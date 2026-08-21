@@ -114,7 +114,8 @@ export default class SocratesPenPlugin extends Plugin {
     const leaf = existing[0] ?? this.app.workspace.getRightLeaf(false);
     if (!leaf) throw new Error(t().errNoRightLeaf);
     await leaf.setViewState({ type: VIEW_TYPE_PEN, active: true });
-    this.app.workspace.revealLeaf(leaf);
+    // revealLeaf 从 1.7.2 才有，minAppVersion 是 1.5.0。
+    this.app.workspace.setActiveLeaf(leaf, { focus: true });
     const view = leaf.view;
     if (!(view instanceof PenView)) throw new Error(t().errViewNotMounted);
     return view;

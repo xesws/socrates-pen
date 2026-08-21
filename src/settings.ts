@@ -174,10 +174,11 @@ function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   return errTail ? `${base}\n${errTail}` : base;
 }
 
-type PenHost = Plugin & {
+/** 不要写成 `Plugin & { settings }`：Plugin.settings 在类型里标了 @since 1.13.0，
+ *  审查器会把每一个 `this.plugin.settings` 判成「用不了 1.5.0」。我们自己的字段。 */
+type PenHost = {
   settings: PenSettings;
   saveSettingsSoon: () => void;
-  /** 语言改了之后重刷 ribbon tooltip、命令名、已打开的侧栏。 */
   applyLanguage: () => void;
   sidecarSnap: () => SidecarSnap;
   sidecarError: () => string;
@@ -191,7 +192,7 @@ export class PenSettingTab extends PluginSettingTab {
   private unwatch: (() => void) | null = null;
 
   constructor(app: App, plugin: PenHost) {
-    super(app, plugin);
+    super(app, plugin as unknown as Plugin);
     this.plugin = plugin;
   }
 
