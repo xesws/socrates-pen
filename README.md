@@ -46,6 +46,25 @@ Enable the plugin under **Settings → Community plugins**. Restricted mode must
 
 MIT. See [LICENSE](LICENSE).
 
+## Development
+
+```bash
+npm install
+npm test
+npm run build          # writes main.js at the repo root (gitignored)
+```
+
+For a live vault:
+
+```bash
+export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
+npm run dev
+```
+
+`npm run dev` refuses to start without `VAULT_PLUGIN_DIR`. Do not hardcode a machine path.
+
+`npm test` also compares the plugin's limit knobs against the sidecar in a sibling `Socrates-agent` checkout (or `SOCRATES_AGENT`). If that tree is missing, the limits check is skipped.
+
 ---
 
 # 苏格拉底
@@ -95,3 +114,22 @@ sidecar 公开之前，只装这个插件问不了问题。sidecar 发布后，�
 ## 许可
 
 MIT，见 [LICENSE](LICENSE)。
+
+## 开发
+
+```bash
+npm install
+npm test
+npm run build          # 仓根写出 main.js（不入库）
+```
+
+对着一个库热更新：
+
+```bash
+export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
+npm run dev
+```
+
+没设 `VAULT_PLUGIN_DIR` 时 `npm run dev` 会直接退出，不要把本机路径写进仓库。
+
+`npm test` 会拿插件的上限表去对旁边的 `Socrates-agent` sidecar（或 `SOCRATES_AGENT`）。那棵树不在就跳过这一项。

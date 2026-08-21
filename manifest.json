@@ -1,0 +1,9 @@
+{
+  "id": "socrates-pen",
+  "name": "Socrates",
+  "version": "0.12.13",
+  "minAppVersion": "1.5.0",
+  "description": "Highlight a passage in your notes and question it through a local sidecar. Desktop only.",
+  "author": "xesws",
+  "isDesktopOnly": true
+}
