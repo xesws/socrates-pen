@@ -11,6 +11,7 @@ import { readLivePick, type EditorPick } from "./selection";
 import type { NoteBinding } from "./types";
 import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
+import { SidecarManager } from "./sidecar";
 
 // 旧版插件把 PenSettings 键直接写在 data.json 顶层，故顶层也要容忍这些键
 type PluginData = Partial<PenSettings> & {
@@ -26,6 +27,7 @@ export default class SocratesPenPlugin extends Plugin {
   private ribbonEl: HTMLElement | null = null;
   private cmdAsk: Command | null = null;
   private cmdOpen: Command | null = null;
+  readonly sidecar = new SidecarManager();
 
   async onload(): Promise<void> {
     await this.loadSettings();
@@ -39,6 +41,9 @@ export default class SocratesPenPlugin extends Plugin {
     // fire-and-forget，而且吞掉所有错：sidecar 没起、端口填错、跨域——
     // 一样都不该让插件加载失败，也不该弹一个读者此刻做不了任何事的通知。
     void purgeExpired(this.settings.sidecarUrl).catch(() => {});
+    if (this.settings.sidecarAutoStart !== false) {
+      void this.ensureSidecar().catch(() => {});
+    }
     this.registerView(VIEW_TYPE_PEN, (leaf) => new PenView(leaf, this));
     this.addSettingTab(new PenSettingTab(this.app, this));
     this.registerDomEvent(document, "selectionchange", () => this.cachePick());
@@ -157,9 +162,37 @@ export default class SocratesPenPlugin extends Plugin {
     };
     this.settings.thinking = coerceThinking(this.settings.thinking);
     this.settings.lang = coerceLangPref(this.settings.lang);
+    this.settings.sidecarAutoStart = this.settings.sidecarAutoStart !== false;
+    this.settings.pythonPath =
+      typeof this.settings.pythonPath === "string" ? this.settings.pythonPath.trim() : "";
     // 手改过、或者被 Sync 弄坏的 data.json 会带来字符串、null、NaN。
     this.settings.limits = coerceLimits(this.settings.limits);
     this.notes = raw.notes || {};
+  }
+
+  sidecarSnap() {
+    return this.sidecar.snapshot();
+  }
+
+  sidecarError(): string {
+    return this.sidecar.lastError();
+  }
+
+  sidecarWatch(fn: () => void): () => void {
+    return this.sidecar.watch(fn);
+  }
+
+  ensureSidecar(): Promise<void> {
+    return this.sidecar.ensure({
+      sidecarUrl: this.settings.sidecarUrl,
+      pythonPath: this.settings.pythonPath,
+      version: this.manifest.version,
+      autoStart: this.settings.sidecarAutoStart,
+    });
+  }
+
+  stopOwnedSidecar(): void {
+    this.sidecar.stopOwned();
   }
 
   async saveSettings(): Promise<void> {

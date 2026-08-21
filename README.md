@@ -2,22 +2,13 @@
 
 Highlight a passage in your Obsidian notes and question it in a Socratic dialogue. Optional write-back puts an answer into the original note — only after you approve it.
 
-**Desktop only.** The plugin is a thin client. The tutor loop, tools, and file edits run in a local sidecar you start yourself.
+**Desktop only.** The plugin starts a local tutor process for you (loopback only). You need Python 3.11+ already installed on this computer; the plugin creates an isolated environment under `~/.socrates-pen` and starts it. No terminal.
 
 ## Requirements
 
 - Obsidian desktop 1.5.0 or later (not mobile)
-- Python 3.11+
-- An API key for an OpenAI-compatible Chat Completions endpoint (set in plugin settings; no environment variables)
-
-## Install the sidecar
-
-```bash
-pip install "git+https://github.com/xesws/socrates-pen.git"
-python -m pen --host 127.0.0.1 --port 8765
-```
-
-Leave that process running. It listens on loopback only (`127.0.0.1:8765`). Session files go in `~/.socrates-pen` (or `<this-repo>/.pen` if you run from a git checkout).
+- Python 3.11 or later on this machine ([python.org](https://www.python.org/downloads/))
+- An API key for an OpenAI-compatible Chat Completions endpoint (Settings → Socrates)
 
 ## Install the plugin
 
@@ -33,21 +24,24 @@ Until then, download these three files from the [latest GitHub Release](https://
 
 Enable the plugin under **Settings → Community plugins**. Restricted mode must be off.
 
+On first launch the plugin may take a minute: it creates `~/.socrates-pen/venv` and pip-installs the tutor from this GitHub repository (GitHub + PyPI). After that, **Settings → Socrates** shows whether the local service is running. Fill in your API key there.
+
 ## Use
 
-1. Start the sidecar (see above).
+1. Enable the plugin. Wait until Settings → Socrates says the local service is running (or click **Start**).
 2. **Settings → Socrates**: API key, and optionally Base URL, model, and thinking level.
 3. Open a note, select a passage (live preview or reading view).
 4. Open the Socrates sidebar and use the current selection, or run the command palette item to do the same.
 5. To write an answer back into the note: say where to insert or replace, or use the write-back chip after a real answer. The model must read the file first, then propose an edit. The sidebar asks you to **allow** that edit before anything is saved.
-6. **Roll back / Redo** restore the whole note from the sidecar snapshot stack, not just the last selection.
+6. **Roll back / Redo** restore the whole note from the snapshot stack, not just the last selection.
 
 ## Privacy and network
 
-- The plugin talks to the sidecar URL you configure (default `http://127.0.0.1:8765`). It does not phone home.
-- Model calls leave your machine from the sidecar, to the endpoint you set (default is a public Chat Completions API).
+- The plugin talks to `http://127.0.0.1:8765` by default. It does not phone home.
+- First-time setup downloads the tutor and its Python dependencies from GitHub and PyPI into `~/.socrates-pen`.
+- Model calls leave your machine from that local process, to the endpoint you set.
 - The API key is stored in this vault at `.obsidian/plugins/socrates-pen/data.json`. If the vault is in Sync, iCloud, or git, the key goes with it.
-- Write-back changes the note on disk through the sidecar, after you approve the edit.
+- Write-back changes the note on disk, after you approve the edit.
 
 ## License
 
@@ -58,9 +52,7 @@ MIT. See [LICENSE](LICENSE).
 ```bash
 npm install
 npm test
-npm run build          # writes main.js at the repo root (gitignored)
-pip install -e .
-python -m pen --host 127.0.0.1 --port 8765
+npm run build
 ```
 
 For a live vault:
@@ -70,7 +62,7 @@ export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
 npm run dev
 ```
 
-`npm run dev` refuses to start without `VAULT_PLUGIN_DIR`. Do not hardcode a machine path.
+`npm run dev` refuses to start without `VAULT_PLUGIN_DIR`.
 
 ---
 
@@ -78,22 +70,13 @@ npm run dev
 
 在 Obsidian 笔记里划一段，用苏格拉底方式追问。可选把解答写回原文——必须你在侧栏点允许之后才落盘。
 
-**仅桌面。** 插件是薄客户端。对话循环、工具和改文件都在你本机启动的 sidecar 里跑。
+**仅桌面。** 插件会自己在本机拉起服务（只绑 loopback）。电脑上需要已经装好 Python 3.11+；插件在 `~/.socrates-pen` 里建隔离环境并启动。不用开终端。
 
 ## 需要
 
 - Obsidian 桌面版 1.5.0 或更高（不能用手机）
-- Python 3.11+
-- 兼容 OpenAI Chat Completions 的 API Key（在插件设置里填，不用配环境变量）
-
-## 安装 sidecar
-
-```bash
-pip install "git+https://github.com/xesws/socrates-pen.git"
-python -m pen --host 127.0.0.1 --port 8765
-```
-
-让它一直开着。只监听本机 `127.0.0.1:8765`。数据在 `~/.socrates-pen`（从 git 检出跑则在仓库里的 `.pen`）。
+- 本机 Python 3.11 或更高（[python.org](https://www.python.org/downloads/)）
+- 兼容 OpenAI Chat Completions 的 API Key（设置 → Socrates）
 
 ## 安装插件
 
@@ -109,21 +92,24 @@ python -m pen --host 127.0.0.1 --port 8765
 
 在 **设置 → 社区插件** 里启用。需要关掉 Restricted mode。
 
+第一次启用可能要一分钟：插件会建 `~/.socrates-pen/venv`，并从本 GitHub 仓库 pip 安装（访问 GitHub 和 PyPI）。之后在 **设置 → Socrates** 最上面看本机服务是否在跑，并填 API Key。
+
 ## 用法
 
-1. 本机先起 sidecar（见上）。
+1. 启用插件。等到设置页显示本机服务在运行（或点 **启动**）。
 2. **设置 → Socrates**：填 API Key；需要的话再改 Base URL、模型、Thinking。
 3. 打开一篇笔记，划一段（实时预览或阅读模式都行）。
 4. 打开苏格拉底侧栏，用当前选区；或用命令面板做同样的事。
 5. 要把解答写进原文：说清楚插哪/换哪，或在有真正解答之后用写回。模型必须先读文件，再单独提一次编辑。侧栏弹出审批，点**允许**才写盘。
-6. **回到上一版 / 重做**按 sidecar 的快照栈整篇回退，不是只撤选区。
+6. **回到上一版 / 重做**按快照栈整篇回退，不是只撤选区。
 
 ## 隐私与网络
 
-- 插件只访问你配置的 sidecar 地址（默认 `http://127.0.0.1:8765`），不向作者汇报。
-- 调模型是 sidecar 按你填的节点发出去的（默认是公开的 Chat Completions 接口）。
+- 插件默认只访问 `http://127.0.0.1:8765`，不向作者汇报。
+- 第一次安装会从 GitHub 和 PyPI 把脑子和 Python 依赖下到 `~/.socrates-pen`。
+- 调模型由这个本机进程按你填的节点发出去。
 - API Key 存在本库 `.obsidian/plugins/socrates-pen/data.json`。库若进了 Sync / iCloud / git，钥匙会跟着走。
-- 写回经 sidecar 改磁盘上的笔记，且必须你先批准。
+- 写回改磁盘上的笔记，且必须你先批准。
 
 ## 许可
 
@@ -135,8 +121,6 @@ MIT，见 [LICENSE](LICENSE)。
 npm install
 npm test
 npm run build
-pip install -e .
-python -m pen --host 127.0.0.1 --port 8765
 ```
 
 对着一个库热更新：

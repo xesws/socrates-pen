@@ -232,7 +232,7 @@ export const zh = {
   errViewNotMounted: "苏格拉底视图未挂上",
   errNeedDesktopVault: "需要桌面库（FileSystemAdapter）",
   noticeSidecarDown:
-    "sidecar 未启动。先在本机终端运行：python -m pen；模型在设置 → Socrates 里填",
+    "本机服务还没起来。打开设置 → Socrates，看最上面那一块的状态。",
 
   // ── 芯片。键对齐后端 pen/session.py 的 FIXED_CHIPS[].id ──
   chips: {
@@ -247,8 +247,29 @@ export const zh = {
   setLangName: "语言 / Language",
   setLangDesc: "默认跟随 Obsidian 的界面语言。",
   setLangAuto: "自动（跟随 Obsidian）",
+  setSidecarSvc: "本机服务",
+  setSidecarSvcDesc:
+    "插件会在你家目录的 ~/.socrates-pen 里建一个隔离的 Python 环境，装上脑子，并在本机 127.0.0.1 拉起。需要系统已安装 Python 3.11+。第一次可能要一两分钟（要下载依赖）。",
+  setSidecarStart: "启动",
+  setSidecarStop: "停止",
+  setSidecarAutoName: "打开 Obsidian 时自动启动",
+  setSidecarAutoDesc: "默认开。关掉就只在你点启动时才拉起。",
+  setSidecarPythonName: "Python 路径",
+  setSidecarPythonDesc: "留空则自动找 python3 / python / py。找不到时请先从 python.org 安装 3.11 或更高。",
+  setSidecarPhaseIdle: "未运行",
+  setSidecarPhaseChecking: "在检查…",
+  setSidecarPhaseInstalling: "在安装本机服务（第一次会久一点）…",
+  setSidecarPhaseStarting: "在启动…",
+  setSidecarPhaseRunning: "运行中",
+  setSidecarErrNoPython: "没找到 Python 3.11+。请先安装，必要时在下面填解释器路径。",
+  setSidecarErrNotLoopback: "插件只能在 127.0.0.1 / localhost 上拉起服务。Sidecar URL 改回 loopback。",
+  setSidecarErrBadUrl: "Sidecar URL 不是合法地址。",
+  setSidecarErrInstall: "安装失败。需要能访问 GitHub 和 PyPI。",
+  setSidecarErrSpawn: "进程没能拉起来。",
+  setSidecarErrHealth: "进程起来了，但健康检查一直没过。",
+  setSidecarErrOther: (code: string): string => `启动失败（${code}）`,
   setIntro1:
-    "在这一页填钥匙和节点。不要去配环境变量。当前库的路径会在框选时自动带给本机 sidecar。",
+    "钥匙和节点填在下面。本机服务由插件自己拉起，不用开终端。当前库的路径会在框选时自动带给服务。",
   setIntro2:
     "API Key 存在本库 .obsidian/plugins/socrates-pen/data.json。若整个库进了 Sync / iCloud / git，钥匙会跟着走。",
   setApiKeyDesc: "OpenAI 兼容节点的钥匙。密码框，不会显示在健康行里。",
@@ -285,7 +306,7 @@ export const zh = {
   limitDesc: (k: string): string => LIMIT_TEXT_ZH[k]?.[1] ?? "",
 
   setSidecarDesc:
-    "本机苏格拉底服务的地址。一般不用改。先在本机终端运行：python -m pen --host 127.0.0.1 --port 8765",
+    "本机服务的地址。一般不用改。插件只会往 loopback 上拉起进程。",
 };
 
 export type Dict = typeof zh;

@@ -1,6 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { usageTotal } from "./api";
 import { coerceLangPref, t, type LangPref } from "./i18n";
+import type { SidecarSnap } from "./sidecar";
 
 export type ThinkingLevel = "off" | "low" | "medium" | "high";
 
@@ -8,6 +9,10 @@ export interface PenSettings {
   /** 界面语言。"auto" 跟随 Obsidian。 */
   lang: LangPref;
   sidecarUrl: string;
+  /** Obsidian 打开时由插件拉起本机服务。 */
+  sidecarAutoStart: boolean;
+  /** 空 = 自动找 python3 / python / py。 */
+  pythonPath: string;
   apiKey: string;
   baseUrl: string;
   model: string;
@@ -115,6 +120,8 @@ export function limitsPayload(s: PenSettings): Record<string, number> | undefine
 export const DEFAULT_SETTINGS: PenSettings = {
   lang: "auto",
   sidecarUrl: "http://127.0.0.1:8765",
+  sidecarAutoStart: true,
+  pythonPath: "",
   apiKey: "",
   baseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-flash",
@@ -144,19 +151,54 @@ export function llmPayload(s: PenSettings): {
   };
 }
 
+function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
+  const s = t();
+  if (snap.phase === "idle") return s.setSidecarPhaseIdle;
+  if (snap.phase === "checking") return s.setSidecarPhaseChecking;
+  if (snap.phase === "installing") return s.setSidecarPhaseInstalling;
+  if (snap.phase === "starting") return s.setSidecarPhaseStarting;
+  if (snap.phase === "running") return s.setSidecarPhaseRunning;
+  if (snap.detail === "no-python") return s.setSidecarErrNoPython;
+  if (snap.detail === "not-loopback") return s.setSidecarErrNotLoopback;
+  if (snap.detail === "bad-url" || snap.detail === "bad-port") return s.setSidecarErrBadUrl;
+  if (snap.detail === "install-failed") {
+    return errTail ? `${s.setSidecarErrInstall}\n${errTail}` : s.setSidecarErrInstall;
+  }
+  if (snap.detail === "spawn-failed") {
+    return errTail ? `${s.setSidecarErrSpawn}\n${errTail}` : s.setSidecarErrSpawn;
+  }
+  if (snap.detail === "no-health") {
+    return errTail ? `${s.setSidecarErrHealth}\n${errTail}` : s.setSidecarErrHealth;
+  }
+  const base = s.setSidecarErrOther(snap.detail || "error");
+  return errTail ? `${base}\n${errTail}` : base;
+}
+
 type PenHost = Plugin & {
   settings: PenSettings;
   saveSettingsSoon: () => void;
   /** 语言改了之后重刷 ribbon tooltip、命令名、已打开的侧栏。 */
   applyLanguage: () => void;
+  sidecarSnap: () => SidecarSnap;
+  sidecarError: () => string;
+  sidecarWatch: (fn: () => void) => () => void;
+  ensureSidecar: () => Promise<void>;
+  stopOwnedSidecar: () => void;
 };
 
 export class PenSettingTab extends PluginSettingTab {
   plugin: PenHost;
+  private unwatch: (() => void) | null = null;
 
   constructor(app: App, plugin: PenHost) {
     super(app, plugin);
     this.plugin = plugin;
+  }
+
+  hide(): void {
+    this.unwatch?.();
+    this.unwatch = null;
+    super.hide();
   }
 
   /**
@@ -201,6 +243,39 @@ export class PenSettingTab extends PluginSettingTab {
     // 也不重复插件名——设置侧栏已经写着 Socrates 了。
     containerEl.createEl("p", { cls: "setting-item-description", text: s.setIntro1 });
     containerEl.createEl("p", { cls: "setting-item-description", text: s.setIntro2 });
+
+    new Setting(containerEl).setName(s.setSidecarSvc).setHeading();
+    containerEl.createEl("p", { cls: "setting-item-description", text: s.setSidecarSvcDesc });
+    const statusEl = containerEl.createEl("p", { cls: "setting-item-description" });
+    const paintStatus = () => {
+      statusEl.setText(sidecarStatusText(this.plugin.sidecarSnap(), this.plugin.sidecarError()));
+    };
+    paintStatus();
+    this.unwatch?.();
+    this.unwatch = this.plugin.sidecarWatch(paintStatus);
+
+    new Setting(containerEl)
+      .setName(s.setSidecarSvc)
+      .addButton((b) =>
+        b.setButtonText(s.setSidecarStart).onClick(() => {
+          void this.plugin.ensureSidecar();
+        }),
+      )
+      .addButton((b) =>
+        b.setButtonText(s.setSidecarStop).onClick(() => {
+          this.plugin.stopOwnedSidecar();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName(s.setSidecarAutoName)
+      .setDesc(s.setSidecarAutoDesc)
+      .addToggle((c) =>
+        c.setValue(this.plugin.settings.sidecarAutoStart !== false).onChange((v) => {
+          this.plugin.settings.sidecarAutoStart = v;
+          this.plugin.saveSettingsSoon();
+        }),
+      );
 
     new Setting(containerEl).setName(s.setSecCommon).setHeading();
 
@@ -308,6 +383,18 @@ export class PenSettingTab extends PluginSettingTab {
     const adv = containerEl.createEl("details", { cls: "sp-set-advanced" });
     adv.createEl("summary", { text: s.setSecAdvanced });
     adv.createEl("p", { cls: "setting-item-description", text: s.setAdvancedNote });
+    new Setting(adv)
+      .setName(s.setSidecarPythonName)
+      .setDesc(s.setSidecarPythonDesc)
+      .addText((c) =>
+        c
+          .setPlaceholder("/usr/bin/python3")
+          .setValue(this.plugin.settings.pythonPath)
+          .onChange((v) => {
+            this.plugin.settings.pythonPath = v.trim();
+            this.plugin.saveSettingsSoon();
+          }),
+      );
     for (const k of ADVANCED_LIMITS) {
       this.num(adv, k, s.limitName(k), s.limitDesc(k));
     }

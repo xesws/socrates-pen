@@ -173,7 +173,7 @@ export const en: Dict = {
   errViewNotMounted: "The Socrates view didn't mount",
   errNeedDesktopVault: "Needs a desktop vault (FileSystemAdapter)",
   noticeSidecarDown:
-    "The sidecar isn't running. Start it in a terminal: python -m pen — the model goes under Settings → Socrates",
+    "The local service isn't up. Open Settings → Socrates and check the status at the top.",
 
   chips: {
     socratic: { label: "Don't tell me yet — ask me something", hint: "" },
@@ -192,8 +192,29 @@ export const en: Dict = {
   setLangName: "语言 / Language",
   setLangDesc: "Follows Obsidian's interface language by default.",
   setLangAuto: "Auto (follow Obsidian)",
+  setSidecarSvc: "Local service",
+  setSidecarSvcDesc:
+    "The plugin creates an isolated Python environment under ~/.socrates-pen, installs the tutor, and binds it to 127.0.0.1. You need Python 3.11+ on this machine. The first run can take a minute (downloads dependencies).",
+  setSidecarStart: "Start",
+  setSidecarStop: "Stop",
+  setSidecarAutoName: "Start when Obsidian opens",
+  setSidecarAutoDesc: "On by default. Turn it off to start only from this page.",
+  setSidecarPythonName: "Python path",
+  setSidecarPythonDesc: "Leave empty to auto-detect python3 / python / py. If none is found, install 3.11+ from python.org.",
+  setSidecarPhaseIdle: "Not running",
+  setSidecarPhaseChecking: "Checking…",
+  setSidecarPhaseInstalling: "Installing the local service (first time is slower)…",
+  setSidecarPhaseStarting: "Starting…",
+  setSidecarPhaseRunning: "Running",
+  setSidecarErrNoPython: "No Python 3.11+ found. Install it, or set the interpreter path below.",
+  setSidecarErrNotLoopback: "The plugin will only start the service on 127.0.0.1 / localhost. Put a loopback Sidecar URL back.",
+  setSidecarErrBadUrl: "Sidecar URL isn't a valid address.",
+  setSidecarErrInstall: "Install failed. This machine needs access to GitHub and PyPI.",
+  setSidecarErrSpawn: "The process didn't start.",
+  setSidecarErrHealth: "The process started, but health checks never passed.",
+  setSidecarErrOther: (code: string): string => `Couldn't start (${code})`,
   setIntro1:
-    "Key and endpoint go here — no environment variables needed. This vault's path is handed to the local sidecar the moment you pick a passage.",
+    "Key and endpoint go below. The plugin starts the local service — no terminal. This vault's path is handed over the moment you pick a passage.",
   setIntro2:
     "The API key lives in this vault, at .obsidian/plugins/socrates-pen/data.json. If the whole vault goes into Sync / iCloud / git, the key rides along.",
   setApiKeyDesc:
@@ -229,5 +250,5 @@ export const en: Dict = {
   limitDesc: (k) => LIMIT_TEXT_EN[k]?.[1] ?? "",
 
   setSidecarDesc:
-    "Where the local pen listens. You rarely need to touch this. Start it with: python -m pen --host 127.0.0.1 --port 8765",
+    "Where the local service listens. You rarely need to touch this. The plugin only spawns on loopback.",
 };
