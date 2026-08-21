@@ -2,21 +2,28 @@
 
 Highlight a passage in your Obsidian notes and question it in a Socratic dialogue. Optional write-back puts an answer into the original note — only after you approve it.
 
-**Desktop only.** This repository is the Obsidian plugin: a thin client. The tutor loop, tools, and file edits run in a **local sidecar** that you start yourself. The sidecar is not published in this repository yet.
+**Desktop only.** The plugin is a thin client. The tutor loop, tools, and file edits run in a local sidecar you start yourself.
 
 ## Requirements
 
 - Obsidian desktop 1.5.0 or later (not mobile)
-- A local sidecar listening on loopback, default `http://127.0.0.1:8765`
+- Python 3.11+
 - An API key for an OpenAI-compatible Chat Completions endpoint (set in plugin settings; no environment variables)
 
-Until the sidecar is released, this plugin cannot answer questions on its own. When the sidecar ships, this README will point to the install command.
+## Install the sidecar
 
-## Install
+```bash
+pip install "git+https://github.com/xesws/socrates-pen.git"
+python -m pen --host 127.0.0.1 --port 8765
+```
 
-Not in the Community plugins directory yet. When it is, use **Settings → Community plugins → Browse**.
+Leave that process running. It listens on loopback only (`127.0.0.1:8765`). Session files go in `~/.socrates-pen` (or `<this-repo>/.pen` if you run from a git checkout).
 
-Until then, after a GitHub Release exists, copy these files into:
+## Install the plugin
+
+When it is in the Community plugins directory: **Settings → Community plugins → Browse → Socrates**.
+
+Until then, download these three files from the [latest GitHub Release](https://github.com/xesws/socrates-pen/releases) and put them in:
 
 `<Vault>/.obsidian/plugins/socrates-pen/`
 
@@ -28,7 +35,7 @@ Enable the plugin under **Settings → Community plugins**. Restricted mode must
 
 ## Use
 
-1. Start the sidecar on this machine (default `127.0.0.1:8765`).
+1. Start the sidecar (see above).
 2. **Settings → Socrates**: API key, and optionally Base URL, model, and thinking level.
 3. Open a note, select a passage (live preview or reading view).
 4. Open the Socrates sidebar and use the current selection, or run the command palette item to do the same.
@@ -52,6 +59,8 @@ MIT. See [LICENSE](LICENSE).
 npm install
 npm test
 npm run build          # writes main.js at the repo root (gitignored)
+pip install -e .
+python -m pen --host 127.0.0.1 --port 8765
 ```
 
 For a live vault:
@@ -63,29 +72,34 @@ npm run dev
 
 `npm run dev` refuses to start without `VAULT_PLUGIN_DIR`. Do not hardcode a machine path.
 
-`npm test` also compares the plugin's limit knobs against the sidecar in a sibling `Socrates-agent` checkout (or `SOCRATES_AGENT`). If that tree is missing, the limits check is skipped.
-
 ---
 
 # 苏格拉底
 
 在 Obsidian 笔记里划一段，用苏格拉底方式追问。可选把解答写回原文——必须你在侧栏点允许之后才落盘。
 
-**仅桌面。** 本仓库是插件：薄客户端。对话循环、工具和改文件都在你本机启动的 **sidecar** 里跑。sidecar **尚未**放进本仓库。
+**仅桌面。** 插件是薄客户端。对话循环、工具和改文件都在你本机启动的 sidecar 里跑。
 
 ## 需要
 
 - Obsidian 桌面版 1.5.0 或更高（不能用手机）
-- 本机 sidecar，默认监听 `http://127.0.0.1:8765`
+- Python 3.11+
 - 兼容 OpenAI Chat Completions 的 API Key（在插件设置里填，不用配环境变量）
 
-sidecar 公开之前，只装这个插件问不了问题。sidecar 发布后，本 README 会补上安装命令。
+## 安装 sidecar
 
-## 安装
+```bash
+pip install "git+https://github.com/xesws/socrates-pen.git"
+python -m pen --host 127.0.0.1 --port 8765
+```
 
-还没进社区插件目录。进了之后走 **设置 → 社区插件 → 浏览**。
+让它一直开着。只监听本机 `127.0.0.1:8765`。数据在 `~/.socrates-pen`（从 git 检出跑则在仓库里的 `.pen`）。
 
-在此之前，等 GitHub Release 有产物了，把下面三个文件拷进：
+## 安装插件
+
+进了社区插件目录之后：**设置 → 社区插件 → 浏览 → Socrates**。
+
+在此之前，从 [GitHub Release](https://github.com/xesws/socrates-pen/releases) 下载这三个文件，拷进：
 
 `<库>/.obsidian/plugins/socrates-pen/`
 
@@ -97,7 +111,7 @@ sidecar 公开之前，只装这个插件问不了问题。sidecar 发布后，�
 
 ## 用法
 
-1. 本机先起 sidecar（默认 `127.0.0.1:8765`）。
+1. 本机先起 sidecar（见上）。
 2. **设置 → Socrates**：填 API Key；需要的话再改 Base URL、模型、Thinking。
 3. 打开一篇笔记，划一段（实时预览或阅读模式都行）。
 4. 打开苏格拉底侧栏，用当前选区；或用命令面板做同样的事。
@@ -120,7 +134,9 @@ MIT，见 [LICENSE](LICENSE)。
 ```bash
 npm install
 npm test
-npm run build          # 仓根写出 main.js（不入库）
+npm run build
+pip install -e .
+python -m pen --host 127.0.0.1 --port 8765
 ```
 
 对着一个库热更新：
@@ -130,6 +146,4 @@ export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
 npm run dev
 ```
 
-没设 `VAULT_PLUGIN_DIR` 时 `npm run dev` 会直接退出，不要把本机路径写进仓库。
-
-`npm test` 会拿插件的上限表去对旁边的 `Socrates-agent` sidecar（或 `SOCRATES_AGENT`）。那棵树不在就跳过这一项。
+没设 `VAULT_PLUGIN_DIR` 时 `npm run dev` 会直接退出。

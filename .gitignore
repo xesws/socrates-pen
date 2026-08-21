@@ -2,3 +2,11 @@ node_modules/
 main.js
 *.map
 .DS_Store
+.pen/
+.venv/
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/

@@ -1,0 +1,211 @@
+{
+  "_source": "从 408 个落盘会话的 <!--pen:chips--> 块里挖出，879 条去重后 49 条。人工标注。",
+  "_labels": {
+    "placeholder": "模型抄了 prompt 占位符，必须挡",
+    "chore": "写回/校对类编辑操作，不是学习问题，必须挡",
+    "navigation": "纯带路，无智力含量，必须挡",
+    "echoes_user": "复读读者原话，必须挡",
+    "local": "局部语法题。实时层放行（读者要基础问题），深层必须挡",
+    "good": "达标的好问题，任何一层都不许误杀",
+    "neutral": "中等，不做断言"
+  },
+  "items": [
+    {
+      "text": "下一问 1",
+      "label": "placeholder"
+    },
+    {
+      "text": "下一问 2",
+      "label": "placeholder"
+    },
+    {
+      "text": "那这块和前面第几拍讲的是同一件事吗？",
+      "label": "neutral"
+    },
+    {
+      "text": "为什么这里选 A 不选 B，代价是什么？",
+      "label": "neutral"
+    },
+    {
+      "text": "带我读一下「本书玩法说明」",
+      "label": "navigation"
+    },
+    {
+      "text": "直接去 Level 0，先看看第一拍",
+      "label": "navigation"
+    },
+    {
+      "text": "...",
+      "label": "placeholder"
+    },
+    {
+      "text": "那 zsh 和 Bash 差别大吗？我该不该切？",
+      "label": "local"
+    },
+    {
+      "text": "$0 和 $SHELL 打印出来的为什么不一样？",
+      "label": "local"
+    },
+    {
+      "text": "把这 5 个例子和速查表写回第三拍",
+      "label": "chore"
+    },
+    {
+      "text": "第五拍 Q2 的 heredoc 引号题怎么解",
+      "label": "neutral"
+    },
+    {
+      "text": "Level 1 Python 的门禁长啥样",
+      "label": "neutral"
+    },
+    {
+      "text": "校对手册目录行号",
+      "label": "chore"
+    },
+    {
+      "text": "下一问 1：第三拍那五个例子，哪几个能挪来给第一、二拍当练习？",
+      "label": "neutral"
+    },
+    {
+      "text": "下一问 2：第四拍想补什么？我猜是 echo 和变量（$HOME 那套），对不对？",
+      "label": "neutral"
+    },
+    {
+      "text": "那 `echo` 后面加引号和不加引号，区别大吗？",
+      "label": "local"
+    },
+    {
+      "text": "提示符里的 `user@mac` 到底是谁，能不能改？",
+      "label": "local"
+    },
+    {
+      "text": "第二拍讲什么？接着往下读。",
+      "label": "navigation"
+    },
+    {
+      "text": "那单引号里想输出一个单引号，怎么写？",
+      "label": "local"
+    },
+    {
+      "text": "为什么双引号里 $ 还能展开，这不是说不拆吗？",
+      "label": "local"
+    },
+    {
+      "text": "第三拍讲 shell 出身，跟这个引号有关系吗？",
+      "label": "neutral"
+    },
+    {
+      "text": "那「全景图：七块积木」和这四块积木是什么关系？",
+      "label": "good"
+    },
+    {
+      "text": "为什么第一个参考实现偏偏是 mini-swe-agent，而不是 LangChain？",
+      "label": "good"
+    },
+    {
+      "text": "开篇说学完能读懂 mini-swe-agent 源码，那我 Level 0 第一关到底学什么？",
+      "label": "good"
+    },
+    {
+      "text": "messages 每轮都整本读，任务长了不就把上下文撑爆了吗？",
+      "label": "echoes_user",
+      "note": "逐字复读读者 2026-08-18 的原话，必须被 user_text 相似度挡掉"
+    },
+    {
+      "text": "依赖图里 permissions 为什么要 import registry，审批台要看花名册干什么？",
+      "label": "good"
+    },
+    {
+      "text": "那步数上限设多少合适？任务没跑完就被熔断了怎么办？",
+      "label": "good"
+    },
+    {
+      "text": "工具输出被截断之后，实习生看不到完整结果，会不会瞎猜？",
+      "label": "good"
+    },
+    {
+      "text": "门禁到底怎么卡人？答不对会不会就卡死在那一关？",
+      "label": "neutral"
+    },
+    {
+      "text": "为什么 Plan/Auto 双模式要放到 Level 6 最后才做？",
+      "label": "good"
+    },
+    {
+      "text": "门禁每题底下都配了 Meta Instance 可运行例子，答题前要先把例子跑一遍吗？",
+      "label": "neutral"
+    },
+    {
+      "text": "第八拍的坑和门禁题是不是反着写的？答对题就能避开坑？",
+      "label": "good"
+    },
+    {
+      "text": "白名单排在危险检测前面，那危险命令是不是也会被静默放行？这个洞 Level 6 怎么堵？",
+      "label": "good"
+    },
+    {
+      "text": "审批被拒之后，拒绝原因是怎么回填给模型的？",
+      "label": "good"
+    },
+    {
+      "text": "刚才粘错了——回到手册，Level 6 的 Plan/Auto 双模式到底解决了什么问题？",
+      "label": "neutral"
+    },
+    {
+      "text": "我想问的不是这个：Agent 在终端里要怎么处理带特殊符号的输出？",
+      "label": "neutral"
+    },
+    {
+      "text": "什么是\"消息循环\"？它跟普通程序的主循环差在哪？",
+      "label": "neutral"
+    },
+    {
+      "text": "为什么骨架里\"审批闸门\"必须单独算一件，不能塞进工具里？",
+      "label": "good"
+    },
+    {
+      "text": "那三大核心（手、刹车、工作模式）分别对应骨架里的哪个零件？",
+      "label": "good"
+    },
+    {
+      "text": "七块积木里，messages 为什么不算文件？数据流上它又凭什么独立一格？",
+      "label": "good"
+    },
+    {
+      "text": "那本手册说的\"四根骨头\"，和 L16 的三大核心，对不上号怎么数？",
+      "label": "good"
+    },
+    {
+      "text": "那如果我只想冻结一部分变量，另一部分要展开，heredoc 有办法吗？",
+      "label": "neutral"
+    },
+    {
+      "text": "定界符带引号时，反斜杠 `\\$` 还有用吗？",
+      "label": "local"
+    },
+    {
+      "text": "实例 1 那个「内容。」占位块，要不要一起替换成真内容？",
+      "label": "chore"
+    },
+    {
+      "text": "位置确认后，〔回读：第四拍 · 设计〕要不要顺手改成指向答疑块的链接？",
+      "label": "neutral"
+    },
+    {
+      "text": "Q1 那个「实例 1：已有例子」也是占位，要不要一起补？",
+      "label": "chore"
+    },
+    {
+      "text": "〔回读：第四拍 · 设计〕指向的第四拍，这册里好像没展开，要不要先翻一眼？",
+      "label": "neutral"
+    },
+    {
+      "text": "这段要不要沉淀进第三拍，把占位「这里讲 shell 出身。」换掉？",
+      "label": "chore"
+    },
+    {
+      "text": "shell=True 的注入风险，具体怎么炸的，要不要举个坏例子？",
+      "label": "good"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "socrates-pen"
+version = "0.12.13"
+description = "Local sidecar for the Socrates Obsidian plugin."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "xesws" }]
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "openai>=1.50.0",
+  "pydantic>=2.0.0",
+  "httpx>=0.27.0",
+]
+
+[project.scripts]
+socrates-pen = "pen.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["pen*"]
+exclude = ["pen.tests*"]

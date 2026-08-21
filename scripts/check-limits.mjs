@@ -20,6 +20,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = join(here, "..");
 
 function findAgentRoot() {
+  const bundled = join(pluginRoot, "pen", "config.py");
+  if (existsSync(bundled)) return resolve(pluginRoot);
   const fromEnv = (process.env.SOCRATES_AGENT || "").trim();
   if (fromEnv && existsSync(join(fromEnv, "pen", "config.py"))) return resolve(fromEnv);
   const sibling = join(pluginRoot, "..", "Socrates-agent");
@@ -30,7 +32,7 @@ function findAgentRoot() {
 const repo = findAgentRoot();
 if (!repo) {
   console.log(
-    "skip check-limits: sidecar source not found (set SOCRATES_AGENT or keep ../Socrates-agent beside this repo)",
+    "skip check-limits: sidecar source not found (this repo should contain pen/config.py)",
   );
   process.exit(0);
 }
