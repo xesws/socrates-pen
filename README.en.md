@@ -1,69 +1,12 @@
 <div align="center">
 
-```
-                           s   . .sAs:   :s:      ..    :.
-                                   ..sA:..:        :..   .:.
-               ..  :s              ..  A::..      :    :
-                .  .s         ::    sG s:s::::..       s:  s3:
-          ..        ..      ... s:   sA.:  :ssAsss:.  .    .     .
-          :.                  As sss.  . ..:sAGGGG33A::     sA3A..
-           .                  .:  :.::..:sA3G&&&&&&&G3G3:   .s::  .s
-     ..                         .. :sAGGG&&@@@@@@@@&&GGG3s  ..:.   .s
-                       ..::::..::sAAG@&@@@@@@@@@@@@@&GG33G:  .s3A: .::
-    :.              .:ssAAAsAAAA33G&@@@@@@@@@@@@@@@@@&G3A33:     ::  .:.
-    s    .          :ssA3GGG&GGGG&@@@@@@@@@@@@@@@@@@@&GG3s3A.:s  .G:
-    .               .:sA3G&@@&&&&&@@@@@@@@@@@@@@@@@@@&3GGssAA.:: AG  :.
-     :               .:sA3GG&&&&&&@@@@@@@@@@@@@@@@@@GGGGA:sAs. A .       :
-     :.                .:AA3&&&G&&&&&&@@@@@@@@@@@&&GGG&Gs::::.:s       : .
-      .:               ..:sAA3333GGGG&&@&&&&&&&&&GG&&&&3:::: .     .:s::
-                    .::.:AGG&GGG3GGGG&&&&@@@@@@@@&&@&&Gs.::.     .s:.      .
-                     .:sAsAG@@@&&&&GGG&&@@@@@@@@@@&&&G3s::.       .:.      :
-                   .....s33A&@@@@@@&&&&@@@@@@@@@&&&&@&&3:::.    A: .s:  s..
-                  .:sAA:. :ss3&@@@@@@&&@@@@&GG&G&@@@@@&GA::.     .sG.  .
-    ..               :s33ssA..A3&@GG@3A&&&&&&@@@&3A:...:s:...       .    .
-                         :ssssAsA&:s&A 333GG33s.           ..
-                                 . .AA            ....    .::        .
-                                   :AA.                  :ss:
-                                  A&@@3       ..:ss. ::sAG3::
-                       .::.       3&@@&AAs. .:sssssAGG3@@&3:
-               .:....:sAAs::      3&@@3s&&GGAsAGG&&@&&@@@GA.
-                :A3AA3AAsAs:      s@@@33GGG@@&G33G&@@@@&G3s       .
-                 .:s3G3G33A:      s&@@&G&&&@@@@@@&&G&G3As.      :
-                   .:A33G3A:     :3&@@@&G3s&@@@@@@&&GAs.     .  :
-                     sA3G33.  .  A&@@@@&G@3 A&@@@@&GA:     ..::s:
-                      :A3A:      s&@&@@G3333::3&&&GA:     .:A:
-                      :sA:        ..:s:   A@@3.sGG3s.::...:sssAs.
-                      ::.              ..sGG&@&AA33A:s::sAA:s :::
-                       .              sA3AAA33GG3AAAAAs:ss3Ass.
-                      .. :       ..  :s::s3G3GA3GAsAs3:As::ss..ss
-             .       .:            .         :s:GAAA:AAsAs:  ...:.
-              ..                      .         ::G3A:A::A:ssA3s
-              .                 .sAssA33AA:       ssG3:::. AG. :.
-                                   :.  .sAss     . .:33.sA  :  ..
-                                 ::s:::::..:.     .:::A3  .:A.:.
-                  :              .s.:ss::Ass.        :.ss  .. .
-                      .       ::s3ssAAAAAAA3ss:.:.     .:As
-                     .s ..   :A A3s.AsAGG3AGGA3:.::.  :  .
-                        .:  .:s.3Ass.s3G3GAsG3s3: s::  ..
-                        ::  :s.:s::  .s3sAA.:Gs s  .s:  :. .:.
-                     .    .  :sA:.    :3AsssAA: .  .::.    .:s:
-                     ..       .:As.  .s:. .:. As. ...    .:.:3Ass.
-                       .         A. .ss  .     :s      .:::::3GG3A.
-                         .:          :ss.:As   ..      .::s::33&&&s
-                          .            :s: .s.        .::AssA3GG&&.
-                                         : ..      .::::3AAA3G3GGs
-```
+<!-- width=840 is the card's real CSS width from scripts/render-hero.py; it renders 1:1.
+     The five drawio figures in the body use width=100%; this one deliberately does not.
+     After editing src/logo.ts, re-run: python scripts/render-hero.py -->
+<img src="docs/img/hero.png" width="840"
+     alt="Socrates — a bust of Socrates drawn with the 8-step density ramp . : s A 3 G &amp; @, beside the SOCRATES wordmark and the subtitle Socrates-agent">
 
-```
- 3&&@&s    sG@&@&s     3&&@&A   s&&&&&G:     A&&     G&&&&&&s .&&&&&&3   s&&@@3
-3@A  3&.  s@G: .3@A   &@s .3&:  A@A  :@@    .@&@3    ..s@G.:   @&       .@G  s&A
-:G&G3s.   G@     &@  s@A        A@GAAA&3    G@ A@:     .@3     @&3333:   3@&GA:
- .:s3&@:  G@.    &@  s@A    :   A@G3@@A    s@&s3@&     :@3     @&ssss.    .sAG@3
-G@s  A@s  s@G: .3@A   G@A::&@:  A@s  G@s   &&3G3G@A    :@3     @&    .  :@3  :@&
-.3@@@&A    sG@&@&s     A&&&G:   s&s   G&: A&s    G&.   .&3     &&&&&&G   A&@@@G:
-```
-
-### Highlight a passage in your own notes, and get questioned
+**Highlight a passage in your own notes, and get questioned**
 
 [中文](README.md) · **English**
 
@@ -93,6 +36,8 @@ G@s  A@s  s@G: .3@A   G@A::&@:  A@s  G@s   &&3G3G@A    :@3     @&    .  :@3  :@&
 [Install · Use · Privacy](#5--install--use--privacy) ·
 [Development](#6--development--tests--license) ·
 [Known gaps](#7--known-gaps)
+
+---
 
 **It is not equally good on any note.** The main conversation runs against any Markdown;
 but the **background deep-dive needs anchors in the book**, which means the handbook has to
