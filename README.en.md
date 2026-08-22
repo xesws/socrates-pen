@@ -94,6 +94,13 @@ G@s  A@s  s@G: .3@A   G@A::&@:  A@s  G@s   &&3G3G@A    :@3     @&    .  :@3  :@&
 [Development](#6--development--tests--license) ·
 [Known gaps](#7--known-gaps)
 
+**It is not equally good on any note.** The main conversation runs against any Markdown;
+but the **background deep-dive needs anchors in the book**, which means the handbook has to
+follow the eight-beat format (each level carrying sections like "third beat · origins" and
+"seventh beat · working code"). Without them, one of the five deep-dive axes dies outright.
+[`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) is a template you can copy —
+see [4.9](#49--handbook-agnostic-v0150).
+
 > **A note on the examples below.** Every transcript in this README was really captured —
 > raw request bodies and SSE event streams live in
 > [`docs/demo/transcripts/`](docs/demo/transcripts/). Exactly one thing was edited after capture:
@@ -183,7 +190,7 @@ this repository.
 
 ### Three steps got it here
 
-| | |
+| Version | |
 | --- | --- |
 | **v0.2.0** | Moved out of a web app and into Obsidian. Learning happens in your notes, so the tool should live in your notes |
 | **v0.13.0** | The plugin learned to start the backend itself. **No terminal required** — before this, installing it meant knowing a shell |
@@ -198,11 +205,11 @@ Every example below runs against **a different book** — a 1,405-line handbook,
 ## 2 · What it actually does, in 30 seconds
 
 1. **Highlight** a passage in a note.
-2. Open the sidebar and **click a chip** (don't give it away / explain to a beginner /
-   just ask / write it back…), or simply type.
+2. Open the sidebar and **click a chip** — the row of preset prompts: don't give it away /
+   explain to a beginner / just ask / write it back… — or simply type.
 3. He **reads your note first**, then answers — or turns the question back on you.
-4. Meanwhile a **separate background line** is reading *elsewhere in the same book*,
-   assembling deeper questions to hand you later.
+4. Meanwhile a **separate background line** (called the **deep-dive ◆** below) reads *elsewhere in
+   the same book*, assembling deeper questions to hand you later.
 5. Want the answer kept in the note? He proposes one edit. **You click Allow, then it lands.**
 
 <!-- shot-01-splash.png / shot-02-socratic.png / shot-03-deep.png / shot-04-approval.png: batch 2 -->
@@ -215,7 +222,9 @@ Every example below runs against **a different book** — a 1,405-line handbook,
 **decision ① — "why two networks, one frozen and one updating"** (lines 954–964).
 That passage splits the answer into three layers: mathematical, dynamical, engineering.
 
-Every answer below came from `deepseek-v4-flash` running against an isolated sidecar.
+Every answer below came from **`deepseek/deepseek-v4-flash`** (via an OpenRouter endpoint),
+running against an isolated **sidecar** — the small Python service the plugin starts on your machine.
+Any OpenAI-compatible Chat Completions endpoint works — **but that one combination is all I actually tested.**
 
 ### 3.1 · Don't give it away — `socratic`
 
@@ -242,21 +251,10 @@ the crack in that passage you haven't noticed yet.
 
 </td></tr></table>
 
-<details><summary>Verbatim original</summary>
-
-> 好，你刚读完了决策①的三层拆法。那一块其实已经把"为什么冻住"讲透了——但有一个裂缝你可能注意到了，也可能没注意到。
->
-> 手册说冻住目标之后，这就变回了一个"标准的监督回归问题"。好，那我问你：
->
-> **监督回归里，标签得是 ground truth 吧？可 Q_target 还是自己估计出来的——它又不是上帝给的正确答案。那"变回标准监督回归"这个说法，是不是藏了一笔账没算？这笔账谁来还？**
-
-</details>
-
 <sup>Raw: [`03-chat-socratic.json`](docs/demo/transcripts/03-chat-socratic.json) · 10.6 s</sup>
 
-The crack it found is real. "Turns back into standard supervised regression" does slide past
-something: supervised labels are given, and this one is estimated.
-**That is the thinnest floorboard in the passage, and it stepped on it.**
+"Turns back into standard supervised regression" does slide past something: supervised labels
+are given, and this one is estimated.
 
 > **Why this is the default**: a learning tool whose default action is "hand you the answer"
 > costs you one act of thinking every time it's used. A default of "ask you a question" has an
@@ -267,7 +265,7 @@ something: supervised labels are given, and this one is estimated.
 Same passage, different chip, completely different shape:
 **TL;DR → (a) concept contrast → (b) mechanism → (c) counterexample → two runnable examples.**
 
-<details open>
+<details>
 <summary><b>Expand the real answer (1,423 chars, 30 s) — translated</b></summary>
 
 > **TL;DR**
@@ -314,7 +312,7 @@ Check all four:
 | `double=True` | ✅ | `:1230` — `double: bool = False,  # turn it on for Double DQN` |
 | `if __name__ == "__main__"` | ✅ | `:1292` |
 
-Four for four. **Nothing invented.** That is why the tool reads the book before it answers.
+Four for four. That is why the tool reads the book before it answers.
 
 ### 3.3 · Just ask — `free`
 
@@ -380,8 +378,6 @@ not from its memory.
 
 ### 3.4 · Background deep-dive ◆
 
-This is the part that looks least like a chatbot.
-
 The **instant** your turn finishes, a separate thread goes off to read *elsewhere in the same book*
 and assemble questions you can't ask yet but would ask one step further on — then hands them to you.
 It runs **fully in parallel** with your conversation. You never wait for it.
@@ -396,7 +392,8 @@ That run returned three. Here is the third:
 > *real-time* part out of bootstrapping — so will the remaining two still gang up and blow up on you
 > under this structure?
 
-<sup>`axis: altitude` · `depth: 5` · anchors span two levels: **Level 2 (740–747) + Level 3 (954–964)**</sup>
+<sup>`axis: altitude` · `depth: 5` · anchors span two levels: **Level 2 (740–747) + Level 3 (954–964)**<br>
+(deadly triad: bootstrapping + off-policy + function approximation — all three together can diverge.)</sup>
 
 </td></tr><tr><td>
 
@@ -411,12 +408,9 @@ That run returned three. Here is the third:
 
 <sup>Raw (Chinese, verbatim): [`06b-deep-ledger.json`](docs/demo/transcripts/06b-deep-ledger.json) · 3 items in the pool, 2 calls, 8,043 in / 649 out tokens</sup>
 
-**The value of that question is that it crosses two levels.** The reader highlighted a passage in
-Level 3, and this question hooks it back to Level 2's deadly triad — **seven hundred lines earlier** —
-with a judgement that is both correct and non-obvious: DQN didn't eliminate any of the triad's three
+The reader highlighted a passage in Level 3; this question hooks it back to Level 2's deadly triad —
+**seven hundred lines earlier**. Its judgement: DQN didn't eliminate any of the triad's three
 ingredients, it only lowered the *connection frequency* of one of them from every step to every C steps.
-
-<img src="docs/img/deep-queue.drawio.svg" alt="Background deep-dive: a job queue" width="100%">
 
 **The gates really do execute questions.** Same passage, English-interface run:
 2 calls, 2,002 output tokens, and **not one item survived** — all killed by the `depth < 4` gate
@@ -427,7 +421,7 @@ ingredients, it only lowered the *connection frequency* of one of them from ever
 
 <sup>Raw: [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)</sup>
 
-**Breadth is capped by code, not by the model's self-restraint** — see [System design](#4--system-design).
+**Breadth is capped by code, not by the model's self-restraint** — see [4.5 The background deep-dive is a job queue](#45--the-background-deep-dive-is-a-job-queue).
 
 ### 3.5 · Writing back, and the approval gate
 
@@ -454,7 +448,7 @@ Translated, the proposal is:
 
 <sup>Raw (Chinese, verbatim `old_string` / `new_string`): [`07-chat-writeback.json`](docs/demo/transcripts/07-chat-writeback.json)</sup>
 
-**The measured numbers here are harder than any promise:**
+**One file, four moments, size and md5:**
 
 | Moment | File size | md5 |
 | --- | --- | --- |
@@ -570,10 +564,19 @@ Three ledgers kept apart: `chat` is the line you're talking to, `probe` is the b
 the turn you're reading right now.
 
 **It counts tokens and does not convert them to money.** The exchange rate is yours: which endpoint,
-which model, what discount, whether cache hits are billed — only you know. A made-up dollar figure
-would be less useful than a real token count.
+which model, what discount, whether cache hits are billed — only you know.
 
-**This total can go down**, and that isn't a bug — sessions expire ([see 4.8](#4--system-design)),
+You probably still want an order of magnitude. Those 200k tokens, at the price that endpoint was
+listing for `deepseek/deepseek-v4-flash` when I ran this ($0.077/M in + $0.154/M out):
+
+```
+in 205,167 × $0.077/M  +  out 16,795 × $0.154/M  ≈  $0.018
+```
+
+**Under two cents** — and that's an *upper* bound, since it prices 125k cached tokens at full rate.
+A frontier model costs one to two orders of magnitude more.
+
+**This total can go down**, and that isn't a bug — sessions expire ([see 4.8](#48--sessions-expire-and-their-bills-go-with-them)),
 and when one is purged its bill goes with it.
 
 ---
@@ -601,11 +604,9 @@ On first enable the plugin builds `~/.socrates-pen/venv` and pip-installs the si
 
 Permissions are three-valued, not a switch:
 
-| | |
-| --- | --- |
-| `read_file` | **allow** — passes automatically |
-| `edit_file` | **ask** — opens an approval every single time |
-| any other name | **deny** — unrecognised means refused |
+- **`read_file`** — allow, passes automatically
+- **`edit_file`** — ask, opens an approval **every single time**
+- **any other name** — deny, unrecognised means refused
 
 That last row is **deny by default**, not allow by default. If the model hallucinates a
 `run_command`, it hits a wall.
@@ -792,10 +793,10 @@ and the deep-dive has somewhere to drop anchors.
 
 **Size** (as of v0.15.1, all measured)
 
-| | |
+| Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 26 modules, 7,732 lines |
-| Python tests | 8,486 lines, **477 passed** |
+| Python tests | 8,486 lines, **480 passed** |
 | TypeScript (plugin) | 15 files, 3,839 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -818,7 +819,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 `npm test` is five independent gates, each guarding one thing:
 
-| | |
+| Gate | Guards |
 | --- | --- |
 | `check-i18n.mjs` | Vocabulary self-check — the language-parsing edge cases that only bite in reality |
 | `check-poll.mjs` | The deep-poll **termination conditions**, run against compiled code. Lose one and it keeps hammering the sidecar after you close the panel |
@@ -828,7 +829,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **477 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **480 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -864,6 +865,11 @@ CHECK OK
 - **Python 3.11 or later** on this computer ([python.org](https://www.python.org/downloads/))
 - An **API key** for an OpenAI-compatible Chat Completions endpoint
 
+**On language.** The plugin UI is fully localised. The bundled demo handbook is Chinese, and the
+model tends to answer in the language of the book you feed it — so an English handbook is what you
+want for an English session. Two rough edges remain; both are listed under
+[Known gaps](#7--known-gaps).
+
 ### Install
 
 Once it's in the community plugin directory: **Settings → Community plugins → Browse → Socrates**.
@@ -898,6 +904,11 @@ Afterwards the top line of **Settings → Socrates** shows whether the local ser
 
 ### Privacy and network
 
+- **It does not read your whole vault.** Only the note you highlighted, plus the handbooks you
+  registered yourself. No indexing, no walking, no uploading. Widening the read scope is your move.
+- **Without the write-back chip it never puts a single character into your notes.** Asking without
+  writing is a perfectly normal way to use it — write-back is a chip you click, and it still
+  goes through approval afterwards.
 - The plugin talks to `http://127.0.0.1:8765` by default. **It does not phone home.**
 - First-time setup downloads the sidecar and its Python dependencies from GitHub and PyPI
   into `~/.socrates-pen`.
@@ -908,6 +919,20 @@ Afterwards the top line of **Settings → Socrates** shows whether the local ser
 - Write-back changes the note on disk — **and only after you approve it**.
 - ⚠️ **Disabling the plugin does not stop the sidecar.** That Python process keeps running
   (so re-enabling is instant). To stop it, use the settings page.
+
+### It won't install / won't start
+
+The first launch builds a venv and pip-installs — that's where things break. In order:
+
+1. **Read the top line of the settings page.** If it says not running, click **Start**; the error
+   shows up right there.
+2. **Check your Python.** `python3 --version` in a terminal — 3.11 or later.
+   The one macOS ships may be 3.9; get a current one from [python.org](https://www.python.org/downloads/).
+3. **If the venv is broken, delete just the venv**: `rm -rf ~/.socrates-pen/venv`, then hit Start and
+   it rebuilds. (`~/.socrates-pen/` also holds your `.pen/` data — **don't delete the whole directory**.)
+4. **Port in use.** Default is `127.0.0.1:8765`; `lsof -nP -iTCP:8765 -sTCP:LISTEN` shows who has it.
+5. **Still stuck**: open Obsidian's developer console (`Ctrl/Cmd + Shift + I`) and file the error at
+   [Issues](https://github.com/xesws/socrates-pen/issues).
 
 ---
 
@@ -932,7 +957,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 477 passed
+python -m pytest pen/tests -q       # 480 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -964,6 +989,11 @@ This section is here on purpose.
   The plugin never hits this, because `handbookIdFromPath` (`src/selection.ts:30`) strips illegal
   characters and appends a path hash — but **anyone calling the HTTP API directly gets a 400**.
   (This one surfaced while writing this README.)
+- **The eight-beat format contract is a hard-coded Chinese literal.** `pen/probe.py:76` is
+  `THIRD_BEAT = "第三拍"`, and `third_beat_sections()` (`:221`) prefix-matches on it to build the
+  anchor whitelist for the `vs_real` axis. A handbook with no section named 第三拍 —
+  **which any English handbook necessarily is** — yields an empty whitelist, and that axis never
+  fires. The other four are unaffected.
 - **With an English UI and a Chinese handbook, the model often still answers in Chinese.**
   The system prompt is written in Chinese, and English is a paragraph appended at the end
   (`REPLY_IN_ENGLISH`, `pen/session.py:117`). One short tail cannot outweigh a wall of Chinese source
