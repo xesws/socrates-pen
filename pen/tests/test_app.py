@@ -1520,3 +1520,39 @@ def test_a_clicked_question_never_comes_back_on_reload(monkeypatch, tmp_path) ->
     texts = [c["text"] for c in again["dyn_chips"]]
     assert asked not in texts, "问过的题不能在重开面板之后复活"
     assert len(texts) == 1, "另一条没问过的还得留着"
+
+
+def test_imported_book_name_reaches_the_session_on_disk(tmp_path: Path, monkeypatch) -> None:
+    """v0.15.0 端到端：导一本别的书，落盘的 messages[0] 里就得是**那本书**。
+
+    走完整条 HTTP（import → sessions），然后直接读 `.pen/sessions/<sid>.json`，
+    因为这一版改的正是「建场那一刻写进 messages[0] 并落盘」的东西。
+    """
+    _isolate_pen(tmp_path, monkeypatch)
+    book = tmp_path / "dqn.md"
+    book.write_text(
+        "# 从零手写 DQN · 强化学习通关手册\n\n"
+        "# Level 0 — 从多臂老虎机到 MDP\n\n"
+        "## 第三拍 · 出身：Bellman 1957\n\n"
+        "**Q1. 折扣因子为什么必须小于 1？**\n\n"
+        "因为 Bellman 算子要是 γ-压缩的。\n\n"
+        "〔回读：第三拍 · 出身〕\n",
+        encoding="utf-8",
+    )
+    with TestClient(app) as client:
+        ok = client.post(
+            "/v1/handbooks/import",
+            json={
+                "original_path": str(book),
+                "handbook_id": "dqn",
+                "vault_root": str(tmp_path),
+            },
+        )
+        assert ok.status_code == 200, ok.text
+        sid = client.post("/v1/sessions", json={"handbook_id": "dqn"}).json()["session_id"]
+
+    saved = json.loads((tmp_path / "sessions" / f"{sid}.json").read_text(encoding="utf-8"))
+    first = saved["messages"][0]["content"]
+    assert "《从零手写 DQN · 强化学习通关手册》" in first
+    assert "SWE" not in first, "别的书的会话里不该还写着那本手册"
+    assert "book_title" not in saved, "它不落盘"

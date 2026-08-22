@@ -106,3 +106,84 @@ def test_old_snapshot_without_new_fields_still_loads() -> None:
     data = {k: v for k, v in sess.to_dict().items() if k not in ("turns", "last_chips")}
     back = PenSession.from_dict(data)
     assert back.turns == 0 and back.last_chips == []
+
+
+# --- v0.15.0：教材和 prompt 解耦 ------------------------------------------
+
+
+def test_book_title_lands_in_the_system_message() -> None:
+    """建场时的书名要注进 messages[0]，而且不能再提 SWE Agent。"""
+    from pen.session import PenSession
+
+    sess = PenSession(
+        session_id="t-book", handbook_id="h", book_title="从零手写 DQN · 强化学习通关手册"
+    )
+    first = sess.messages[0]["content"]
+    assert first.startswith("你是苏格拉底")
+    assert "《从零手写 DQN · 强化学习通关手册》" in first
+    assert "SWE" not in first, "写死的那本书必须已经不在了"
+    assert "实习生" not in first
+
+
+def test_no_book_title_stays_anonymous_not_empty_quotes() -> None:
+    """没书名时说「一本通关手册」，不能留一对空的《》。"""
+    from pen.session import PenSession
+
+    first = PenSession(session_id="t-anon", handbook_id="h").messages[0]["content"]
+    assert "一本通关手册" in first
+    assert "《》" not in first
+    assert "SWE" not in first
+
+
+def test_examples_chip_no_longer_names_swe_only_files() -> None:
+    """examples 芯片曾点名 scan.sh / dispatch，那是只有那一本书才有的东西。"""
+    from pen.session import SYSTEM_PROMPT
+
+    for name in ("scan.sh", "messages.append", "dispatch", "approve…"):
+        assert name not in SYSTEM_PROMPT, name
+    assert "第七拍里真出现过的东西" in SYSTEM_PROMPT
+
+
+def test_book_phrase_strips_extension_and_existing_quotes() -> None:
+    """书名取不到 H1 时退回文件名，那条路上不能露出 `.md`。"""
+    from pen.session import _book_phrase
+
+    assert _book_phrase("从零手写DQN.md") == "一本叫《从零手写DQN》的通关手册"
+    assert _book_phrase("《从零手写DQN》") == "一本叫《从零手写DQN》的通关手册"
+    assert _book_phrase("  ") == "一本通关手册"
+    assert _book_phrase(".md") == "一本通关手册"
+
+
+def test_english_keeps_the_appended_instruction_with_a_book_title() -> None:
+    from pen.session import system_prompt
+
+    zh = system_prompt("zh", book_title="Deep RL")
+    en = system_prompt("en", book_title="Deep RL")
+    assert en.startswith(zh)
+    assert "Reply in English" in en and "Reply in English" not in zh
+    assert "《Deep RL》" in zh
+
+
+def test_book_title_does_not_touch_the_persisted_schema() -> None:
+    """book_title 只在建场那一刻有用，不落盘——旧会话的 messages[0] 原样不动。"""
+    from pen.session import PenSession
+
+    sess = PenSession(session_id="t-nostore", handbook_id="h", book_title="某本书")
+    data = sess.to_dict()
+    assert "book_title" not in data
+
+    frozen = "你是苏格拉底，坐在读者旁边，正在带人读一本手搓 SWE Agent 的通关手册。"
+    old = {**data, "messages": [{"role": "system", "content": frozen}]}
+    back = PenSession.from_dict(old)
+    assert back.messages[0]["content"] == frozen, "老会话的第一条不许被重写"
+    assert back.book_title == ""
+
+
+def test_store_create_passes_the_title_through(pen_home: Path) -> None:
+    store = SessionStore()
+    sess = store.create("h", lang="zh", book_title="从零手写 DQN")
+    assert "《从零手写 DQN》" in sess.messages[0]["content"]
+    # 落盘再读回来，第一条还是那句（因为它就存在 messages 里）
+    back = load_session(sess.session_id)
+    assert back is not None
+    assert "《从零手写 DQN》" in back.messages[0]["content"]

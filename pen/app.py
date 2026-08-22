@@ -466,7 +466,7 @@ def _public_session(sess) -> dict[str, Any]:
 
 @app.post("/v1/sessions")
 def create_session(body: SessionBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
-    _meta_or_404(body.handbook_id, lang)
+    meta = _meta_or_404(body.handbook_id, lang)
     if body.session_id:
         try:
             sess = STORE.get(body.session_id)
@@ -477,7 +477,9 @@ def create_session(body: SessionBody, lang: str = Depends(req_lang)) -> dict[str
                 return _public_session(sess)
         except KeyError:
             pass
-    sess = STORE.create(body.handbook_id, lang=lang)
+    # 书名注进 system prompt 的第一句（v0.15.0）。`meta.title` 是
+    # `build_index` 从第 1 行 H1 取的，取不到就是文件名——两种都能用。
+    sess = STORE.create(body.handbook_id, lang=lang, book_title=str(meta.title or ""))
     return _public_session(sess)
 
 

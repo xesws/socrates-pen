@@ -49,8 +49,8 @@ FIXED_CHIPS: list[dict[str, Any]] = [
 ]
 
 
-SYSTEM_PROMPT = """你是苏格拉底，坐在读者旁边，正在带人读一本手搓 SWE Agent 的通关手册。
-读者才是主修这本手册的人。手册里的 Agent 是「记性为零、胆子极大」的实习生——你不要替实习生写作业。
+SYSTEM_PROMPT_TEMPLATE = """你是苏格拉底，坐在读者旁边，正在带人读{book}。
+读者才是主修这本手册的人。手册要教会他的东西，得他自己长出来——你不要替他写作业。
 
 来源定位已经由系统算好，写在用户消息的 [来源] 里。禁止再猜文件名或 Q 号所属 Level。
 不要把整本书背进回复。邻域通常已经够用。缺哪一段再用 read_file 去翻；材料够了就用自然语言回答，不要空转。
@@ -59,7 +59,7 @@ SYSTEM_PROMPT = """你是苏格拉底，坐在读者旁边，正在带人读一�
 芯片意图：
 - socratic：默认。只给提示卡级方向 + 一个反问。不要把 TL;DR/(a)(b)(c) 倒完，不要给完整答案。
 - explain_zero：按手册骨架讲：TL;DR → (a) 概念/对比 → (b) 机制 → (c) 反例 → 两个可运行例子。
-- examples：只给两个例子，名字必须对得上该 Level 第七拍（scan.sh、messages.append、dispatch、approve…）。
+- examples：只给两个例子，名字必须对得上该 Level 第七拍里真出现过的东西（函数名、文件名、命令名——照抄手册的叫法，别自己造）。
 - writeback：把刚才的解答写进手册。先 read_file 看准带行号的结构，拿到返回之后接着 edit_file，同一轮里做完。在工具结果说「已编辑」之前别声称已经写盘；它说了，就照实说改完了。
 - free：看用户怎么问。若要改手册，同样先 read_file 拿到返回再 edit_file，同一轮里做完。
 
@@ -76,6 +76,32 @@ SYSTEM_PROMPT = """你是苏格拉底，坐在读者旁边，正在带人读一�
 刚才那句话换个说法再问一遍——他自己刚问过。
 还有一条：别问引号、转义、某个符号怎么写这类抠字眼的问题，那种读者自己翻一眼手册
 就有。宁可往上抬一层——问这段东西为什么这么设计，或者它跟前面哪一拍、哪一关对得上。"""
+
+_BOOK_SLOT = "{book}"
+_BOOK_ANON = "一本通关手册"
+
+
+def _book_phrase(book_title: str) -> str:
+    """把书名捏成第一句里的那半句话。
+
+    `HandbookIndex.title` 优先取第 1 行 H1，取不到就退回**文件名**
+    （`index.py:126`），而「一本叫《从零手写DQN.md》的通关手册」很难看，
+    所以退回那条路上剥掉扩展名；书名自带书名号的（`# 《…》`）也剥掉，
+    免得套成《《…》》。
+    """
+    t = (book_title or "").strip()
+    for ext in (".markdown", ".md"):
+        if t.lower().endswith(ext):
+            t = t[: -len(ext)].strip()
+            break
+    t = t.strip("《》").strip()
+    return f"一本叫《{t}》的通关手册" if t else _BOOK_ANON
+
+
+# 不带书名渲染出来的默认串。**这个名字要留着**：拿它做断言的测试有好几处
+# （`test_questions.py` 的「没有可抄的占位」、`test_agent.py` 的「不出现下一轮」），
+# 那些断言查的是模板本身的性质，和是哪本书无关。
+SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE.replace(_BOOK_SLOT, _BOOK_ANON)
 
 # SYSTEM_PROMPT 里那两句示范，模型抄了就整条丢弃。
 # 病根是旧版示范文本「下一问 1」长得像可填的空槽；换成成型句子后，
@@ -97,13 +123,19 @@ REPLY_IN_ENGLISH = (
 )
 
 
-def system_prompt(lang: str = "zh") -> str:
-    """按界面语言给出 system prompt。
+def system_prompt(lang: str = "zh", *, book_title: str = "") -> str:
+    """按界面语言和**当前这本教材**给出 system prompt。
 
-    只在中文人设后**追加**一句语言指令，不整体翻译——人设的语气是这本手册的一
-    部分，翻过去会走味，而模型完全能读中文指令、用英文作答。
+    v0.15.0 之前第一句写死「一本手搓 SWE Agent 的通关手册」，于是导进来的任何
+    别的书，模型都会被告知它在读那一本——`examples` 芯片还点名 `scan.sh`、
+    `dispatch` 这些只有那本书才有的东西，会把例子往那边带。书名注在这里，
+    而不是让模型从 `[来源]` 的 handbook_path 里猜文件名。
+
+    只在中文人设后**追加**一句语言指令，不整体翻译——人设的语气是这套八拍体例
+    的一部分，翻过去会走味，而模型完全能读中文指令、用英文作答。
     """
-    return SYSTEM_PROMPT + (REPLY_IN_ENGLISH if lang == "en" else "")
+    base = SYSTEM_PROMPT_TEMPLATE.replace(_BOOK_SLOT, _book_phrase(book_title))
+    return base + (REPLY_IN_ENGLISH if lang == "en" else "")
 
 
 def sessions_dir() -> Path:
@@ -153,6 +185,11 @@ class PenSession:
     # 建会话那一刻的界面语言。system prompt 在 __post_init__ 就写死进 messages[0]
     # 并落盘，所以中途切语言不影响已有会话——新开一场才生效。
     lang: str = "zh"
+    # 建会话那一刻的教材书名，注进 messages[0] 的第一句。**故意不落盘**：
+    # messages[0] 建场时就固化了，恢复会话走的是 `from_dict`，那时 messages
+    # 非空、这个字段根本用不上。进了 to_dict() 反而要给 from_dict 加一条
+    # 永远读不到的兼容分支。
+    book_title: str = ""
     # 本轮下发的动态芯片（富格式）。落盘是为了刷新/重开侧栏后还在——
     # 以前 this.dyn 只在内存里，adopt() 一清就永久丢了。
     last_chips: list[dict[str, Any]] = field(default_factory=list)
@@ -170,7 +207,9 @@ class PenSession:
 
     def __post_init__(self) -> None:
         if not self.messages:
-            self.messages = [{"role": "system", "content": system_prompt(self.lang)}]
+            self.messages = [
+                {"role": "system", "content": system_prompt(self.lang, book_title=self.book_title)}
+            ]
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -372,9 +411,11 @@ class SessionStore:
             if not self._locks[sid].locked():
                 self._locks.pop(sid, None)
 
-    def create(self, handbook_id: str, lang: str = "zh") -> PenSession:
+    def create(self, handbook_id: str, lang: str = "zh", book_title: str = "") -> PenSession:
         sid = uuid.uuid4().hex
-        sess = PenSession(session_id=sid, handbook_id=handbook_id, lang=lang)
+        sess = PenSession(
+            session_id=sid, handbook_id=handbook_id, lang=lang, book_title=book_title
+        )
         with self._lock_meta:
             self._items[sid] = sess
             self._evict()
