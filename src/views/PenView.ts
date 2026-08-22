@@ -332,10 +332,13 @@ export class PenView extends ItemView {
   private paintQuote(): void {
     const e = this.els;
     if (!e) return;
-    // 宽栏下 CSS 会放开到 4-6 行，文本上限也跟着放宽；真正的裁剪交给 line-clamp
-    const text = this.quote.slice(0, 420);
+    // 全文进 DOM，视觉裁剪交给 CSS line-clamp。slice(0, 420) 又不标省略
+    // 的话，读者会以为模型把话讲断了——审批面板已经为这件事写过一回。
     e.quote.classList.toggle("is-off", !this.quote);
-    if (e.quote.textContent !== text) e.quote.textContent = text;
+    if (e.quote.textContent !== this.quote) {
+      e.quote.textContent = this.quote;
+      setTooltip(e.quote, this.quote);
+    }
   }
 
   private static row(r: TokenRow | undefined): number {
