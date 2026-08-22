@@ -1,6 +1,60 @@
-<p align="center">
-  <img src="docs/socrates.gif" alt="Socrates" width="520">
-</p>
+<div align="center">
+
+```
+                           s   . .sAs:   :s:      ..    :.
+                                   ..sA:..:        :..   .:.
+               ..  :s              ..  A::..      :    :
+                .  .s         ::    sG s:s::::..       s:  s3:
+          ..        ..      ... s:   sA.:  :ssAsss:.  .    .     .
+          :.                  As sss.  . ..:sAGGGG33A::     sA3A..
+           .                  .:  :.::..:sA3G&&&&&&&G3G3:   .s::  .s
+     ..                         .. :sAGGG&&@@@@@@@@&&GGG3s  ..:.   .s
+                       ..::::..::sAAG@&@@@@@@@@@@@@@&GG33G:  .s3A: .::
+    :.              .:ssAAAsAAAA33G&@@@@@@@@@@@@@@@@@&G3A33:     ::  .:.
+    s    .          :ssA3GGG&GGGG&@@@@@@@@@@@@@@@@@@@&GG3s3A.:s  .G:
+    .               .:sA3G&@@&&&&&@@@@@@@@@@@@@@@@@@@&3GGssAA.:: AG  :.
+     :               .:sA3GG&&&&&&@@@@@@@@@@@@@@@@@@GGGGA:sAs. A .       :
+     :.                .:AA3&&&G&&&&&&@@@@@@@@@@@&&GGG&Gs::::.:s       : .
+      .:               ..:sAA3333GGGG&&@&&&&&&&&&GG&&&&3:::: .     .:s::
+                    .::.:AGG&GGG3GGGG&&&&@@@@@@@@&&@&&Gs.::.     .s:.      .
+                     .:sAsAG@@@&&&&GGG&&@@@@@@@@@@&&&G3s::.       .:.      :
+                   .....s33A&@@@@@@&&&&@@@@@@@@@&&&&@&&3:::.    A: .s:  s..
+                  .:sAA:. :ss3&@@@@@@&&@@@@&GG&G&@@@@@&GA::.     .sG.  .
+    ..               :s33ssA..A3&@GG@3A&&&&&&@@@&3A:...:s:...       .    .
+                         :ssssAsA&:s&A 333GG33s.           ..
+                                 . .AA            ....    .::        .
+                                   :AA.                  :ss:
+                                  A&@@3       ..:ss. ::sAG3::
+                       .::.       3&@@&AAs. .:sssssAGG3@@&3:
+               .:....:sAAs::      3&@@3s&&GGAsAGG&&@&&@@@GA.
+                :A3AA3AAsAs:      s@@@33GGG@@&G33G&@@@@&G3s       .
+                 .:s3G3G33A:      s&@@&G&&&@@@@@@&&G&G3As.      :
+                   .:A33G3A:     :3&@@@&G3s&@@@@@@&&GAs.     .  :
+                     sA3G33.  .  A&@@@@&G@3 A&@@@@&GA:     ..::s:
+                      :A3A:      s&@&@@G3333::3&&&GA:     .:A:
+                      :sA:        ..:s:   A@@3.sGG3s.::...:sssAs.
+                      ::.              ..sGG&@&AA33A:s::sAA:s :::
+                       .              sA3AAA33GG3AAAAAs:ss3Ass.
+                      .. :       ..  :s::s3G3GA3GAsAs3:As::ss..ss
+             .       .:            .         :s:GAAA:AAsAs:  ...:.
+              ..                      .         ::G3A:A::A:ssA3s
+              .                 .sAssA33AA:       ssG3:::. AG. :.
+                                   :.  .sAss     . .:33.sA  :  ..
+                                 ::s:::::..:.     .:::A3  .:A.:.
+                  :              .s.:ss::Ass.        :.ss  .. .
+                      .       ::s3ssAAAAAAA3ss:.:.     .:As
+                     .s ..   :A A3s.AsAGG3AGGA3:.::.  :  .
+                        .:  .:s.3Ass.s3G3GAsG3s3: s::  ..
+                        ::  :s.:s::  .s3sAA.:Gs s  .s:  :. .:.
+                     .    .  :sA:.    :3AsssAA: .  .::.    .:s:
+                     ..       .:As.  .s:. .:. As. ...    .:.:3Ass.
+                       .         A. .ss  .     :s      .:::::3GG3A.
+                         .:          :ss.:As   ..      .::s::33&&&s
+                          .            :s: .s.        .::AssA3GG&&.
+                                         : ..      .::::3AAA3G3GGs
+```
+
+</div>
 
 # Socrates
 
