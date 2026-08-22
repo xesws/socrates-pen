@@ -391,7 +391,7 @@ ingredients, it only lowered the *connection frequency* of one of them from ever
 <img src="docs/img/shot-04-approval.png" width="100%"
      alt="The approval panel: a heading reading "Approve this edit", the note that edit_file points at, then a line-by-line "--- original ---" / "+++ replaced with +++" comparison, and two buttons at the bottom — allow this edit, or refuse. The panel notes that the model picked the passage itself and nothing touches the note until you allow it.">
 
-<img src="docs/img/writeback.drawio.svg" alt="Write-back: two tools, three gates, one snapshot stack" width="100%">
+<img src="docs/img/writeback.en.drawio.svg" alt="Write-back: three tools, three gates, one snapshot stack" width="100%">
 
 You say: *"take those three layers you just explained about why there are two networks, fold them
 into a collapsible block, and put it after decision ①."*
@@ -560,7 +560,7 @@ and when one is purged its bill goes with it.
 
 ### 4.1 · Three processes, one loopback
 
-<img src="docs/img/arch.drawio.svg" alt="Three processes, one loopback" width="100%">
+<img src="docs/img/arch.en.drawio.svg" alt="Three processes, one loopback" width="100%">
 
 An Obsidian plugin (TypeScript), a local sidecar (Python / FastAPI), and the model endpoint you
 configured — three processes, with a loopback between them. The plugin never calls the author's
@@ -632,7 +632,7 @@ Because it makes him try, fail, and then improvise in front of you.
 
 ### 4.5 · The background deep-dive is a job queue
 
-<img src="docs/img/deep-queue.drawio.svg" alt="Background deep-dive: a job queue" width="100%">
+<img src="docs/img/deep-queue.en.drawio.svg" alt="Background deep-dive: a job queue" width="100%">
 
 **Why it needed its own layer.** Originally the follow-ups were a by-product — the model appended two
 `<!--pen:chips -->` lines at the end of each answer. The trouble is those two were forever tangled in
@@ -704,7 +704,7 @@ drifting — clamping to 30 on one side and 60 on the other is a bug that only e
 
 ### 4.7 · Cost gates: capped by category, never in total
 
-<img src="docs/img/gates.drawio.svg" alt="All the gates: one set for money, another for safety" width="100%">
+<img src="docs/img/gates.en.drawio.svg" alt="All the gates: one set for money, another for safety" width="100%">
 
 Three token ceilings, **accounted for and capped separately**: main conversation, background
 deep-dive, cross-book reading. The reason is practical — a background overrun must not cut off the
@@ -780,7 +780,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 
 ### 4.10 · One turn, from highlight to written word
 
-<img src="docs/img/turn.drawio.svg" alt="One turn: from highlight to written word" width="100%">
+<img src="docs/img/turn.en.drawio.svg" alt="One turn: from highlight to written word" width="100%">
 
 <details>
 <summary><b>Expand: the developer layer</b></summary>
@@ -844,9 +844,10 @@ lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
 
-**All five architecture diagrams are `.drawio.svg`** — GitHub renders them as images, and
-[draw.io](https://app.diagrams.net/) opens them for editing (the mxGraph model is stored in the root
-`<svg>` element's `content` attribute).
+**All five architecture diagrams are `.drawio.svg`.** This English README points at the
+`.en.drawio.svg` copies. GitHub renders them as images; [draw.io](https://app.diagrams.net/) opens
+them for editing (the mxGraph model is stored in the root `<svg>` element's `content` attribute).
+Screenshots below were taken in a Chinese interface and are not translated yet.
 
 </details>
 

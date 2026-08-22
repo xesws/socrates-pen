@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1040" height="706" viewBox="0 0 1040 706" role="img" aria-label="All the gates: one set for money, another for safety" content='&lt;mxfile host="hand-authored" agent="socrates-pen" version="24.7.7"&gt;&lt;diagram id="All the gates: one set for money, another for safety" name="All the gates: one set for money, another for safety"&gt;&lt;mxGraphModel dx="1040" dy="706" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="706" math="0" shadow="0"&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="Cost gates · per kind, not a total; all off by default" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f3f0fe;strokeColor=#6f5bd0;fontSize=12;fontColor=#1F2328;align=center;spacingLeft=0;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="64" width="460" height="44" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" value="Safety gates · whether it may, the model does not decide" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fff8e3;strokeColor=#bf8700;fontSize=12;fontColor=#1F2328;align=center;spacingLeft=0;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="64" width="460" height="44" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" value="Three token gates, each with its own ledger&amp;lt;br&amp;gt;Main chat · deep-dive · cross-book. Overspend on deep-dive cannot kill the turn you are in." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="124" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" value="All three default to 0 = unlimited&amp;lt;br&amp;gt;0 is not conservative: it is the regression guarantee. Leave them blank and behaviour matches the pre-cap build byte for byte." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="198" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" value="⚠️ the main-chat cap is not hard&amp;lt;br&amp;gt;On the cap, that tool batch is skipped, but the closing shot still fires — otherwise the spend is wasted." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fff8e3;strokeColor=#bf8700;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="272" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" value="Hitting the cap is not an error; one sentence goes to the model&amp;lt;br&amp;gt;Stop reading other books. Answer from what you have, and say which passages you saw." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="346" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="8" value="Deep-dive count gates&amp;lt;br&amp;gt;8 per session · 40 per hour · concurrency 2 · stop when 3 sit unanswered." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="420" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="9" value="Cross-book character gate&amp;lt;br&amp;gt;24,000 characters / 8 reads per turn; tool-loop cap 100." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="494" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="10" value="Sessions expire; the ledger goes with them&amp;lt;br&amp;gt;Empty sessions: 1 day · chatted: 7 days · pending approval: 30 days. Purged on start." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="568" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="11" value="sidecar only binds loopback&amp;lt;br&amp;gt;When the plugin starts it, only 127.0.0.1 / localhost / ::1; anything else is not-loopback." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="124" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="12" value="Sandbox: two sets of roots&amp;lt;br&amp;gt;Write: only the registered note. Read: may widen to a whitelist. .git · .obsidian · .env* refused." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="198" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="13" value="Permissions are three-valued, no fourth&amp;lt;br&amp;gt;read_file → allow; fetch → allow; edit_file → ask every time; any other name → deny." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="272" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="14" value="read-first hard gate&amp;lt;br&amp;gt;To edit a passage, an earlier turn must have really read that file. Same-batch read+edit is blocked too." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="346" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="15" value="Approval gate&amp;lt;br&amp;gt;Landing on disk is always your click. Deny: not one byte moves." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f3f0fe;strokeColor=#6f5bd0;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="420" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="16" value="Data does not leave .pen&amp;lt;br&amp;gt;Sessions · snapshots · quotas · deep questions stay on this machine; outbound is only your model endpoint." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="494" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="17" value="The two limit tables must not drift&amp;lt;br&amp;gt;18 knobs: LIMIT_SPEC in TS and LIMIT_RANGE in config.py are compared by npm test." style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="568" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;&lt;/diagram&gt;&lt;/mxfile&gt;'>
+<title>All the gates: one set for money, another for safety</title>
+<style>
+.dg-bg{fill:#ffffff}
+text{fill:#1f2328}
+.e{stroke:#59636e;fill:none;stroke-width:1.5}
+.e-acc{stroke:#6f5bd0;fill:none;stroke-width:1.8}
+.el{fill:#59636e}
+.gl{fill:#59636e}
+.grp{fill:none;stroke:#8c959f;stroke-width:1.2;stroke-dasharray:6 5;opacity:.75}
+.ttl{fill:#1f2328}
+.cap{fill:#59636e}
+.f-box{fill:#ffffff;stroke:#d0d7de}
+.t-box{fill:#1f2328}
+.f-accent{fill:#f3f0fe;stroke:#6f5bd0}
+.t-accent{fill:#2c2059}
+.f-warn{fill:#fff8e3;stroke:#bf8700}
+.t-warn{fill:#4a3600}
+.f-ghost{fill:#f6f8fa;stroke:#8c959f}
+.t-ghost{fill:#3d444d}
+.f-store{fill:#eef6ff;stroke:#4a86c8}
+.t-store{fill:#10314f}
+.f-note{fill:none;stroke:none}
+.t-note{fill:#59636e}
+.f-ok{fill:#eaf7ee;stroke:#2f9e50}
+.t-ok{fill:#0d3d1e}
+.f-bad{fill:#fdeeee;stroke:#cf4b4b}
+.t-bad{fill:#4d1414}
+.ah{fill:#59636e}
+.ah-acc{fill:#6f5bd0}
+@media (prefers-color-scheme: dark){
+.dg-bg{fill:#0d1117}
+text{fill:#e6edf3}
+.e{stroke:#9198a1}
+.e-acc{stroke:#a99cf0}
+.el{fill:#9198a1}
+.gl{fill:#9198a1}
+.grp{stroke:#6e7681}
+.ttl{fill:#e6edf3}
+.cap{fill:#9198a1}
+.ah{fill:#9198a1}
+.ah-acc{fill:#a99cf0}
+.f-box{fill:#161b22;stroke:#3d444d}
+.t-box{fill:#e6edf3}
+.f-accent{fill:#221d3a;stroke:#a99cf0}
+.t-accent{fill:#ddd7fb}
+.f-warn{fill:#2a2310;stroke:#d9a441}
+.t-warn{fill:#f2dca6}
+.f-ghost{fill:#0f141a;stroke:#6e7681}
+.t-ghost{fill:#b6bec9}
+.f-store{fill:#111d2b;stroke:#6ea8dc}
+.t-store{fill:#cbe2f8}
+.f-note{fill:none;stroke:none}
+.t-note{fill:#9198a1}
+.f-ok{fill:#10241a;stroke:#57ab6a}
+.t-ok{fill:#c3ebcd}
+.f-bad{fill:#2a1414;stroke:#e07c7c}
+.t-bad{fill:#f5cfcf}
+}
+</style>
+<rect class="dg-bg" x="0" y="0" width="100%" height="100%"/>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah"/></marker><marker id="ah-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah-acc"/></marker><marker id="ahs-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah-acc"/></marker></defs>
+<text x="520.0" y="30" class="ttl" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="16" font-weight="700" text-anchor="middle">All the gates: one set for money, another for safety</text>
+<rect x="40" y="64" width="460" height="44" rx="8" class="f-accent" stroke-width="1.4"/>
+<text x="270.0" y="90.5" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="13" font-weight="700" text-anchor="middle">Cost gates · per kind, not a total; all off by default</text>
+<rect x="540" y="64" width="460" height="44" rx="8" class="f-warn" stroke-width="1.4"/>
+<text x="770.0" y="90.5" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="13" font-weight="700" text-anchor="middle">Safety gates · whether it may, the model does not decide</text>
+<rect x="40" y="124" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="152.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Three token gates, each with its own ledger</text>
+<text x="54.0" y="168.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Main chat · deep-dive · cross-book. Overspend on deep-dive cannot kill the turn you are in.</text>
+<rect x="40" y="198" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="226.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">All three default to 0 = unlimited</text>
+<text x="54.0" y="242.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">0 is not conservative: it is the regression guarantee. Leave them blank and behaviour matches the pre-cap build byte for byte.</text>
+<rect x="40" y="272" width="460" height="64" rx="8" class="f-warn" stroke-width="1.4"/>
+<text x="54.0" y="300.8" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">⚠️ the main-chat cap is not hard</text>
+<text x="54.0" y="316.2" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">On the cap, that tool batch is skipped, but the closing shot still fires — otherwise the spend is wasted.</text>
+<rect x="40" y="346" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="374.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Hitting the cap is not an error; one sentence goes to the model</text>
+<text x="54.0" y="390.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Stop reading other books. Answer from what you have, and say which passages you saw.</text>
+<rect x="40" y="420" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="448.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Deep-dive count gates</text>
+<text x="54.0" y="464.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">8 per session · 40 per hour · concurrency 2 · stop when 3 sit unanswered.</text>
+<rect x="40" y="494" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="522.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Cross-book character gate</text>
+<text x="54.0" y="538.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">24,000 characters / 8 reads per turn; tool-loop cap 100.</text>
+<rect x="40" y="568" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="596.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Sessions expire; the ledger goes with them</text>
+<text x="54.0" y="612.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Empty sessions: 1 day · chatted: 7 days · pending approval: 30 days. Purged on start.</text>
+<rect x="540" y="124" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="152.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">sidecar only binds loopback</text>
+<text x="554.0" y="168.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">When the plugin starts it, only 127.0.0.1 / localhost / ::1; anything else is not-loopback.</text>
+<rect x="540" y="198" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="226.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Sandbox: two sets of roots</text>
+<text x="554.0" y="242.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Write: only the registered note. Read: may widen to a whitelist. .git · .obsidian · .env* refused.</text>
+<rect x="540" y="272" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="300.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Permissions are three-valued, no fourth</text>
+<text x="554.0" y="316.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">read_file → allow; fetch → allow; edit_file → ask every time; any other name → deny.</text>
+<rect x="540" y="346" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="374.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">read-first hard gate</text>
+<text x="554.0" y="390.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">To edit a passage, an earlier turn must have really read that file. Same-batch read+edit is blocked too.</text>
+<rect x="540" y="420" width="460" height="64" rx="8" class="f-accent" stroke-width="1.4"/>
+<text x="554.0" y="448.8" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Approval gate</text>
+<text x="554.0" y="464.2" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Landing on disk is always your click. Deny: not one byte moves.</text>
+<rect x="540" y="494" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="522.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">Data does not leave .pen</text>
+<text x="554.0" y="538.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">Sessions · snapshots · quotas · deep questions stay on this machine; outbound is only your model endpoint.</text>
+<rect x="540" y="568" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="596.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">The two limit tables must not drift</text>
+<text x="554.0" y="612.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">18 knobs: LIMIT_SPEC in TS and LIMIT_RANGE in config.py are compared by npm test.</text>
+<text x="520.0" y="692" class="cap" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" text-anchor="middle">Settings clamp, they never error — a bad number must not kill this turn.</text>
+</svg>
