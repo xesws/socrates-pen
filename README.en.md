@@ -951,41 +951,22 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 ## 7 · Future Works
 
-These are the pieces that are not done yet, or that we already know work poorly.
+What it cannot do yet, or does poorly:
 
-The most visible one: **the `search` chip is still a placeholder**. It shows up in the sidebar, greyed
-out and not clickable; hovering says "Lands in P2. It won't pretend it searched." It stays because
-people will eventually ask whether it can look something up; deleting it would pretend that request
-does not exist.
+**It cannot search the web.** The sidebar chip for papers / provenance is greyed out. Socrates only
+reads notes in your vault.
 
-**The eight-beat format contract is a hard-coded Chinese literal**, `pen/probe.py:76` being
-`THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 means the `vs_real` axis never
-fires — which any English handbook necessarily is, and so is a Chinese one that names its sections
-differently. The other four axes are unaffected: they only look at `level_key` / `alt` / `trigger`,
-and none of them touches `beat`. The one spillover is the anchor whitelist spliced into the system
-prompt shared by all five axes; when it is empty a bare heading sits there, blocking no axis, just
-an empty promise.
+**Deep follow-up questions work best on a structured handbook.** Background probes look for sections
+named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those
+headings, still work for the main conversation; cross-chapter probes get weaker. See
+[`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) for a template.
 
-**With an English UI and a Chinese handbook, the model often still answers in Chinese.** The system
-prompt is written in Chinese and English is only a paragraph appended at the end
-(`REPLY_IN_ENGLISH`, `pen/session.py:147`); one short tail cannot outweigh a wall of Chinese source
-text. Interestingly the background deep-dive layer is unaffected — its prompt is much shorter, and
-the English run's questions came back in English
-(see [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)).
+**Keep the UI language and the book language the same.** An English UI over a Chinese handbook often
+still answers in Chinese. Switch the book to English, or the UI to Chinese.
 
-**Anyone calling the HTTP API directly gets a 400.** `libraries._suggest_id` preserves CJK
-characters (in Python, `'从'.isalnum()` is `True`) while `_SAFE_ID` accepts only `[A-Za-z0-9._-]`,
-so the id it emits is one the backend itself refuses. The plugin never hits this, because
-`handbookIdFromPath` (`src/selection.ts:30`) strips illegal characters and appends a path hash.
-This one surfaced while writing this README.
-
-The rest is internal debt that doesn't affect use, recorded here so it isn't forgotten:
-`pen/index.py:149`'s `if i == 1 or heading.startswith("手搓")` has a second half that is a private
-lane for one particular handbook, while the first-line-H1 path works for any book, so the `or` is
-just baggage; `pen/config.py:34`'s `DEFAULT_HANDBOOK` still hard-codes a filename (a missing file
-is a no-op and the sidecar still boots); and a comment in `src/deeppoll.ts` says "at most 5 minutes"
-while the constant is 480 seconds — the constant is right, a cross-book exploration was measured at
-351 s, the comment just didn't keep up.
+**Very few model combinations have been tested.** The examples in this README all ran on
+`deepseek/deepseek-v4-flash`. Other OpenAI-compatible endpoints should work by protocol; they have
+not been tried one by one.
 
 ---
 
