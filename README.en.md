@@ -9,7 +9,7 @@
 <img src="docs/img/hero.en.png" width="840"
      alt="A violet gradient card: on the left, a bust of Socrates drawn with the density characters . : s A 3 G &amp; @; on the right, the SOCRATES wordmark, the tagline The Socratic Method and the subtitle Socrates-agent">
 
-**Highlight a passage in your own notes, and get questioned**
+**The Socratic method for going deep on any handbook**
 
 [中文](README.md) · **English**
 
@@ -22,13 +22,16 @@
 
 ---
 
-> Highlight a passage in Obsidian. Someone sits in the sidebar and, instead of answering,
-> asks you a question first.
+> Highlight a passage in Obsidian, and this plugin lets you practise the **Socratic method**.
+> Practising it means two things.
 >
-> He holds exactly two tools: **read your note** and **edit your note**. He must read before
-> he may edit, and even then he can only *propose* — nothing touches the disk until you click **Allow**.
+> **You can keep asking.** Ask as much as you want. Questions get answered on the spot, and
+> the answer can be written back into your note, where it stays. Take any point as deep as
+> you choose.
 >
-> He runs on your own machine. **There is no server owned by the author.**
+> **Socratic questioning.** It turns the questions around on you: it keeps asking about the
+> passage you marked, until you see the crack you had not noticed, and your grasp of that
+> point goes one layer deeper.
 
 **Contents**
 
