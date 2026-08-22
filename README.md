@@ -585,7 +585,9 @@ Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己
 **写**只允许改**登记过的那一篇**（`assert_write_target`：目标必须逐字等于登记时的原文路径）。
 **读**可以放宽到白名单里的根。`.git` / `.obsidian` / `.env*` 一律拒，两边都拒。
 
-**这两套根宽窄差得很远，得说清楚。** 从 Obsidian 里用，读根就是**整个库根**——
+**这两套根宽窄差得很远，得说清楚。** 从 Obsidian 里用，读根是**整个库根**
+（外加 sidecar 自己那个根：`read_roots()` 返回的是 `[REPO_ROOT, *extra_roots]`，
+`REPO_ROOT` 永远在里面——pip 装的时候它是 site-packages）——
 插件登记教材时把 `vaultRoot(app)` 一起发过去（`src/views/PenView.ts:788` →
 `pen/libraries.py` 的 `meta.allow_root` → `pen/tutor.py:69` 的 `read_roots()` →
 `pen/sandbox.py` 的 `assert_readable`），不需要你手动放宽。实测：登记 `book.md`
@@ -751,12 +753,12 @@ v0.15.4 当时只在提示词里加了一句「那五个例子取自另一本书
 <details>
 <summary><b>展开：给开发者的那一层</b></summary>
 
-**规模**（截至 v0.15.7，全部实测）
+**规模**（截至 v0.15.11，全部实测）
 
 | 部分 | 规模 |
 | --- | --- |
-| Python（sidecar，不含测试） | 28 个模块，7803 行 |
-| Python 测试 | 8670 行，**485 passed** |
+| Python（sidecar，不含测试） | 28 个模块，7814 行 |
+| Python 测试 | 8700 行，**487 passed** |
 | TypeScript（插件） | 15 个文件，3839 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -784,12 +786,12 @@ v0.15.4 当时只在提示词里加了一句「那五个例子取自另一本书
 | `check-i18n.mjs` | 词表自检——语言解析在真实边界上的那几个坑 |
 | `check-poll.mjs` | 深挖轮询的**终止条件**，跑的是编译出来的真代码。少一个终止条件，你关掉面板它还在后台敲 sidecar |
 | `check-api.mjs` | HTTP 错误的形状，跑的是 `src/api.ts` 编译出来的真代码 |
-| `check-css.mjs` | `styles.css` 的不变量，**7 项**，条条是真踩过的坑 |
+| `check-css.mjs` | `styles.css` 的不变量，条条是真踩过的坑（跑一遍会打印当前条数） |
 | `check-limits.mjs` | **前后端那两张夹紧表必须逐项相等**——同一道闸的两半 |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **485 passed**，
+后端 `python -m pytest pen/tests -q` → **487 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -804,7 +806,7 @@ python -m pen.index --check 你的笔记.md
 ```
 $ python -m pen.index --check docs/demo/从零手写DQN.md
 从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）
-path=/Users/tangyiq/dev/socrates-pen/docs/demo/从零手写DQN.md
+path=/Users/you/socrates-pen/docs/demo/从零手写DQN.md
 lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
@@ -865,8 +867,13 @@ CHECK OK
   （`src/views/PenView.ts:788` 把 `vaultRoot(app)` 发给 `POST /handbooks/import`），
   不需要你手动放宽。你要是在对话里报出一个路径，它就能读到。
   写的边界严格得多——见 [4.4 沙箱有两套根](#44--沙箱有两套根读和写不是一回事)。
-- **不点写回，它一个字都不会往你笔记里放。** 只问不写是完全正常的用法——
-  写回是一枚要你主动点的芯片，而且点完还得再过一次审批。
+- **任何编辑都要你先批准，不批准就是一个字都不落盘。** 只问不写是完全正常的用法。
+  ⚠️ **兜住这件事的是审批闸，不是「你没点那枚芯片」。** 写回确实是一枚要你点的芯片，
+  但在 `free` 里直说「帮我在那段后面补一句」，模型同样会走到 `edit_file`
+  （`pen/session.py:64` 就是这么写的），侧栏照样弹审批——
+  [3.5](#35--写回原文和那道审批闸) 那段拒绝演示用的正是 `free` 芯片
+  （[`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)）。
+  真正的闸在 `pen/agent/permissions.py:15`：`edit_file` 恒为 `ask`，对每一枚芯片都成立。
 - 插件默认只访问 `http://127.0.0.1:8765`，**不向作者汇报任何东西**。
 - 第一次安装从 GitHub 和 PyPI 下载 sidecar 和 Python 依赖到 `~/.socrates-pen`。
 - 模型调用由这个本机进程发出，发到**你填的那个节点**。
@@ -913,7 +920,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 485 passed
+python -m pytest pen/tests -q       # 487 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -939,7 +946,6 @@ python -m pen.index --check 你的笔记.md
   但这个常量本身还没清干净。
 - **`src/deeppoll.ts` 的注释写「最多转 5 分钟」，常量是 480 秒。**
   常量是对的（跨书探索实测跑过 351 秒），注释没跟上。
-- **`pen/app.py:57` 的 `FastAPI(version="0.12.13")` 落后于 `manifest.json` 的 `0.13.1`。**
 - **`libraries._suggest_id` 会吐出后端自己不收的 id。** 它保留 CJK 字符
   （Python 里 `'从'.isalnum()` 是 `True`），而 `_SAFE_ID` 只认 `[A-Za-z0-9._-]`。
   插件撞不到这条，因为 `src/selection.ts:30` 的 `handbookIdFromPath` 会把非法字符

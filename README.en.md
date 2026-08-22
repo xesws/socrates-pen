@@ -658,7 +658,9 @@ equal the registered original path exactly). **Reading** may be widened to a whi
 `.git`, `.obsidian` and `.env*` are refused on both sides.
 
 **The two sets are far apart in width, and that deserves saying plainly.** Used from Obsidian, the
-read root is **the whole vault root** — the plugin sends `vaultRoot(app)` along when it registers a
+read root is **the whole vault root** (plus the sidecar's own root: `read_roots()` returns
+`[REPO_ROOT, *extra_roots]`, and `REPO_ROOT` is always in there — under a pip install that's
+site-packages) — the plugin sends `vaultRoot(app)` along when it registers a
 handbook (`src/views/PenView.ts:788` → `meta.allow_root` in `pen/libraries.py` → `read_roots()` in
 `pen/tutor.py:69` → `assert_readable` in `pen/sandbox.py`), so you never widen anything by hand.
 Measured: after registering `book.md`, `read_file("私人/日记/2026.md")` is **allowed**.
@@ -844,12 +846,12 @@ and the deep-dive has somewhere to drop anchors.
 <details>
 <summary><b>Expand: the developer layer</b></summary>
 
-**Size** (as of v0.15.7, all measured)
+**Size** (as of v0.15.11, all measured)
 
 | Part | Size |
 | --- | --- |
-| Python (sidecar, excluding tests) | 28 modules, 7,803 lines |
-| Python tests | 8,670 lines, **485 passed** |
+| Python (sidecar, excluding tests) | 28 modules, 7,814 lines |
+| Python tests | 8,700 lines, **487 passed** |
 | TypeScript (plugin) | 15 files, 3,839 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -877,12 +879,12 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 | `check-i18n.mjs` | Vocabulary self-check — the language-parsing edge cases that only bite in reality |
 | `check-poll.mjs` | The deep-poll **termination conditions**, run against compiled code. Lose one and it keeps hammering the sidecar after you close the panel |
 | `check-api.mjs` | The shape of HTTP errors, run against the compiled `src/api.ts` |
-| `check-css.mjs` | Invariants of `styles.css` — **7 checks**, every one a pothole we actually hit |
+| `check-css.mjs` | Invariants of `styles.css` — every one a pothole we actually hit (run it and it prints the current count) |
 | `check-limits.mjs` | **The two clamp tables, frontend and backend, must match item for item** — two halves of one gate |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **485 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **487 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -898,7 +900,7 @@ It calls no model. The same input always yields the same index —
 ```
 $ python -m pen.index --check docs/demo/从零手写DQN.md
 从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）
-path=/Users/tangyiq/dev/socrates-pen/docs/demo/从零手写DQN.md
+path=/Users/you/socrates-pen/docs/demo/从零手写DQN.md
 lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
@@ -967,9 +969,14 @@ Afterwards the top line of **Settings → Socrates** shows whether the local ser
   `POST /handbooks/import`) — you don't have to widen anything. Name a path in the conversation
   and it can read it. The *write* boundary is far tighter — see
   [4.4 The sandbox has two sets of roots](#44--the-sandbox-has-two-sets-of-roots-reading-and-writing-are-not-the-same-thing).
-- **Without the write-back chip it never puts a single character into your notes.** Asking without
-  writing is a perfectly normal way to use it — write-back is a chip you click, and it still
-  goes through approval afterwards.
+- **Every edit needs your approval first; without it nothing reaches disk.** Asking without
+  writing is a perfectly normal way to use it.
+  ⚠️ **What holds this is the approval gate, not "you didn't click that chip."** Write-back is
+  indeed a chip you click, but saying "add a line after that paragraph" in `free` sends the model
+  to `edit_file` just the same (`pen/session.py:64` says so explicitly), and the sidebar asks all
+  the same — the deny demo in [3.5](#35--writing-back-and-the-approval-gate) runs on the `free` chip
+  ([`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)).
+  The real gate is `pen/agent/permissions.py:15`: `edit_file` is always `ask`, for every chip.
 - The plugin talks to `http://127.0.0.1:8765` by default. **It does not phone home.**
 - First-time setup downloads the sidecar and its Python dependencies from GitHub and PyPI
   into `~/.socrates-pen`.
@@ -1018,7 +1025,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 485 passed
+python -m pytest pen/tests -q       # 487 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -1044,7 +1051,6 @@ This section is here on purpose.
   carry their own fallback handbook. The constant itself hasn't been cleaned up.
 - **A comment in `src/deeppoll.ts` says "at most 5 minutes"; the constant is 480 seconds.**
   The constant is right (a cross-book exploration was measured at 351 s); the comment didn't keep up.
-- **`pen/app.py:57`'s `FastAPI(version="0.12.13")` lags `manifest.json`'s `0.13.1`.**
 - **`libraries._suggest_id` can emit an id the backend itself refuses.** It preserves CJK characters
   (in Python, `'从'.isalnum()` is `True`) while `_SAFE_ID` only accepts `[A-Za-z0-9._-]`.
   The plugin never hits this, because `handbookIdFromPath` (`src/selection.ts:30`) strips illegal
