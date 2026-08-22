@@ -217,7 +217,13 @@ def probe_system(lang: str = "zh", limits: config.RuntimeLimits | None = None) -
 
 
 def third_beat_sections(idx: HandbookIndex) -> list[Any]:
-    """七处「第三拍 · 出身」。vs_real 轴的合法锚点白名单。"""
+    """本书里所有「第三拍 · 出身」小节。vs_real 轴的合法锚点白名单。
+
+    **不写死条数**：这句原来写「七处」，那是作者自己那本 SWE 手册的数，
+    随仓公开的演示教材实跑是 4 处（L92 / L343 / L652 / L924），照着数会对不上。
+    书里没有叫「第三拍」的小节时白名单为空，那条轴就永不出题——
+    见 README「还欠着的」里 `THIRD_BEAT` 那条。
+    """
     return [t for t in idx.toc if (t.beat or "").startswith(THIRD_BEAT)]
 
 

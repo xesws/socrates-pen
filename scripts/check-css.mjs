@@ -1,5 +1,8 @@
 /**
- * styles.css 的不变量。三条都是真踩过的坑。
+ * styles.css 的不变量。条条是真踩过的坑。
+ *
+ * 不在这儿写死条数——写死就会漂：这句原来写「三条」，实跑早就是 7 项了，
+ * 而公开仓的 README 是照抄这句注释的（v0.15.9 一起改的）。要数就跑一遍看末行。
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
