@@ -31,7 +31,7 @@ ASCII 密度画的形状信息编码在字符的**密度差异**里，所以单�
     WORDMARK_WIDE   @16px   每列 9.6px   清楚 —— 但要 674px 宽，横排给不起
 
 而肖像本身接近正方形（宽高比 0.9），竖排里要够宽就必然够高，实测竖排卡片
-会长到 580px 且左右大片留白。横排是唯一能把 hero 压在 411px 的布局，
+会长到 580px 且左右大片留白。横排是唯一能把 hero 压在 473px 的布局，
 于是「清晰的肖像 + 清晰的 ASCII 字标」在 840px 宽里装不下：
 肖像要 ~280px，字标要 ~570px，加间距超出可用的 770px 约 100px。
 
@@ -64,14 +64,21 @@ TRANSPARENT_IDX = QUANT_COLORS
 # 改了 logo.ts 的行列数会走到这里，提醒你同步改中英两份 README。
 README_WIDTH = 840
 
+# 真文字字标的字号。写死而不是按右栏宽度反算：反算出来的值会随肖像字号漂，
+# 而这个字标是整张卡的视觉主音，尺寸该由设计定、不该是别的参数的副产品。
+# 44px 在 fp=13 的右栏（368.5px）里占 86%，离卡片内缘还剩 70px。
+WORDTEXT_PX = 44
+
 # 肖像和字标分开选，因为它们受**不同维度**约束：
-#   肖像卡在高度上——卡片总高 411 是硬上限，行数直接定死字号（51 行只能给 6.7px，糊；
-#                    31 行能给 11px，字符各是各的形状）。
+#   肖像卡在高度上——卡片总高定死字号：高 = 1 + 34 + 31*fp + 34 + 1，fp=13 出 473。
+#                    （v0.16.7 把这条上限从 411 抬到 473，+15%：读者要肖像再大一点。
+#                    同一条高度下 PORTRAIT_WIDE 的 51 行只能给 403/51 = 7.9px，仍旧糊，
+#                    所以 narrow 那幅仍是唯一解。）
 #   字标卡在宽度上——右栏宽度由卡片总宽减出来，是个定值。同样一条右栏，
 #                    WORDMARK_WIDE(80列) 和 WORDMARK_NARROW(64列) 画出来的字母
 #                    **物理尺寸完全相同**，但 WIDE 多 25% 的字符格子去表达同一个字母，
 #                    所以形状更准。字号小不等于字看着小——这里比的是格子密度。
-PORTRAITS = {"narrow": ("PORTRAIT_NARROW", 11), "wide": ("PORTRAIT_WIDE", 11)}
+PORTRAITS = {"narrow": ("PORTRAIT_NARROW", 13), "wide": ("PORTRAIT_WIDE", 13)}
 WORDMARKS = {"wide": "WORDMARK_WIDE", "narrow": "WORDMARK_NARROW", "text": None}
 
 # 这张卡不引用 styles.css：那是插件的运行期样式，会随版本变；README 的产物必须能在
@@ -173,18 +180,25 @@ TEMPLATE = """<!doctype html>
   #portrait { font-size:__FP__px; color:#B3B9C0; }
   #meta { display:flex; flex-direction:column; align-items:stretch; }
   #word { font-size:__FW__px; color:#DCDDDE; }
-  #wordtext { font-size:44px; line-height:1; letter-spacing:0.30em;
-              text-indent:0.30em; color:#DCDDDE; font-weight:500;
+  /* 没有 text-indent：那一条是**居中**布局用来抵消末字后多出的一格字距的
+     （插件那张竖排卡就是居中，见 TEMPLATE_COL）。横排右栏是左对齐，
+     text-indent 只会把首字往右推——SOCRATES 被推 0.30em = 13.2px，标语被推
+     0.34em = 6.8px，副题没有 indent 所以纹丝不动，三行于是各站各的。 */
+  #wordtext { font-size:__FT__px; line-height:1; letter-spacing:0.30em;
+              color:#DCDDDE; font-weight:500; white-space:nowrap;
               font-family:Menlo, monospace; }
   #rule { height:1px; margin-top:24px; background:__RULE__; }
   /* 层级照插件来（styles.css:613-633）：标语在上，600 粗、0.34em；副题在下，细、0.16em。
-     text-indent 抵消末字后多出的那一格字距，视觉才真居中——这一条也是插件原样。
+     插件那条 text-indent 不搬过来，理由见上面 #wordtext。
      中文钉 Hiragino Sans GB：Menlo 没有汉字，不指定就会跟着系统回退漂。 */
+  /* nowrap：英文标语 "The Socratic Method" 在右栏里只剩 20px 余量，一旦静默折行，
+     右栏的纵向层级就塌了而且没人会发现。宁可让它溢出到边框外——check_align()
+     会把越界量打出来，那是看得见的失败。 */
   #tag  { margin-top:22px; font-size:20px; line-height:1.3; font-weight:600;
-          letter-spacing:0.34em; text-indent:0.34em; color:#DCDDDE;
+          letter-spacing:0.34em; color:#DCDDDE; white-space:nowrap;
           font-family:Menlo,"Hiragino Sans GB",monospace; }
   #sub  { margin-top:11px; font-size:12px; line-height:1.3;
-          letter-spacing:0.16em; color:#9AA0A6; }
+          letter-spacing:0.16em; color:#9AA0A6; white-space:nowrap; }
 </style></head>
 <body>
 <div id="card">
@@ -235,6 +249,32 @@ TEMPLATE_COL = """<!doctype html>
 </body></html>
 """
 
+# 去掉 text-indent 只把三行拉回同一个**排版原点**，但墨迹不从原点开始：每个字形自带
+# 左侧边距（left side bearing），字号越大差得越多。三行字号不同，边距就必然不同，
+# 光对齐盒子对不齐眼睛看到的那条竖线。
+#
+# 所以按 canvas 量出每行首字的真实墨迹起点，再用等量负边距把它拉回栏左缘。目标是
+# #rule 的左端——分隔线横跨整栏，是这一栏视觉上的左边界；于是字标、标语、副题、
+# 分隔线四条左缘落在同一根竖线上。量出来的值会打印，出图时看得见。
+#
+# actualBoundingBoxLeft 的符号约定是「向左为正」：墨迹起点在原点右侧时它是负数，
+# 所以左边承 = -actualBoundingBoxLeft，要补的负边距 = -左边承 = actualBoundingBoxLeft。
+ALIGN_JS = """() => {
+  const c = document.createElement('canvas').getContext('2d');
+  const out = {};
+  for (const id of ['wordtext', 'tag', 'sub']) {
+    const el = document.getElementById(id);
+    if (!el) continue;                       // ASCII 字标那档没有 #wordtext
+    const cs = getComputedStyle(el);
+    c.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    const first = el.textContent.trim().charAt(0);
+    const bearing = -c.measureText(first).actualBoundingBoxLeft;
+    el.style.marginLeft = (-bearing).toFixed(3) + 'px';
+    out[id] = Math.round(bearing * 1000) / 1000;
+  }
+  return out;
+}"""
+
 PROBE_JS = """() => {
   const c = document.createElement('canvas').getContext('2d');
   const s = '0'.repeat(64);
@@ -279,6 +319,7 @@ def build_html(portrait: str, word: str, fp: float, fw: float, gap: float,
     pal = palette(tint)
     return (TEMPLATE
             .replace("__CW__", f"{README_WIDTH:g}")
+            .replace("__FT__", f"{WORDTEXT_PX:g}")
             .replace("__GAP__", f"{gap:g}")
             .replace("__FP__", f"{fp:g}")
             .replace("__FW__", f"{fw:g}")
@@ -314,6 +355,8 @@ def render(page_html: str) -> tuple[bytes, dict]:
             sys.exit(f"[render-hero] Menlo 字宽比实测 {p['adv']:.6f}，期望 {ADV:.6f}。"
                      "字体版本不对，出的图比例会漂。")
 
+        bearings = page.evaluate(ALIGN_JS)
+
         card = page.locator("#card")
         box = card.bounding_box()
         # 截元素的 border-box：天然没有多余留白。omit_background=True 让圆角外是真透明——
@@ -321,6 +364,7 @@ def render(page_html: str) -> tuple[bytes, dict]:
         # 主题下都能融进页面，一张图通吃。
         png = card.screenshot(omit_background=True, type="png", animations="disabled")
         browser.close()
+    box["bearings"] = bearings
     return png, box
 
 
@@ -361,10 +405,63 @@ def quantize(png: bytes) -> bytes:
     return buf.getvalue()
 
 
+def check_align(png: bytes, col_left_css: float, right_limit_css: float) -> bool:
+    """从**成图的像素**里量右栏每行文字的墨迹左缘，证明它们真对齐了。
+
+    不看渲染器报了什么，看出来的图。读者退回过一次就是因为这里：三行分别被
+    text-indent 推成 +16.0 / +8.0 / +1.0 CSS px 的阶梯，肉眼一看就是没对齐。
+    三行左缘互相差超过 1 个设备像素就告警。
+    """
+    from PIL import Image
+
+    im = Image.open(io.BytesIO(png)).convert("RGBA")
+    px = im.load()
+    W, H = im.size
+    x0 = int(round(col_left_css * SCALE))
+    lo, hi = max(0, x0 - 40), W - 40
+
+    def bright(x, y):
+        q = px[x, y]
+        return q[3] == 255 and (q[0] + q[1] + q[2]) / 3 > 140
+
+    bands, start = [], None
+    for y in range(H):
+        has = any(bright(x, y) for x in range(lo, hi))
+        if has and start is None:
+            start = y
+        elif not has and start is not None:
+            if y - start >= 3:
+                bands.append((start, y - 1))
+            start = None
+
+    lefts, rights = [], []
+    for a, b in bands:
+        cols = [x for y in range(a, b + 1) for x in range(lo, hi) if bright(x, y)]
+        lefts.append(min(cols))
+        rights.append(max(cols))
+    if not lefts:
+        return True
+    spread = max(lefts) - min(lefts)
+    detail = "  ".join("%+.1f" % ((x - x0) / SCALE) for x in lefts)
+    print(f"[render-hero] 右栏 {len(lefts)} 行文字的墨迹左缘（相对栏左缘，CSS px）：{detail}")
+    over = max(rights) / SCALE - right_limit_css
+    if over > -2:
+        print(f"\n  ⚠️  右栏最长那行已经贴到卡片内缘（还差 {-over:.1f} CSS px 就出界）。"
+              f"\n      #tag 是 nowrap，再长就会溢出边框被截掉。缩字号或缩 --gap。\n")
+        return False
+    print(f"[render-hero] 右栏最长一行距卡片内缘还有 {-over:.1f} CSS px")
+    if spread > 1:
+        print(f"\n  ⚠️  三行没对齐，最大相差 {spread / SCALE:.1f} CSS px。"
+              f"\n      多半是又有人往 #wordtext / #tag / #sub 上加了 text-indent，"
+              f"\n      或者 ALIGN_JS 的边承补偿没跑到。\n")
+        return False
+    return True
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--variant", choices=sorted(PORTRAITS), default="narrow",
-                    help="肖像用哪一幅；受卡片高度约束，narrow(31行) 才给得起 11px")
+                    help="肖像用哪一幅；受卡片高度约束，narrow(31行) 才给得起 13px")
     ap.add_argument("--layout", choices=("row", "column"), default="row",
                     help="column = 肖像在上字标在下（插件 splash 的堆叠顺序）")
     ap.add_argument("--fp", type=float, default=0,
@@ -401,8 +498,9 @@ def main() -> None:
         # 横排：右栏宽度是从卡片总宽减出来的定值，字标字号由它反算。
         right = README_WIDTH - 2 - 68 - pcols * ADV * fp - args.gap
         fw = round(right / (wcols * ADV), 3)
-    print(f"[render-hero] {pname} {prows}×{pcols} @{fp}px   "
-          f"{wname or 'SOCRATES(文字)'} @{fw}px")
+    # text 档不用 fw（#wordtext 的字号是 WORDTEXT_PX），别印一个没生效的数字
+    shown_word = f"{wname} @{fw}px" if wname else f"SOCRATES(真文字) @{WORDTEXT_PX}px"
+    print(f"[render-hero] {pname} {prows}×{pcols} @{fp}px   {shown_word}")
     print(f"              预期肖像 {pcols * ADV * fp:.2f}×{prows * fp}")
 
     if args.layout == "column":
@@ -413,11 +511,17 @@ def main() -> None:
     png, box = render(page)
     w = round(box["width"])
     print(f"[render-hero] 卡片实测 {box['width']:.3f} × {box['height']:.3f} CSS px")
+    if box.get("bearings"):
+        print("[render-hero] 首字左边承（已用等量负边距抵掉）：  "
+              + "   ".join(f"{k} {v:+.2f}px" for k, v in box["bearings"].items()))
 
     if not args.no_quantize:
         raw = len(png)
         png = quantize(png)
         print(f"[render-hero] 量化 {QUANT_COLORS} 色：{raw / 1024:.1f} KB → {len(png) / 1024:.1f} KB")
+
+    if args.layout == "row":
+        check_align(png, 1 + 34 + pcols * ADV * fp + args.gap, README_WIDTH - 35)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_bytes(png)
