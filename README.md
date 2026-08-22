@@ -192,7 +192,7 @@ edit 的参数是在**看见读的结果之前**就定好的，那还是猜。
 需要教材按八拍体例写（每一关有「第三拍 · 出身」「第七拍 · 实操代码」这些小节）。
 少了那些小节，五条深挖轴里会直接死掉一条。
 [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) 是可以照抄的样板，
-详见 [4.9 教材无关](#49--教材无关v0150)。
+详见 [4.9 教材无关](#49--教材无关v0150--v0157)。
 
 下面每一节的输出，**都是真跑出来的**，原始请求体和 SSE 事件流全部存在
 [`docs/demo/transcripts/`](docs/demo/transcripts/) 里。落盘之后只做过一件事：
@@ -675,7 +675,7 @@ Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己
 
 <sup>`pen/retention.py`，模块头有完整的实测记录</sup>
 
-### 4.9 · 教材无关（v0.15.0）
+### 4.9 · 教材无关（v0.15.0 · v0.15.7）
 
 改这一版之前，`SYSTEM_PROMPT` 第一句话是写死的：
 
@@ -694,6 +694,22 @@ Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己
 
 <sup>原文：[`02b-system-prompt.json`](docs/demo/transcripts/02b-system-prompt.json)</sup>
 
+**但那只解了一半，而且过了三版才发现。** v0.15.0 改的是主对话那条路。
+后台深挖走的是另一份提示词，它的 user packet 里给了位置、原话、苏格拉底刚讲的、
+足迹、书架、已经问过的题——**唯独不说这是哪本书**。模型只能从关号、拍名和材料
+往回推，于是照着提示词里那五个示范问题的名字走，而那五个例子取自 SWE 手册。
+v0.15.7 把书名注了进去，走的是和 `messages[0]` 同一套清洗：
+
+```
+[你在带读哪本书]
+《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》
+（下面所有材料都出自这本书。它讲什么，看材料——别从别的书上推。）
+```
+
+<sup>`pen/probe.py:build_user_message`。这一条是审查 Agent 报出来的：
+v0.15.4 当时只在提示词里加了一句「那五个例子取自另一本书，别照搬名字」，
+那是缓解——模型照做了，但它依然不知道手上这本讲什么。</sup>
+
 **但八拍体例留下了，而且是故意的。** 「第三拍 · 出身」「第五拍 · Meta Question 门禁」
 这些不是那本书的内容，是**格式契约**——`vs_real` 轴要求锚点落在「出身」那一拍，
 `examples` 要求例子名对得上「第七拍」。
@@ -708,12 +724,12 @@ Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己
 <details>
 <summary><b>展开：给开发者的那一层</b></summary>
 
-**规模**（截至 v0.15.1，全部实测）
+**规模**（截至 v0.15.7，全部实测）
 
 | 部分 | 规模 |
 | --- | --- |
-| Python（sidecar，不含测试） | 26 个模块，7732 行 |
-| Python 测试 | 8486 行，**480 passed** |
+| Python（sidecar，不含测试） | 28 个模块，7803 行 |
+| Python 测试 | 8670 行，**485 passed** |
 | TypeScript（插件） | 15 个文件，3839 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -746,7 +762,7 @@ Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **480 passed**，
+后端 `python -m pytest pen/tests -q` → **485 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -863,7 +879,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 480 passed
+python -m pytest pen/tests -q       # 485 passed
 python -m pen.index --check 你的笔记.md
 ```
 

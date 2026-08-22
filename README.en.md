@@ -99,7 +99,7 @@ but the **background deep-dive needs anchors in the book**, which means the hand
 follow the eight-beat format (each level carrying sections like "third beat · origins" and
 "seventh beat · working code"). Without them, one of the five deep-dive axes dies outright.
 [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) is a template you can copy —
-see [4.9](#49--handbook-agnostic-v0150).
+see [4.9](#49--handbook-agnostic-v0150--v0157).
 
 > **A note on the examples below.** Every transcript in this README was really captured —
 > raw request bodies and SSE event streams live in
@@ -750,7 +750,7 @@ That "and not an empty session" in the third row was a later tightening. The fir
 
 <sup>`pen/retention.py`; the module header carries the full measurement log</sup>
 
-### 4.9 · Handbook-agnostic (v0.15.0)
+### 4.9 · Handbook-agnostic (v0.15.0 · v0.15.7)
 
 Before this version, the first sentence of `SYSTEM_PROMPT` was hard-coded:
 
@@ -775,6 +775,27 @@ The word **`SWE` appears 0 times** in the whole prompt.
 
 <sup>Raw: [`02b-system-prompt.json`](docs/demo/transcripts/02b-system-prompt.json)</sup>
 
+**But that only fixed half of it, and it took three more versions to notice.** v0.15.0 changed
+the main conversation. The background deep-dive runs on a separate prompt, and its user packet gave
+the model the position, the reader's words, what Socrates just said, the footprint, the shelf, the
+questions already asked — **everything except which book this is**. It could only infer the subject
+from level numbers, beat names and the excerpt, so it followed the names in the five worked examples
+in its prompt — and those five come from the SWE handbook. v0.15.7 injects the title, through the
+same cleaner `messages[0]` uses:
+
+```
+[你在带读哪本书]
+《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》
+（下面所有材料都出自这本书。它讲什么，看材料——别从别的书上推。）
+```
+
+*("Which book you're walking them through" · "Everything below comes from this book. What it's
+about — read the material; don't infer it from some other book.")*
+
+<sup>`pen/probe.py:build_user_message`. A review agent caught this one: v0.15.4 had only added a line
+to the prompt saying "those five examples come from a different book, don't copy their names." That
+was mitigation — the model complied, and still had no idea what book it was holding.</sup>
+
 **But the eight-beat structure stayed, on purpose.** "Third beat · origins," "fifth beat · Meta
 Question gate" and the rest aren't that book's *content*, they're a **format contract** — the
 `vs_real` axis requires its anchor to land on the origins beat, and `examples` requires example names
@@ -791,12 +812,12 @@ and the deep-dive has somewhere to drop anchors.
 <details>
 <summary><b>Expand: the developer layer</b></summary>
 
-**Size** (as of v0.15.1, all measured)
+**Size** (as of v0.15.7, all measured)
 
 | Part | Size |
 | --- | --- |
-| Python (sidecar, excluding tests) | 26 modules, 7,732 lines |
-| Python tests | 8,486 lines, **480 passed** |
+| Python (sidecar, excluding tests) | 28 modules, 7,803 lines |
+| Python tests | 8,670 lines, **485 passed** |
 | TypeScript (plugin) | 15 files, 3,839 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -829,7 +850,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **480 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **485 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -957,7 +978,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 480 passed
+python -m pytest pen/tests -q       # 485 passed
 python -m pen.index --check your-note.md
 ```
 
