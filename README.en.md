@@ -107,8 +107,11 @@ see [4.9](#49--handbook-agnostic-v0150--v0157).
 > the capture environment's temporary absolute paths were rewritten to `/Users/you/…`
 > ([details](docs/demo/transcripts/README.md)). Nothing else. The demo handbook is written
 > in Chinese, and the model answers in the language of the book, so the answers you'll see
-> quoted are translations; the verbatim original is one click away under each one.
-> See [Known gaps](#7--known-gaps) for why that happens.
+> quoted are translations; the verbatim original is one click away under each one —
+> **except in [3.7](#37--between-two-books)**, whose two excerpts come from the author's own
+> local `.pen/` and are not shipped with the repo (they are full of private vault paths).
+> That is the one place in this document you cannot check for yourself, and its caption says so.
+> See [Known gaps](#7--known-gaps) for why the language switch happens.
 
 ---
 
@@ -292,10 +295,27 @@ Same passage, different chip, completely different shape:
 >
 > Both live in the `train()` function of the seventh beat — same function body, different arguments:
 >
+> **Example 1: standard DQN (C = 200)**
+>
 > ```python
-> returns = train(episodes=400, sync_every=200)                # standard DQN
-> returns = train(episodes=400, sync_every=200, double=True)   # Double DQN, one argument
+> # 第七拍里就是这样调的
+> returns = train(episodes=400, sync_every=200)
 > ```
+>
+> `sync_every=200` is C. The online network updates 200 times before its weights are copied over to
+> `target_net`. For those 200 steps the target is dead still and the gradient is honest. Run it and
+> the return curve climbs.
+>
+> **Example 2: Double DQN (one argument changed)**
+>
+> ```python
+> # 同一份代码，打开 double=True
+> returns = train(episodes=400, sync_every=200, double=True)
+> ```
+>
+> The handbook hard-codes the `double` parameter — it changes exactly one line, in the TD target:
+> select the action with the online network, evaluate it with the target network. Compare the two
+> curves and see whether decoupling selection from evaluation makes it steadier.
 
 </details>
 
@@ -414,7 +434,7 @@ ingredients, it only lowered the *connection frequency* of one of them from ever
 
 **The gates really do execute questions.** Same passage, English-interface run:
 2 calls, 2,002 output tokens, and **not one item survived** — all killed by the `depth < 4` gate
-(`pen/probe.py:968`). One made it through on the second round, in English:
+(`pen/probe.py:1001`). One made it through on the second round, in English:
 
 > NFQ trains until convergence before updating the target, while DQN updates every C steps.
 > Why doesn't DQN just adopt NFQ's approach for guaranteed convergence?
@@ -524,7 +544,9 @@ book about?" — asked twice.
 > lightweight SWE Agent… The whole book runs on one metaphor: you're the master, the Agent is an
 > intern with zero memory and enormous nerve.
 
-<sup>Both from the author's own real session records.</sup>
+<sup>⚠️ Both come from real sessions in the author's local `.pen/`, **not shipped with the repo**
+(they contain private vault paths), which makes this the **only** quotation in this document you
+cannot verify yourself. Every other quote has its raw JSON linked underneath.</sup>
 
 **Note that the "before" answer is not a failure.** "I haven't read that book" was **correct** —
 that was the truth at the time. Which is exactly why the shelf block **disappears entirely** when
@@ -566,14 +588,14 @@ the turn you're reading right now.
 **It counts tokens and does not convert them to money.** The exchange rate is yours: which endpoint,
 which model, what discount, whether cache hits are billed — only you know.
 
-You probably still want an order of magnitude. Those 200k tokens, at the price that endpoint was
+You probably still want an order of magnitude. Those 222k tokens, at the price that endpoint was
 listing for `deepseek/deepseek-v4-flash` when I ran this ($0.077/M in + $0.154/M out):
 
 ```
 in 205,167 × $0.077/M  +  out 16,795 × $0.154/M  ≈  $0.018
 ```
 
-**Under two cents** — and that's an *upper* bound, since it prices 125k cached tokens at full rate.
+**Under two cents** — and that's an *upper* bound, since it prices 129k cached tokens at full rate.
 A frontier model costs one to two orders of magnitude more.
 
 **This total can go down**, and that isn't a bug — sessions expire ([see 4.8](#48--sessions-expire-and-their-bills-go-with-them)),
@@ -635,6 +657,16 @@ When blocked, the model doesn't get a bare refusal — it gets **instructions fo
 equal the registered original path exactly). **Reading** may be widened to a whitelist of roots.
 `.git`, `.obsidian` and `.env*` are refused on both sides.
 
+**The two sets are far apart in width, and that deserves saying plainly.** Used from Obsidian, the
+read root is **the whole vault root** — the plugin sends `vaultRoot(app)` along when it registers a
+handbook (`src/views/PenView.ts:788` → `meta.allow_root` in `pen/libraries.py` → `read_roots()` in
+`pen/tutor.py:69` → `assert_readable` in `pen/sandbox.py`), so you never widen anything by hand.
+Measured: after registering `book.md`, `read_file("私人/日记/2026.md")` is **allowed**.
+
+It doesn't happen in practice because the prompt only ever tells the model about the current note
+and the shelf — **that's behaviour, not a boundary**. The write side is the real gate: it cannot
+touch even the other books on the shelf, only the one registered note.
+
 Shelf visibility uses the **read roots**, not the global allow roots. A fine distinction with a
 clear direction:
 
@@ -673,7 +705,7 @@ The passage around the reader's selection is withheld. The reason is in `pen/pro
 
 > Those 4,000 characters are all the handbook's own beginner questions ("what do the quotes in
 > `<<'EOF'` do in a heredoc"), and a model staring at them will inevitably produce isomorphic
-> questions — **that is the root cause of the "does echo need quotes" problem.**
+> questions — that is the root cause of the "does echo need quotes" problem.
 
 It's fed what Socrates just said instead, with code blocks stripped.
 
@@ -699,7 +731,7 @@ Every question must fill `axis`, `depth`, `grounding`, `anchors` and `why`. The 
 | `altitude` | Move up one level of abstraction |
 
 Then **Python validates the slots, not the phrasing**: `depth` is self-scored 1–5, and anything
-below 4 is discarded (`pen/probe.py:968`). In [3.4](#34--background-deep-dive-) the English run's
+below 4 is discarded (`pen/probe.py:1001`). In [3.4](#34--background-deep-dive-) the English run's
 2 calls and 2,002 output tokens were wiped out by exactly this gate.
 
 </details>
@@ -724,7 +756,7 @@ the turn you're reading.**
 Three properties worth remembering:
 
 1. **All default to 0, and 0 means unlimited.** The whole test is one line:
-   `cap > 0 and (spent + headroom) >= cap` (`pen/meter.py:167`). The `cap > 0` half *is* the entire
+   `cap > 0 and (spent + max(0, headroom)) >= cap` (`pen/meter.py:167`). The `cap > 0` half *is* the entire
    implementation of "0 means unlimited."
 2. **Going over is not an error.** It appends a sentence telling the model to wrap up; it does not
    raise. What you see is a shorter answer, not a red exclamation mark.
@@ -845,7 +877,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 | `check-i18n.mjs` | Vocabulary self-check — the language-parsing edge cases that only bite in reality |
 | `check-poll.mjs` | The deep-poll **termination conditions**, run against compiled code. Lose one and it keeps hammering the sidecar after you close the panel |
 | `check-api.mjs` | The shape of HTTP errors, run against the compiled `src/api.ts` |
-| `check-css.mjs` | Invariants of `styles.css` — all three are potholes we actually hit |
+| `check-css.mjs` | Invariants of `styles.css` — **7 checks**, every one a pothole we actually hit |
 | `check-limits.mjs` | **The two clamp tables, frontend and backend, must match item for item** — two halves of one gate |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
@@ -866,6 +898,7 @@ It calls no model. The same input always yields the same index —
 ```
 $ python -m pen.index --check docs/demo/从零手写DQN.md
 从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）
+path=/Users/tangyiq/dev/socrates-pen/docs/demo/从零手写DQN.md
 lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
@@ -925,8 +958,15 @@ Afterwards the top line of **Settings → Socrates** shows whether the local ser
 
 ### Privacy and network
 
-- **It does not read your whole vault.** Only the note you highlighted, plus the handbooks you
-  registered yourself. No indexing, no walking, no uploading. Widening the read scope is your move.
+- **No indexing, no walking, no uploading.** It does not scan your vault and does not send your
+  notes anywhere. In practice only two things ever get read: the note you highlighted and the
+  handbooks on your shelf — because those are the only ones the prompt tells it about.
+  ⚠️ **That is behaviour, not a sandbox guarantee.** The sandbox's *read* boundary is the
+  **whole vault root** (minus `.git` / `.obsidian` / `.env*`), and that root is registered
+  automatically by the plugin (`src/views/PenView.ts:788` sends `vaultRoot(app)` to
+  `POST /handbooks/import`) — you don't have to widen anything. Name a path in the conversation
+  and it can read it. The *write* boundary is far tighter — see
+  [4.4 The sandbox has two sets of roots](#44--the-sandbox-has-two-sets-of-roots-reading-and-writing-are-not-the-same-thing).
 - **Without the write-back chip it never puts a single character into your notes.** Asking without
   writing is a perfectly normal way to use it — write-back is a chip you click, and it still
   goes through approval afterwards.
@@ -1011,13 +1051,19 @@ This section is here on purpose.
   characters and appends a path hash — but **anyone calling the HTTP API directly gets a 400**.
   (This one surfaced while writing this README.)
 - **The eight-beat format contract is a hard-coded Chinese literal.** `pen/probe.py:76` is
-  `THIRD_BEAT = "第三拍"`, and `third_beat_sections()` (`:221`) prefix-matches on it to build the
-  anchor whitelist for the `vs_real` axis. A handbook with no section named 第三拍 —
-  **which any English handbook necessarily is** — yields an empty whitelist, and that axis never
-  fires. The other four are unaffected.
+  `THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 — **which any English handbook
+  necessarily is** — means the `vs_real` axis never fires. Two places hang off that one constant:
+  `third_beat_sections()` (`:219`) builds the anchor whitelist **that goes into the prompt**, while
+  the actual `return False` is at `:439`, `if not any(m.is_third_beat for m in marks)` (via
+  `Anchored.is_third_beat`, `:360`, which prefix-matches the same constant independently).
+  The other four axes are unaffected — `:439` sits inside `if axis == "vs_real":`, and the other
+  four validators only look at `level_key` / `alt` / `trigger`; none of them touches `beat`.
+  The one spillover is `:543`: the whitelist is spliced into the system prompt **shared by all five
+  axes**, so when it's empty a bare heading with nothing under it is visible to all five. It blocks
+  no axis — it's just an empty promise.
 - **With an English UI and a Chinese handbook, the model often still answers in Chinese.**
   The system prompt is written in Chinese, and English is a paragraph appended at the end
-  (`REPLY_IN_ENGLISH`, `pen/session.py:117`). One short tail cannot outweigh a wall of Chinese source
+  (`REPLY_IN_ENGLISH`, `pen/session.py:147`). One short tail cannot outweigh a wall of Chinese source
   text. Interestingly **the background deep-dive layer is unaffected** — its prompt is much shorter,
   and the English run's questions came back in English
   (see [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)).
