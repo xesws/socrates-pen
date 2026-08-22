@@ -360,6 +360,7 @@
 | 调用 | 返回 |
 | --- | --- |
 | `decide("read_file")` | `allow` — 只读自动过 |
+| `decide("fetch")` | `allow` — 取公网页面，自动过 |
 | `decide("edit_file")` | `ask` — **每一次**都问人 |
 | `decide("bash")` / `decide("write_file")` | `deny` — 没登记的工具一律拒 |
 | `read_first_block("edit_file", 教材, read_before=∅)` | ⛔ 挡下 |
@@ -494,7 +495,11 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 工具箱里是 `read_file`、`fetch` 和 `edit_file`——**没有 bash，没有 write_file，没有 shell**。
 权限也不是一个开关，是三值的：`read_file` 和 `fetch` 是 allow，自动过；`edit_file` 是 ask，
 **每一次**都弹审批；其他任何名字一律 deny，不认识就拒。最后这一条是默认拒绝，不是默认放行，
-模型幻觉出一个 `run_command` 来，撞的是墙。`fetch` 只接受公网 http/https，内网和本机一律拒。
+模型幻觉出一个 `run_command` 来，撞的是墙。
+
+`fetch` 给定一个 http 或 https 的 URL，GET 那一页，去掉标签，把正文交给模型。它不是搜索：
+侧栏「查相关论文 / 算法出处」仍是灰的，没有 URL 就不会去网上翻。只接受公网地址，内网、
+本机、`file://` 一律拒；解析出 IP 之后按这个 IP 去连，Host / SNI 仍用原来的名字。
 
 ### 4.3 · read-first 是一道硬闸
 
@@ -848,9 +853,6 @@ python -m pen.index --check 你的笔记.md
 ## 7 · Future Works
 
 现在还做不到、或做得不好的几件事：
-
-**不能搜网页。** 侧栏里「查相关论文 / 算法出处」仍是灰的。给定一个 http(s) URL，可以用
-`fetch` 把那一页取回来；没有搜索引擎，没有 URL 就不会去网上翻。
 
 **深挖更适合按固定体例写的教材。** 后台追问会去「第三拍 · 出身」「第七拍 · 实操」这类小节
 下锚。普通随笔、或没有这些小节的英文教材，主对话不受影响，跨章节的深挖会变弱。可以对照

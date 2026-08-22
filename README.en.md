@@ -433,6 +433,7 @@ Rolling back restores the original **byte for byte**.
 | Call | Returns |
 | --- | --- |
 | `decide("read_file")` | `allow` — read-only passes automatically |
+| `decide("fetch")` | `allow` — fetching a public page passes automatically |
 | `decide("edit_file")` | `ask` — **every single time** |
 | `decide("bash")` / `decide("write_file")` | `deny` — unregistered tools are refused |
 | `read_first_block("edit_file", book, read_before=∅)` | ⛔ blocked |
@@ -581,8 +582,12 @@ The toolbox holds `read_file`, `fetch` and `edit_file` — **no bash, no write_f
 Permissions aren't a switch either, they're three-valued: `read_file` and `fetch` are allow and
 pass automatically; `edit_file` is ask and opens an approval **every single time**; any other name
 is deny, because unrecognised means refused. That last one is deny by default rather than allow by
-default, so if the model hallucinates a `run_command`, it hits a wall. `fetch` only accepts public
-http/https; loopback and private addresses are refused.
+default, so if the model hallucinates a `run_command`, it hits a wall.
+
+`fetch` takes an http or https URL, GETs the page, strips the tags, and hands the text to the
+model. It is not search: the sidebar chip for papers / provenance is still grey, and with no URL
+it will not go looking. Public addresses only — loopback, private networks and `file://` are
+refused. After resolving the host it connects to that IP, with Host / SNI still the original name.
 
 ### 4.3 · Read-first is a hard gate
 
@@ -981,10 +986,6 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 ## 7 · Future Works
 
 What it cannot do yet, or does poorly:
-
-**It cannot search the web.** The sidebar chip for papers / provenance is still greyed out. Given
-an http(s) URL it can `fetch` that page; there is no search engine, and with no URL it stays in
-the vault.
 
 **Deep follow-up questions work best on a structured handbook.** Background probes look for sections
 named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those
