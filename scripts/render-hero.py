@@ -38,7 +38,7 @@ ASCII 密度画的形状信息编码在字符的**密度差异**里，所以单�
 一个认不出字母的字标就是一片噪点，不如换成读得出来的字。这跟
 src/views/splash.ts:74 的判断同源——那里写着「字符画只用在肖像和字标上……
 标语是"字"，让它保持可读」；在 README 这个尺寸下，字标也落进了「必须可读」
-那一边。肖像仍是字符画，密度阶那一行也照旧展示画它用的那套字符。
+那一边。肖像仍是字符画；密度阶那一行已经撤掉，位置让给标语（读者定的）。
 """
 from __future__ import annotations
 
@@ -74,15 +74,55 @@ PORTRAITS = {"narrow": ("PORTRAIT_NARROW", 11), "wide": ("PORTRAIT_WIDE", 11)}
 WORDMARKS = {"wide": "WORDMARK_WIDE", "narrow": "WORDMARK_NARROW", "text": None}
 
 # 这张卡不引用 styles.css：那是插件的运行期样式，会随版本变；README 的产物必须能在
-# 任何一个 commit 上原样重出。下面的色值是从 styles.css 那套 color-mix 算出来的定值
-# （color-mix(in srgb, #7aa2f7 16%, #1E1E1E) = #2D3341，4% = #222327），改插件不影响这里。
+# 任何一个 commit 上原样重出。下面的色值按 styles.css:559-565 那套公式**算**出来，
+# 不是手调的：
+#     background: linear-gradient(150deg,
+#       color-mix(accent 16%, base) 0%, color-mix(accent 4%, base) 60%, base 100%)
+#     border:     1px solid color-mix(accent 18%, transparent)
+# README 里没有用户强调色，所以把 accent 冻结成演示截图里那一档。
+#
+# ACCENT 是**量出来的**：docs/img/shot-01-splash.png 里最常见的饱和紫，出现 260 次,
+# 就是「问」按钮和状态点的颜色。这样 hero 和 §2 起那一批界面图是同一个色系。
+# 标语取插件 i18n 里那一条，不另起炉灶：src/i18n/zh.ts 的 splashTagline。
+TAGLINE = "苏格拉底学习法"
+
+ACCENT = (0x8A, 0x5C, 0xF6)
+
+# 三档底色，每档是 (base, top_ratio, mid_ratio)：base 是渐变尾端的纯色，两个比例
+# 按插件那条 color-mix 公式把 ACCENT 兑进 base。插件原式是 16%/4% 兑进中性灰
+# #1E1E1E，尾段因此褪成灰——那是因为它嵌在暗色 UI 里，褪成灰才不抢戏。
+# hero 是白页上的孤岛，尾段一褪灰整张卡就没了色相，所以 base 本身也要染紫。
+TINTS = {
+    "violet-deep": ((0x24, 0x1E, 0x30), 0.24, 0.07),   # 默认：全程紫，仓里那张
+    "violet":      ((0x22, 0x1E, 0x2A), 0.16, 0.04),   # 同色系淡一档
+    "faithful":    ((0x1E, 0x1E, 0x1E), 0.16, 0.04),   # 照搬插件，前紫后灰
+}
+
+
+def _mix(fg, bg, r):
+    return tuple(int(round(f * r + b * (1 - r))) for f, b in zip(fg, bg))
+
+
+def _hx(c):
+    return "#%02X%02X%02X" % c
+
+
+def palette(tint):
+    """按插件公式算出这一档的渐变、边框和分隔线。"""
+    base, top, mid = TINTS[tint]
+    return {
+        "GRAD": "linear-gradient(150deg,%s 0%%,%s 60%%,%s 100%%)"
+                % (_hx(_mix(ACCENT, base, top)), _hx(_mix(ACCENT, base, mid)), _hx(base)),
+        "BORDER": "rgba(%d,%d,%d,0.22)" % ACCENT,
+        "RULE": "rgba(%d,%d,%d,0.30)" % ACCENT,
+    }
 TEMPLATE = """<!doctype html>
 <html><head><meta charset="utf-8"><style>
   html,body { margin:0; padding:0; background:transparent; }
   #card {
     display:flex; align-items:center; gap:__GAP__px;
-    width:__CW__px; box-sizing:border-box; padding:34px; border:1px solid rgba(122,162,247,0.22); border-radius:16px;
-    background:linear-gradient(150deg,#2D3341 0%,#222327 60%,#1E1E1E 100%);
+    width:__CW__px; box-sizing:border-box; padding:34px; border:1px solid __BORDER__; border-radius:16px;
+    background:__GRAD__;
     font-family:Menlo, monospace;
   }
   #portrait { flex:none; }
@@ -98,11 +138,15 @@ TEMPLATE = """<!doctype html>
   #wordtext { font-size:44px; line-height:1; letter-spacing:0.30em;
               text-indent:0.30em; color:#DCDDDE; font-weight:500;
               font-family:Menlo, monospace; }
-  #rule { height:1px; margin-top:24px; background:rgba(122,162,247,0.28); }
-  #sub  { margin-top:22px; font-size:14px; line-height:1.3;
-          letter-spacing:0.20em; color:#9AA0A6; }
-  #ramp { margin-top:12px; font-size:11px; line-height:1.3;
-          letter-spacing:0.34em; color:#868C94; }
+  #rule { height:1px; margin-top:24px; background:__RULE__; }
+  /* 层级照插件来（styles.css:613-633）：标语在上，600 粗、0.34em；副题在下，细、0.16em。
+     text-indent 抵消末字后多出的那一格字距，视觉才真居中——这一条也是插件原样。
+     中文钉 Hiragino Sans GB：Menlo 没有汉字，不指定就会跟着系统回退漂。 */
+  #tag  { margin-top:22px; font-size:20px; line-height:1.3; font-weight:600;
+          letter-spacing:0.34em; text-indent:0.34em; color:#DCDDDE;
+          font-family:Menlo,"Hiragino Sans GB",monospace; }
+  #sub  { margin-top:11px; font-size:12px; line-height:1.3;
+          letter-spacing:0.16em; color:#9AA0A6; }
 </style></head>
 <body>
 <div id="card">
@@ -110,8 +154,8 @@ TEMPLATE = """<!doctype html>
   <div id="meta">
     __WORDBLOCK__
     <div id="rule"></div>
+    <div id="tag">__TAGLINE__</div>
     <div id="sub">Socrates-agent</div>
-    <div id="ramp">. : s A 3 G &amp; @</div>
   </div>
 </div>
 </body></html>
@@ -123,8 +167,8 @@ TEMPLATE_COL = """<!doctype html>
   #card {
     display:flex; flex-direction:column; align-items:center;
     width:__CW__px; padding:34px 0 30px;
-    border:1px solid rgba(122,162,247,0.22); border-radius:16px;
-    background:linear-gradient(150deg,#2D3341 0%,#222327 60%,#1E1E1E 100%);
+    border:1px solid __BORDER__; border-radius:16px;
+    background:__GRAD__;
     font-family:Menlo, monospace;
   }
   /* line-height:1 是这幅画的设计前提（styles.css 的 .sp-art）。
@@ -135,19 +179,20 @@ TEMPLATE_COL = """<!doctype html>
   #portrait { font-size:__FP__px; color:#B3B9C0; }
   #word { font-size:__FW__px; color:#DCDDDE; margin-top:22px; }
   #rule { height:1px; width:__RW__px; margin-top:24px;
-          background:rgba(122,162,247,0.28); }
-  #sub  { margin-top:20px; font-size:13px; line-height:1.3;
-          letter-spacing:0.34em; text-indent:0.34em; color:#9AA0A6; }
-  #ramp { margin-top:11px; font-size:10px; line-height:1.3;
-          letter-spacing:0.30em; text-indent:0.30em; color:#868C94; }
+          background:__RULE__; }
+  #tag  { margin-top:20px; font-size:18px; line-height:1.3; font-weight:600;
+          letter-spacing:0.34em; text-indent:0.34em; color:#DCDDDE;
+          font-family:Menlo,"Hiragino Sans GB",monospace; }
+  #sub  { margin-top:10px; font-size:11px; line-height:1.3;
+          letter-spacing:0.16em; text-indent:0.16em; color:#9AA0A6; }
 </style></head>
 <body>
 <div id="card">
   <div class="art" id="portrait">__PORTRAIT__</div>
   <div class="art" id="word">__WORDMARK__</div>
   <div id="rule"></div>
+  <div id="tag">__TAGLINE__</div>
   <div id="sub">Socrates-agent</div>
-  <div id="ramp">. : s A 3 G &amp; @</div>
 </div>
 </body></html>
 """
@@ -186,18 +231,24 @@ def build_html_col(portrait: str, word: str, fp: float, fw: float,
             .replace("__WORDMARK__", html.escape(word)))
 
 
-def build_html(portrait: str, word: str, fp: float, fw: float, gap: float) -> str:
+def build_html(portrait: str, word: str, fp: float, fw: float, gap: float,
+               tint: str = "violet-deep", tagline: str = TAGLINE) -> str:
     if word is None:
         block = '<div id="wordtext">SOCRATES</div>'
     else:
         # 画里 & 极多，必须转义，否则 &@@ 之类会被当实体解析
         block = f'<div class="art" id="word">{html.escape(word)}</div>'
+    pal = palette(tint)
     return (TEMPLATE
             .replace("__CW__", f"{README_WIDTH:g}")
             .replace("__GAP__", f"{gap:g}")
             .replace("__FP__", f"{fp:g}")
             .replace("__FW__", f"{fw:g}")
             .replace("__WORDBLOCK__", block)
+            .replace("__GRAD__", pal["GRAD"])
+            .replace("__BORDER__", pal["BORDER"])
+            .replace("__RULE__", pal["RULE"])
+            .replace("__TAGLINE__", html.escape(tagline))
             .replace("__PORTRAIT__", html.escape(portrait)))
 
 
@@ -285,6 +336,11 @@ def main() -> None:
                          "横排右栏里认不出字母，见模块头")
     ap.add_argument("--gap", type=float, default=41.5,
                     help="肖像与右栏之间的间距；字标字号由剩下的宽度反算")
+    ap.add_argument("--tint", choices=sorted(TINTS), default="violet-deep",
+                    help="底色档位：violet-deep=全程紫（默认，仓里那张就是它）；"
+                         "violet=同色系但淡一档；faithful=照搬插件公式，尾段褪成灰")
+    ap.add_argument("--tagline", default=TAGLINE,
+                    help="卡片上那句标语，默认取 src/i18n/zh.ts 的 splashTagline")
     ap.add_argument("--no-quantize", action="store_true")
     ap.add_argument("--out", type=Path, default=OUT)
     args = ap.parse_args()
@@ -314,7 +370,7 @@ def main() -> None:
         page = build_html_col(portrait, word, fp, fw,
                               README_WIDTH - 2, wcols * ADV * fw)
     else:
-        page = build_html(portrait, word, fp, fw, args.gap)
+        page = build_html(portrait, word, fp, fw, args.gap, args.tint, args.tagline)
     png, box = render(page)
     w = round(box["width"])
     print(f"[render-hero] 卡片实测 {box['width']:.3f} × {box['height']:.3f} CSS px")

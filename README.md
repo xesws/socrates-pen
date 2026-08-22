@@ -2,9 +2,11 @@
 
 <!-- width=840 是 scripts/render-hero.py 出图时的实际 CSS 宽度，在 GitHub 上 1:1 呈现。
      正文里那五张 drawio 图用 width=100%，这里不用，是有意的。
-     改了 src/logo.ts 的画之后重跑：python scripts/render-hero.py -->
+     中英各一张，只差卡片上那句标语。改了 src/logo.ts 的画之后**两张都要重跑**：
+       python scripts/render-hero.py
+       python scripts/render-hero.py --tagline "The Socratic Method" --out docs/img/hero.en.png -->
 <img src="docs/img/hero.png" width="840"
-     alt="Socrates —— 用 . : s A 3 G &amp; @ 这套 8 级密度字符拼出的苏格拉底半身像，旁边是 SOCRATES 标题和副题 Socrates-agent">
+     alt="紫色渐变卡片：左边是用 . : s A 3 G &amp; @ 这套密度字符拼出的苏格拉底半身像，右边是 SOCRATES 字标、标语「苏格拉底学习法」和副题 Socrates-agent">
 
 **苏格拉底学习法，深度学习任何一本教材**
 

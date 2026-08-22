@@ -2,9 +2,12 @@
 
 <!-- width=840 is the card's real CSS width from scripts/render-hero.py; it renders 1:1.
      The five drawio figures in the body use width=100%; this one deliberately does not.
-     After editing src/logo.ts, re-run: python scripts/render-hero.py -->
-<img src="docs/img/hero.png" width="840"
-     alt="Socrates — a bust of Socrates drawn with the 8-step density ramp . : s A 3 G &amp; @, beside the SOCRATES wordmark and the subtitle Socrates-agent">
+     One card per language, differing only in the tagline. After editing src/logo.ts,
+     **re-render both**:
+       python scripts/render-hero.py
+       python scripts/render-hero.py --tagline "The Socratic Method" --out docs/img/hero.en.png -->
+<img src="docs/img/hero.en.png" width="840"
+     alt="A violet gradient card: on the left, a bust of Socrates drawn with the density characters . : s A 3 G &amp; @; on the right, the SOCRATES wordmark, the tagline The Socratic Method and the subtitle Socrates-agent">
 
 **Highlight a passage in your own notes, and get questioned**
 
