@@ -987,6 +987,13 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 What it cannot do yet, or does poorly:
 
+**A huge selection will blow up the first turn.** The opening packet does not stuff the whole book
+into the model: neighborhood 4,000 characters, table of contents 4,500. The selection itself has
+no cap — however much you highlight, that much rides in the first shot. Highlight a million-character
+note and that request is sized to the passage. Later this can fetch context on demand, in pieces.
+Almost no handbook is that large: the 13,083-line, 626 KB book this started from is already long,
+about 410,000 characters, and still nowhere near a million tokens.
+
 **Deep follow-up questions work best on a structured handbook.** Background probes look for sections
 named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those
 headings, still work for the main conversation; cross-chapter probes get weaker. See
