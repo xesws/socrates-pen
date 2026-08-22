@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/socrates.gif" alt="Socrates" width="520">
+</p>
+
 # Socrates
 
 Highlight a passage in your Obsidian notes and question it in a Socratic dialogue. Optional write-back puts an answer into the original note — only after you approve it.
