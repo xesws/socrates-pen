@@ -1051,6 +1051,14 @@ This section is here on purpose.
   carry their own fallback handbook. The constant itself hasn't been cleaned up.
 - **A comment in `src/deeppoll.ts` says "at most 5 minutes"; the constant is 480 seconds.**
   The constant is right (a cross-book exploration was measured at 351 s); the comment didn't keep up.
+- **The lab repo's copy of the plugin has drifted three versions, and nothing watches it.**
+  In this repo `manifest.json` / `package.json` / `pyproject.toml` / `pen/__init__.py` all agree,
+  and since v0.15.11 a test enforces that. But the plugin was originally copied over from another,
+  private repo, whose `obsidian/manifest.json` still sits at `0.12.13`. The two `src/` trees have
+  genuinely diverged (this one has an extra `sidecar.ts`, and four other files differ), so that copy
+  **may well be frozen on purpose** — but no document anywhere states that policy, and the new
+  version gate happens to skip exactly there. The place that skips is the place that drifted, and
+  that deserves to be visible.
 - **`libraries._suggest_id` can emit an id the backend itself refuses.** It preserves CJK characters
   (in Python, `'从'.isalnum()` is `True`) while `_SAFE_ID` only accepts `[A-Za-z0-9._-]`.
   The plugin never hits this, because `handbookIdFromPath` (`src/selection.ts:30`) strips illegal

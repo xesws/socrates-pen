@@ -1036,21 +1036,47 @@ def test_the_openapi_version_is_not_a_second_hand_copied_literal() -> None:
     assert app.version == __version__, "别在 app.py 里抄第二份版本号字面量"
 
 
-def test_the_package_version_matches_the_plugin_manifest() -> None:
-    """公开仓里 sidecar 和插件是同一个 Release tag，版本号必须一致。
+def test_all_four_version_sources_agree() -> None:
+    """`pen/__init__.py` / `manifest.json` / `package.json` / `pyproject.toml`
+    必须同版：公开仓里 sidecar 和插件是**同一个 GitHub Release tag**，
+    而 Obsidian 要求 tag 逐字等于 `manifest.json` 的 `version`。
 
-    用 `pytest.skip` 而不是裸 `return`：实验室仓的插件在 `obsidian/` 下，
-    根目录没有 manifest.json，那边跳过是对的——但要在报告里**留个痕**，
-    否则「静默不跑」和「跑过了」长得一模一样。
+    v0.15.11 建这道闸时只盯了 `manifest.json` 一家。审查随即指出：
+    `package.json` 和 `pyproject.toml` 仍然没人盯，下次发版漏改哪一家都不会变红——
+    **正是 v0.15.11 自己写下的那条规律**（没人读的常量必然过期）。所以这里一次盯全。
+
+    `versions.json` 也一并检：Obsidian 要求发布的版本必须在这张
+    version → minAppVersion 表里，漏登记会让插件市场那边直接拒。
+
+    用 `pytest.skip` 而不是裸 `return`，因为「静默不跑」和「跑过了」长得一模一样。
+    **skip 的措辞只陈述事实，不下判断**：实验室仓的插件在 `obsidian/` 下、
+    根目录确实没有这些文件，但那边 `obsidian/manifest.json` 现在是 `0.12.13`
+    ——已经和 `pen/__init__.py` 漂开三版了。跳过的地方恰好就是漂了的地方，
+    这件事该被人看见，不该被一句「那边跳过是对的」盖住。
     """
     import json
 
     from pen import __version__, config
 
-    manifest = config.REPO_ROOT / "manifest.json"
-    if not manifest.is_file():
-        pytest.skip("根目录没有 manifest.json（实验室仓的插件在 obsidian/ 下）")
-    assert json.loads(manifest.read_text(encoding="utf-8"))["version"] == __version__
+    root = config.REPO_ROOT
+    if not (root / "manifest.json").is_file():
+        pytest.skip(
+            f"{root} 下没有 manifest.json——这里只检查了 pen/__init__.py "
+            f"（{__version__}）。若这是实验室仓，插件在 obsidian/ 下，不在这道闸里。"
+        )
+
+    for name in ("manifest.json", "package.json"):
+        got = json.loads((root / name).read_text(encoding="utf-8"))["version"]
+        assert got == __version__, f"{name} 是 {got}，pen/__init__.py 是 {__version__}"
+
+    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
+    line = next(ln for ln in pyproject.splitlines() if ln.startswith("version"))
+    assert line.split("=")[1].strip().strip('"') == __version__, f"pyproject.toml：{line}"
+
+    versions = json.loads((root / "versions.json").read_text(encoding="utf-8"))
+    assert __version__ in versions, (
+        f"versions.json 里没有 {__version__}——Obsidian 要求发布的版本登记在这张表里"
+    )
 
 
 # ── v0.10.0 计量 ────────────────────────────────────────────────

@@ -946,6 +946,13 @@ python -m pen.index --check 你的笔记.md
   但这个常量本身还没清干净。
 - **`src/deeppoll.ts` 的注释写「最多转 5 分钟」，常量是 480 秒。**
   常量是对的（跨书探索实测跑过 351 秒），注释没跟上。
+- **实验室仓那份插件的版本号已经漂开三版，没人盯着。** 这个仓的
+  `manifest.json` / `package.json` / `pyproject.toml` / `pen/__init__.py` 四家同版，
+  v0.15.11 起有测试盯着；但插件最早是从另一个私有仓复制过来的，那边
+  `obsidian/manifest.json` 至今停在 `0.12.13`。两边的 `src/` 确实已经分叉
+  （这边多一个 `sidecar.ts`，另外四个文件内容不同），所以那份**可能就是有意冻住的**
+  ——但没有任何地方写过这条政策，而新建的那道版本闸恰好在那边 skip。
+  跳过的地方正是漂了的地方，这件事该被看见。
 - **`libraries._suggest_id` 会吐出后端自己不收的 id。** 它保留 CJK 字符
   （Python 里 `'从'.isalnum()` 是 `True`），而 `_SAFE_ID` 只认 `[A-Za-z0-9._-]`。
   插件撞不到这条，因为 `src/selection.ts:30` 的 `handbookIdFromPath` 会把非法字符
