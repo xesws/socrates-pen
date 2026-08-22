@@ -65,13 +65,13 @@ handing over the answer. The default chip is called `socratic`, and its whole jo
 answer back and ask you a question instead; a tool that asks by default and a tool that answers by
 default are two different tools, because the second one has already done the thinking for you.
 
-Three further promises are kept **in code, not in a prompt**. Web search is not wired up, so the
-`search` chip sits greyed out and says so when clicked, rather than pretending to have searched.
-The model may not edit a passage unless it genuinely read that file in an earlier turn, and the
-execution layer keeps that ledger — claiming to have read it does not count. Sessions, snapshots
-and the deep-dive ledger never leave your machine; once installed, the only call that goes out is
-to the model endpoint you configured, and no telemetry exists in this repository. Where each of the
-three is enforced, line by line, is [section 4](#4--system-design).
+Two further promises are kept **in code, not in a prompt**. The model may not edit a passage
+unless it genuinely read that file in an earlier turn, and the execution layer keeps that ledger —
+claiming to have read it does not count. Sessions, snapshots and the deep-dive ledger, meanwhile,
+never leave your machine and no telemetry exists in this repository; once installed, the only call
+that goes out is to the model endpoint you configured, and only the first restart after a plugin
+upgrade fetches a fresh sidecar. Where each of the two is enforced, line by line, is
+[section 4](#4--system-design).
 
 Every example below runs against a different book: *Building DQN from Scratch*, 1,405 lines,
 shipped in this repository under [`docs/demo/`](docs/demo/). Import it into your own vault and you
@@ -87,11 +87,12 @@ leaving Obsidian, no terminal, nothing to feed to anyone in advance. The first f
 ask. Only the last one touches your disk, and only once you have said so yourself.
 
 1. Highlight a passage in a note.
-2. Open the sidebar and click a chip (don't give it away / explain to a beginner / examples only /
-   write it back), or simply type your question.
+2. Open the sidebar, click "use current selection" (the command palette has the same command),
+   then click a chip (don't give it away / explain to a beginner / examples only), or simply type
+   your question.
 3. He reads your note first, then answers you — or turns the question back on you.
 4. Meanwhile a separate background line (the deep-dive ◆ below) reads elsewhere in the same book,
-   assembling deeper questions to hand you later.
+   assembling deeper questions into a pool and releasing at most one per turn.
 5. Want the answer kept in the note? He proposes one edit, and nothing lands on disk until you
    click Allow.
 
@@ -297,10 +298,12 @@ not from its memory.
 ### 3.4 · Background deep-dive ◆
 
 The **instant** your turn finishes, a separate thread goes off to read *elsewhere in the same book*
-and assemble questions you can't ask yet but would ask one step further on — then hands them to you.
-It runs **fully in parallel** with your conversation. You never wait for it.
+and assemble questions you can't ask yet but would ask one step further on, into a pool. It runs
+**fully in parallel** with your conversation, so you never wait for it; the pool is not emptied at
+you all at once, but released **at most one per turn** (`MAX_RELEASE_PER_TURN = 1`,
+`pen/probe_store.py:42`), with at most two hanging in the sidebar at a time.
 
-That run returned three. Here is the third:
+That run put three in the pool. Here is the third:
 
 <table><tr><td>
 
@@ -442,7 +445,7 @@ book about?" — asked twice.
 > lightweight SWE Agent… The whole book runs on one metaphor: you're the master, the Agent is an
 > intern with zero memory and enormous nerve.
 
-<sup>⚠️ Both come from real sessions in the author's local `.pen/`, **not shipped with the repo**
+<sup>⚠️ Both come from real sessions on the author's own machine, **not shipped with the repo**
 (they contain private vault paths), which makes this the **only** quotation in this document you
 cannot verify yourself. Every other quote has its raw JSON linked underneath.</sup>
 
@@ -511,11 +514,15 @@ An Obsidian plugin (TypeScript), a local sidecar (Python / FastAPI), and the mod
 configured — three processes, with a loopback between them. The plugin never calls the author's
 server and there is no telemetry endpoint in this repository; the sidecar binds `127.0.0.1` only,
 and putting a non-local address in settings makes `parseListen` throw `new Error("not-loopback")`
-(`src/sidecar.ts:52`) rather than warn.
+(`src/sidecar.ts:53`) rather than warn.
 
 Model calls leave from your machine, to your endpoint, and any OpenAI-compatible Chat Completions
-endpoint works. The one other thing that leaves the machine is the first enable: the plugin builds
-`~/.socrates-pen/venv` and pip-installs the sidecar from GitHub and PyPI. After that it's all local.
+endpoint works. The other things that leave the machine are install and upgrade: the plugin builds
+`~/.socrates-pen/venv` and pip-installs the sidecar from GitHub and PyPI, and after that it's all
+local. The upgrade half comes with a condition: on every start the plugin pings the local service
+first, and a successful ping means it just attaches and downloads nothing. Only when the ping fails
+and the service has to be restarted does it compare versions — and only a stale version fetches a
+matching sidecar once more.
 
 ### 4.2 · The toolbox holds exactly two tools
 
@@ -608,8 +615,9 @@ giving up after 3 consecutive failures (`DEEP_POLL_MAX_FAILS`). Normally it stop
 `running` empties and never approaches that budget.
 
 **⑤ A maturity gate.**
-Each question carries a `timing`: `now` is thrown to you immediately; `later` stays in the pool and
-**is re-gated on every subsequent turn** — it surfaces once you've read far enough.
+Each question carries a `timing`: `now` is eligible this turn; `later` stays in the pool and
+**is re-gated on every subsequent turn** — it surfaces once you've read far enough. Past the gate
+there is still the throttle: one per turn, at most.
 
 **⑥ Quality comes from mandatory slots plus deterministic validation, not from flattering the model.**
 Every question must fill `axis`, `depth`, `grounding`, `anchors` and `why`. The axes are a closed set:
@@ -660,7 +668,7 @@ had already started. The settings page says so, and so does this.
 | Talked to | everything else | **7 days** |
 | Approval pending | `pending.id` set **and not an empty session** | **30 days** |
 
-Why this is needed: before the cleanup shipped, `.pen/sessions/` had grown to
+Why this is needed: before the cleanup shipped, the session directory had grown to
 **3,389 files / 10.4 MB**, of which **3,371 were empty** — every highlight creates a session, and
 most never saw a first message before the next highlight replaced them.
 
@@ -850,15 +858,17 @@ paragraph" in `free` sends the model to `edit_file` just the same (`pen/session.
 sidebar asks all the same; the deny demo in
 [3.5](#35--writing-back-and-the-approval-gate) runs on the `free` chip
 ([`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)). The real gate is
-`pen/agent/permissions.py:15`: `edit_file` is always `ask`, for every chip.
+`pen/agent/permissions.py:18-19`: `edit_file` is always `ask`, for every chip.
 
 **Three things left for you to watch.** One, your API key is stored in this vault at
 `.obsidian/plugins/socrates-pen/data.json`, so if the vault is in Sync, iCloud or git, the key goes
-with it. Two, the network is touched in exactly two places: setup pulls the sidecar and its
-dependencies from GitHub and PyPI into `~/.socrates-pen`, and after that model calls leave from
-that local process to the endpoint you configured. Three, disabling the plugin does not stop the
-sidecar — that Python process keeps running, so re-enabling is instant, and to stop it properly use
-the settings page.
+with it. Two, the network is touched in exactly two places: installing pulls the sidecar and its
+dependencies from GitHub and PyPI into `~/.socrates-pen`, and the first restart after a plugin
+upgrade fetches them once more; everything else is the model call itself, leaving from that local
+process to the endpoint you configured. Three, disabling the plugin does not stop the sidecar —
+that Python process keeps running, so re-enabling is instant. But the "stop" button on the settings
+page only governs the process this enable session started itself; if the process was left over from
+a previous one, the button will not touch it and you have to kill whatever holds the port.
 
 ### It won't install / won't start
 
@@ -913,10 +923,11 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 ## 7 · Known gaps
 
 This section covers what is known to be unfinished and known to rub you the wrong way. The most
-immediate one: **the `search` chip is still a placeholder** — visible, clickable, and it tells you
-it isn't wired. It isn't simply deleted because sooner or later you will wonder whether it can look
-something up, and a greyed-out chip that says "not wired yet" is more honest than an interface that
-says nothing: it admits the need exists and admits it can't be met yet.
+immediate one: **the `search` chip is still a placeholder** — you can see it in the sidebar, but it
+is greyed out and not clickable, and only hovering tells you: "Lands in P2. It won't pretend it
+searched." It isn't simply deleted because sooner or later you will wonder whether it can look
+something up, and a greyed-out chip that can say why it is greyed out is more honest than an
+interface that says nothing: it admits the need exists and admits it can't be met yet.
 
 **The eight-beat format contract is a hard-coded Chinese literal**, `pen/probe.py:76` being
 `THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 means the `vs_real` axis never
