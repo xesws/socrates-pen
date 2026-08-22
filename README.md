@@ -6,7 +6,7 @@
 <img src="docs/img/hero.png" width="840"
      alt="Socrates —— 用 . : s A 3 G &amp; @ 这套 8 级密度字符拼出的苏格拉底半身像，旁边是 SOCRATES 标题和副题 Socrates-agent">
 
-**在你自己的笔记里，划一段，被人追问**
+**苏格拉底学习法，深度学习任何一本教材**
 
 **中文** · [English](README.en.md)
 
