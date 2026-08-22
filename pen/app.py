@@ -31,7 +31,7 @@ from pen.config import DEFAULT_HANDBOOK_ID, LLMConfig, llm_public_status, merge_
 from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
 from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, reading_roots
-from pen.session import FIXED_CHIPS, STORE, chip_label
+from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
 from pen.tutor import (
     ProviderError,
     build_user_packet,
@@ -761,6 +761,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         except Exception:
             shelf = ""  # 登记表烂了不能把正常对话带崩
         try:
+            apply_session_lang(sess, lang, book_title=str(meta.title or ""))
             packet, anchor = build_user_packet(
                 idx,
                 path,
@@ -772,6 +773,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 asked=[str(c.get("text") or "") for c in sess.last_chips],
                 intent_extra=intent_extra,
                 shelf=shelf,
+                lang=lang,
             )
         except ValueError as exc:
             raise HTTPException(400, localized(exc, lang)) from exc

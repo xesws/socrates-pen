@@ -224,14 +224,30 @@ def test_book_phrase_caps_length_so_h1_cannot_flood_the_system_prompt() -> None:
     assert _book_phrase(real) == f"一本叫《{real}》的通关手册"
 
 
-def test_english_keeps_the_appended_instruction_with_a_book_title() -> None:
+def test_english_uses_a_full_english_template_with_the_book_title() -> None:
     from pen.session import system_prompt
 
     zh = system_prompt("zh", book_title="Deep RL")
     en = system_prompt("en", book_title="Deep RL")
-    assert en.startswith(zh)
-    assert "Reply in English" in en and "Reply in English" not in zh
+    assert zh.startswith("你是苏格拉底")
+    assert en.startswith("You are Socrates")
+    assert "你是苏格拉底" not in en
+    assert 'a handbook called "Deep RL"' in en
     assert "《Deep RL》" in zh
+
+
+def test_apply_session_lang_rewrites_messages_zero() -> None:
+    from pen.session import PenSession, apply_session_lang
+
+    sess = PenSession(session_id="t-lang", handbook_id="h", lang="zh", book_title="Deep RL")
+    assert sess.messages[0]["content"].startswith("你是苏格拉底")
+    apply_session_lang(sess, "en", book_title="Deep RL")
+    assert sess.lang == "en"
+    assert sess.messages[0]["content"].startswith("You are Socrates")
+    assert "你是苏格拉底" not in sess.messages[0]["content"]
+    apply_session_lang(sess, "zh", book_title="Deep RL")
+    assert sess.lang == "zh"
+    assert sess.messages[0]["content"].startswith("你是苏格拉底")
 
 
 def test_book_title_does_not_touch_the_persisted_schema() -> None:

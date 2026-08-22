@@ -110,12 +110,13 @@ def test_a_renamed_note_is_not_reported_as_a_gone_session():
     assert "重新框选" in detail, detail
 
 
-def test_system_prompt_appends_english_instruction():
-    """英文版必须是「中文人设 + 追加一句」，不是整体重写——人设的语气是内容的一部分。"""
+def test_system_prompt_switches_to_a_full_english_template():
+    """v0.16.0：英文界面走整份英文人设，不再在中文后面追加一句。"""
     zh, en = system_prompt("zh"), system_prompt("en")
-    assert en.startswith(zh)
-    assert "Reply in English" in en
-    assert "Reply in English" not in zh
+    assert zh.startswith("你是苏格拉底")
+    assert en.startswith("You are Socrates")
+    assert "你是苏格拉底" not in en
+    assert "You are Socrates" not in zh
 
 
 def test_session_records_lang_and_survives_reload():
@@ -128,6 +129,6 @@ def test_session_records_lang_and_survives_reload():
 
     sess = STORE.get(sid)
     assert sess.lang == "en"
-    assert "Reply in English" in sess.messages[0]["content"]
+    assert sess.messages[0]["content"].startswith("You are Socrates")
     # 落盘再读出来，语言不能丢
     assert load_session(sid).lang == "en"

@@ -18,7 +18,12 @@ from pen.agent.registry import dispatch, schemas
 from pen.agent.tools_impl import limits_of
 from pen.sandbox import resolve_read_target
 from pen.questions import clean_candidates
-from pen.session import PROMPT_EXAMPLE_LINES, FIXED_CHIPS, PenSession
+from pen.session import (
+    PROMPT_EXAMPLE_LINES,
+    FIXED_CHIPS,
+    PenSession,
+    apply_session_lang,
+)
 
 # MAX_TOOL_ROUNDS 搬到了 config.py，**这里不留别名**：留一个
 # `MAX_TOOL_ROUNDS = config.MAX_TOOL_ROUNDS` 就是第二个定义点，
@@ -36,23 +41,64 @@ SHELF_CHARS = 3200
 # 的现成先例，让两道闸给模型的心智模型一致。
 # 芯片块的起手记号。收分片时要拿它切，收尾时 parse_dynamic_chips 也认它。
 CHIPS_MARKER = "<!--pen:chips"
-FORCE_ANSWER_BUDGET = (
-    "这一轮的翻阅额度用完了。用邻域和你已经读到的内容直接回答读者，"
-    "并且说清楚你只读了哪几段、还有哪些没看。不要再调用任何工具，也不要凭书名猜。"
-)
-FORCE_ANSWER = (
-    "工具次数用完了。根据邻域和你已经读到的内容，直接用自然语言回答读者。"
-    "不要再调用任何工具。"
-)
+FORCE_ANSWER_BUDGET = {
+    "zh": (
+        "这一轮的翻阅额度用完了。用邻域和你已经读到的内容直接回答读者，"
+        "并且说清楚你只读了哪几段、还有哪些没看。不要再调用任何工具，也不要凭书名猜。"
+    ),
+    "en": (
+        "The reading budget for this turn is used up. Answer the reader from the "
+        "neighborhood and what you already read, and say which passages you saw and "
+        "which you did not. Do not call any more tools, and do not guess from the title."
+    ),
+}
+FORCE_ANSWER = {
+    "zh": (
+        "工具次数用完了。根据邻域和你已经读到的内容，直接用自然语言回答读者。"
+        "不要再调用任何工具。"
+    ),
+    "en": (
+        "The tool-call budget is used up. Answer the reader in plain language from the "
+        "neighborhood and what you already read. Do not call any more tools."
+    ),
+}
 
 CHIP_INTENT = {
-    "socratic": "先别揭晓。只问一个问题，帮读者自己想。",
-    "explain_zero": "假设读者零基础。按 TL;DR → (a)(b)(c) 讲完，再给两个可运行例子。",
-    "examples": "只举两个例子，紧贴本 Level 第七拍的名字。",
-    "search": "（未开放）不要假装检索。告诉读者 P2 才有联网。",
-    "writeback": "必须先 read_file 看准带行号的原文，下一轮再单独 edit_file。old_string 去掉 N\\t。不要声称已经写盘。",
-    "free": "按用户原话回答，仍守苏格拉底的人设。",
+    "socratic": {
+        "zh": "先别揭晓。只问一个问题，帮读者自己想。",
+        "en": "Don't give it away. Ask one question and let the reader think.",
+    },
+    "explain_zero": {
+        "zh": "假设读者零基础。按 TL;DR → (a)(b)(c) 讲完，再给两个可运行例子。",
+        "en": "Assume the reader knows nothing. Teach TL;DR → (a)(b)(c), then two runnable examples.",
+    },
+    "examples": {
+        "zh": "只举两个例子，紧贴本 Level 第七拍的名字。",
+        "en": "Only two examples, using names that actually appear in this Level's seventh beat.",
+    },
+    "search": {
+        "zh": "（未开放）不要假装检索。告诉读者 P2 才有联网。",
+        "en": "(Not available.) Do not pretend you searched. Tell the reader web search is not on yet.",
+    },
+    "writeback": {
+        "zh": "必须先 read_file 看准带行号的原文，下一轮再单独 edit_file。old_string 去掉 N\\t。不要声称已经写盘。",
+        "en": "read_file the numbered original first, then edit_file on its own next. Strip N\\t from old_string. Do not claim it is on disk.",
+    },
+    "free": {
+        "zh": "按用户原话回答，仍守苏格拉底的人设。",
+        "en": "Answer in the user's words, still in Socrates' voice.",
+    },
 }
+
+
+def _chip_intent(chip: str, lang: str) -> str:
+    row = CHIP_INTENT.get(chip) or CHIP_INTENT["free"]
+    return row["en"] if lang == "en" else row["zh"]
+
+
+def _force_answer(capped: bool, lang: str) -> str:
+    table = FORCE_ANSWER_BUDGET if capped else FORCE_ANSWER
+    return table["en"] if lang == "en" else table["zh"]
 
 
 def read_roots(extra_roots: Sequence[Path] | None) -> list[Path]:
@@ -93,6 +139,7 @@ def build_user_packet(
     asked: Sequence[str] = (),
     intent_extra: str = "",
     shelf: str = "",
+    lang: str = "zh",
 ) -> tuple[str, dict[str, Any]]:
     section = idx.locate(start_line)
     nb = neighborhood(original_path, section, (start_line, end_line))
@@ -111,16 +158,65 @@ def build_user_packet(
     # 预算截完可能一行不剩（首行就超预算）。段头还在、条目却是空的，等于向模型
     # 断言「有别的教材」然后一本都不给——它只能凭空编。宁可整段不出现。
     shelf_rows = _budget_lines(shelf.splitlines(), SHELF_CHARS).strip()
-    shelf_block = (
-        "[工作目录里的其他教材]\n"
-        "（下面只是每本前 400 行扒出来的标题，不是正文。要说它讲了什么，\n"
-        "  先用 read_file 按 path 读，读了再说。读不到、或者本轮额度用完了，\n"
-        "  就照实说「那本我没读到」——按标题猜内容，和假装搜过是一回事。）\n"
-        f"{shelf_rows}\n\n"
-        if shelf_rows
-        else ""
+    en = lang == "en"
+    if shelf_rows:
+        if en:
+            shelf_block = (
+                "[Other handbooks in the workspace]\n"
+                "(Titles skimmed from the first 400 lines of each book, not the body. "
+                "To say what a book teaches, read_file its path first. If you cannot read it, "
+                "or this turn's budget is gone, say you have not read it — guessing from the "
+                "title is the same as pretending you searched.)\n"
+                f"{shelf_rows}\n\n"
+            )
+        else:
+            shelf_block = (
+                "[工作目录里的其他教材]\n"
+                "（下面只是每本前 400 行扒出来的标题，不是正文。要说它讲了什么，\n"
+                "  先用 read_file 按 path 读，读了再说。读不到、或者本轮额度用完了，\n"
+                "  就照实说「那本我没读到」——按标题猜内容，和假装搜过是一回事。）\n"
+                f"{shelf_rows}\n\n"
+            )
+    else:
+        shelf_block = ""
+    intent = _chip_intent(chip, lang)
+    none_user = (
+        "(none — follow the chip)"
+        if en
+        else "（无，按芯片意图行动）"
     )
-    packet = f"""[来源]
+    none_asked = "(none yet)" if en else "（还没抛过）"
+    if en:
+        packet = f"""[Source]
+handbook_path: {original_path}
+level: {section.level}
+beat: {section.beat or "—"}
+q_title: {section.q_title or "—"}
+kind: {section.kind}
+lines: {start_line}-{end_line}
+
+{shelf_block}[Table of contents (do not recite the book)]
+{toc}
+
+[Selection]
+{selected_text}
+
+[Neighborhood]
+{nb}
+
+[Intent]
+chip = {chip}
+{intent}
+{intent_extra}
+
+[Reader's note]
+{user_text or none_user}
+
+[Follow-ups already asked (do not repeat these)]
+{_budget_lines([f"- {a}" for a in asked], ASKED_CHARS) or none_asked}
+"""
+    else:
+        packet = f"""[来源]
 handbook_path: {original_path}
 level: {section.level}
 beat: {section.beat or "—"}
@@ -139,14 +235,14 @@ lines: {start_line}-{end_line}
 
 [意图]
 chip = {chip}
-{CHIP_INTENT.get(chip, CHIP_INTENT["free"])}
+{intent}
 {intent_extra}
 
 [用户补充]
-{user_text or "（无，按芯片意图行动）"}
+{user_text or none_user}
 
 [已经抛过的追问（别再重复这些）]
-{_budget_lines([f"- {a}" for a in asked], ASKED_CHARS) or "（还没抛过）"}
+{_budget_lines([f"- {a}" for a in asked], ASKED_CHARS) or none_asked}
 """
     anchor = {
         "path": str(original_path),
@@ -401,6 +497,7 @@ def stream_chat(
         }
         return
 
+    apply_session_lang(session, lang)
     session.messages.append({"role": "user", "content": user_packet})
     # 新的一轮，本轮账清零。**只能在这里清，绝不能放进 _agent_loop 或
     # resume_chat**——那是同一轮的后半段，清了就等于审批让预算翻倍，
@@ -588,7 +685,7 @@ def _agent_loop(
             return
 
     session.messages.append(
-        {"role": "user", "content": FORCE_ANSWER_BUDGET if capped else FORCE_ANSWER}
+        {"role": "user", "content": _force_answer(capped, lang)}
     )
     yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
     try:
@@ -738,6 +835,7 @@ def resume_chat(
     lang: str = "zh",
     limits: RuntimeLimits | None = None,
 ) -> Iterator[dict[str, Any]]:
+    apply_session_lang(session, lang)
     pending = session.pending
     if not pending or pending.get("id") != pending_id:
         yield {"type": "error", "message": msg("approval.expired", lang)}

@@ -1332,6 +1332,13 @@ def test_prompt_follows_the_knobs() -> None:
     assert "«" not in got
 
 
+def test_english_probe_system_is_a_full_english_template() -> None:
+    got = probe.probe_system("en")
+    assert got.startswith("You are this handbook")
+    assert "你是这本手册的助教" not in got
+    assert "«" not in got and "»" not in got
+
+
 def test_prompt_uses_replace_not_format() -> None:
     """正文里那段 JSON 模板全是字面大括号，str.format 会当场炸。
     这条把「为什么不用 format」钉住。"""

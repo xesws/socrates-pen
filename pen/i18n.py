@@ -1,7 +1,7 @@
 """sidecar 的用户可见文案中英表。
 
 只收**会显示到插件界面上的**文案：HTTPException 的 detail、SSE 的 error.message。
-不收给模型看的 prompt（那是内容语言，见 session.SYSTEM_PROMPT）。
+给模型看的人设在 `session.system_prompt`，按同一份 Accept-Language 选中文或英文模板。
 
 语言从请求的 Accept-Language 头来——比给每个 Pydantic 模型加 lang 字段省事，
 而且 GET 路由（没有 body）也能覆盖。

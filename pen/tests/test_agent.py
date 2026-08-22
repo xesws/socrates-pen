@@ -860,8 +860,8 @@ def test_turn_cap_breaks_to_a_real_answer_not_an_error(monkeypatch, tmp_path: Pa
     assert evs[-1]["type"] == "done", "要正常收场，不是 error"
     assert not any(e["type"] == "error" for e in evs)
     texts = [str(m.get("content") or "") for m in sess.messages if m.get("role") == "user"]
-    assert any(FORCE_ANSWER_BUDGET in t for t in texts), "收口话术要说是预算到线"
-    assert not any(FORCE_ANSWER in t for t in texts), (
+    assert any(FORCE_ANSWER_BUDGET["zh"] in t for t in texts), "收口话术要说是预算到线"
+    assert not any(FORCE_ANSWER["zh"] in t for t in texts), (
         "不能说「工具次数用完了」——次数根本没用完，那是对模型撒谎"
     )
     assert "tools" not in seen[-1], "收口那一枪不带 tools，否则它还会接着翻"

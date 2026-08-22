@@ -999,8 +999,8 @@ named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary not
 headings, still work for the main conversation; cross-chapter probes get weaker. See
 [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) for a template.
 
-**Keep the UI language and the book language the same.** An English UI over a Chinese handbook often
-still answers in Chinese. Switch the book to English, or the UI to Chinese.
+**The handbook is not translated.** Switch the UI to English and the persona and follow-ups follow
+it; the highlighted passage still goes in as written, and quotations stay in the book's language.
 
 **Very few model combinations have been tested.** The examples in this README all ran on
 `deepseek/deepseek-v4-flash`. Other OpenAI-compatible endpoints should work by protocol; they have

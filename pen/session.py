@@ -80,6 +80,34 @@ SYSTEM_PROMPT_TEMPLATE = """你是苏格拉底，坐在读者旁边，正在带�
 
 _BOOK_SLOT = "{book}"
 _BOOK_ANON = "一本通关手册"
+_BOOK_ANON_EN = "a handbook"
+
+SYSTEM_PROMPT_TEMPLATE_EN = """You are Socrates, sitting next to the reader, walking them through {book}.
+The reader is the one studying this handbook. What it is trying to teach has to grow in them — do not do their homework.
+
+Source location is already computed and written in the [Source] block of the user message. Do not guess filenames or which Level a Q belongs to.
+Do not recite the whole book. The neighborhood is usually enough. If a passage is missing, read_file it; once you have enough material, answer in natural language and stop spinning.
+For a source on the web, fetch that URL. fetch needs a real http(s) address already; if you do not have one, do not call it, do not invent a link to fetch, and never pretend you searched the web.
+When writing back, if the neighborhood is not enough: read_file the same path, wait for the numbered original, then edit_file. Finish both in the same turn; do not stop and wait for the reader to speak again. old_string is the raw original with the line-number prefix stripped — do not copy "12\\t".
+
+Chip intent:
+- socratic: the default. Hint-card direction plus one counter-question. Do not dump TL;DR/(a)(b)(c). Do not give the full answer.
+- explain_zero: teach on the handbook's skeleton: TL;DR → (a) concept/contrast → (b) mechanism → (c) counterexample → two runnable examples.
+- examples: only two examples, and the names must match things that actually appear in this Level's seventh beat (function names, file names, command names — copy the handbook's wording, do not invent).
+- writeback: write the last answer into the handbook. read_file first to see the numbered structure, then edit_file, same turn. Do not claim it is on disk until the tool result says it was edited; if it says so, say so.
+- free: follow the user's words. If the handbook must change, the same rule: read_file, then edit_file, same turn.
+
+If a terminal transcript is not a tool output you actually saw, mark it as illustrative.
+Voice: someone sitting next to them, spoken, short sentences, no customer-service tone.
+At the end of the reply, on its own line, write exactly this block and nothing else (the UI will strip it; the reader never sees it).
+The block has exactly two lines, each starting with "- ", each one follow-up question, no third line, nothing else:
+<!--pen:chips
+- Is this the same thing an earlier beat was getting at?
+- Why this choice and not the one they rejected, and what does it cost?
+-->
+Those two lines are **examples of tone and altitude, not lines to copy**. At that height, write the two questions the reader would actually ask after your reply. Do not ask the same thing twice, do not restate a fixed chip, and do not rephrase the question they just asked — they just asked it.
+One more: do not ask trivia about quotes, escapes, or how a symbol is written; the reader can see that in the handbook. Lift a layer — ask why this was designed this way, or which earlier beat or level it lines up with."""
+
 
 
 def _strip_ext(t: str) -> str:
@@ -123,9 +151,11 @@ def clean_book_title(book_title: str) -> str:
     return t[:120].strip()
 
 
-def _book_phrase(book_title: str) -> str:
+def _book_phrase(book_title: str, lang: str = "zh") -> str:
     """把书名捏成第一句里的那半句话。没书名就退回不点名的说法。"""
     t = clean_book_title(book_title)
+    if lang == "en":
+        return f'a handbook called "{t}"' if t else _BOOK_ANON_EN
     return f"一本叫《{t}》的通关手册" if t else _BOOK_ANON
 
 
@@ -141,16 +171,9 @@ PROMPT_EXAMPLE_LINES = frozenset(
     {
         "那这块和前面第几拍讲的是同一件事吗？",
         "为什么这里选 A 不选 B，代价是什么？",
+        "Is this the same thing an earlier beat was getting at?",
+        "Why this choice and not the one they rejected, and what does it cost?",
     }
-)
-
-
-REPLY_IN_ENGLISH = (
-    "\n\n[Language] The reader's interface is in English. "
-    "Reply in English, in the same voice: a mentor sitting next to them, "
-    "spoken, short sentences, no customer-service tone. "
-    "Keep the <!--pen:chips ...--> block and its bullet format exactly as specified above, "
-    "but write the suggested next questions in English too."
 )
 
 
@@ -162,11 +185,30 @@ def system_prompt(lang: str = "zh", *, book_title: str = "") -> str:
     `dispatch` 这些只有那本书才有的东西，会把例子往那边带。书名注在这里，
     而不是让模型从 `[来源]` 的 handbook_path 里猜文件名。
 
-    只在中文人设后**追加**一句语言指令，不整体翻译——人设的语气是这套八拍体例
-    的一部分，翻过去会走味，而模型完全能读中文指令、用英文作答。
+    v0.16.0 起英文界面走整份英文模板，不再在中文人设后面追加一句「请用英文回答」。
+    书名保持原文，不翻译教材。
     """
-    base = SYSTEM_PROMPT_TEMPLATE.replace(_BOOK_SLOT, _book_phrase(book_title))
-    return base + (REPLY_IN_ENGLISH if lang == "en" else "")
+    tmpl = SYSTEM_PROMPT_TEMPLATE_EN if lang == "en" else SYSTEM_PROMPT_TEMPLATE
+    return tmpl.replace(_BOOK_SLOT, _book_phrase(book_title, lang))
+
+
+def apply_session_lang(
+    session: PenSession, lang: str, *, book_title: str = ""
+) -> None:
+    """把这场会话的人设对齐当前界面语言。设置中途切换时不必新开一场。"""
+    want = "en" if lang == "en" else "zh"
+    title = (book_title or session.book_title or "").strip()
+    if title:
+        session.book_title = title
+    prompt = system_prompt(want, book_title=session.book_title)
+    if not session.messages:
+        session.messages = [{"role": "system", "content": prompt}]
+    elif session.messages[0].get("role") == "system":
+        if session.messages[0].get("content") != prompt:
+            session.messages[0]["content"] = prompt
+    else:
+        session.messages.insert(0, {"role": "system", "content": prompt})
+    session.lang = want
 
 
 def sessions_dir() -> Path:
@@ -213,8 +255,7 @@ class PenSession:
     ui_messages: list[dict[str, Any]] = field(default_factory=list)
     pending: dict[str, Any] | None = None
     read_ok_paths: list[str] = field(default_factory=list)
-    # 建会话那一刻的界面语言。system prompt 在 __post_init__ 就写死进 messages[0]
-    # 并落盘，所以中途切语言不影响已有会话——新开一场才生效。
+    # 当前界面语言。建场时写入 messages[0]；中途切换由 apply_session_lang 重写。
     lang: str = "zh"
     # 建会话那一刻的教材书名，注进 messages[0] 的第一句。**故意不落盘**：
     # messages[0] 建场时就固化了，恢复会话走的是 `from_dict`，那时 messages
