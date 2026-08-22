@@ -158,6 +158,7 @@ export const zh = {
   kickerPen: "苏格拉底",
   kickerReadTool: "翻手册",
   kickerEditTool: "改原文",
+  kickerFetchTool: "取网页",
   toolOk: "成功",
   toolDenied: "拒绝",
   noPath: "（无路径）",

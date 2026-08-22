@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from pen.agent.fetch import handle_fetch
 from pen.agent.tools_impl import handle_edit_file, handle_read_file
 
 Handler = Callable[[dict[str, Any], dict[str, Any]], dict[str, Any]]
@@ -55,9 +56,29 @@ EDIT_FILE_SCHEMA = {
     },
 }
 
+FETCH_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "fetch",
+        "description": (
+            "GET 一个公网 http 或 https 页面，返回去掉标签后的正文。"
+            "必须已经有一个完整 URL。没有 URL 就不要调用，也不要编一个链接再去取，更不要假装搜过网页。"
+            "不能取内网、本机、file://。一次只取一页。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string"},
+            },
+            "required": ["url"],
+        },
+    },
+}
+
 TOOLS: dict[str, dict[str, Any]] = {
     "read_file": {"schema": READ_FILE_SCHEMA, "handler": handle_read_file},
     "edit_file": {"schema": EDIT_FILE_SCHEMA, "handler": handle_edit_file},
+    "fetch": {"schema": FETCH_SCHEMA, "handler": handle_fetch},
 }
 
 

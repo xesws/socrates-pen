@@ -89,7 +89,12 @@ function toolCaption(m: ChatMessage): { ok: boolean; file: string; kicker: strin
   const name = m.text.split(" ")[0] || "tool";
   const path = m.text.split("\u2192").slice(1).join("\u2192").trim();
   const file = path.split("/").filter(Boolean).pop() || (path || t().noPath);
-  const kicker = name === "edit_file" ? t().kickerEditTool : t().kickerReadTool;
+  const kicker =
+    name === "edit_file"
+      ? t().kickerEditTool
+      : name === "fetch"
+        ? t().kickerFetchTool
+        : t().kickerReadTool;
   return { ok, file, kicker };
 }
 

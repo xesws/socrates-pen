@@ -118,6 +118,7 @@ export const en: Dict = {
   kickerPen: "Socrates",
   kickerReadTool: "reading",
   kickerEditTool: "editing",
+  kickerFetchTool: "fetch",
   toolOk: "ok",
   toolDenied: "blocked",
   noPath: "(no path)",

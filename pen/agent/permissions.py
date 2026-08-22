@@ -1,4 +1,4 @@
-"""审批：只读自动过；edit_file 每次问人；未知工具拒绝。read-first 硬闸。"""
+"""审批：read_file / fetch 自动过；edit_file 每次问人；未知工具拒绝。read-first 硬闸。"""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ READ_FIRST_MSG = (
 
 
 def decide(name: str) -> str:
-    if name == "read_file":
+    if name in ("read_file", "fetch"):
         return "allow"
     if name == "edit_file":
         return "ask"

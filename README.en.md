@@ -94,10 +94,10 @@ default are two different tools, because the second one has already done the thi
 Two further promises are kept **in code, not in a prompt**. The model may not edit a passage
 unless it genuinely read that file in an earlier turn, and the execution layer keeps that ledger —
 claiming to have read it does not count. Sessions, snapshots and the deep-dive ledger, meanwhile,
-never leave your machine and no telemetry exists in this repository; once installed, the only call
-that goes out is to the model endpoint you configured, and only the first restart after a plugin
-upgrade fetches a fresh sidecar. Where each of the two is enforced, line by line, is
-[section 4](#4--system-design).
+never leave your machine and no telemetry exists in this repository. What goes out is the model
+endpoint you configured, a fresh sidecar on the first restart after a plugin upgrade, and a GET
+to a URL when the model calls `fetch` (public http/https only). Where the first two are enforced,
+line by line, is [section 4](#4--system-design).
 
 Every example below runs against a different book: *Building DQN from Scratch*, 1,405 lines,
 shipped in this repository under [`docs/demo/`](docs/demo/). Import it into your own vault and you
@@ -575,13 +575,14 @@ first, and a successful ping means it just attaches and downloads nothing. Only 
 and the service has to be restarted does it compare versions — and only a stale version fetches a
 matching sidecar once more.
 
-### 4.2 · The toolbox holds exactly two tools
+### 4.2 · The toolbox holds three tools
 
-The toolbox holds `read_file` and `edit_file`, and nothing else — **no bash, no write_file, no
-shell**. Permissions aren't a switch either, they're three-valued: `read_file` is allow and passes
-automatically; `edit_file` is ask and opens an approval **every single time**; any other name is
-deny, because unrecognised means refused. That last one is deny by default rather than allow by
-default, so if the model hallucinates a `run_command`, it hits a wall.
+The toolbox holds `read_file`, `fetch` and `edit_file` — **no bash, no write_file, no shell**.
+Permissions aren't a switch either, they're three-valued: `read_file` and `fetch` are allow and
+pass automatically; `edit_file` is ask and opens an approval **every single time**; any other name
+is deny, because unrecognised means refused. That last one is deny by default rather than allow by
+default, so if the model hallucinates a `run_command`, it hits a wall. `fetch` only accepts public
+http/https; loopback and private addresses are refused.
 
 ### 4.3 · Read-first is a hard gate
 
@@ -917,10 +918,12 @@ sidebar asks all the same; the deny demo in
 
 **Three things left for you to watch.** One, your API key is stored in this vault at
 `.obsidian/plugins/socrates-pen/data.json`, so if the vault is in Sync, iCloud or git, the key goes
-with it. Two, the network is touched in exactly two places: installing pulls the sidecar and its
+with it. Two, the network is touched in three places: installing pulls the sidecar and its
 dependencies from GitHub and PyPI into `~/.socrates-pen`, and the first restart after a plugin
-upgrade fetches them once more; everything else is the model call itself, leaving from that local
-process to the endpoint you configured. Three, disabling the plugin does not stop the sidecar —
+upgrade fetches them once more; the model call itself leaves from that local process to the
+endpoint you configured; and when the model calls `fetch` it issues a GET to that URL (public
+http/https only — loopback and private addresses are refused). Three, disabling the plugin does
+not stop the sidecar —
 that Python process keeps running, so re-enabling is instant. But the "stop" button on the settings
 page only governs the process this enable session started itself; if the process was left over from
 a previous one, the button will not touch it and you have to kill whatever holds the port.
@@ -979,8 +982,9 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 What it cannot do yet, or does poorly:
 
-**It cannot search the web.** The sidebar chip for papers / provenance is greyed out. Socrates only
-reads notes in your vault.
+**It cannot search the web.** The sidebar chip for papers / provenance is still greyed out. Given
+an http(s) URL it can `fetch` that page; there is no search engine, and with no URL it stays in
+the vault.
 
 **Deep follow-up questions work best on a structured handbook.** Background probes look for sections
 named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those

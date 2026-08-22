@@ -16,6 +16,7 @@ from pen.tutor import resume_chat, stream_chat
 
 def test_read_allow_edit_ask_unknown_deny() -> None:
     assert decide("read_file") == "allow"
+    assert decide("fetch") == "allow"
     assert decide("edit_file") == "ask"
     assert decide("bash") == "deny"
     assert decide("write_file") == "deny"
@@ -30,17 +31,20 @@ def test_read_first_block_requires_earlier_read() -> None:
     assert read_first_block("edit_file", book, {other}) == READ_FIRST_MSG
 
 
-def test_schemas_only_read_and_edit() -> None:
+def test_schemas_only_read_edit_and_fetch() -> None:
     names = [s["function"]["name"] for s in schemas()]
-    assert names == ["read_file", "edit_file"]
+    assert names == ["read_file", "edit_file", "fetch"]
     assert "write_file" not in TOOLS
     assert "bash" not in TOOLS
     read_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "read_file")
     edit_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "edit_file")
+    fetch_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "fetch")
     assert "行号" in read_desc
     assert "N\\t原文" in read_desc
     assert "先成功 read_file" in edit_desc
     assert "行号" in edit_desc
+    assert "URL" in fetch_desc
+    assert "不要假装搜过" in fetch_desc
 
 
 def test_edit_file_unique_replace(tmp_path: Path) -> None:

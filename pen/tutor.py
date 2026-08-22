@@ -1,4 +1,4 @@
-"""对话脑：L2 外环 + registry 工具。edit_file 须人批；无 bash / write_file。"""
+"""对话脑：L2 外环 + registry 工具。edit_file 须人批；无 bash / write_file。fetch 自动过。"""
 
 from __future__ import annotations
 
