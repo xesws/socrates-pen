@@ -43,6 +43,12 @@ def test_blocked_reason_rejects_non_http_and_private() -> None:
     assert blocked_reason("https://user:pass@example.com/") is not None
     assert blocked_reason("not-a-url") is not None
     assert blocked_reason("https://example.com/paper") is None
+    assert blocked_reason("http://0.0.0.0/") is not None
+    assert blocked_reason("http://[::ffff:127.0.0.1]/") is not None
+    assert blocked_reason("http://2130706433/") is not None
+    assert blocked_reason("http://0x7f000001/") is not None
+    assert blocked_reason("http://example.com:abc/") is not None
+    assert blocked_reason("http://[::1") is not None
 
 
 class _Resp:
@@ -60,6 +66,22 @@ class _Resp:
 
 
 def _patch_client(monkeypatch: pytest.MonkeyPatch, handler: Any) -> None:
+    class _Stream:
+        def __init__(self, resp: _Resp) -> None:
+            self.status_code = resp.status_code
+            self.headers = resp.headers
+            self.url = resp.url
+            self._content = resp.content
+
+        def __enter__(self) -> _Stream:
+            return self
+
+        def __exit__(self, *args: Any) -> None:
+            return None
+
+        def iter_bytes(self) -> Any:
+            yield self._content
+
     class _Client:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             assert kwargs.get("trust_env") is False
@@ -71,15 +93,24 @@ def _patch_client(monkeypatch: pytest.MonkeyPatch, handler: Any) -> None:
         def __exit__(self, *args: Any) -> None:
             return None
 
-        def get(self, url: str, headers: dict[str, str] | None = None) -> _Resp:
-            return handler(url)
+        def stream(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, str] | None = None,
+            extensions: dict[str, Any] | None = None,
+        ) -> _Stream:
+            assert method == "GET"
+            return _Stream(handler(url, headers or {}, extensions or {}))
 
     monkeypatch.setattr(httpx, "Client", _Client)
 
 
 def test_fetch_returns_stripped_html(monkeypatch: pytest.MonkeyPatch) -> None:
-    def handler(url: str) -> _Resp:
-        assert url == "https://example.com/paper"
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
+        assert "93.184.216.34" in url
+        assert headers.get("Host") == "example.com"
+        assert ext.get("sni_hostname") == "example.com"
         return _Resp(200, b"<html><script>x</script><p>DQN paper</p></html>")
 
     _patch_client(monkeypatch, handler)
@@ -88,6 +119,7 @@ def test_fetch_returns_stripped_html(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "DQN paper" in out["text"]
     assert "script" not in out["text"].lower()
     assert out["detail"] == "https://example.com/paper"
+    assert set(out) == {"ok", "text", "resolved", "detail"}
 
 
 def test_fetch_refuses_loopback_without_http() -> None:
@@ -110,9 +142,9 @@ def test_fetch_refuses_empty_url() -> None:
 def test_fetch_does_not_follow_redirect_into_loopback(monkeypatch: pytest.MonkeyPatch) -> None:
     seen: list[str] = []
 
-    def handler(url: str) -> _Resp:
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
         seen.append(url)
-        if url.startswith("https://example.com"):
+        if "93.184.216.34" in url:
             return _Resp(
                 302,
                 b"",
@@ -124,14 +156,31 @@ def test_fetch_does_not_follow_redirect_into_loopback(monkeypatch: pytest.Monkey
     _patch_client(monkeypatch, handler)
     out = handle_fetch({"url": "https://example.com/hop"}, {})
     assert out["ok"] is False
-    assert seen == ["https://example.com/hop"]
+    assert len(seen) == 1
     assert "内网" in out["text"] or "本机" in out["text"]
+
+
+def test_fetch_does_not_follow_redirect_into_file(monkeypatch: pytest.MonkeyPatch) -> None:
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
+        return _Resp(302, b"", headers={"location": "file:///etc/passwd"}, url=url)
+
+    _patch_client(monkeypatch, handler)
+    out = handle_fetch({"url": "https://example.com/hop"}, {})
+    assert out["ok"] is False
+
+
+def test_fetch_malformed_url_is_tool_error_not_crash() -> None:
+    out = handle_fetch({"url": "http://example.com:abc/"}, {})
+    assert out["ok"] is False
+    assert "ok" in out and "text" in out
+    broken = handle_fetch({"url": "http://[::1"}, {})
+    assert broken["ok"] is False
 
 
 def test_fetch_truncates_to_max_output(monkeypatch: pytest.MonkeyPatch) -> None:
     blob = ("word " * (MAX_OUTPUT // 4 + 50)).encode("utf-8")
 
-    def handler(url: str) -> _Resp:
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
         return _Resp(200, blob, headers={"content-type": "text/plain"})
 
     _patch_client(monkeypatch, handler)
@@ -142,7 +191,7 @@ def test_fetch_truncates_to_max_output(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_fetch_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    def handler(url: str) -> _Resp:
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
         return _Resp(404, b"nope")
 
     _patch_client(monkeypatch, handler)
