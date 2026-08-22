@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from pen import config, diagnose, trajectory
 from pen.app import app
 
-# 不写 `from pen.config import config.DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
+# 不写 `from pen.config import DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
 # conftest 的 `_default_handbook_fixture` patch 的是 config 上的属性，够不着它。
 
 

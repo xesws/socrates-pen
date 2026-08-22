@@ -5,6 +5,12 @@ from pathlib import Path
 from pen import config
 from pen.config import merge_llm, parse_dotenv, resolve_llm
 
+# **故意**用 import 时冻住的绑定：模块 import 发生在任何 fixture 之前，所以这里拿到的是
+# conftest `_default_handbook_fixture` 替换**之前**的原值。下面那条断言要验的正是
+# 「`config.DEFAULT_HANDBOOK` 这个常量本身指向的文件在不在」，验替换后的 fixture 是永真的。
+# 别照着 test_app.py / test_diagnose.py 的注释把它改成运行时取值——那会让这条断言失效。
+from pen.config import DEFAULT_HANDBOOK as PRISTINE_DEFAULT_HANDBOOK
+
 
 def test_parse_strips_inline_comment(tmp_path: Path) -> None:
     p = tmp_path / ".env"
@@ -279,7 +285,11 @@ def test_tests_never_write_the_real_pen_dir() -> None:
     assert snapshots.LIBRARIES_DIR.resolve() == config.LIBRARIES_DIR.resolve()
     # 实验室检出里默认手册还得能读到；公开仓 / pip 安装没有这份文件。
     if (config.REPO_ROOT / "SWE-Agent通关手册v2.md").is_file():
-        assert config.DEFAULT_HANDBOOK.is_file()
+        assert PRISTINE_DEFAULT_HANDBOOK.is_file()
+    # 并且 conftest 确实把它换掉了——这一条防的是「fixture 悄悄失效、
+    # 测试又跑回真教材上」，那会让公开仓重新变红而没人发现。
+    assert config.DEFAULT_HANDBOOK != PRISTINE_DEFAULT_HANDBOOK
+    assert config.DEFAULT_HANDBOOK.name == "default_handbook.md"
 
 
 def test_isolated_pen_dir_is_not_pre_created() -> None:

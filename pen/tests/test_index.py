@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# **故意**用 import 时冻住的绑定：下面 `test_real_handbook_index_readonly` 要验的是
+# **那本真教材**（13083 行、80 道 Q），不是 conftest 换上去的 138 行 fixture。
+# 模块 import 早于任何 fixture，所以这里拿到的是原值。别改成 `config.DEFAULT_HANDBOOK`——
+# 那会让这条测试改去验 fixture，实验室仓对真教材的唯一覆盖就没了。
 from pen.config import DEFAULT_HANDBOOK
 from pen.index import build_index, check_index
 

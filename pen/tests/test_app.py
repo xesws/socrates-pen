@@ -13,7 +13,7 @@ from pen.app import SEARCH_REPLY, app
 from pen import config
 from pen.config import REPO_ROOT
 
-# 不写 `from pen.config import config.DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
+# 不写 `from pen.config import DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
 # conftest 的 `_default_handbook_fixture` patch 的是 config 上的属性，够不着它。
 # 每处都走 `config.DEFAULT_HANDBOOK`，取的才是 patch 之后的那本。
 from pen.session import STORE
