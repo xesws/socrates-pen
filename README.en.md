@@ -1053,7 +1053,9 @@ This section is here on purpose.
   The constant is right (a cross-book exploration was measured at 351 s); the comment didn't keep up.
 - **The lab repo's copy of the plugin has drifted three versions, and nothing watches it.**
   In this repo `manifest.json` / `package.json` / `pyproject.toml` / `pen/__init__.py` all agree,
-  and since v0.15.11 a test enforces that. But the plugin was originally copied over from another,
+  and since v0.15.13 one test enforces all four at once (v0.15.11 built the gate watching only
+  `manifest.json` — the three it left out being exactly the ones a release forgets). But the plugin
+  was originally copied over from another,
   private repo, whose `obsidian/manifest.json` still sits at `0.12.13`. The two `src/` trees have
   genuinely diverged (this one has an extra `sidecar.ts`, and four other files differ), so that copy
   **may well be frozen on purpose** — but no document anywhere states that policy, and the new
