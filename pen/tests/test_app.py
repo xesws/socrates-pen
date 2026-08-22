@@ -982,6 +982,47 @@ def test_failed_spawn_gives_the_claim_back(tmp_path, monkeypatch) -> None:
     assert probe_store.load("spawnfail").running == [], "坑没还回去"
 
 
+def test_the_probe_job_learns_which_book_it_is_reading(tmp_path, monkeypatch) -> None:
+    """v0.15.7 的透传闸。**走完整条 HTTP**，不是直接调 `_maybe_probe`——
+
+    真正会漏的是调用点：`_maybe_probe` 的 `book_title` 有默认值（不设必填是为了
+    不动十七处测试构造点），所以 app 里忘了传参不会当场炸，只会静默退回
+    「深挖不知道自己在读哪本书」——正是 v0.15.7 要治的那个病本身。
+    """
+    _isolate_pen(tmp_path, monkeypatch)
+    from pen import libraries, probe as probemod
+
+    seen: dict = {}
+    monkeypatch.setattr(probemod, "spawn", lambda job, pid: seen.update(job=job))
+
+    def fake_stream(sess, path, packet, llm=None, extra_roots=None,
+                    allow_env_fallback=True, lang="zh", **_kw):
+        sess.last_assistant = "讲了一大段。" * 30
+        sess.has_substantive = True
+        yield {"type": "done", "usage": {"context_tokens": 1, "completion_tokens": 1,
+                                         "prompt_tokens": 1},
+               "dynamic_chips": [], "has_substantive": True}
+
+    monkeypatch.setattr("pen.app.stream_chat", fake_stream)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        sess = STORE.get(sid)
+        sess.turns = 1
+        # 会话是从内存里拿的，book_title 建场时就有了——**把它清掉**，
+        # 逼这条路只能走 meta。落盘恢复回来的会话本来就是这个样子
+        # （book_title 不落盘），而深挖恰恰最常发生在读者聊了几轮之后。
+        sess.book_title = ""
+        resp = client.post("/v1/chat", json=_chat_body(
+            sid, _q1_line(), base_url="http://x", api_key="sk", model="m"))
+        assert resp.status_code == 200
+        title = libraries.get("swe-agent-v2").title
+
+    job = seen.get("job")
+    assert job is not None, "深挖压根没起，这条测试就没在测东西"
+    assert job.book_title == title, "app 没把书名接上去"
+    assert probemod.build_user_message(job).startswith("[你在带读哪本书]")
+
+
 # ── v0.10.0 计量 ────────────────────────────────────────────────
 
 

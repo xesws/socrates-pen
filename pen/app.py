@@ -552,11 +552,22 @@ def _history(sess, keep: int = 6) -> list[dict[str, str]]:
     return rows
 
 
-def _maybe_probe(sess, body: "ChatBody", anchor: dict[str, Any], path: Path, lang: str) -> bool:
+def _maybe_probe(
+    sess,
+    body: "ChatBody",
+    anchor: dict[str, Any],
+    path: Path,
+    lang: str,
+    book_title: str = "",
+) -> bool:
     """在 done 那一刻决定要不要起一次后台深挖。返回是否真的起了。
 
     这里所有东西都要**当场冻结**进 job：cfg 尤其不能让线程晚点自己 resolve，
     那会绕过 merge_llm 的跨主机钥匙保护。
+
+    `book_title` 由调用方从 `meta` 传进来，**不从 `sess.book_title` 取**：那个字段
+    不落盘（v0.15.0 只把书名固化进 `messages[0]`），从磁盘恢复回来的会话上它是空的——
+    而深挖恰恰最常发生在读者聊了几轮之后。走 meta 才是每轮都真。
     """
     try:
         lim = body.merged_limits()
@@ -602,6 +613,7 @@ def _maybe_probe(sess, body: "ChatBody", anchor: dict[str, Any], path: Path, lan
             born_round=sess.turns,
             lang=lang,
             cfg=cfg,
+            book_title=book_title,
             limits=lim,
             extra_roots=libraries.extra_roots_for(sess.handbook_id) or [],
             footprint=_footprint(sess.handbook_id),
@@ -794,7 +806,9 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                     # 绝不延长这条流——busy=false 要等流关闭，多挂一秒就多冻一秒输入框。
                     ev = {
                         **ev,
-                        "deep_running": _maybe_probe(sess, body, anchor, path, lang),
+                        "deep_running": _maybe_probe(
+                            sess, body, anchor, path, lang, str(meta.title or "")
+                        ),
                         "spend": _merged_spend(sess),
                         # 每轮都把池子里成熟的题捎出来。**这是 v0.8.1 就设计过
                         # 却一直没实现的那条路**，不补上就是个死锁：

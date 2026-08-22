@@ -562,6 +562,9 @@ class ProbeJob:
     born_round: int
     lang: str
     cfg: LLMConfig
+    # 这本书叫什么。**给默认值不设必填**，理由和下面 limits 那条一样：
+    # 必填要改十七处测试构造点。漏接线由 test_app 的透传断言兜住。
+    book_title: str = ""
     # 本次请求认下来的上限。**必须在 done 那一刻当场冻进来**，理由和 cfg 一样：
     # 探索线程跑起来时请求早结束了，模块级全局在多 vault 下已经是别人的值。
     # 用 default_factory 而不是必填：必填要改十几处测试构造点，
@@ -616,8 +619,30 @@ def books_mentioned(shelf: str, *texts: str) -> list[str]:
 
 
 def build_user_message(job: ProbeJob, excerpt: str = "") -> str:
+    """深挖线程发出去的那份 user packet。
+
+    **第一块必须是书名**（v0.15.6）。在那之前这份 packet 从头到尾不说这是哪本书——
+    没书名，没 path——模型只能从 level / 拍名 / 材料往回推。v0.15.0 解耦的是
+    主对话那条路（`session.SYSTEM_PROMPT_TEMPLATE` 的 `{book}` 槽），深挖这条
+    一直漏着；v0.15.4 在 `PROBE_SYSTEM` 里加的那段免责话只是让它别照抄那五个
+    SWE 例子的名字，治不了「不知道手上这本讲什么」。
+
+    书名走的是和 `messages[0]` 同一套清洗（`session.clean_book_title`），
+    不在这儿重抄——重抄就是等着两边漂。
+    """
+    from pen.session import clean_book_title  # 延迟导入：probe 全仓不在模块级 import session
+
     a = job.anchor
-    parts = [
+    parts: list[str] = []
+    book = clean_book_title(job.book_title)
+    if book:
+        parts += [
+            "[你在带读哪本书]",
+            f"《{book}》",
+            "（下面所有材料都出自这本书。它讲什么，看材料——别从别的书上推。）",
+            "",
+        ]
+    parts += [
         "[读者刚才在读哪儿]",
         f"位置：{a.get('level') or '—'} / {a.get('beat') or '—'} / {a.get('q_title') or '—'}"
         f"（第 {a.get('start_line')}-{a.get('end_line')} 行）",
