@@ -1051,9 +1051,8 @@ def test_all_four_version_sources_agree() -> None:
     用 `pytest.skip` 而不是裸 `return`，因为「静默不跑」和「跑过了」长得一模一样。
     **skip 的措辞只陈述事实，不下判断**：实验室仓的插件在 `obsidian/` 下、
     根目录确实没有这些文件，但那边 `obsidian/manifest.json` 现在是 `0.12.13`
-    ——落后 `pen/__init__.py` 两个发布（这个插件总共只发过 `0.12.13` /
-    `0.13.0` / `0.13.1` 三个版本，`versions.json` 的 key 就是完整清单）。跳过的地方恰好就是漂了的地方，
-    这件事该被人看见，不该被一句「那边跳过是对的」盖住。
+    ——落后 `pen/__init__.py`（这个插件发过的版本，`versions.json` 的 key 就是完整清单）。
+    跳过的地方恰好就是漂了的地方，这件事该被人看见，不该被一句「那边跳过是对的」盖住。
     """
     import json
 
@@ -1069,6 +1068,15 @@ def test_all_four_version_sources_agree() -> None:
     for name in ("manifest.json", "package.json"):
         got = json.loads((root / name).read_text(encoding="utf-8"))["version"]
         assert got == __version__, f"{name} 是 {got}，pen/__init__.py 是 {__version__}"
+
+    lock = json.loads((root / "package-lock.json").read_text(encoding="utf-8"))
+    assert lock["version"] == __version__, (
+        f"package-lock.json 顶层是 {lock['version']}，pen/__init__.py 是 {__version__}"
+    )
+    assert lock["packages"][""]["version"] == __version__, (
+        f"package-lock.json packages[''] 是 {lock['packages']['']['version']}，"
+        f"pen/__init__.py 是 {__version__}"
+    )
 
     pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
     line = next(ln for ln in pyproject.splitlines() if ln.startswith("version"))
