@@ -59,6 +59,26 @@ hands. It does not know how the concept was set up in Level 2, it does not know 
 rejected a simpler approach in decision ② of Level 4, and it does not know that you asked almost
 this exact question three minutes ago.
 
+To fill that seat, this plugin follows the **Socratic method**. Socrates barely lectured: he sat
+with the other person and asked about what they had just said, or just read, until they could
+see for themselves what they had not thought through. He did not hand over the answer; the questions
+drew it out of them. You thought you were keeping up, and one question shows you were not. You do
+not have to compose a full explanation; you only have to take that one question, which already
+marks the piece worth thinking about.
+
+The method more often recommended for studying alone is the **Feynman technique**. Pick a concept,
+explain it in plain language as if to a newcomer, and wherever the explanation dies is where you
+do not yet understand; then go back, fill the hole, and explain it again. It runs on output: the
+talking has to come from you. It is a good tool once you already have most of it and need to find
+the holes. But it has a threshold: you already have to be able to start.
+
+The worst moment in a long handbook sits before that threshold. The material is only half laid down,
+the last level has not settled, and you do not even know which piece to "teach." A blank page will
+not ask you first. You can do Feynman alone, with a sheet of paper; the Socratic method has always
+been missing the person sitting next to you. For a handbook where each level sits on the last, what
+you lack is not a podium; it is the person who asks one thing at the point where you stopped. That
+much is out of Feynman's reach: you don't have to become the teacher first.
+
 So every design choice here grows out of one sentence: **put someone who has actually read this
 book, and knows where you are in it, next to you.** Someone sitting next to you does not open by
 handing over the answer. The default chip is called `socratic`, and its whole job is to hold the
