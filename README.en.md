@@ -96,7 +96,17 @@ ask. Only the last one touches your disk, and only once you have said so yoursel
 5. Want the answer kept in the note? He proposes one edit, and nothing lands on disk until you
    click Allow.
 
-<!-- shot-01-splash.png / shot-02-socratic.png / shot-03-deep.png / shot-04-approval.png: batch 2 -->
+<img src="docs/img/shot-08-overview.png" width="100%"
+     alt="An Obsidian window split in two: on the left, the body of *Building DQN from Scratch* with one passage highlighted; on the right, the Socrates sidebar questioning that passage back and forth, with a ◆ deep-dive question hanging at the bottom.">
+
+<sup>These interface shots are real runs, not mock-ups. The UI language follows Obsidian's, and
+these were taken in Chinese. The chips this README calls *don't give it away*, *explain to a
+beginner*, *examples only*, *find the paper* and *write it back* read, in an English interface,
+<em>"Don't tell me yet — ask me something"</em>, <em>"Assume I know nothing, then give me two
+examples"</em>, <em>"Just show me examples"</em>, <em>"Find the paper / where this came from"</em>
+and <em>"Write that answer back into the manual"</em>. The status line's "dev fallback
+DEEPSEEK_API_KEY" only shows when running from a source tree; on a normal install that spot names
+the endpoint you filled in on the settings page.</sup>
 
 **It is not equally good on any note.** The main conversation runs against any Markdown, but the
 background deep-dive needs anchors in the book, which means the handbook has to follow the
@@ -132,6 +142,9 @@ click away under each. [Known gaps](#7--known-gaps) explains why the language sw
 
 **The default chip.** It reads your selection and then **doesn't answer** — it goes looking for
 the crack in that passage you haven't noticed yet.
+
+<img src="docs/img/shot-02-socratic.png" width="100%"
+     alt="The sidebar after clicking the socratic chip: it sets the two update rules side by side, points out that the difference is not step size but whether the old record is remembered, and closes by asking the reader which one is closer to what the learner actually wants.">
 
 <table><tr><td>
 
@@ -303,6 +316,9 @@ and assemble questions you can't ask yet but would ask one step further on, into
 you all at once, but released **at most one per turn** (`MAX_RELEASE_PER_TURN = 1`,
 `pen/probe_store.py:42`), with at most two hanging in the sidebar at a time.
 
+<img src="docs/img/shot-03-deep.png" width="100%"
+     alt="The chip area at the bottom of the sidebar: below the four fixed chips, one ◆ deep-dive question sits in a highlighted outline — "γ discounts the future, α discounts the old record; with both in play, what is Q actually chasing?"">
+
 That run put three in the pool. Here is the third:
 
 <table><tr><td>
@@ -345,6 +361,9 @@ ingredients, it only lowered the *connection frequency* of one of them from ever
 **Breadth is capped by code, not by the model's self-restraint** — see [4.5 The background deep-dive is a job queue](#45--the-background-deep-dive-is-a-job-queue).
 
 ### 3.5 · Writing back, and the approval gate
+
+<img src="docs/img/shot-04-approval.png" width="100%"
+     alt="The approval panel: a heading reading "Approve this edit", the note that edit_file points at, then a line-by-line "--- original ---" / "+++ replaced with +++" comparison, and two buttons at the bottom — allow this edit, or refuse. The panel notes that the model picked the passage itself and nothing touches the note until you allow it.">
 
 <img src="docs/img/writeback.drawio.svg" alt="Write-back: two tools, three gates, one snapshot stack" width="100%">
 
@@ -399,6 +418,9 @@ Rolling back restores the original **byte for byte**.
 ### 3.6 · Roll back / redo
 
 The two arrows in the sidebar walk a **snapshot stack**, not the editor's undo history.
+
+<img src="docs/img/shot-05-rollback.png" width="100%"
+     alt="Hovering the roll-back arrow at the top of the sidebar pops a tooltip: the whole note returns to its previous version, one step still available. Below it the full conversation, with the status lines for a successful handbook read and a successful edit to the original.">
 
 ```
 GET  /v1/handbooks/dqn-550d425c/snapshots
@@ -478,6 +500,9 @@ GET /v1/usage
   "total": 221962, "sessions": 2, "skipped": 0
 }
 ```
+
+<img src="docs/img/shot-07-usage.png" width="100%"
+     alt="The spending panel on the settings page: 101,785 tokens in total across 2,694 conversations, broken out into main conversation 59,806, deep dive 41,979 and write-back 0, plus 34,432 served from cache.">
 
 <sup>Raw: [`10-usage.json`](docs/demo/transcripts/10-usage.json) — the actual bill after everything in 3.1–3.6 above</sup>
 
@@ -787,7 +812,7 @@ lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
 
-**All five diagrams are `.drawio.svg`** — GitHub renders them as images, and
+**All five architecture diagrams are `.drawio.svg`** — GitHub renders them as images, and
 [draw.io](https://app.diagrams.net/) opens them for editing (the mxGraph model is stored in the root
 `<svg>` element's `content` attribute).
 
@@ -833,7 +858,11 @@ running. No terminal required at any point.
    turn; the sidebar asks you to **Allow** before anything is saved.
 4. **Roll back / Redo** restore **the whole note** from the snapshot stack, not just the selection.
 
-<!-- shot-05-rollback.png / shot-06-settings.png / shot-07-usage.png: batch 2 -->
+<img src="docs/img/shot-01-splash.png" width="100%"
+     alt="The sidebar as it looks freshly installed, before a key is filled in: a line at the top says the sidecar is up and to fill in an API key under Settings → Socrates; in the middle, the character-art portrait of Socrates and the wordmark; along the bottom, a row of chips — the first three lit, the search chip and the write-back chip greyed out.">
+
+<img src="docs/img/shot-06-settings.png" width="100%"
+     alt="The settings page: start/stop and running state for the local service at the top, then language, API key (a password field), base URL, model name, thinking level, the background deep-dive toggle, and the hourly deep-dive ceiling among other dials.">
 
 ### Privacy and network
 

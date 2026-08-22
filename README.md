@@ -85,7 +85,12 @@
    存进池子，每轮最多放一条出来抛给你。
 5. 想把解答留在笔记里，他会提议一处编辑；你点「允许」，磁盘上才会动。
 
-<!-- shot-01-splash.png / shot-02-socratic.png / shot-03-deep.png / shot-04-approval.png：第二批补 -->
+<img src="docs/img/shot-08-overview.png" width="100%"
+     alt="Obsidian 窗口左右分屏：左边是《从零手写DQN》的正文，第二拍里有一段被划中并高亮；右边是苏格拉底侧栏，正在就那一段来回追问，底部挂着一条带 ◆ 的深挖问题。">
+
+<sup>这一节和下一节的界面图都是真跑出来的，没有摆拍。界面语言跟随 Obsidian，图里是中文界面。
+状态行上那句「开发回退 DEEPSEEK_API_KEY」是从源码树跑才有的字样——你正常安装之后，
+那里显示的是你在设置页填的那个节点。</sup>
 
 **它不是对任意笔记都一样好用。** 主对话对任何 Markdown 都能跑；但后台深挖要在书里下锚，
 需要教材按八拍体例写，每一关得有「第三拍 · 出身」「第七拍 · 实操代码」这样的小节。少了
@@ -114,6 +119,9 @@
 ### 3.1 · 先别揭晓 `socratic`
 
 **默认那一枚。** 它读你划的那段，然后**不回答**——它去找那段话里你还没意识到的裂缝。
+
+<img src="docs/img/shot-02-socratic.png" width="100%"
+     alt="侧栏里点了「先别揭晓，问我一个问题」之后的回答：它把两个更新式并排摆出来，指出区别不在步长而在「记不记得旧账」，最后反过来问读者哪一个更接近它真正想要的。">
 
 <table><tr><td>
 
@@ -252,6 +260,9 @@
 你不用等；池子不会一次倒给你，每一轮最多放一条出来（`pen/probe_store.py:42` 的
 `MAX_RELEASE_PER_TURN = 1`），侧栏上同时最多挂两条。
 
+<img src="docs/img/shot-03-deep.png" width="100%"
+     alt="侧栏底部的芯片区：四枚固定芯片下面，一条带 ◆ 的深挖问题被高亮框起来——「γ 给未来打折，α 给旧账打折，两个折扣一起用，Q 值到底在追什么东西？」">
+
 真跑那一次池子里攒了三条，第三条是这样的：
 
 <table><tr><td>
@@ -288,6 +299,9 @@
 **广度由代码封死，不由模型自律**——这一条在 [4.5 后台深挖是一条任务队列](#45--后台深挖是一条任务队列)里会讲透。
 
 ### 3.5 · 写回原文，和那道审批闸
+
+<img src="docs/img/shot-04-approval.png" width="100%"
+     alt="审批面板：标题「审批这次编辑」，下面是 edit_file 指向的那篇笔记，再下面是「--- 原文 ---」和「+++ 换成 +++」的逐行对照，最底下两个按钮「允许这次编辑」和「拒绝」。面板上写着「模型自己选要换的那一小段。点允许才会改这篇笔记。」">
 
 <img src="docs/img/writeback.drawio.svg" alt="写回：两把工具，三道闸，一个快照栈" width="100%">
 
@@ -338,6 +352,9 @@
 ### 3.6 · 回滚 / 重做
 
 写回之后侧栏上那两个箭头，走的是**快照栈**，不是编辑器的 undo。
+
+<img src="docs/img/shot-05-rollback.png" width="100%"
+     alt="侧栏顶部的回退箭头悬停时弹出提示「整篇笔记回到上一版（还能退 1 次）」；下方是完整的对话记录，中间可以看到「翻手册 成功」和「改原文 成功」两条状态行。">
 
 ```
 GET  /v1/handbooks/dqn-550d425c/snapshots
@@ -409,6 +426,9 @@ GET /v1/usage
   "total": 221962, "sessions": 2, "skipped": 0
 }
 ```
+
+<img src="docs/img/shot-07-usage.png" width="100%"
+     alt="设置页里的「花销」面板：一共 101,785 token，来自 2,694 场对话；下面分列主对话 59,806、深挖 41,979、写回 0，以及缓存命中 34,432。">
 
 <sup>原文：[`10-usage.json`](docs/demo/transcripts/10-usage.json)——上面 3.1 到 3.6 全部跑完之后的真实账单</sup>
 
@@ -686,7 +706,7 @@ lines=1405 sections=87 qs=21 toc=45
 CHECK OK
 ```
 
-**五张图都是 `.drawio.svg`**——GitHub 当图渲染，用 [draw.io](https://app.diagrams.net/)
+**那五张架构图都是 `.drawio.svg`**——GitHub 当图渲染，用 [draw.io](https://app.diagrams.net/)
 打开还能直接改（mxGraph 模型存在根 `<svg>` 的 `content` 属性里）。
 
 </details>
@@ -722,7 +742,11 @@ pip 安装 sidecar，这一步要访问 GitHub 和 PyPI。装完之后**设置 �
    必须先读文件，再单独一轮提编辑；侧栏弹审批，点**允许**才写盘。
 4. **回到上一版 / 重做**按快照栈**整篇**回退，不是只撤选区。
 
-<!-- shot-05-rollback.png / shot-06-settings.png / shot-07-usage.png：第二批补 -->
+<img src="docs/img/shot-01-splash.png" width="100%"
+     alt="刚装好、还没填 Key 时的侧栏：顶上一行写着「sidecar 在，请到设置 → Socrates 填写 API Key」，中间是苏格拉底的字符画肖像和「苏格拉底学习法」字标，底下一排芯片——前三枚是亮的，「查相关论文 / 算法出处」和「把刚才的解答写进手册原文」两枚是灰的。">
+
+<img src="docs/img/shot-06-settings.png" width="100%"
+     alt="设置页：最上面是本机服务的启动/停止和运行状态，下面依次是语言、API Key（密码框）、Base URL、模型名、Thinking 档位、后台深挖开关，以及每小时深挖上限等旋钮。">
 
 ### 隐私与网络
 
