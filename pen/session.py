@@ -81,8 +81,21 @@ _BOOK_SLOT = "{book}"
 _BOOK_ANON = "一本通关手册"
 
 
-def _book_phrase(book_title: str) -> str:
-    """把书名捏成第一句里的那半句话。
+def _strip_ext(t: str) -> str:
+    """剥掉一层 Markdown 扩展名。`HandbookIndex.title` 取不到 H1 时退回文件名
+    （`index.py:126`），而「一本叫《从零手写DQN.md》的通关手册」很难看。"""
+    for ext in (".markdown", ".md"):
+        if t.lower().endswith(ext):
+            return t[: -len(ext)].strip()
+    return t
+
+
+def clean_book_title(book_title: str) -> str:
+    """把 `HandbookIndex.title` 洗成可以直接塞进提示词的一行。洗不出东西就返回 `""`。
+
+    **这套清洗是一处一处踩出来的**，所以抽成公开函数给两条路共用：主对话的
+    `_book_phrase`（进 `messages[0]`），和深挖的 `probe.build_user_message`
+    （进后台线程那份 user packet）。在 probe 里重抄一遍就是等着两边漂。
 
     `HandbookIndex.title` 优先取第 1 行 H1，取不到就退回**文件名**
     （`index.py:126`），而「一本叫《从零手写DQN.md》的通关手册」很难看，
@@ -92,19 +105,26 @@ def _book_phrase(book_title: str) -> str:
     # 压平换行和连续空白：H1 里的换行会在 system prompt 里渲染成**独立的一段**，
     # 那就等于让读者的笔记标题往系统提示里插一条新指令。
     t = " ".join((book_title or "").split())
-    for ext in (".markdown", ".md"):
-        if t.lower().endswith(ext):
-            t = t[: -len(ext)].strip()
-            break
+    # 扩展名剥**两次**，中间夹着剥书名号：两种写法都真的出现过，
+    # `《DQN》.md`（书名自带书名号，退回文件名那条路补上的 .md）走前一次，
+    # `《DQN.md》`（读者自己在 H1 里把整个文件名套进了书名号）走后一次。
+    # v0.15.4 只剥一次，后一种会漏出个 `.md` 尾巴。
+    t = _strip_ext(t)
     # **只剥成对的外层，且只剥一层。** 早先写的是 `t.strip("《》")`——`str.strip`
     # 收的是字符集合不是配对，于是 `深入理解《计算机系统》` 被剥成
     # `深入理解《计算机系统`，渲染出来书名号错位。中文技术书标题套书名号很常见。
+    # 只剥一层也是有意的：`《《套娃》》` 剥成 `《套娃》`，渲染回去还是原样。
     if t.startswith("《") and t.endswith("》"):
-        t = t[1:-1].strip()
+        t = _strip_ext(t[1:-1].strip())
     # 封顶。挡不住书名里的 `》` 让这句话提前闭合（那得是读者自己往自己笔记的 H1 里写），
     # 但挡得住「整篇灌进 system prompt」这个真正危险的形状。
     # 上限取 120 不是 60：实测演示教材书名 49 字、SWE 手册 56 字，60 贴得太近。
-    t = t[:120].strip()
+    return t[:120].strip()
+
+
+def _book_phrase(book_title: str) -> str:
+    """把书名捏成第一句里的那半句话。没书名就退回不点名的说法。"""
+    t = clean_book_title(book_title)
     return f"一本叫《{t}》的通关手册" if t else _BOOK_ANON
 
 
