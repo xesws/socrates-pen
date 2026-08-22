@@ -49,6 +49,16 @@ def _patch_openai_boom(monkeypatch, exc: Exception) -> None:
     monkeypatch.setattr(openai, "OpenAI", _BoomClient)
 
 
+def _a_line(idx) -> int:
+    """随便挑一行**这本书里真有**的行号。
+
+    此前这四个测试写死 `start_line=544`——那两个数只在实验室仓那本 13083 行的教材上
+    成立，换任何一本短书都会撞 `ValueError: 行号越界`。它们要验的是目录段和书架段，
+    跟具体落在哪一行无关。
+    """
+    return min(2, idx.n_lines)
+
+
 def test_usage_snapshot_is_last_call_not_a_sum() -> None:
     first = usage_snapshot(100, 20)
     second = usage_snapshot(250, 40)
@@ -247,8 +257,8 @@ def test_build_user_packet_keeps_whole_toc_and_lists_asked() -> None:
         idx,
         Path(idx.original_path),
         selected_text="x",
-        start_line=544,
-        end_line=545,
+        start_line=_a_line(idx),
+        end_line=_a_line(idx),
         chip="socratic",
         user_text="",
         asked=["上一轮抛过的那个问题？"],
@@ -273,7 +283,7 @@ def test_packet_omits_the_shelf_block_when_there_is_only_one_book() -> None:
     idx = libraries.load_index("swe-agent-v2")
     packet, _ = build_user_packet(
         idx, Path(idx.original_path), selected_text="x",
-        start_line=544, end_line=545, chip="free", user_text="",
+        start_line=_a_line(idx), end_line=_a_line(idx), chip="free", user_text="",
     )
     assert "[工作目录里的其他教材]" not in packet
 
@@ -293,7 +303,7 @@ def test_packet_carries_the_shelf_with_paths_so_the_tutor_can_read_file() -> Non
     shelf = "- 《另一本》  path: /tmp/vault/other.md\n  大纲：开篇 / 第一章"
     packet, _ = build_user_packet(
         idx, Path(idx.original_path), selected_text="x",
-        start_line=544, end_line=545, chip="free",
+        start_line=_a_line(idx), end_line=_a_line(idx), chip="free",
         user_text="另一本讲什么", shelf=shelf,
     )
     assert "[工作目录里的其他教材]" in packet
@@ -319,7 +329,7 @@ def test_packet_drops_the_shelf_block_when_the_budget_eats_every_row() -> None:
     huge = "- 《" + "长" * 4000 + "》  path: /x.md"
     packet, _ = build_user_packet(
         idx, Path(idx.original_path), selected_text="x",
-        start_line=544, end_line=545, chip="free", user_text="", shelf=huge,
+        start_line=_a_line(idx), end_line=_a_line(idx), chip="free", user_text="", shelf=huge,
     )
     assert len(huge) > tutor.SHELF_CHARS
     assert "[工作目录里的其他教材]" not in packet

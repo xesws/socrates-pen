@@ -4,9 +4,11 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from pen import diagnose, trajectory
+from pen import config, diagnose, trajectory
 from pen.app import app
-from pen.config import DEFAULT_HANDBOOK
+
+# 不写 `from pen.config import config.DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
+# conftest 的 `_default_handbook_fixture` patch 的是 config 上的属性，够不着它。
 
 
 def _q(
@@ -120,8 +122,8 @@ def test_diagnosis_endpoint_empty_and_no_handbook_write(tmp_path: Path, monkeypa
     from pen import config
 
     monkeypatch.setattr(config, "PEN_DIR", tmp_path / ".pen")
-    before = DEFAULT_HANDBOOK.read_bytes()
-    mtime = DEFAULT_HANDBOOK.stat().st_mtime
+    before = config.DEFAULT_HANDBOOK.read_bytes()
+    mtime = config.DEFAULT_HANDBOOK.stat().st_mtime
     with TestClient(app) as client:
         r = client.get("/v1/handbooks/swe-agent-v2/diagnosis")
         assert r.status_code == 200
@@ -131,8 +133,8 @@ def test_diagnosis_endpoint_empty_and_no_handbook_write(tmp_path: Path, monkeypa
         assert "footprints" in body
         missing = client.get("/v1/handbooks/no-such-book/diagnosis")
         assert missing.status_code == 404
-    assert DEFAULT_HANDBOOK.read_bytes() == before
-    assert DEFAULT_HANDBOOK.stat().st_mtime == mtime
+    assert config.DEFAULT_HANDBOOK.read_bytes() == before
+    assert config.DEFAULT_HANDBOOK.stat().st_mtime == mtime
 
 
 def test_start_line_keeps_first_hit() -> None:

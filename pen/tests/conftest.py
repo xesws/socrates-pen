@@ -42,6 +42,38 @@ def _isolate_pen_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     yield
 
 
+DEFAULT_HANDBOOK_FIXTURE = Path(__file__).parent / "fixtures" / "default_handbook.md"
+
+
+@pytest.fixture(autouse=True)
+def _default_handbook_fixture(monkeypatch: pytest.MonkeyPatch):
+    """把默认手册指到仓库自带的 fixture，不指实验室那本 13083 行的教材。
+
+    `config.DEFAULT_HANDBOOK` 原本是 `REPO_ROOT / "SWE-Agent通关手册v2.md"`——
+    那是实验室仓的教材，按 v0.14.0 的决定**不进公开仓**。于是公开仓干净 checkout 上
+    `libraries.ensure_default()` 空操作返回 None，45 条拿默认手册当地基的测试全塌
+    （test_app 36 / test_tutor 4 / test_retention 2 / test_i18n 2 / test_diagnose 1）。
+    实验室仓因为那本书在，一直是绿的，把这条依赖盖住了。
+
+    **无条件替换**，不写成「真书不在时才兜底」：条件分支会让两个仓跑的是不同的测试，
+    同一份 `pen/` 却有两种行为，比这条病本身更难查。
+
+    `DEFAULT_HANDBOOK_ID` 不动——测试只断言 id（`test_app.py:43`、`:591`），
+    不断言书的内容。
+
+    两个名字都得 patch：`pen/libraries.py:11` 是 `from pen.config import DEFAULT_HANDBOOK`，
+    import 那一刻就冻住了，只 patch `config` 够不着它。
+
+    fixture 落在 `pen/tests/fixtures/` 下，也就在 `config.REPO_ROOT` 里——
+    `sandbox.handbook_allow_roots()` 靠这个放行（`config.py:345`）。
+    """
+    from pen import config, libraries
+
+    monkeypatch.setattr(config, "DEFAULT_HANDBOOK", DEFAULT_HANDBOOK_FIXTURE)
+    monkeypatch.setattr(libraries, "DEFAULT_HANDBOOK", DEFAULT_HANDBOOK_FIXTURE)
+    yield
+
+
 @pytest.fixture(autouse=True)
 def _reset_module_state():
     """清掉跨测试残留的模块级状态。

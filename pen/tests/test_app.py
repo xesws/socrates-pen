@@ -10,7 +10,12 @@ from fastapi.testclient import TestClient
 
 from pen import config, gitops, libraries, snapshots
 from pen.app import SEARCH_REPLY, app
-from pen.config import DEFAULT_HANDBOOK, REPO_ROOT
+from pen import config
+from pen.config import REPO_ROOT
+
+# 不写 `from pen.config import config.DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
+# conftest 的 `_default_handbook_fixture` patch 的是 config 上的属性，够不着它。
+# 每处都走 `config.DEFAULT_HANDBOOK`，取的才是 patch 之后的那本。
 from pen.session import STORE
 
 FIXTURE = Path(__file__).parent / "fixtures" / "mini_handbook.md"
@@ -41,7 +46,7 @@ def test_health_and_locate_q1() -> None:
         assert client.get("/v1/health").json()["status"] == "ok"
         books = client.get("/v1/handbooks").json()["handbooks"]
         assert any(b["handbook_id"] == "swe-agent-v2" for b in books)
-        text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+        text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
         line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
         loc = client.get(f"/v1/handbooks/swe-agent-v2/locate?line={line}").json()
         assert loc["level"] == "Level 0"
@@ -285,7 +290,7 @@ def test_chat_forwards_settings_overrides(monkeypatch) -> None:
 
     monkeypatch.setattr("pen.app.merge_llm", fake_merge)
     monkeypatch.setattr("pen.app.stream_chat", fake_stream)
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
     with TestClient(app) as client:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
@@ -327,7 +332,7 @@ def test_chat_request_base_url_disables_env_fallback(monkeypatch) -> None:
         }
 
     monkeypatch.setattr("pen.app.stream_chat", fake_stream)
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
     with TestClient(app) as client:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
@@ -408,7 +413,7 @@ def test_chat_stream_raise_yields_error_and_records_not_ok(tmp_path: Path, monke
         yield  # 只是为了让本函数成为生成器：第一次 next 才抛
 
     monkeypatch.setattr("pen.app.stream_chat", boom_stream)
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
     with TestClient(app) as client:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
@@ -579,13 +584,13 @@ def test_import_rejects_arbitrary_and_unsafe_ids(tmp_path: Path, monkeypatch) ->
         assert "Markdown" in py.json()["detail"]
         bad_id = client.post(
             "/v1/handbooks/import",
-            json={"original_path": str(DEFAULT_HANDBOOK), "handbook_id": "../escape"},
+            json={"original_path": str(config.DEFAULT_HANDBOOK), "handbook_id": "../escape"},
         )
         assert bad_id.status_code == 400
         assert "handbook_id" in bad_id.json()["detail"]
         ok = client.post(
             "/v1/handbooks/import",
-            json={"original_path": str(DEFAULT_HANDBOOK), "handbook_id": "swe-agent-v2"},
+            json={"original_path": str(config.DEFAULT_HANDBOOK), "handbook_id": "swe-agent-v2"},
         )
         assert ok.status_code == 200
         assert ok.json()["handbook_id"] == "swe-agent-v2"
@@ -668,7 +673,7 @@ def test_apply_commit_failure_consumes_proposal(tmp_path: Path, monkeypatch) -> 
 
 
 def _q1_line() -> int:
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     return next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
 
 
@@ -972,7 +977,7 @@ def test_failed_spawn_gives_the_claim_back(tmp_path, monkeypatch) -> None:
         chip="socratic", user_text="", base_url="",
         merged=lambda: LLMConfig("http://x", "sk", "m", "t", "off"),
     )
-    got = _maybe_probe(sess, body, {"level": "Level 0"}, DEFAULT_HANDBOOK, "zh")
+    got = _maybe_probe(sess, body, {"level": "Level 0"}, config.DEFAULT_HANDBOOK, "zh")
     assert got is False
     assert probe_store.load("spawnfail").running == [], "坑没还回去"
 
@@ -1001,7 +1006,7 @@ def test_done_event_carries_the_merged_session_spend(monkeypatch, tmp_path) -> N
 
     monkeypatch.setattr("pen.app.stream_chat", fake_stream)
     monkeypatch.setattr("pen.app.probemod.spawn", lambda job, pid: None)
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
     with TestClient(app) as client:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
@@ -1091,7 +1096,7 @@ def _chat_body(sid: str, line: int, **over) -> dict:
 
 
 def _q1_line() -> int:
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     return next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
 
 
@@ -1135,7 +1140,7 @@ def test_approve_forwards_limits_too(monkeypatch) -> None:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
         sess = STORE.get(sid)
         sess.pending = {"id": "pid1", "name": "edit_file", "args": {},
-                        "original_path": str(DEFAULT_HANDBOOK)}
+                        "original_path": str(config.DEFAULT_HANDBOOK)}
         client.post("/v1/chat/approve", json={
             "session_id": sid, "pending_id": "pid1", "allow": False,
             "limits": {"max_tool_rounds": 5},
@@ -1270,7 +1275,7 @@ def test_propose_persists_and_returns_the_fold_spend(monkeypatch, tmp_path) -> N
         return FOLD
 
     monkeypatch.setattr("pen.app.propose_fold_md", fake_fold)
-    text = DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
     line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
     with TestClient(app) as client:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
@@ -1301,7 +1306,7 @@ def test_approve_done_also_carries_spend(monkeypatch, tmp_path) -> None:
         sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
         sess = STORE.get(sid)
         sess.pending = {"id": "p1", "name": "edit_file", "args": {},
-                        "original_path": str(DEFAULT_HANDBOOK)}
+                        "original_path": str(config.DEFAULT_HANDBOOK)}
         resp = client.post("/v1/chat/approve",
                            json={"session_id": sid, "pending_id": "p1", "allow": False})
         done = next(
