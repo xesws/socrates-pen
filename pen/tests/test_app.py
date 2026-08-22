@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import openai
+import pytest
 from fastapi.testclient import TestClient
 
 from pen import config, gitops, libraries, snapshots
@@ -1021,6 +1022,35 @@ def test_the_probe_job_learns_which_book_it_is_reading(tmp_path, monkeypatch) ->
     assert job is not None, "深挖压根没起，这条测试就没在测东西"
     assert job.book_title == title, "app 没把书名接上去"
     assert probemod.build_user_message(job).startswith("[你在带读哪本书]")
+
+
+def test_the_openapi_version_is_not_a_second_hand_copied_literal() -> None:
+    """v0.15.11。`FastAPI(version=...)` 曾经写死成 `"0.12.13"`，而
+    `pen/__init__.py` / `manifest.json` / `package.json` / `pyproject.toml`
+    四家早就是 `0.13.1`——漂了三版没人发现，因为**全仓没有任何代码读它**
+    （唯一出口是 `/openapi.json` 的 `info.version`）。没人读的常量必然过期，
+    所以这条测试就是那个读它的人。
+    """
+    from pen import __version__
+
+    assert app.version == __version__, "别在 app.py 里抄第二份版本号字面量"
+
+
+def test_the_package_version_matches_the_plugin_manifest() -> None:
+    """公开仓里 sidecar 和插件是同一个 Release tag，版本号必须一致。
+
+    用 `pytest.skip` 而不是裸 `return`：实验室仓的插件在 `obsidian/` 下，
+    根目录没有 manifest.json，那边跳过是对的——但要在报告里**留个痕**，
+    否则「静默不跑」和「跑过了」长得一模一样。
+    """
+    import json
+
+    from pen import __version__, config
+
+    manifest = config.REPO_ROOT / "manifest.json"
+    if not manifest.is_file():
+        pytest.skip("根目录没有 manifest.json（实验室仓的插件在 obsidian/ 下）")
+    assert json.loads(manifest.read_text(encoding="utf-8"))["version"] == __version__
 
 
 # ── v0.10.0 计量 ────────────────────────────────────────────────
