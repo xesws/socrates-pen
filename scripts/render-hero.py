@@ -43,6 +43,7 @@ src/views/splash.ts:74 的判断同源——那里写着「字符画只用在肖
 from __future__ import annotations
 
 import argparse
+import colorsys
 import html
 import io
 import re
@@ -74,32 +75,43 @@ PORTRAITS = {"narrow": ("PORTRAIT_NARROW", 11), "wide": ("PORTRAIT_WIDE", 11)}
 WORDMARKS = {"wide": "WORDMARK_WIDE", "narrow": "WORDMARK_NARROW", "text": None}
 
 # 这张卡不引用 styles.css：那是插件的运行期样式，会随版本变；README 的产物必须能在
-# 任何一个 commit 上原样重出。下面的色值按 styles.css:559-565 那套公式**算**出来，
-# 不是手调的：
-#     background: linear-gradient(150deg,
-#       color-mix(accent 16%, base) 0%, color-mix(accent 4%, base) 60%, base 100%)
-#     border:     1px solid color-mix(accent 18%, transparent)
-# README 里没有用户强调色，所以把 accent 冻结成演示截图里那一档。
+# 任何一个 commit 上原样重出。所以色值全部落成字面量，且每一个都说得出出处。
 #
-# ACCENT 是**量出来的**：docs/img/shot-01-splash.png 里最常见的饱和紫，出现 260 次,
-# 就是「问」按钮和状态点的颜色。这样 hero 和 §2 起那一批界面图是同一个色系。
+# ACCENT 是**量出来的**：docs/img/shot-01-splash.png 里最常见的饱和紫，出现 260 次，
+# 就是「问」按钮和状态点的颜色。它在这里只管边框和分隔线，不再参与底色。
 # 标语取插件 i18n 里那一条，不另起炉灶：src/i18n/zh.ts 的 splashTagline。
 TAGLINE = "苏格拉底学习法"
 
 ACCENT = (0x8A, 0x5C, 0xF6)
 
-# 三档底色，每档是 (base, top_ratio, mid_ratio)：base 是渐变尾端的纯色，两个比例
-# 按插件那条 color-mix 公式把 ACCENT 兑进 base。插件原式是 16%/4% 兑进中性灰
-# #1E1E1E，尾段因此褪成灰——那是因为它嵌在暗色 UI 里，褪成灰才不抢戏。
-# hero 是白页上的孤岛，尾段一褪灰整张卡就没了色相，所以 base 本身也要染紫。
+# 底色的锚是 REFERENCE，读者点名的那个紫。它不是审美偏好，是**插件在读者主题下的
+# 实际底色**：docs/img/shot-01-splash.png 里 22.5% 的像素恰好是这个值，铺满启动卡
+# 的整个上半幅。hero 用它，README 顶上那张卡就和读者打开插件第一眼看到的那张同色。
+#
+# 上一版（v0.16.5）走的是 styles.css:559-565 那条 color-mix(accent 24%, #241E30)，
+# 算出 #3C2D60 = H257 S36 L28。对着参考色 H261 S20 L20 一比：亮 8 个明度点、
+# 饱和度高 16 个点。「太浅」说的就是这两条——把高饱和的强调色直接当底色兑，
+# 出来的是廉价的紫；压住饱和度、压低明度，才是那个稳重的紫。
+REFERENCE = "#30293D"          # H261.0  S19.6  L20.0
+
+# 每档是 linear-gradient 的三个色标：0% / 60% / 100%。
+# noble 两档都钉死在参考色的色相与饱和度上（H261 S20），只动明度——
+# 整张卡因此只有一个紫，没有第二个色相混进来。
 TINTS = {
-    "violet-deep": ((0x24, 0x1E, 0x30), 0.24, 0.07),   # 默认：全程紫，仓里那张
-    "violet":      ((0x22, 0x1E, 0x2A), 0.16, 0.04),   # 同色系淡一档
-    "faithful":    ((0x1E, 0x1E, 0x1E), 0.16, 0.04),   # 照搬插件，前紫后灰
+    # 默认：参考色本身就是最亮的那一端，往尾部压到 L15。卡上没有任何一个像素
+    # 比读者点名的那个紫更浅——这一条是对「太浅」的直接回答。
+    "noble":      ("#30293D", "#2A2436", "#241F2E"),   # L 20.0 → 17.6 → 15.0
+    # 参考色挪到 60% 那个色标，顶端抬到 L24：渐变更看得出来，代价是左上角
+    # 比读者给的那个紫亮 4 个明度点。
+    "noble-lift": ("#393148", "#30293D", "#272132"),   # L 23.7 → 20.0 → 16.3
+    # 照搬 styles.css:559-565 的公式：color-mix(accent 16%/4%, #1E1E1E)。
+    # 尾段褪成中性灰——插件嵌在暗色 UI 里该这样，白页上的 hero 不该这样。
+    "faithful":   ("#2F2841", "#222027", "#1E1E1E"),
 }
 
 
 def _mix(fg, bg, r):
+    """color-mix(in srgb, fg r%, bg)。"""
     return tuple(int(round(f * r + b * (1 - r))) for f, b in zip(fg, bg))
 
 
@@ -107,14 +119,40 @@ def _hx(c):
     return "#%02X%02X%02X" % c
 
 
+def _hsl(hexstr):
+    c = tuple(int(hexstr[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    h, l, s = colorsys.rgb_to_hls(*c)
+    return h * 360, s * 100, l * 100
+
+
+# faithful 那三个值是上面那条公式算出来的，写成字面量只为好 grep。在这儿钉住：
+# 公式改了、字面量手抖改了，导入时就炸，不会悄悄出一张对不上出处的图。
+_FAITHFUL_BASE = (0x1E, 0x1E, 0x1E)
+assert TINTS["faithful"] == (_hx(_mix(ACCENT, _FAITHFUL_BASE, 0.16)),
+                             _hx(_mix(ACCENT, _FAITHFUL_BASE, 0.04)),
+                             _hx(_FAITHFUL_BASE)), TINTS["faithful"]
+
+# noble 两档只准动明度。色相/饱和度一旦漂了，卡上就会出现第二个紫，
+# 那正是上一版被读者退回的毛病。
+for _name in ("noble", "noble-lift"):
+    _rh, _rs, _ = _hsl(REFERENCE)
+    for _stop in TINTS[_name]:
+        _h, _s, _ = _hsl(_stop)
+        assert abs(_h - _rh) <= 1.5 and abs(_s - _rs) <= 1.0, (_name, _stop, _h, _s)
+
+
 def palette(tint):
-    """按插件公式算出这一档的渐变、边框和分隔线。"""
-    base, top, mid = TINTS[tint]
+    """这一档的渐变、边框、分隔线。"""
+    top, mid, base = TINTS[tint]
     return {
-        "GRAD": "linear-gradient(150deg,%s 0%%,%s 60%%,%s 100%%)"
-                % (_hx(_mix(ACCENT, base, top)), _hx(_mix(ACCENT, base, mid)), _hx(base)),
-        "BORDER": "rgba(%d,%d,%d,0.22)" % ACCENT,
-        "RULE": "rgba(%d,%d,%d,0.30)" % ACCENT,
+        "GRAD": "linear-gradient(150deg,%s 0%%,%s 60%%,%s 100%%)" % (top, mid, base),
+        # 18% 是 styles.css:569 的原值（border: color-mix(accent 18%, transparent)）。
+        # 实测也对得上：读者那张样图圆角上的描边合成后是 #3D315D，反解 α≈0.16。
+        # 上一版用的 0.22 既不是原值也偏亮，跟着这次一起改回去。
+        "BORDER": "rgba(%d,%d,%d,0.18)" % ACCENT,
+        # 分隔线是 hero 自己加的（插件那张竖排卡没有），没有可照搬的原值；
+        # 底色压暗之后 0.30 显得跳，收到 0.26。
+        "RULE": "rgba(%d,%d,%d,0.26)" % ACCENT,
     }
 TEMPLATE = """<!doctype html>
 <html><head><meta charset="utf-8"><style>
@@ -232,7 +270,7 @@ def build_html_col(portrait: str, word: str, fp: float, fw: float,
 
 
 def build_html(portrait: str, word: str, fp: float, fw: float, gap: float,
-               tint: str = "violet-deep", tagline: str = TAGLINE) -> str:
+               tint: str = "noble", tagline: str = TAGLINE) -> str:
     if word is None:
         block = '<div id="wordtext">SOCRATES</div>'
     else:
@@ -336,9 +374,10 @@ def main() -> None:
                          "横排右栏里认不出字母，见模块头")
     ap.add_argument("--gap", type=float, default=41.5,
                     help="肖像与右栏之间的间距；字标字号由剩下的宽度反算")
-    ap.add_argument("--tint", choices=sorted(TINTS), default="violet-deep",
-                    help="底色档位：violet-deep=全程紫（默认，仓里那张就是它）；"
-                         "violet=同色系但淡一档；faithful=照搬插件公式，尾段褪成灰")
+    ap.add_argument("--tint", choices=sorted(TINTS), default="noble",
+                    help="底色档位：noble=以参考色 %s 为最亮端（默认，仓里那两张）；"
+                         "noble-lift=参考色摆中间、顶端再抬一档；"
+                         "faithful=照搬插件 color-mix 公式，尾段褪成灰" % REFERENCE)
     ap.add_argument("--tagline", default=TAGLINE,
                     help="卡片上那句标语，默认取 src/i18n/zh.ts 的 splashTagline")
     ap.add_argument("--no-quantize", action="store_true")
