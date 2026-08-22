@@ -58,7 +58,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 # 版本号**从 `pen/__init__.py` 读**，不在这儿抄一份字面量。抄的那份会漂：
 # 它一直卡在 0.12.13，而 manifest.json / package.json / pyproject.toml 三家
 # 早就是 0.13.1 了。全仓没有任何代码读这个字段（唯一出口是 /openapi.json 的
-# info.version），所以漂了三版都没人发现——正是「没人读的常量必然过期」。
+# info.version），所以它落下了后面那两个发布都没人发现——正是「没人读的常量必然过期」。
 app = FastAPI(title="Socratic Pen", version=__version__, lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,

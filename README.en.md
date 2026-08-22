@@ -1051,12 +1051,14 @@ This section is here on purpose.
   carry their own fallback handbook. The constant itself hasn't been cleaned up.
 - **A comment in `src/deeppoll.ts` says "at most 5 minutes"; the constant is 480 seconds.**
   The constant is right (a cross-book exploration was measured at 351 s); the comment didn't keep up.
-- **The lab repo's copy of the plugin has drifted three versions, and nothing watches it.**
+- **The lab repo's copy of the plugin is two releases behind, and nothing watches it.**
   In this repo `manifest.json` / `package.json` / `pyproject.toml` / `pen/__init__.py` all agree,
   and since v0.15.13 one test enforces all four at once (v0.15.11 built the gate watching only
   `manifest.json` — the three it left out being exactly the ones a release forgets). But the plugin
   was originally copied over from another,
-  private repo, whose `obsidian/manifest.json` still sits at `0.12.13`. The two `src/` trees have
+  private repo, whose `obsidian/manifest.json` still sits at `0.12.13` — this plugin has only ever
+  shipped three versions (the keys of `versions.json` are the complete list: `0.12.13` / `0.13.0` /
+  `0.13.1`), so what it missed is the latter two. The two `src/` trees have
   genuinely diverged (this one has an extra `sidecar.ts`, and four other files differ), so that copy
   **may well be frozen on purpose** — but no document anywhere states that policy, and the new
   version gate happens to skip exactly there. The place that skips is the place that drifted, and

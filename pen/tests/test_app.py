@@ -1027,7 +1027,7 @@ def test_the_probe_job_learns_which_book_it_is_reading(tmp_path, monkeypatch) ->
 def test_the_openapi_version_is_not_a_second_hand_copied_literal() -> None:
     """v0.15.11。`FastAPI(version=...)` 曾经写死成 `"0.12.13"`，而
     `pen/__init__.py` / `manifest.json` / `package.json` / `pyproject.toml`
-    四家早就是 `0.13.1`——漂了三版没人发现，因为**全仓没有任何代码读它**
+    四家早就是 `0.13.1`——落下了后面两个发布没人发现，因为**全仓没有任何代码读它**
     （唯一出口是 `/openapi.json` 的 `info.version`）。没人读的常量必然过期，
     所以这条测试就是那个读它的人。
     """
@@ -1051,7 +1051,8 @@ def test_all_four_version_sources_agree() -> None:
     用 `pytest.skip` 而不是裸 `return`，因为「静默不跑」和「跑过了」长得一模一样。
     **skip 的措辞只陈述事实，不下判断**：实验室仓的插件在 `obsidian/` 下、
     根目录确实没有这些文件，但那边 `obsidian/manifest.json` 现在是 `0.12.13`
-    ——已经和 `pen/__init__.py` 漂开三版了。跳过的地方恰好就是漂了的地方，
+    ——落后 `pen/__init__.py` 两个发布（这个插件总共只发过 `0.12.13` /
+    `0.13.0` / `0.13.1` 三个版本，`versions.json` 的 key 就是完整清单）。跳过的地方恰好就是漂了的地方，
     这件事该被人看见，不该被一句「那边跳过是对的」盖住。
     """
     import json
