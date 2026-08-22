@@ -35,7 +35,7 @@
 [System design](#4--system-design) ·
 [Install · Use · Privacy](#5--install--use--privacy) ·
 [Development](#6--development--tests--license) ·
-[Known gaps](#7--known-gaps)
+[Future Works](#7--future-works)
 
 ---
 
@@ -136,7 +136,7 @@ and that section's caption says so.
 
 One thing about reading them: the demo handbook is written in Chinese and the model answers in the
 language of the book, so the answers quoted below are translations, with the verbatim original one
-click away under each. [Known gaps](#7--known-gaps) explains why the language switches.
+click away under each. [Future Works](#7--future-works) explains why the language switches.
 
 ### 3.1 · Don't give it away — `socratic`
 
@@ -833,7 +833,7 @@ Three things to check before you start:
 One more thing worth knowing up front: the plugin UI is fully localised, but the model tends to
 answer in the language of the book you feed it, so an English handbook is what you want for an
 English session — the bundled demo handbook is Chinese. Two rough edges remain here, both listed
-under [Known gaps](#7--known-gaps).
+under [Future Works](#7--future-works).
 
 Once it's in the community plugin directory, go **Settings → Community plugins → Browse →
 Socrates**. Until then install it by hand: download `main.js`, `manifest.json` and `styles.css`
@@ -949,14 +949,14 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 ---
 
-## 7 · Known gaps
+## 7 · Future Works
 
-This section covers what is known to be unfinished and known to rub you the wrong way. The most
-immediate one: **the `search` chip is still a placeholder** — you can see it in the sidebar, but it
-is greyed out and not clickable, and only hovering tells you: "Lands in P2. It won't pretend it
-searched." It isn't simply deleted because sooner or later you will wonder whether it can look
-something up, and a greyed-out chip that can say why it is greyed out is more honest than an
-interface that says nothing: it admits the need exists and admits it can't be met yet.
+These are the pieces that are not done yet, or that we already know work poorly.
+
+The most visible one: **the `search` chip is still a placeholder**. It shows up in the sidebar, greyed
+out and not clickable; hovering says "Lands in P2. It won't pretend it searched." It stays because
+people will eventually ask whether it can look something up; deleting it would pretend that request
+does not exist.
 
 **The eight-beat format contract is a hard-coded Chinese literal**, `pen/probe.py:76` being
 `THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 means the `vs_real` axis never
