@@ -1027,7 +1027,7 @@ def test_the_probe_job_learns_which_book_it_is_reading(tmp_path, monkeypatch) ->
 def test_the_openapi_version_is_not_a_second_hand_copied_literal() -> None:
     """v0.15.11。`FastAPI(version=...)` 曾经写死成 `"0.12.13"`，而
     `pen/__init__.py` / `manifest.json` / `package.json` / `pyproject.toml`
-    四家早就是 `0.13.1`——落下了后面两个发布没人发现，因为**全仓没有任何代码读它**
+    四家早就是 `0.13.1`——它一连落下两个发布都没人发现，因为**全仓没有任何代码读它**
     （唯一出口是 `/openapi.json` 的 `info.version`）。没人读的常量必然过期，
     所以这条测试就是那个读它的人。
     """
