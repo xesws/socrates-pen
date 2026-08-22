@@ -39,128 +39,70 @@
 
 ---
 
-**It is not equally good on any note.** The main conversation runs against any Markdown;
-but the **background deep-dive needs anchors in the book**, which means the handbook has to
-follow the eight-beat format (each level carrying sections like "third beat · origins" and
-"seventh beat · working code"). Without them, one of the five deep-dive axes dies outright.
-[`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) is a template you can copy —
-see [4.9](#49--handbook-agnostic-v0150--v0157).
-
-> **A note on the examples below.** Every transcript in this README was really captured —
-> raw request bodies and SSE event streams live in
-> [`docs/demo/transcripts/`](docs/demo/transcripts/). Exactly one thing was edited after capture:
-> the capture environment's temporary absolute paths were rewritten to `/Users/you/…`
-> ([details](docs/demo/transcripts/README.md)). Nothing else. The demo handbook is written
-> in Chinese, and the model answers in the language of the book, so the answers you'll see
-> quoted are translations; the verbatim original is one click away under each one —
-> **except in [3.7](#37--between-two-books)**, whose two excerpts come from the author's own
-> local `.pen/` and are not shipped with the repo (they are full of private vault paths).
-> That is the one place in this document you cannot check for yourself, and its caption says so.
-> See [Known gaps](#7--known-gaps) for why the language switch happens.
-
----
-
 ## 1 · Why this exists
 
-It started with a book.
+Socrates is an Obsidian plugin. Highlight a passage in a note and the sidebar takes that passage as
+its topic; when the conversation lands on something worth keeping, it can write the result back
+into the note. It takes exactly one situation seriously: one person working through one long
+handbook, where the book is thick, the author is not in the room, and you are the only reader.
+Capturing ideas and polishing prose are not what it is for.
 
-A **13,083-line, 626 KB** handbook titled *Building a SWE Agent by Hand*. One person wrote it.
-One person was reading it. It is not the kind of book you can skim — every level rests on the
-conclusions of the one before it, and a single line in Level 7 ("so this has to read first")
-has its reasoning buried three layers deep inside a design decision in Level 2.
+The book it started from is **13,083 lines and 626 KB**, written by one person and read by exactly
+one. Skimming a book like that buys you nothing: every level rests on the conclusions of the one
+before it, and a single line in Level 7 ("so this has to read first") has its reasoning buried
+three layers deep inside a design decision back in Level 2. The hard part was never comprehension —
+the hard part is that when you get stuck, **there is nobody to ask**.
 
-Reading a book like that, the real problem isn't comprehension. It's that
-**when you get stuck, there is nobody to ask.**
+A general-purpose chatbot cannot fill that seat. It has not read your book, so when you paste the
+passage in you get a competent, generic explanation: correct, and unrelated to the book in your
+hands. It does not know how the concept was set up in Level 2, it does not know the author already
+rejected a simpler approach in decision ② of Level 4, and it does not know that you asked almost
+this exact question three minutes ago.
 
-You can paste the passage into a general-purpose chatbot. But it hasn't read your book.
-It gives you a competent, generic explanation — **correct, and unrelated to the book in your hands**.
-It doesn't know how the concept was set up in Level 2, doesn't know the author already rejected
-a simpler approach in decision ② of Level 4, and certainly doesn't know you asked almost this
-exact question three minutes ago.
+So every design choice here grows out of one sentence: **put someone who has actually read this
+book, and knows where you are in it, next to you.** Someone sitting next to you does not open by
+handing over the answer. The default chip is called `socratic`, and its whole job is to hold the
+answer back and ask you a question instead; a tool that asks by default and a tool that answers by
+default are two different tools, because the second one has already done the thinking for you.
 
-So: this. Every design choice grows out of one sentence.
+Three further promises are kept **in code, not in a prompt**. Web search is not wired up, so the
+`search` chip sits greyed out and says so when clicked, rather than pretending to have searched.
+The model may not edit a passage unless it genuinely read that file in an earlier turn, and the
+execution layer keeps that ledger — claiming to have read it does not count. Sessions, snapshots
+and the deep-dive ledger never leave your machine; once installed, the only call that goes out is
+to the model endpoint you configured, and no telemetry exists in this repository. Where each of the
+three is enforced, line by line, is [section 4](#4--system-design).
 
-> **Put someone who has actually read this book — and knows where you are in it — next to you.**
-
-### It wasn't called Socrates at first
-
-It was a "reading pen," and the model called itself "Master."
-
-The v0.11.0 notes record the problem: the two names fought each other. A reading pen is
-*you point, it reads*. A Master is *it speaks, you listen*. What was actually wanted was neither.
-
-The rename **started in the prompt**, not in the UI. Change the model's self-concept first,
-then work outward to the label on the sidebar. The final name is **Socrates**, because the
-default chip is `socratic`, and its entire job is:
-
-> **Don't give it away. Ask me a question instead.**
-
-That's a first-principles product decision, not a tagline. A tool that answers by default and a
-tool that questions by default are two different tools.
-
-### Three creeds, each backed by code
-
-Not a values statement. Three hard constraints you can point at, line by line.
-
-**1 · If search isn't on, say it isn't on. Never pretend to have searched.**
-
-There is a `search` chip in the sidebar that is **visible and permanently disabled**.
-The frontend stops it dead (`src/views/PenView.ts:938`, one line: `if (chip === "search") return;`),
-and the backend chip definition (`pen/session.py:38`) says plainly that it has no network.
-
-Why not just delete it? Because sooner or later you *will* wonder whether it can look things up.
-A greyed-out chip that tells you "not wired yet" is **more honest** than a UI that says nothing —
-it admits the need exists, and admits it isn't met.
-
-**2 · Guessing without reading is what a con artist does.**
-
-This one has a source. In a real session, the model was asked what the *other* book covered:
-
-> As for what that *Handbook* actually says and how it divides labour with this one —
-> give me its path and I'll go read it before I answer.
-> **Guessing without reading is what a con artist does; a Master doesn't.**
-
-(Note the last three words. **That is the sentence that got it renamed** — the persona landed,
-the name didn't.)
-
-And the discipline isn't enforced by asking the prompt nicely. To edit a passage in your note,
-the model must have genuinely `read_file`'d that path in an **earlier turn**.
-Not "claimed to" — the execution layer keeps the books.
-`read_first_block()` (`pen/agent/permissions.py:23`) is a hard gate, and it even blocks
-"read then edit in the same batch of tool_calls" — because in one batch, the edit's arguments
-were chosen **before the read result came back**. That's still guessing.
-
-**3 · Your data does not leave your machine.**
-
-Sessions, snapshots, the deep-dive ledger — all under a local `.pen/`. The only thing that
-goes out is a call to the model endpoint *you* configured. No telemetry endpoint exists in
-this repository.
-
-### Three steps got it here
-
-| Version | |
-| --- | --- |
-| **v0.2.0** | Moved out of a web app and into Obsidian. Learning happens in your notes, so the tool should live in your notes |
-| **v0.13.0** | The plugin learned to start the backend itself. **No terminal required** — before this, installing it meant knowing a shell |
-| **v0.15.0** | Pulled the handbook out of the prompt. Until then the system prompt's first sentence **hard-coded** that one SWE Agent book; now the title is injected from the first-line H1 of *your* note. **It no longer serves only one book** |
-
-Every example below runs against **a different book** — a 1,405-line handbook,
-*Building DQN from Scratch*, which ships in this repository under
-[`docs/demo/`](docs/demo/) so you can reproduce all of it.
+Every example below runs against a different book: *Building DQN from Scratch*, 1,405 lines,
+shipped in this repository under [`docs/demo/`](docs/demo/). Import it into your own vault and you
+can reproduce every exchange in the next section yourself — this README does not ask you to take a
+screenshot's word for it.
 
 ---
 
 ## 2 · What it actually does, in 30 seconds
 
-1. **Highlight** a passage in a note.
-2. Open the sidebar and **click a chip** — the row of preset prompts: don't give it away /
-   explain to a beginner / just ask / write it back… — or simply type.
-3. He **reads your note first**, then answers — or turns the question back on you.
-4. Meanwhile a **separate background line** (called the **deep-dive ◆** below) reads *elsewhere in
-   the same book*, assembling deeper questions to hand you later.
-5. Want the answer kept in the note? He proposes one edit. **You click Allow, then it lands.**
+A full pass is five steps, and all five happen between your note and the sidebar beside it: no
+leaving Obsidian, no terminal, nothing to feed to anyone in advance. The first four only read and
+ask. Only the last one touches your disk, and only once you have said so yourself.
+
+1. Highlight a passage in a note.
+2. Open the sidebar and click a chip (don't give it away / explain to a beginner / examples only /
+   write it back), or simply type your question.
+3. He reads your note first, then answers you — or turns the question back on you.
+4. Meanwhile a separate background line (the deep-dive ◆ below) reads elsewhere in the same book,
+   assembling deeper questions to hand you later.
+5. Want the answer kept in the note? He proposes one edit, and nothing lands on disk until you
+   click Allow.
 
 <!-- shot-01-splash.png / shot-02-socratic.png / shot-03-deep.png / shot-04-approval.png: batch 2 -->
+
+**It is not equally good on any note.** The main conversation runs against any Markdown, but the
+background deep-dive needs anchors in the book, which means the handbook has to follow the
+eight-beat format: every level carrying sections like "third beat · origins" and "seventh beat ·
+working code". Without them one of the five deep-dive axes dies outright and the other four carry
+on. [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) is a template you can copy, and
+[4.9](#49--handbook-agnostic) explains why the format has to be that one.
 
 ---
 
@@ -173,6 +115,17 @@ That passage splits the answer into three layers: mathematical, dynamical, engin
 Every answer below came from **`deepseek/deepseek-v4-flash`** (via an OpenRouter endpoint),
 running against an isolated **sidecar** — the small Python service the plugin starts on your machine.
 Any OpenAI-compatible Chat Completions endpoint works — **but that one combination is all I actually tested.**
+
+Every transcript below was really captured: raw request bodies and SSE event streams live in
+[`docs/demo/transcripts/`](docs/demo/transcripts/), linked under each quote. Exactly one thing was
+edited afterwards — the capture environment's temporary absolute paths became `/Users/you/…`
+([details](docs/demo/transcripts/README.md)). The two excerpts in [3.7](#37--between-two-books) are
+the one exception: they come from the author's own local sessions, are full of private vault paths,
+and that section's caption says so.
+
+One thing about reading them: the demo handbook is written in Chinese and the model answers in the
+language of the book, so the answers quoted below are translations, with the verbatim original one
+click away under each. [Known gaps](#7--known-gaps) explains why the language switches.
 
 ### 3.1 · Don't give it away — `socratic`
 
@@ -554,40 +507,32 @@ and when one is purged its bill goes with it.
 
 <img src="docs/img/arch.drawio.svg" alt="Three processes, one loopback" width="100%">
 
-An Obsidian plugin (TypeScript) + a local sidecar (Python / FastAPI) + the model endpoint you configured.
+An Obsidian plugin (TypeScript), a local sidecar (Python / FastAPI), and the model endpoint you
+configured — three processes, with a loopback between them. The plugin never calls the author's
+server and there is no telemetry endpoint in this repository; the sidecar binds `127.0.0.1` only,
+and putting a non-local address in settings makes `parseListen` throw `new Error("not-loopback")`
+(`src/sidecar.ts:52`) rather than warn.
 
-- **The plugin never calls the author's server.** There is no telemetry endpoint in this repository.
-- **The sidecar binds `127.0.0.1` only.** Put a non-local address in settings and `parseListen`
-  throws `new Error("not-loopback")` (`src/sidecar.ts:52`) — not a best-effort warning.
-- **Model calls leave from your machine**, to **your endpoint**. Any OpenAI-compatible
-  Chat Completions endpoint works.
-
-On first enable the plugin builds `~/.socrates-pen/venv` and pip-installs the sidecar
-(reaching GitHub and PyPI). After that it's all local.
+Model calls leave from your machine, to your endpoint, and any OpenAI-compatible Chat Completions
+endpoint works. The one other thing that leaves the machine is the first enable: the plugin builds
+`~/.socrates-pen/venv` and pip-installs the sidecar from GitHub and PyPI. After that it's all local.
 
 ### 4.2 · The toolbox holds exactly two tools
 
-`read_file` and `edit_file`. **No bash, no write_file, no shell.**
-
-Permissions are three-valued, not a switch:
-
-- **`read_file`** — allow, passes automatically
-- **`edit_file`** — ask, opens an approval **every single time**
-- **any other name** — deny, unrecognised means refused
-
-That last row is **deny by default**, not allow by default. If the model hallucinates a
-`run_command`, it hits a wall.
+The toolbox holds `read_file` and `edit_file`, and nothing else — **no bash, no write_file, no
+shell**. Permissions aren't a switch either, they're three-valued: `read_file` is allow and passes
+automatically; `edit_file` is ask and opens an approval **every single time**; any other name is
+deny, because unrecognised means refused. That last one is deny by default rather than allow by
+default, so if the model hallucinates a `run_command`, it hits a wall.
 
 ### 4.3 · Read-first is a hard gate
 
-To edit a passage, it must have successfully read that file in an **earlier turn**.
-
-**Read-then-edit inside one batch of `tool_calls` is also blocked.** That looks like over-engineering
-and isn't: within a single batch both calls' arguments are generated **at the same time** — when
-`edit_file`'s `old_string` was written, the `read_file` result had not come back. That's still
-guessing, just a better-dressed guess.
-
-When blocked, the model doesn't get a bare refusal — it gets **instructions for doing it right**:
+To edit a passage, the model must have successfully read that file in an **earlier turn**, and
+read-then-edit inside one batch of `tool_calls` is blocked just the same. That looks like
+over-engineering and isn't — within a single batch both calls' arguments are generated at the same
+time, so when `edit_file`'s `old_string` was written the `read_file` result had not come back. That
+is still guessing, just a better-dressed guess. When blocked, the model doesn't get a bare refusal;
+it gets instructions for doing it right:
 
 > Error: you must successfully read_file the same path before edit_file. First read_file to see the
 > original with line numbers (format `N\ttext`), then call edit_file on its own in the next turn
@@ -697,18 +642,15 @@ drifting — clamping to 30 on one side and 60 on the other is a bug that only e
 <img src="docs/img/gates.drawio.svg" alt="All the gates: one set for money, another for safety" width="100%">
 
 Three token ceilings, **accounted for and capped separately**: main conversation, background
-deep-dive, cross-book reading. The reason is practical — **a background overrun must not cut off
-the turn you're reading.**
+deep-dive, cross-book reading. The reason is practical — a background overrun must not cut off the
+turn you're reading. All three default to 0 and 0 means unlimited, the whole test being one line,
+`cap > 0 and (spent + max(0, headroom)) >= cap` (`pen/meter.py:167`); that `cap > 0` half *is* the
+entire implementation of "0 means unlimited."
 
-Three properties worth remembering:
-
-1. **All default to 0, and 0 means unlimited.** The whole test is one line:
-   `cap > 0 and (spent + max(0, headroom)) >= cap` (`pen/meter.py:167`). The `cap > 0` half *is* the entire
-   implementation of "0 means unlimited."
-2. **Going over is not an error.** It appends a sentence telling the model to wrap up; it does not
-   raise. What you see is a shorter answer, not a red exclamation mark.
-3. ⚠️ **The main-conversation cap is not a hard ceiling.** Once the limit is reached you will still
-   get **one more answer** (that turn had already started). The settings page says so, and so does this.
+Going over is not an error. It appends a sentence telling the model to wrap up rather than raising,
+so what you see is a shorter answer, not a red exclamation mark. **The main-conversation cap is not
+a hard ceiling**: once the limit is reached you will still get one more answer, because that turn
+had already started. The settings page says so, and so does this.
 
 ### 4.8 · Sessions expire, and their bills go with them
 
@@ -729,21 +671,13 @@ That "and not an empty session" in the third row was a later tightening. The fir
 
 <sup>`pen/retention.py`; the module header carries the full measurement log</sup>
 
-### 4.9 · Handbook-agnostic (v0.15.0 · v0.15.7)
+### 4.9 · Handbook-agnostic
 
-Before this version, the first sentence of `SYSTEM_PROMPT` was hard-coded:
-
-```
-You are Socrates, sitting beside the reader, walking them through a handbook on
-building a SWE Agent by hand.
-```
-
-That string was **the entire content of `messages[0]` in every session**, frozen and persisted at
-creation. Run it against a different book and the model is told, in its first sentence, that it's
-reading a book it isn't reading.
-
-Now the title is injected from **the first-line H1 of your note**. The `messages[0]` actually
-persisted in that run begins:
+It works against any Markdown handbook, and the title is injected from **the first-line H1 of your
+note**. That sentence is the first line of `SYSTEM_PROMPT`, which is the entire content of
+`messages[0]` in every session, frozen and persisted the moment the session is created — hard-code
+a title there and the model is told, in its very first sentence, that it is reading a book it isn't
+reading. The `messages[0]` actually persisted in that run begins:
 
 > 你是苏格拉底，坐在读者旁边，正在带人读一本叫《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》的通关手册。
 >
@@ -754,13 +688,12 @@ The word **`SWE` appears 0 times** in the whole prompt.
 
 <sup>Raw: [`02b-system-prompt.json`](docs/demo/transcripts/02b-system-prompt.json)</sup>
 
-**But that only fixed half of it, and it took three more versions to notice.** v0.15.0 changed
-the main conversation. The background deep-dive runs on a separate prompt, and its user packet gave
-the model the position, the reader's words, what Socrates just said, the footprint, the shelf, the
-questions already asked — **everything except which book this is**. It could only infer the subject
-from level numbers, beat names and the excerpt, so it followed the names in the five worked examples
-in its prompt — and those five come from the SWE handbook. v0.15.7 injects the title, through the
-same cleaner `messages[0]` uses:
+The title has to be injected twice, because there are two prompt paths. The background deep-dive
+runs on a separate one, and its user packet gives the model the position, the reader's words, what
+Socrates just said, the footprint, the shelf and the questions already asked — everything except
+which book this is. It could only infer the subject from level numbers, beat names and the excerpt,
+so it followed the names in the five worked examples in its own prompt, and those five come from a
+different book. That path now carries the title too, through the same cleaner `messages[0]` uses:
 
 ```
 [你在带读哪本书]
@@ -771,17 +704,13 @@ same cleaner `messages[0]` uses:
 *("Which book you're walking them through" · "Everything below comes from this book. What it's
 about — read the material; don't infer it from some other book.")*
 
-<sup>`pen/probe.py:build_user_message`. A review agent caught this one: v0.15.4 had only added a line
-to the prompt saying "those five examples come from a different book, don't copy their names." That
-was mitigation — the model complied, and still had no idea what book it was holding.</sup>
+<sup>`pen/probe.py:build_user_message`</sup>
 
 **But the eight-beat structure stayed, on purpose.** "Third beat · origins," "fifth beat · Meta
-Question gate" and the rest aren't that book's *content*, they're a **format contract** — the
-`vs_real` axis requires its anchor to land on the origins beat, and `examples` requires example names
-to match the seventh beat.
-
-**The handbook format and the deep-dive algorithm are interlocked.** Write your book in this format
-and the deep-dive has somewhere to drop anchors.
+Question gate" and the rest aren't that book's *content*, they're a **format contract**: the
+`vs_real` axis requires its anchor to land on the origins beat, and `examples` requires example
+names to match the seventh beat. The handbook format and the deep-dive algorithm are interlocked —
+write your book in this format and the deep-dive has somewhere to drop anchors, and
 [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) is a template you can copy.
 
 ### 4.10 · One turn, from highlight to written word
@@ -860,78 +789,76 @@ CHECK OK
 
 ## 5 · Install · Use · Privacy
 
-### Requirements
+### Install
+
+Three things to check before you start:
 
 - **Obsidian desktop 1.5.0 or later** (not mobile — it starts a Python process on your machine)
 - **Python 3.11 or later** on this computer ([python.org](https://www.python.org/downloads/))
 - An **API key** for an OpenAI-compatible Chat Completions endpoint
 
-**On language.** The plugin UI is fully localised. The bundled demo handbook is Chinese, and the
-model tends to answer in the language of the book you feed it — so an English handbook is what you
-want for an English session. Two rough edges remain; both are listed under
-[Known gaps](#7--known-gaps).
+One more thing worth knowing up front: the plugin UI is fully localised, but the model tends to
+answer in the language of the book you feed it, so an English handbook is what you want for an
+English session — the bundled demo handbook is Chinese. Two rough edges remain here, both listed
+under [Known gaps](#7--known-gaps).
 
-### Install
+Once it's in the community plugin directory, go **Settings → Community plugins → Browse →
+Socrates**. Until then install it by hand: download `main.js`, `manifest.json` and `styles.css`
+from the [latest GitHub Release](https://github.com/xesws/socrates-pen/releases), put them in
+`<Vault>/.obsidian/plugins/socrates-pen/`, and enable it under **Settings → Community plugins**
+with Restricted mode off.
 
-Once it's in the community plugin directory: **Settings → Community plugins → Browse → Socrates**.
-
-Until then, download `main.js`, `manifest.json` and `styles.css` from the
-[latest GitHub Release](https://github.com/xesws/socrates-pen/releases) and put them in:
-
-```
-<Vault>/.obsidian/plugins/socrates-pen/
-```
-
-Enable it under **Settings → Community plugins** (Restricted mode must be off).
-
-**The first launch takes about a minute.** The plugin creates an isolated environment at
-`~/.socrates-pen/venv` and pip-installs the sidecar from this repository (reaching GitHub and PyPI).
-Afterwards the top line of **Settings → Socrates** shows whether the local service is running.
-
-**No terminal required.** That's what v0.13.0 was for.
+The first launch takes about a minute: the plugin creates an isolated environment at
+`~/.socrates-pen/venv` and pip-installs the sidecar from this repository, which reaches GitHub and
+PyPI. Afterwards the top line of **Settings → Socrates** shows whether the local service is
+running. No terminal required at any point.
 
 ### Use
 
-1. Wait until the settings page says the local service is **running** (or click **Start**).
-2. **Settings → Socrates**: fill in your API key; optionally change base URL, model and thinking level.
-3. Open a note and **highlight a passage** (live preview or reading view).
-4. Open the Socrates sidebar to use the current selection, or run the command-palette item.
-5. To write an answer into the note: say **where to insert or replace**, or use the write-back chip
-   after a real answer. The model must read the file first, then propose an edit **in a separate turn**.
-   The sidebar asks you to **Allow** before anything is saved.
-6. **Roll back / Redo** restore **the whole note** from the snapshot stack, not just the selection.
+1. Wait until the settings page says the local service is **running**, or click **Start**; then
+   fill in your API key under **Settings → Socrates**, optionally changing base URL, model and
+   thinking level.
+2. Open a note and **highlight a passage** (live preview or reading view), then open the Socrates
+   sidebar to use the current selection, or run the command-palette item.
+3. To write an answer into the note, say **where to insert or replace**, or use the write-back chip
+   after a real answer. The model must read the file first, then propose an edit in a separate
+   turn; the sidebar asks you to **Allow** before anything is saved.
+4. **Roll back / Redo** restore **the whole note** from the snapshot stack, not just the selection.
 
 <!-- shot-05-rollback.png / shot-06-settings.png / shot-07-usage.png: batch 2 -->
 
 ### Privacy and network
 
-- **No indexing, no walking, no uploading.** It does not scan your vault and does not send your
-  notes anywhere. In practice only two things ever get read: the note you highlighted and the
-  handbooks on your shelf — because those are the only ones the prompt tells it about.
-  ⚠️ **That is behaviour, not a sandbox guarantee.** The sandbox's *read* boundary is the
-  **whole vault root** (minus `.git` / `.obsidian` / `.env*`), and that root is registered
-  automatically by the plugin (`src/views/PenView.ts:788` sends `vaultRoot(app)` to
-  `POST /handbooks/import`) — you don't have to widen anything. Name a path in the conversation
-  and it can read it. The *write* boundary is far tighter — see
-  [4.4 The sandbox has two sets of roots](#44--the-sandbox-has-two-sets-of-roots-reading-and-writing-are-not-the-same-thing).
-- **Every edit needs your approval first; without it nothing reaches disk.** Asking without
-  writing is a perfectly normal way to use it.
-  ⚠️ **What holds this is the approval gate, not "you didn't click that chip."** Write-back is
-  indeed a chip you click, but saying "add a line after that paragraph" in `free` sends the model
-  to `edit_file` just the same (`pen/session.py:64` says so explicitly), and the sidebar asks all
-  the same — the deny demo in [3.5](#35--writing-back-and-the-approval-gate) runs on the `free` chip
-  ([`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)).
-  The real gate is `pen/agent/permissions.py:15`: `edit_file` is always `ask`, for every chip.
-- The plugin talks to `http://127.0.0.1:8765` by default. **It does not phone home.**
-- First-time setup downloads the sidecar and its Python dependencies from GitHub and PyPI
-  into `~/.socrates-pen`.
-- Model calls leave from that local process, to the endpoint you configured.
-- Sessions, snapshots and the deep-dive ledger all live in a local `.pen/`.
-- ⚠️ **Your API key is stored in this vault** at `.obsidian/plugins/socrates-pen/data.json`.
-  If the vault is in Sync, iCloud or git, **the key goes with it**.
-- Write-back changes the note on disk — **and only after you approve it**.
-- ⚠️ **Disabling the plugin does not stop the sidecar.** That Python process keeps running
-  (so re-enabling is instant). To stop it, use the settings page.
+**What it does not do.** No indexing, no walking, no uploading: it does not scan your vault and
+does not send your notes anywhere. In practice only two things ever get read — the note you
+highlighted and the handbooks on your shelf. The plugin talks to `http://127.0.0.1:8765` by default
+and does not phone home; sessions, snapshots and the deep-dive ledger all live under
+`~/.socrates-pen/` on your own machine.
+
+**But that is behaviour, not a sandbox guarantee.** Only those two get read because those are the
+only ones the prompt tells it about. The sandbox's actual *read* boundary is the **whole vault
+root** (minus `.git` / `.obsidian` / `.env*`), and that root is registered automatically when the
+plugin imports a handbook (`src/views/PenView.ts:788` sends `vaultRoot(app)` to
+`POST /handbooks/import`), so you never widen anything by hand. Name a path in the conversation and
+it can read it. The *write* boundary is far tighter; see
+[4.4 The sandbox has two sets of roots](#44--the-sandbox-has-two-sets-of-roots-reading-and-writing-are-not-the-same-thing).
+
+**The write side is where the real gate is.** Every edit needs your approval first and without it
+nothing reaches disk, so asking without writing is a perfectly normal way to use it. What holds
+this is the approval gate, not "you didn't click that chip" — saying "add a line after that
+paragraph" in `free` sends the model to `edit_file` just the same (`pen/session.py:64`), and the
+sidebar asks all the same; the deny demo in
+[3.5](#35--writing-back-and-the-approval-gate) runs on the `free` chip
+([`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)). The real gate is
+`pen/agent/permissions.py:15`: `edit_file` is always `ask`, for every chip.
+
+**Three things left for you to watch.** One, your API key is stored in this vault at
+`.obsidian/plugins/socrates-pen/data.json`, so if the vault is in Sync, iCloud or git, the key goes
+with it. Two, the network is touched in exactly two places: setup pulls the sidecar and its
+dependencies from GitHub and PyPI into `~/.socrates-pen`, and after that model calls leave from
+that local process to the endpoint you configured. Three, disabling the plugin does not stop the
+sidecar — that Python process keeps running, so re-enabling is instant, and to stop it properly use
+the settings page.
 
 ### It won't install / won't start
 
@@ -939,12 +866,13 @@ The first launch builds a venv and pip-installs — that's where things break. I
 
 1. **Read the top line of the settings page.** If it says not running, click **Start**; the error
    shows up right there.
-2. **Check your Python.** `python3 --version` in a terminal — 3.11 or later.
-   The one macOS ships may be 3.9; get a current one from [python.org](https://www.python.org/downloads/).
-3. **If the venv is broken, delete just the venv**: `rm -rf ~/.socrates-pen/venv`, then hit Start and
-   it rebuilds. (`~/.socrates-pen/` also holds your `.pen/` data — **don't delete the whole directory**.)
+2. **Check your Python.** `python3 --version` in a terminal — 3.11 or later. The one macOS ships
+   may be 3.9; get a current one from [python.org](https://www.python.org/downloads/).
+3. **If the venv is broken, delete just the venv**: `rm -rf ~/.socrates-pen/venv`, then hit Start
+   and it rebuilds. `~/.socrates-pen/` also holds your sessions and snapshots — **don't delete the
+   whole directory**.
 4. **Port in use.** Default is `127.0.0.1:8765`; `lsof -nP -iTCP:8765 -sTCP:LISTEN` shows who has it.
-5. **Still stuck**: open Obsidian's developer console (`Ctrl/Cmd + Shift + I`) and file the error at
+5. **Still stuck.** Open Obsidian's developer console (`Ctrl/Cmd + Shift + I`) and file the error at
    [Issues](https://github.com/xesws/socrates-pen/issues).
 
 ---
@@ -984,52 +912,40 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 ## 7 · Known gaps
 
-This section is here on purpose.
+This section covers what is known to be unfinished and known to rub you the wrong way. The most
+immediate one: **the `search` chip is still a placeholder** — visible, clickable, and it tells you
+it isn't wired. It isn't simply deleted because sooner or later you will wonder whether it can look
+something up, and a greyed-out chip that says "not wired yet" is more honest than an interface that
+says nothing: it admits the need exists and admits it can't be met yet.
 
-- **The `search` chip is a placeholder.** Visible, clickable, and tells you it isn't wired.
-  It has no network.
-- **`pen/index.py:149` still carries a legacy special case**:
-  `if i == 1 or heading.startswith("手搓")`. The second half is a private lane for that one SWE
-  handbook. The first-line-H1 path works for any book; the `or` is now just baggage.
-- **`pen/config.py:34`'s `DEFAULT_HANDBOOK` still hard-codes `SWE-Agent通关手册v2.md`.**
-  Since v0.14.0 a missing file is a no-op (the sidecar still boots), and since v0.15.1 the tests
-  carry their own fallback handbook. The constant itself hasn't been cleaned up.
-- **A comment in `src/deeppoll.ts` says "at most 5 minutes"; the constant is 480 seconds.**
-  The constant is right (a cross-book exploration was measured at 351 s); the comment didn't keep up.
-- **The lab repo's copy of the plugin is two releases behind, and nothing watches it.**
-  In this repo `manifest.json` / `package.json` / `pyproject.toml` / `pen/__init__.py` all agree,
-  and since v0.15.13 one test enforces all four at once (v0.15.11 built the gate watching only
-  `manifest.json` — the three it left out being exactly the ones a release forgets). But the plugin
-  was originally copied over from another,
-  private repo, whose `obsidian/manifest.json` still sits at `0.12.13` — this plugin has only ever
-  shipped three versions (the keys of `versions.json` are the complete list: `0.12.13` / `0.13.0` /
-  `0.13.1`), so what it missed is the latter two. The two `src/` trees have
-  genuinely diverged (this one has an extra `sidecar.ts`, and four other files differ), so that copy
-  **may well be frozen on purpose** — but no document anywhere states that policy, and the new
-  version gate happens to skip exactly there. The place that skips is the place that drifted, and
-  that deserves to be visible.
-- **`libraries._suggest_id` can emit an id the backend itself refuses.** It preserves CJK characters
-  (in Python, `'从'.isalnum()` is `True`) while `_SAFE_ID` only accepts `[A-Za-z0-9._-]`.
-  The plugin never hits this, because `handbookIdFromPath` (`src/selection.ts:30`) strips illegal
-  characters and appends a path hash — but **anyone calling the HTTP API directly gets a 400**.
-  (This one surfaced while writing this README.)
-- **The eight-beat format contract is a hard-coded Chinese literal.** `pen/probe.py:76` is
-  `THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 — **which any English handbook
-  necessarily is** — means the `vs_real` axis never fires. Two places hang off that one constant:
-  `third_beat_sections()` (`:219`) builds the anchor whitelist **that goes into the prompt**, while
-  the actual `return False` is at `:439`, `if not any(m.is_third_beat for m in marks)` (via
-  `Anchored.is_third_beat`, `:360`, which prefix-matches the same constant independently).
-  The other four axes are unaffected — `:439` sits inside `if axis == "vs_real":`, and the other
-  four validators only look at `level_key` / `alt` / `trigger`; none of them touches `beat`.
-  The one spillover is `:543`: the whitelist is spliced into the system prompt **shared by all five
-  axes**, so when it's empty a bare heading with nothing under it is visible to all five. It blocks
-  no axis — it's just an empty promise.
-- **With an English UI and a Chinese handbook, the model often still answers in Chinese.**
-  The system prompt is written in Chinese, and English is a paragraph appended at the end
-  (`REPLY_IN_ENGLISH`, `pen/session.py:147`). One short tail cannot outweigh a wall of Chinese source
-  text. Interestingly **the background deep-dive layer is unaffected** — its prompt is much shorter,
-  and the English run's questions came back in English
-  (see [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)).
+**The eight-beat format contract is a hard-coded Chinese literal**, `pen/probe.py:76` being
+`THIRD_BEAT = "第三拍"`. A handbook with no section named 第三拍 means the `vs_real` axis never
+fires — which any English handbook necessarily is, and so is a Chinese one that names its sections
+differently. The other four axes are unaffected: they only look at `level_key` / `alt` / `trigger`,
+and none of them touches `beat`. The one spillover is the anchor whitelist spliced into the system
+prompt shared by all five axes; when it is empty a bare heading sits there, blocking no axis, just
+an empty promise.
+
+**With an English UI and a Chinese handbook, the model often still answers in Chinese.** The system
+prompt is written in Chinese and English is only a paragraph appended at the end
+(`REPLY_IN_ENGLISH`, `pen/session.py:147`); one short tail cannot outweigh a wall of Chinese source
+text. Interestingly the background deep-dive layer is unaffected — its prompt is much shorter, and
+the English run's questions came back in English
+(see [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)).
+
+**Anyone calling the HTTP API directly gets a 400.** `libraries._suggest_id` preserves CJK
+characters (in Python, `'从'.isalnum()` is `True`) while `_SAFE_ID` accepts only `[A-Za-z0-9._-]`,
+so the id it emits is one the backend itself refuses. The plugin never hits this, because
+`handbookIdFromPath` (`src/selection.ts:30`) strips illegal characters and appends a path hash.
+This one surfaced while writing this README.
+
+The rest is internal debt that doesn't affect use, recorded here so it isn't forgotten:
+`pen/index.py:149`'s `if i == 1 or heading.startswith("手搓")` has a second half that is a private
+lane for one particular handbook, while the first-line-H1 path works for any book, so the `or` is
+just baggage; `pen/config.py:34`'s `DEFAULT_HANDBOOK` still hard-codes a filename (a missing file
+is a no-op and the sidecar still boots); and a comment in `src/deeppoll.ts` says "at most 5 minutes"
+while the constant is 480 seconds — the constant is right, a cross-book exploration was measured at
+351 s, the comment just didn't keep up.
 
 ---
 
