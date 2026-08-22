@@ -1,0 +1,32 @@
+{
+  "request": "GET /v1/usage",
+  "response": {
+    "spend": {
+      "chat": {
+        "calls": 14,
+        "in_tokens": 189275,
+        "out_tokens": 9872,
+        "cached_tokens": 125440,
+        "reasoning_tokens": 4906
+      },
+      "probe": {
+        "calls": 4,
+        "in_tokens": 15892,
+        "out_tokens": 6923,
+        "cached_tokens": 3328,
+        "reasoning_tokens": 5674
+      },
+      "fold": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      }
+    },
+    "total": 221962,
+    "sessions": 2,
+    "skipped": 0,
+    "handbook_id": ""
+  }
+}

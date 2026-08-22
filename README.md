@@ -54,138 +54,830 @@
                                          : ..      .::::3AAA3G3GGs
 ```
 
+```
+ 3&&@&s    sG@&@&s     3&&@&A   s&&&&&G:     A&&     G&&&&&&s .&&&&&&3   s&&@@3
+3@A  3&.  s@G: .3@A   &@s .3&:  A@A  :@@    .@&@3    ..s@G.:   @&       .@G  s&A
+:G&G3s.   G@     &@  s@A        A@GAAA&3    G@ A@:     .@3     @&3333:   3@&GA:
+ .:s3&@:  G@.    &@  s@A    :   A@G3@@A    s@&s3@&     :@3     @&ssss.    .sAG@3
+G@s  A@s  s@G: .3@A   G@A::&@:  A@s  G@s   &&3G3G@A    :@3     @&    .  :@3  :@&
+.3@@@&A    sG@&@&s     A&&&G:   s&s   G&: A&s    G&.   .&3     &&&&&&G   A&@@@G:
+```
+
+### 在你自己的笔记里，划一段，被人追问
+
+**中文** · [English](README.en.md)
+
+![Obsidian 1.5.0+](https://img.shields.io/badge/Obsidian-1.5.0%2B-7c3aed?style=flat-square)
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776ab?style=flat-square)
+![MIT](https://img.shields.io/badge/License-MIT-16a34a?style=flat-square)
+![desktop only](https://img.shields.io/badge/%E4%BB%85%E6%A1%8C%E9%9D%A2-ea580c?style=flat-square)
+
 </div>
-
-# Socrates
-
-Highlight a passage in your Obsidian notes and question it in a Socratic dialogue. Optional write-back puts an answer into the original note — only after you approve it.
-
-**Desktop only.** The plugin starts a local tutor process for you (loopback only). You need Python 3.11+ already installed on this computer; the plugin creates an isolated environment under `~/.socrates-pen` and starts it. No terminal.
-
-## Requirements
-
-- Obsidian desktop 1.5.0 or later (not mobile)
-- Python 3.11 or later on this machine ([python.org](https://www.python.org/downloads/))
-- An API key for an OpenAI-compatible Chat Completions endpoint (Settings → Socrates)
-
-## Install the plugin
-
-When it is in the Community plugins directory: **Settings → Community plugins → Browse → Socrates**.
-
-Until then, download these three files from the [latest GitHub Release](https://github.com/xesws/socrates-pen/releases) and put them in:
-
-`<Vault>/.obsidian/plugins/socrates-pen/`
-
-- `main.js`
-- `manifest.json`
-- `styles.css`
-
-Enable the plugin under **Settings → Community plugins**. Restricted mode must be off.
-
-On first launch the plugin may take a minute: it creates `~/.socrates-pen/venv` and pip-installs the tutor from this GitHub repository (GitHub + PyPI). After that, **Settings → Socrates** shows whether the local service is running. Fill in your API key there.
-
-## Use
-
-1. Enable the plugin. Wait until Settings → Socrates says the local service is running (or click **Start**).
-2. **Settings → Socrates**: API key, and optionally Base URL, model, and thinking level.
-3. Open a note, select a passage (live preview or reading view).
-4. Open the Socrates sidebar and use the current selection, or run the command palette item to do the same.
-5. To write an answer back into the note: say where to insert or replace, or use the write-back chip after a real answer. The model must read the file first, then propose an edit. The sidebar asks you to **allow** that edit before anything is saved.
-6. **Roll back / Redo** restore the whole note from the snapshot stack, not just the last selection.
-
-## Privacy and network
-
-- The plugin talks to `http://127.0.0.1:8765` by default. It does not phone home.
-- First-time setup downloads the tutor and its Python dependencies from GitHub and PyPI into `~/.socrates-pen`.
-- Model calls leave your machine from that local process, to the endpoint you set.
-- The API key is stored in this vault at `.obsidian/plugins/socrates-pen/data.json`. If the vault is in Sync, iCloud, or git, the key goes with it.
-- Write-back changes the note on disk, after you approve the edit.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
-
-## Development
-
-```bash
-npm install
-npm test
-npm run build
-```
-
-For a live vault:
-
-```bash
-export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
-npm run dev
-```
-
-`npm run dev` refuses to start without `VAULT_PLUGIN_DIR`.
 
 ---
 
-# 苏格拉底
+> 在 Obsidian 里划中一段，侧栏坐着一个人，先不给你答案，先问你一个问题。
+>
+> 他手里只有两把工具：**读你的笔记**、**改你的笔记**。改之前必须先读，读完了也只能提议——
+> 你点「允许」，磁盘上才会动一个字节。
+>
+> 他跑在你自己的电脑上。**没有作者的服务器。**
 
-在 Obsidian 笔记里划一段，用苏格拉底方式追问。可选把解答写回原文——必须你在侧栏点允许之后才落盘。
+**目录**
 
-**仅桌面。** 插件会自己在本机拉起服务（只绑 loopback）。电脑上需要已经装好 Python 3.11+；插件在 `~/.socrates-pen` 里建隔离环境并启动。不用开终端。
+[为什么会有这个东西](#1--为什么会有这个东西) ·
+[它到底怎么用](#2--30-秒看明白它干什么) ·
+[核心功能逐个上例子](#3--核心功能逐个上例子) ·
+[系统设计](#4--系统设计) ·
+[装 · 用 · 隐私](#5--装--用--隐私) ·
+[开发与测试](#6--开发--测试--许可) ·
+[还欠着的](#7--还欠着的)
 
-## 需要
+---
 
-- Obsidian 桌面版 1.5.0 或更高（不能用手机）
-- 本机 Python 3.11 或更高（[python.org](https://www.python.org/downloads/)）
-- 兼容 OpenAI Chat Completions 的 API Key（设置 → Socrates）
+## 1 · 为什么会有这个东西
 
-## 安装插件
+起点是一本书。
+
+一本 **13083 行、626 KB** 的《手搓 SWE Agent 通关手册》，一个人写的，也只有一个人在读。
+它不是那种能跳着看的书——每一关都压在上一关的结论上，第 7 关的一句「所以这里必须先 read」，
+理由埋在第 2 关某个决策的第三层里。
+
+读这种书，真正的问题不是「看不懂」，是**卡住的时候没人可问**。
+
+你可以去问通用的聊天机器人。但它没读过你这本书。你把那一段贴给它，它给你一段
+四平八稳的通用解释——**正确，但和你手里这本书没有关系**。它不知道这个概念在第 2 关
+是怎么铺垫的，不知道作者在第 4 关的决策②里已经否掉过一个更朴素的做法，
+更不知道你三分钟前才刚问过一个几乎一样的问题。
+
+于是有了这个东西。它的全部设计都从一句话长出来：
+
+> **让一个真读过这本书、而且知道你读到哪儿了的人，坐在你旁边。**
+
+### 它最早不叫苏格拉底
+
+最早它叫**「点读笔」**，模型自称**「师傅」**。
+
+v0.11.0 那一版的记录里写着：这两个名字打架——「点读笔」听起来像给小孩用的复读机，
+「师傅」又太中二。更要命的是它们指向两种不同的产品：点读笔是**你点哪它读哪**，
+师傅是**它说什么你听什么**。而真正想要的东西，两个都不是。
+
+改名是从 **prompt 开始改的**，不是从界面。先把模型的自我认知换掉，再一路改到侧栏上的字。
+最后定名**苏格拉底**——因为默认那枚芯片叫 `socratic`，它的全部职责是：
+
+> **先别揭晓。反过来问我一个问题。**
+
+这是产品的第一性选择，不是一句文案。一个默认「不给答案」的工具，
+和一个默认「给答案」的工具，是两个东西。
+
+### 三条信条，每条都有代码兜底
+
+不是价值观宣言，是三条能在代码里指到行的硬约束。
+
+**一 · search 没开就说没开，不假装搜过。**
+
+侧栏上有一枚 `search` 芯片，是**可见但永久禁用**的。前端 `src/views/PenView.ts:938`
+一行 `if (chip === "search") return;` 直接拦掉，后端 `pen/session.py:38` 那条芯片定义里
+写明了它现在不通网。
+
+为什么不干脆删掉？因为读者迟早会想「它能不能上网查一下」。一枚灰着的、
+点了会告诉你「这个还没通」的芯片，比一个什么都不说的界面**更诚实**——
+它承认了这个需求存在，也承认了现在还满足不了。
+
+**二 · 不读就猜，那是江湖骗子干的事。**
+
+这句话有出处。作者本人的一场真实会话里，模型被问到另一本书讲什么，它答：
+
+> 至于那本《通关手册》具体讲什么、跟这本怎么分工——你把它的路径给我，我去读一眼再回答你。
+> **不读就猜，那是江湖骗子干的事，师傅不干。**
+
+（注意结尾那三个字。**这就是那句让它被改名的话**——人设立住了，名字没立住。）
+
+而这条纪律不是靠 prompt 求它自觉的。模型想改你笔记里的某一段，
+它必须在**更早的一轮**真的 `read_file` 过那个文件。
+不是「声称读过」，是执行层记账。`pen/agent/permissions.py:23` 的 `read_first_block()`
+是一道硬闸，连「同一批 tool_calls 里先 read 再 edit」都拦——因为那一批里
+edit 的参数是在**看见读的结果之前**就定好的，那还是猜。
+
+**三 · 数据不出你的机器。**
+
+会话、快照、深挖账本，全在本地 `.pen/` 目录下。唯一出网的是你自己在设置里填的那个
+模型节点。插件不向作者汇报任何东西，仓库里也没有任何 telemetry 端点。
+
+### 它长成今天这样，花了三步
+
+| | |
+| --- | --- |
+| **v0.2.0** | 从一个 web 应用搬进 Obsidian。学习发生在笔记里，工具就该长在笔记里 |
+| **v0.13.0** | 插件学会自己拉起后台服务。**读者不用开终端**——这一步之前，装它得会用命令行 |
+| **v0.15.0** | 把教材从 prompt 里摘出去。在这之前，system prompt 第一句话把书**写死**成那本 SWE Agent 手册；现在书名从你那篇笔记的第 1 行 H1 注进去。**它不再只服务那一本书** |
+
+下面所有例子，跑的都是**另一本书**——一本 1405 行的《从零手写 DQN · 强化学习通关手册》，
+就在这个仓库的 [`docs/demo/`](docs/demo/) 里，你可以自己导进去复现。
+
+---
+
+## 2 · 30 秒看明白它干什么
+
+1. 在笔记里**划一段**。
+2. 打开侧栏，**点一枚芯片**（先别揭晓 / 当我零基础 / 直接问 / 写回原文…），或者直接打字。
+3. 他会**先读你的笔记**，然后回答——或者反问你。
+4. 与此同时，后台**另起一条线**在读同一本书的别处，攒几个更深的问题，回头抛给你。
+5. 想把解答留在笔记里？他提议一处编辑，**你点允许，才落盘**。
+
+<!-- shot-01-splash.png / shot-02-socratic.png / shot-03-deep.png / shot-04-approval.png：第二批补 -->
+
+下面每一节的输出，**都是真跑出来的**，原始请求体和 SSE 事件流全部存在
+[`docs/demo/transcripts/`](docs/demo/transcripts/) 里。落盘之后只做过一件事：
+把采集环境的临时绝对路径换成了 `/Users/you/…`，除此之外一个字符没动
+（[说明](docs/demo/transcripts/README.md)）。
+
+---
+
+## 3 · 核心功能逐个上例子
+
+**场景**：你在读《从零手写 DQN》的 Level 3，划中了第四拍的**决策① 「为什么非要两个网络——
+一个冻着、一个在更新」**（第 954–964 行）。这一段把答案拆成了三层：数学、动力学、工程。
+
+以下所有回答，模型都是 `deepseek-v4-flash`，跑在一个隔离的 sidecar 上。
+
+### 3.1 · 先别揭晓 `socratic`
+
+**默认那一枚。** 它读你划的那段，然后**不回答**——它去找那段话里你还没意识到的裂缝。
+
+<table><tr><td>
+
+**你**：（划中决策①，点「先别揭晓」，一个字没打）
+
+</td></tr><tr><td>
+
+**苏格拉底**：
+
+> 好，你刚读完了决策①的三层拆法。那一块其实已经把"为什么冻住"讲透了——但有一个裂缝你可能注意到了，也可能没注意到。
+>
+> 手册说冻住目标之后，这就变回了一个"标准的监督回归问题"。好，那我问你：
+>
+> **监督回归里，标签得是 ground truth 吧？可 Q_target 还是自己估计出来的——它又不是上帝给的正确答案。那"变回标准监督回归"这个说法，是不是藏了一笔账没算？这笔账谁来还？**
+
+</td></tr></table>
+
+<sup>原文：[`03-chat-socratic.json`](docs/demo/transcripts/03-chat-socratic.json)　10.6 秒</sup>
+
+它抓的那个点是真的：手册里那句「变回标准监督回归」确实滑过了一件事——
+监督回归的标签是给定的，而这里的标签是自己估的。**这是这一段最薄的一块地板，它踩上去了。**
+
+> **为什么默认是这一枚**：一个学习工具，如果默认动作是「把答案给你」，
+> 那它每被用一次，你就少想一次。默认动作是「问你一个问题」，成本完全不同。
+
+### 3.2 · 当我零基础 `explain_zero`
+
+同一段，换一枚芯片，形状完全变了：**TL;DR → (a) 概念对比 → (b) 机制 → (c) 反例 → 两个能跑的例子**。
+
+<details open>
+<summary><b>展开真实回答（1423 字，30 秒）</b></summary>
+
+> **TL;DR**
+>
+> **冻住目标网络 = 把 RL 的移动靶子钉在墙上，让它变回普通回归。**
+> 在线网络每步更新，目标网络每 C 步才被同步一次。两次同步之间，损失函数里的目标是常数，半梯度变成了真梯度。
+>
+> **(a) 概念/对比：在动 vs 冻住**
+>
+> | | 不冻（Level 2 的表格 / 函数逼近） | 冻住（DQN） |
+> |---|---|---|
+> | 目标里有 θ？ | 有，损失一更新目标也跟着变 | 没有，C 步之内目标不变 |
+> | 这是什么问题 | 非定常目标回归（半梯度） | 标准监督回归（真梯度） |
+> | 收敛风险 | 正反馈环路→发散 | 环路被切断，只每 C 步接通一瞬间 |
+>
+> **(c) 反例：C = 1 时就是白冻了**
+>
+> 如果你让 C = 1（每更新一步就同步一次），那目标网络永远和在线网络一模一样——冻住了个寂寞。你退回到了 2013 年那版 DQN，震不减、环没断，烧着显卡和钱，跟没冻一样。
+>
+> **两个可运行例子**
+>
+> 都在第七拍的 `train()` 函数里，用同一个函数体、不同参数跑：
+>
+> ```python
+> returns = train(episodes=400, sync_every=200)                # 标准 DQN
+> returns = train(episodes=400, sync_every=200, double=True)   # Double DQN，只改一个参数
+> ```
+
+</details>
+
+<sup>原文：[`04-chat-explain-zero.json`](docs/demo/transcripts/04-chat-explain-zero.json)</sup>
+
+**这里有一条约束值得单拿出来说。** `explain_zero` 的 prompt 里写着：例子的名字
+**必须对得上该 Level 第七拍里真出现过的东西**，不许自己造。核对一下它给的四个名字：
+
+| 它写的 | 教材里 | 位置 |
+| --- | --- | --- |
+| `train()` | ✅ | `docs/demo/从零手写DQN.md:1223` |
+| `sync_every=200` | ✅ | `:1228`　`sync_every: int = 200,  # ← 这就是 C` |
+| `double=True` | ✅ | `:1230`　`double: bool = False,  # 打开就是 Double DQN` |
+| `if __name__ == "__main__"` | ✅ | `:1292` |
+
+四个全中，**没有一个是编的**。这就是为什么工具要先读书，而不是先答题。
+
+### 3.3 · 直接问 `free`
+
+你自己打字。**注意它仍然不肯直接把答案倒给你**——`socratic` 不只是一枚芯片，是整个 prompt 的底色。
+
+<table><tr><td>
+
+**你**：
+
+> 我在学 DQN，不太理解为什么要有一个 Q-network 固定、另一个在更新。
+> 凭什么这样算法就会收敛而不发散？这个 idea 最早出自哪篇 paper？数学上怎么证明它不会发散？
+
+</td></tr><tr><td>
+
+**苏格拉底**：
+
+> 好问题，三个问题串得很顺。我先不急着全倒给你——你把它们拆开想清楚，比听我念答案值钱得多。
+>
+> 先说你能自己翻到的部分：
+>
+> 手册第三拍「出身：这两个技巧分别是谁的」专门讲了 target network 和 replay buffer 各自从哪篇 paper 来的。你翻到那一段，看看它俩是不是同一篇论文提出来的——先搞清楚这个。
+>
+> 然后你回来看决策④。它已经写得很清楚了：**没有人证明过 DQN 会收敛。** 而且它把"能证明什么"和"不能证明什么"分得清清楚楚。你读完全段之后，可以试着用你自己的话回答我下面这个追问：
+>
+> **决策④说 DQN 和 FQI 之间隔着一层——DQN 每步只做一次梯度更新、目标每 C 步才同步。那如果 FQI 能证收敛，DQN 只是"靠近"它，这种靠近到底多近才算够近？你自己觉得，C 取多大，你才愿意说"嗯，这差不多就是 FQI 了"？**
+
+</td></tr></table>
+
+<sup>原文：[`05-chat-free-three-questions.json`](docs/demo/transcripts/05-chat-free-three-questions.json)　11.0 秒</sup>
+
+三个问题，它一个都没有直接回答，但**三个都指到了书里的确切位置**：出身在第三拍，
+收敛性在决策④，而且它把决策④里最重要的那句话原样端了出来——「没有人证明过 DQN 会收敛。」
+
+同一个问题用英文问一遍，它就肯给全了（[`14-chat-free-en.json`](docs/demo/transcripts/14-chat-free-en.json)）：
+
+> **第二个：哪个论文。**
+>
+> 翻第三拍（924-943 行）。有个关键区分：2013 年的 workshop paper **没有** target network，2015 年的 Nature **加了**。再往前，Riedmiller 2005 的 NFQ 是直接祖先——那篇的做法是「训完一整轮再换目标」，DQN 把它改成了每 C 步换一次。
+>
+> **第三个：有没有证明它不会发散。**
+>
+> 结论是：**没有人证明过 DQN 会收敛**。但如果你把 C 推到极端——两次同步之间把回归训到底——它就变成了 Fitted Q Iteration，那个东西有一套误差界。
+
+那些行号、那些年份、那句引文，全部来自它 `read_file` 读到的正文，不是它的记忆。
+
+### 3.4 · 后台深挖 ◆
+
+这是这个工具里**最不像聊天机器人**的一块。
+
+你那一轮对话结束的**同一时刻**，另起一条线程，去读同一本书的**别处**，
+攒出几个「你现在还问不出来、但再往前走一步就会问」的问题，然后当场抛给你。
+它跟你的对话**完全并行**，你不用等。
+
+真跑那一次，后台抛回来三条。第三条是这样的：
+
+<table><tr><td>
+
+◆ **深挖**
+
+> 你在 Level 2 学到三个东西凑齐就发散，DQN 砍掉了自举的实时性——那剩下的两样在这个结构下还会不会联手炸给你看？
+
+<sup>`axis: altitude` · `depth: 5` · 锚点跨两关：**Level 2（740–747）+ Level 3（954–964）**</sup>
+
+</td></tr><tr><td>
+
+**它为什么抛这一条**（`why` 字段，模型自己填的）：
+
+> 他刚读完决策①的三层拆法，手里正好捏着 Level 2 的 deadly triad。让他把两关的知识挂上钩——DQN 没有杀死发散，只是把那个环从每步都通改成每 C 步通一瞬。读者需要补上这个抽象跳跃。
+
+</td></tr></table>
+
+<sup>原文：[`06b-deep-ledger.json`](docs/demo/transcripts/06b-deep-ledger.json)　池子里 3 条，2 次调用，8043 in / 649 out token</sup>
+
+**这条题的价值在于它跨了两关。** 读者划的是 Level 3 的一段，而这个问题把它接回了
+Level 2 的 deadly triad——那是**七百行之前**的内容，而且它给出了一个正确且非平凡的判断：
+DQN 没有消灭 deadly triad 的三个要素，它只是把其中一个的**接通频率**从每步降到了每 C 步。
+
+<img src="docs/img/deep-queue.drawio.svg" alt="后台深挖：一条任务队列" width="100%">
+
+**闸门是真的会枪毙题的。** 同一段正文，换成英文界面那一场：2 次调用、2002 个输出 token，
+池子里**一条都没留下**——全被 `depth < 4` 这道闸挡了（`pen/probe.py:968`）。
+到第二轮才留下一条：
+
+> NFQ trains until convergence before updating the target, while DQN updates every C steps. Why doesn't DQN just adopt NFQ's approach for guaranteed convergence?
+
+<sup>原文：[`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)</sup>
+
+**广度由代码封死，不由模型自律**——这一条在[系统设计](#4--系统设计)那一章会讲透。
+
+### 3.5 · 写回原文，和那道审批闸
+
+<img src="docs/img/writeback.drawio.svg" alt="写回：两把工具，三道闸，一个快照栈" width="100%">
+
+你说：「把你刚才讲的『为什么要两个网络』那三层，做成一个折叠块，补在决策① 后面。」
+
+它先 `read_file` 读到带行号的原文，**下一轮**才单独提一次编辑。侧栏弹出审批面板，
+`old_string` / `new_string` 逐字对照。它提议的是：
+
+```diff
+- 这是本关最核心的一问，把它拆成三层：
++ 这是本关最核心的一问。下面从三个层面拆解，你可以按自己感兴趣的顺序读（点击展开）：
++
++ <details>
++ <summary><b>数学层 · 动力学层 · 工程层 —— 三层拆解</b></summary>
+  ...三层原文一字不动...
++
++ </details>
+```
+
+<sup>原文：[`07-chat-writeback.json`](docs/demo/transcripts/07-chat-writeback.json)</sup>
+
+**这一段实测出来的数字，比任何承诺都硬：**
+
+| 时刻 | 文件大小 | md5 |
+| --- | --- | --- |
+| 提案已发出、审批面板开着 | 96874 | `153a8982b0c7…` |
+| **你点「拒绝」之后** | **96874** | **`153a8982b0c7…`** |
+| 你点「允许」之后 | 97051 | `551363244889…` |
+| **回滚之后** | **96874** | **`153a8982b0c7…`** |
+
+提案挂着的时候，磁盘上**一个字节都没动**；拒绝之后还是没动；回滚之后**逐字节还原成原文**。
+
+<sup>原文：[`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)（拒绝）· [`08-approve-allow.json`](docs/demo/transcripts/08-approve-allow.json)（允许）· [`09-snapshots-rollback.json`](docs/demo/transcripts/09-snapshots-rollback.json)（回滚）</sup>
+
+**权限层是可以脱离模型单独验的**，这也是它该有的样子：
+
+| 调用 | 返回 |
+| --- | --- |
+| `decide("read_file")` | `allow` — 只读自动过 |
+| `decide("edit_file")` | `ask` — **每一次**都问人 |
+| `decide("bash")` / `decide("write_file")` | `deny` — 没登记的工具一律拒 |
+| `read_first_block("edit_file", 教材, read_before=∅)` | ⛔ 挡下 |
+| `read_first_block("edit_file", 教材, read_before={别的文件})` | ⛔ 挡下 |
+| `read_first_block("edit_file", 教材, read_before={教材})` | ✅ 放行 |
+
+<sup>原文：[`15-permission-gates.json`](docs/demo/transcripts/15-permission-gates.json)　源码：`pen/agent/permissions.py:15`、`:23`</sup>
+
+### 3.6 · 回滚 / 重做
+
+写回之后侧栏上那两个箭头，走的是**快照栈**，不是编辑器的 undo。
+
+```
+GET  /v1/handbooks/dqn-550d425c/snapshots
+     → {"can_undo": true, "can_redo": false, "undo_n": 1, "redo_n": 0}
+
+POST /v1/writeback/rollback
+     → {"ok": true, "restored_from": ".../snapshots/20260822T015739533075Z-pre-edit.md"}
+```
+
+**它按整篇还原，不是只撤你划的那一段。** 因为模型提议的编辑可能同时动了好几处，
+按选区回退会留下一个半新半旧的文件。
+
+undo + redo **一共只留 20 版**（`pen/config.py:57` `SNAPSHOT_KEEP = 20`）——
+这不是一个无限的历史，是一个能兜住「刚才那下点错了」的深度。
+
+### 3.7 · 两本书之间
+
+书架上不止一本书的时候，苏格拉底会拿到一份**其他教材的摘要 + 路径**，于是他能翻到另一本。
+
+这件事的价值，看一对**同题对照**最清楚。同一个问题——「另一本讲什么」——问了两次。
+
+**书架接上之前**，他老实认账：
+
+> 好问题，但我得先给你交个底：**另一本《通关手册》我没读到，不能瞎编。**
+>
+> 我能确认的是手上这本。它名字就写明了——`writeback-fixture.md`，fixture，测试夹具。
+> 意思是：这本书的真正用途不是「内容」，是**测试「写回」这条链路**。
+>
+> 至于那本《通关手册》具体讲什么——你把它的路径给我，我去读一眼再回答你。
+> 不读就猜，那是江湖骗子干的事。
+
+**书架接上之后**，同一个问题，他先去读：
+
+> 我先去翻一眼那本《通关手册》的开头，别凭标题瞎说。
+>
+> `read_file` → `1  # 手搓 SWE Agent 通关手册 v2 · 教材级（全册：开篇 + Level 0~6 + Capstone）` …
+>
+> 看完了，两本册子不是一套书，是两种东西。
+> **《通关手册》是正课。** 目标一句话：让你从零手搓出一个轻量 SWE Agent……
+> 整本一个比喻：你是师傅，Agent 是记性为零、胆子极大的实习生。
+
+<sup>两段都出自作者本人的真实会话记录。</sup>
+
+**注意「之前」那一版并不是失败。** 他答「我没读到那本书」是**对的**——那本来就是实情。
+这就是为什么书架那一整段在只有一本书的时候会**整段不出现**，而不是写一个「（无）」：
+写「（无）」等于替模型确认过「没有别的书」，那是替它撒谎。
+
+还有一条：给书名**必须同时给路径**。
+> 光给书名，苏格拉底只会去猜文件名。
+
+这句话现在是 `pen/tests/test_tutor.py` 里一条断言的失败提示。
+
+### 3.8 · 账单
+
+```
+GET /v1/usage
+```
+
+```json
+{
+  "spend": {
+    "chat":  {"calls": 14, "in_tokens": 189275, "out_tokens": 9872,
+              "cached_tokens": 125440, "reasoning_tokens": 4906},
+    "probe": {"calls": 4,  "in_tokens": 15892,  "out_tokens": 6923,
+              "cached_tokens": 3328,  "reasoning_tokens": 5674},
+    "fold":  {"calls": 0,  "in_tokens": 0, "out_tokens": 0}
+  },
+  "total": 221962, "sessions": 2, "skipped": 0
+}
+```
+
+<sup>原文：[`10-usage.json`](docs/demo/transcripts/10-usage.json)——上面 3.1 到 3.6 全部跑完之后的真实账单</sup>
+
+三笔分开记：`chat` 是你正在聊的那条线，`probe` 是后台深挖，`fold` 是写回时的折叠生成。
+**分开记是为了能分开限**——后台超支不该掐掉你正在读的那一轮。
+
+**它只数 token，不折算成钱。** 因为汇率是你的：你填的是哪个节点、哪个模型、
+有没有折扣、缓存命中算不算钱，只有你知道。给你一个编出来的美元数字，
+比给你一个真实的 token 数字更没用。
+
+**这个累计数会往下掉**，别以为是 bug——会话是有保质期的（[见 4.8](#4--系统设计)），
+被清掉的那些，它们的账也跟着走了。
+
+---
+
+## 4 · 系统设计
+
+### 4.1 · 三个进程，一条 loopback
+
+<img src="docs/img/arch.drawio.svg" alt="三个进程，一条 loopback" width="100%">
+
+Obsidian 插件（TypeScript）+ 本机 sidecar（Python / FastAPI）+ 你自己填的那个模型节点。
+
+- **插件不打作者的服务器。** 仓库里没有任何 telemetry 端点。
+- **sidecar 只绑 `127.0.0.1`。** 你在设置里填一个非本机地址，`parseListen` 会**直接拒**，
+  不是「尽力而为」。
+- **模型调用从你的电脑发出去**，发到**你填的那个节点**。任何 OpenAI 兼容的
+  Chat Completions 端点都行。
+
+第一次启用插件时它会建 `~/.socrates-pen/venv` 并 pip 安装 sidecar（走 GitHub 和 PyPI）。
+之后就全在本地。
+
+### 4.2 · 工具箱里只有两把
+
+`read_file` 和 `edit_file`。**没有 bash，没有 write_file，没有 shell。**
+
+权限是三值的，不是开关：
+
+| | |
+| --- | --- |
+| `read_file` | **allow** — 自动过 |
+| `edit_file` | **ask** — 每一次都弹审批 |
+| 其他任何名字 | **deny** — 不认识就拒 |
+
+最后一条是**默认拒绝**，不是默认放行。模型幻觉出一个 `run_command` 来，它撞的是墙。
+
+### 4.3 · read-first 是一道硬闸
+
+要改哪一段，必须在**更早一轮**成功读过那个文件。
+
+**同一批 `tool_calls` 里先 read 再 edit 也拦。** 这条容易被当成过度设计，其实不是：
+同一批里那两个调用的参数是**同时**生成的——写 `edit_file` 的 `old_string` 时，
+`read_file` 的结果还没回来。那仍然是猜，只是猜得比较像。
+
+被拦下来时，模型收到的不是一句「拒绝」，是一段**说明怎么做才对**的话：
+
+> 错误：edit_file 之前必须先成功 read_file 同一路径。请先 read_file 看准带行号的原文
+> （格式 N\t原文），下一轮再单独调用 edit_file（不要和 read_file 写在同一批 tool_calls 里）。
+> old_string 必须是去掉行号前缀后的纯原文。
+
+<sup>`pen/agent/permissions.py:7` `READ_FIRST_MSG`</sup>
+
+### 4.4 · 沙箱有两套根，读和写不是一回事
+
+**写**只允许改**登记过的那一篇**（`assert_write_target`：目标必须逐字等于登记时的原文路径）。
+**读**可以放宽到白名单里的根。`.git` / `.obsidian` / `.env*` 一律拒，两边都拒。
+
+书架的可见性用的是**读根**，不是全局允许根。这条差别听起来很细，但方向很明确：
+
+> 印一条苏格拉底读不到的路径，比不印更糟。
+
+因为那会让他试着去读、失败、然后当着你的面编。
+
+### 4.5 · 后台深挖是一条任务队列
+
+<img src="docs/img/deep-queue.drawio.svg" alt="后台深挖：一条任务队列" width="100%">
+
+**为什么要另起一层。** 一开始追问是搭车产出的——让模型在回答的末尾顺手写两条
+`<!--pen:chips -->`。问题是那两条永远纠缠在刚讲过的细节上（「echo 加不加引号」），
+而读者真正想问的是架构层面的东西。**搭车的追问，视野被那一轮的上下文锁死了。**
+
+于是深挖被拆成独立的一层，有自己的 prompt、自己的预算、自己的账本。
+
+<details>
+<summary><b>展开：这一层的六条设计约束（每条都有它要治的病）</b></summary>
+
+**① `done` 那一刻起一个 daemon 线程，刻意不用 `ThreadPoolExecutor`。**
+`ThreadPoolExecutor` 会注册一个 `atexit` 钩子去 join 所有 worker——一个卡在
+网络 IO 上的 worker，能让你按 Ctrl-C 之后等 30 秒。daemon 线程不会。
+
+**② 永远不给它 tools。**
+定向读由 **Python 执行**，不是模型自己决定读多少：硬上限 **2 段 × 80 行、最多 2 次**。
+
+> **广度由代码封死，不由模型自律。**
+
+一个能自己决定「我再多读几段」的后台任务，就是一张开着口的账单。
+
+**③ 故意不喂邻域。**
+不把读者划中那段的前后文喂给它。理由写在 `pen/probe.py` 的模块头上：
+
+> 那 4000 字符里全是手册自带的入门题（「heredoc 里 `<<'EOF'` 的引号起什么作用」），
+> 模型盯着它们必然产同构题——**这才是「echo 加不加引号」的病根。**
+
+改喂苏格拉底刚讲的那段话，而且剥掉代码块。
+
+**④ 会话为键的收件箱 + 一个游标。**
+`GET /v1/sessions/{sid}/deep?since=N`。前端 3 秒一拍
+（`src/deeppoll.ts` `DEEP_POLL_MS = 3000`），最多转 **480 秒**
+（`DEEP_POLL_BUDGET_MS`），连失败 3 次放弃（`DEEP_POLL_MAX_FAILS`）。
+正常情况下 `running` 一空就停，跑不满这个预算。
+
+**⑤ 成熟度闸门。**
+每条题自带 `timing`：`now` 当场抛给你，`later` 留在池子里，**每一轮重新过一次闸**——
+你读到那儿了，它才出来。
+
+**⑥ 质量靠强制填槽 + 确定性校验，不靠夸模型。**
+每条题必须填满 `axis` / `depth` / `grounding` / `anchors` / `why`，
+五条轴是封闭集合：
+
+| 轴 | 它要产什么 |
+| --- | --- |
+| `bridge` | 把两处挂上钩 |
+| `tradeoff` | 这里选了 A 否了 B，代价是什么（必须填 `alt`） |
+| `vs_real` | 现实里是怎么做的（锚点必须落在「第三拍 · 出身」，白名单校验） |
+| `failure` | 什么条件下会炸（必须填 `trigger`） |
+| `altitude` | 往上抬一层 |
+
+然后 **Python 验槽，不验措辞**：`depth` 自己打 1–5 分，`depth < 4` 的直接扔
+（`pen/probe.py:968`）。[3.4 节](#34--后台深挖-)里英文那一场，2 次调用 2002 个输出 token
+被这道闸全部枪毙，就是它在干活。
+
+</details>
+
+### 4.6 · 配置每请求透传，不写全局槽
+
+一台 sidecar 可能同时伺候两个 vault。设置写进全局槽，就是 A 库的模型串到 B 库去。
+所以**所有旋钮跟着每一个请求走**。
+
+一共 **18 个**旋钮（`pen/config.py` 的 `LIMIT_RANGE`）。前后端各有一张范围表，
+而 `scripts/check-limits.mjs` 是一道 CI 闸，专门守着这两张表**不许漂**——
+前端夹到 30、后端夹到 60，那就是一个只在边界上出现的 bug。
+
+### 4.7 · 成本闸门：分类不分总
+
+<img src="docs/img/gates.drawio.svg" alt="闸门全景：钱一套闸，安全另一套" width="100%">
+
+三个 token 上限，**分开记也分开限**：主对话一个、后台深挖一个、跨书阅读一个。
+分开的理由很实际——**后台超支不该掐掉你正在读的那一轮**。
+
+三条性质要记住：
+
+1. **默认全是 0，0 就是不限。** 判据只有一句：`cap > 0 and (spent + headroom) >= cap`
+   （`pen/meter.py:167`）。「0 = 不限」的全部实现就是 `cap > 0` 这一半。
+2. **超限不报错。** 它给模型追加一句让它收敛的话，不是抛异常。你看到的是一个
+   短一点的回答，不是一个红色感叹号。
+3. ⚠️ **主对话那个不是硬上限。** 到线之后**还会再出一次答案**（因为那一轮已经开跑了）。
+   设置页上就是这么写的，这里也照样写。
+
+### 4.8 · 会话会过期，账也跟着走
+
+| 类型 | 判据 | 留多久 |
+| --- | --- | --- |
+| 空会话 | `len(messages) <= 1` | **1 天** |
+| 聊过的 | 其余 | **7 天** |
+| 挂着审批的 | `pending.id` 非空**且不是空会话** | **30 天** |
+
+为什么需要这个：清理上线之前实测，`.pen/sessions/` 攒到 **3389 个文件 / 10.4 MB**，
+其中 **3371 个是空的**——每划一次词就建一场，绝大多数没等到第一句话就被下一次划词换掉了。
+
+第三档那个「且不是空会话」是后来收紧的。第一版写成「有 pending 就永不删」，
+那是一条**无界豁免**：任何带 `pending` 键的文件从此占着盘，清理再怎么跑都动不了它——
+**那正是这次要治的病本身**。
+
+<sup>`pen/retention.py`，模块头有完整的实测记录</sup>
+
+### 4.9 · 教材无关（v0.15.0）
+
+改这一版之前，`SYSTEM_PROMPT` 第一句话是写死的：
+
+```
+你是苏格拉底，坐在读者旁边，正在带人读一本手搓 SWE Agent 的通关手册。
+```
+
+它是**每一场会话 `messages[0]` 的全部内容**，建场那一刻就固化并落盘。
+拿别的教材去跑，模型一上来就被告知它在读一本它没在读的书。
+
+现在书名从**你那篇笔记的第 1 行 H1** 注进去。真跑那一次落盘的 `messages[0]` 第一行是：
+
+> 你是苏格拉底，坐在读者旁边，正在带人读一本叫《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》的通关手册。
+
+全文里 **`SWE` 出现 0 次**。
+
+<sup>原文：[`02b-system-prompt.json`](docs/demo/transcripts/02b-system-prompt.json)</sup>
+
+**但八拍体例留下了，而且是故意的。** 「第三拍 · 出身」「第五拍 · Meta Question 门禁」
+这些不是那本书的内容，是**格式契约**——`vs_real` 轴要求锚点落在「出身」那一拍，
+`examples` 要求例子名对得上「第七拍」。
+
+**教材体例和深挖算法是咬合的。** 你的书按这个格式写，深挖才有地方下锚。
+[`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) 就是一份可以照抄的样板。
+
+### 4.10 · 一轮对话，从划词到落字
+
+<img src="docs/img/turn.drawio.svg" alt="一轮对话：从划词到落字" width="100%">
+
+<details>
+<summary><b>展开：给开发者的那一层</b></summary>
+
+**规模**（截至 v0.15.1，全部实测）
+
+| | |
+| --- | --- |
+| Python（sidecar，不含测试） | 26 个模块，7732 行 |
+| Python 测试 | 8486 行，**477 passed** |
+| TypeScript（插件） | 15 个文件，3839 行 |
+| HTTP 路由 | 23 条 |
+| 配置旋钮 | 18 个 |
+
+**SSE 事件的种类在 JSON 载荷的 `type` 字段里，不在 SSE 的 `event:` 行上。**
+这是接这套 API 时第一个会踩的坑。八种：
+
+| `type` | 是什么 |
+| --- | --- |
+| `status` | 阶段：`writing` / `thinking` / `reading` / `tool` |
+| `think` | 思考过程（模型支持时） |
+| `token` | 正文，一段一段吐 |
+| `tool` | 工具跑完了，带 `name` / `ok` / `detail` |
+| `approval` | **要你点允许**，带 `pending_id` / `name` / `args` |
+| `spend` | 这一轮花了多少 token |
+| `done` | 这一轮结束，带合并后的账 |
+| `error` | 出事了，带本地化过的人话 |
+
+**测试闸门**
+
+前端 `npm test` 是五道独立的闸，各守一件事：
+
+| | |
+| --- | --- |
+| `check-i18n.mjs` | 词表自检——语言解析在真实边界上的那几个坑 |
+| `check-poll.mjs` | 深挖轮询的**终止条件**，跑的是编译出来的真代码。少一个终止条件，你关掉面板它还在后台敲 sidecar |
+| `check-api.mjs` | HTTP 错误的形状，跑的是 `src/api.ts` 编译出来的真代码 |
+| `check-css.mjs` | `styles.css` 的不变量，三条都是真踩过的坑 |
+| `check-limits.mjs` | **前后端那两张夹紧表必须逐项相等**——同一道闸的两半 |
+
+`npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
+
+后端 `python -m pytest pen/tests -q` → **477 passed**，
+在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
+[`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
+
+**教材索引自检**
+
+```bash
+python -m pen.index --check 你的笔记.md
+```
+
+它不调模型。同一份输入永远切出同一份索引——**这条性质是所有定位、锚点、回读的地基**。
+
+```
+$ python -m pen.index --check docs/demo/从零手写DQN.md
+从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）
+lines=1405 sections=87 qs=21 toc=45
+CHECK OK
+```
+
+**五张图都是 `.drawio.svg`**——GitHub 当图渲染，用 [draw.io](https://app.diagrams.net/)
+打开还能直接改（mxGraph 模型存在根 `<svg>` 的 `content` 属性里）。
+
+</details>
+
+---
+
+## 5 · 装 · 用 · 隐私
+
+### 需要什么
+
+- **Obsidian 桌面版 1.5.0 或更高**（手机版不行——它要在你机器上起一个 Python 进程）
+- **本机 Python 3.11 或更高**（[python.org](https://www.python.org/downloads/)）
+- 一个兼容 OpenAI Chat Completions 的 **API Key**
+
+### 装
 
 进了社区插件目录之后：**设置 → 社区插件 → 浏览 → Socrates**。
 
-在此之前，从 [GitHub Release](https://github.com/xesws/socrates-pen/releases) 下载这三个文件，拷进：
+在此之前，从 [GitHub Release](https://github.com/xesws/socrates-pen/releases) 下载
+`main.js` / `manifest.json` / `styles.css` 三个文件，拷进：
 
-`<库>/.obsidian/plugins/socrates-pen/`
+```
+<你的库>/.obsidian/plugins/socrates-pen/
+```
 
-- `main.js`
-- `manifest.json`
-- `styles.css`
+在**设置 → 社区插件**里启用（Restricted mode 要关掉）。
 
-在 **设置 → 社区插件** 里启用。需要关掉 Restricted mode。
+**第一次启用会花一分钟。** 插件在 `~/.socrates-pen/venv` 里建一个隔离环境，
+从本仓库 pip 安装 sidecar（访问 GitHub 和 PyPI）。装完之后
+**设置 → Socrates** 最上面那一行会显示本机服务在不在跑。
 
-第一次启用可能要一分钟：插件会建 `~/.socrates-pen/venv`，并从本 GitHub 仓库 pip 安装（访问 GitHub 和 PyPI）。之后在 **设置 → Socrates** 最上面看本机服务是否在跑，并填 API Key。
+**不用开终端。** 这是 v0.13.0 专门做的事。
 
-## 用法
+### 用
 
-1. 启用插件。等到设置页显示本机服务在运行（或点 **启动**）。
-2. **设置 → Socrates**：填 API Key；需要的话再改 Base URL、模型、Thinking。
-3. 打开一篇笔记，划一段（实时预览或阅读模式都行）。
-4. 打开苏格拉底侧栏，用当前选区；或用命令面板做同样的事。
-5. 要把解答写进原文：说清楚插哪/换哪，或在有真正解答之后用写回。模型必须先读文件，再单独提一次编辑。侧栏弹出审批，点**允许**才写盘。
-6. **回到上一版 / 重做**按快照栈整篇回退，不是只撤选区。
+1. 等设置页显示本机服务**运行中**（或者点**启动**）。
+2. **设置 → Socrates** 填 API Key；需要的话再改 Base URL、模型、Thinking 档位。
+3. 打开一篇笔记，**划一段**（实时预览或阅读模式都行）。
+4. 打开苏格拉底侧栏用当前选区，或者用命令面板做同样的事。
+5. 想把解答写进原文：说清楚**插哪 / 换哪**，或者在有了真正解答之后点**写回**。
+   模型必须先读文件，再**单独一轮**提编辑。侧栏弹审批，点**允许**才写盘。
+6. **回到上一版 / 重做**按快照栈**整篇**回退，不是只撤选区。
 
-## 隐私与网络
+<!-- shot-05-rollback.png / shot-06-settings.png / shot-07-usage.png：第二批补 -->
 
-- 插件默认只访问 `http://127.0.0.1:8765`，不向作者汇报。
-- 第一次安装会从 GitHub 和 PyPI 把脑子和 Python 依赖下到 `~/.socrates-pen`。
-- 调模型由这个本机进程按你填的节点发出去。
-- API Key 存在本库 `.obsidian/plugins/socrates-pen/data.json`。库若进了 Sync / iCloud / git，钥匙会跟着走。
-- 写回改磁盘上的笔记，且必须你先批准。
+### 隐私与网络
 
-## 许可
+- 插件默认只访问 `http://127.0.0.1:8765`，**不向作者汇报任何东西**。
+- 第一次安装从 GitHub 和 PyPI 下载 sidecar 和 Python 依赖到 `~/.socrates-pen`。
+- 模型调用由这个本机进程发出，发到**你填的那个节点**。
+- 会话、快照、深挖账本全在本地 `.pen/` 下。
+- ⚠️ **API Key 存在本库的 `.obsidian/plugins/socrates-pen/data.json` 里。**
+  这个库要是进了 Sync / iCloud / git，**钥匙会跟着走**。
+- 写回会改磁盘上的笔记——**且必须你先批准**。
+- ⚠️ **禁用插件不会停掉 sidecar。** 那个 Python 进程还在跑（下次启用就能立刻用）。
+  要彻底停掉，去设置页点停止。
 
-MIT，见 [LICENSE](LICENSE)。
+---
 
-## 开发
+## 6 · 开发 · 测试 · 许可
 
 ```bash
 npm install
-npm test
-npm run build
+npm test        # 五道闸：i18n / poll / api / css / limits
+npm run build   # tsc --noEmit && npm test && esbuild
 ```
 
-对着一个库热更新：
+对着一个真库热更新：
 
 ```bash
 export VAULT_PLUGIN_DIR=/path/to/vault/.obsidian/plugins/socrates-pen
 npm run dev
 ```
 
-没设 `VAULT_PLUGIN_DIR` 时 `npm run dev` 会直接退出。
+没设 `VAULT_PLUGIN_DIR` 时 `npm run dev` 会**直接退出**——防止你把一份陈旧的
+副本装进库里。
+
+后端：
+
+```bash
+python -m pytest pen/tests -q       # 477 passed
+python -m pen.index --check 你的笔记.md
+```
+
+想自己复现 [3 章](#3--核心功能逐个上例子)里的所有例子：教材在
+[`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md)，
+每一步的原始请求体和 SSE 事件流在
+[`docs/demo/transcripts/`](docs/demo/transcripts/)。
+
+**许可：MIT**，见 [LICENSE](LICENSE)。
+
+---
+
+## 7 · 还欠着的
+
+这一节是故意留的。
+
+- **`search` 芯片是个占位。** 它可见、可点、点了告诉你还没通。不通网。
+- **`pen/index.py:149` 还留着一条遗留特判**：`if i == 1 or heading.startswith("手搓")`。
+  后半句是那本 SWE 手册的专属通道。第 1 行 H1 那条路对任何书都成立，
+  这个 `or` 现在只是历史包袱。
+- **`pen/config.py:34` 的 `DEFAULT_HANDBOOK` 仍然写死着 `SWE-Agent通关手册v2.md`。**
+  v0.14.0 之后它不存在就空操作（sidecar 照样能起），v0.15.1 之后测试有自己的兜底手册。
+  但这个常量本身还没清干净。
+- **`src/deeppoll.ts` 的注释写「最多转 5 分钟」，常量是 480 秒。**
+  常量是对的（跨书探索实测跑过 351 秒），注释没跟上。
+- **`pen/app.py:57` 的 `FastAPI(version="0.12.13")` 落后于 `manifest.json` 的 `0.13.1`。**
+- **`libraries._suggest_id` 会吐出后端自己不收的 id。** 它保留 CJK 字符
+  （Python 里 `'从'.isalnum()` 是 `True`），而 `_SAFE_ID` 只认 `[A-Za-z0-9._-]`。
+  插件撞不到这条，因为 `src/selection.ts:30` 的 `handbookIdFromPath` 会把非法字符
+  全换掉再补一个路径哈希——但**直接打 HTTP 的人会撞 400**。
+  （这一条就是写这份 README 时真撞出来的。）
+- **英文界面 + 中文教材时，模型经常仍然用中文回答。** system prompt 是中文的，
+  英文只是尾部追加的一段（`REPLY_IN_ENGLISH`）。一整篇中文正文压过来，
+  那一段尾巴顶不住。有意思的是**后台深挖那一层不受影响**——它的 prompt 更短，
+  英文那一场抛回来的题是英文的（见 [`13-deep-en.json`](docs/demo/transcripts/13-deep-en.json)）。
+
+---
+
+<div align="center">
+<sub>
+
+MIT · [xesws/socrates-pen](https://github.com/xesws/socrates-pen)
+
+**中文** · [English](README.en.md)
+
+</sub>
+</div>

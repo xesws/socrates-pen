@@ -1,0 +1,44 @@
+{
+  "这是什么": "直接驱动 pen/agent/permissions.py 的两个函数，不经模型，可逐条复现。",
+  "源码": "pen/agent/permissions.py:15 decide() / :23 read_first_block()",
+  "用例": [
+    {
+      "说明": "read_file 一律自动过",
+      "调用与返回": {
+        "decide('read_file')": "allow"
+      }
+    },
+    {
+      "说明": "edit_file 每次都要问人",
+      "调用与返回": {
+        "decide('edit_file')": "ask"
+      }
+    },
+    {
+      "说明": "没登记的工具一律拒",
+      "调用与返回": {
+        "decide('bash')": "deny",
+        "decide('write_file')": "deny"
+      }
+    },
+    {
+      "说明": "没读过就改 → 挡",
+      "调用与返回": {
+        "read_first_block('edit_file', 教材, read_before=set())": "错误：edit_file 之前必须先成功 read_file 同一路径。请先 read_file 看准带行号的原文（格式 N\\t原文），下一轮再单独调用 edit_file（不要和 read_file 写在同一批 tool_calls 里）。old_string 必须是去掉行号前缀后的纯原文。"
+      }
+    },
+    {
+      "说明": "读了别的文件就改 → 挡",
+      "调用与返回": {
+        "read_first_block('edit_file', 教材, read_before={别的文件})": "错误：edit_file 之前必须先成功 read_file 同一路径。请先 read_file 看准带行号的原文（格式 N\\t原文），下一轮再单独调用 edit_file（不要和 read_file 写在同一批 tool_calls 里）。old_string 必须是去掉行号前缀后的纯原文。"
+      }
+    },
+    {
+      "说明": "更早一轮真读过 → 放行",
+      "调用与返回": {
+        "read_first_block('edit_file', 教材, read_before={教材})": null
+      }
+    }
+  ],
+  "READ_FIRST_MSG": "错误：edit_file 之前必须先成功 read_file 同一路径。请先 read_file 看准带行号的原文（格式 N\\t原文），下一轮再单独调用 edit_file（不要和 read_file 写在同一批 tool_calls 里）。old_string 必须是去掉行号前缀后的纯原文。"
+}

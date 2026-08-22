@@ -1,0 +1,67 @@
+{
+  "request": {
+    "handbook_id": "dqn-550d425c"
+  },
+  "response": {
+    "session_id": "c5298fbe28d14ef798c20207e698df2a",
+    "handbook_id": "dqn-550d425c",
+    "chips": [
+      {
+        "id": "socratic",
+        "label": "先别揭晓，问我一个问题",
+        "enabled": true
+      },
+      {
+        "id": "explain_zero",
+        "label": "当我零基础，讲清楚再给两个例子",
+        "enabled": true
+      },
+      {
+        "id": "examples",
+        "label": "只举例子",
+        "enabled": true
+      },
+      {
+        "id": "search",
+        "label": "查相关论文 / 算法出处",
+        "enabled": false,
+        "hint": "P2 才开放，现在不会假装搜过"
+      },
+      {
+        "id": "writeback",
+        "label": "把刚才的解答写进手册原文",
+        "enabled": false,
+        "hint": "先有一轮实质解答"
+      }
+    ],
+    "has_substantive": false,
+    "last_anchor": null,
+    "ui_messages": [],
+    "last_assistant": "",
+    "pending": null,
+    "dyn_chips": [],
+    "spend": {
+      "chat": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      },
+      "probe": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      },
+      "fold": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      }
+    }
+  }
+}

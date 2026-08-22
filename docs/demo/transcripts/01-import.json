@@ -1,0 +1,15 @@
+{
+  "request": {
+    "original_path": "/Users/you/vault/从零手写DQN.md",
+    "handbook_id": "dqn-550d425c",
+    "vault_root": "/Users/you/vault"
+  },
+  "response": {
+    "handbook_id": "dqn-550d425c",
+    "title": "从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）",
+    "original_path": "/Users/you/vault/从零手写DQN.md",
+    "imported_at": "2026-08-22T01:49:19.323194+00:00",
+    "mtime": 1787363239.7583735,
+    "allow_root": "/Users/you/vault"
+  }
+}

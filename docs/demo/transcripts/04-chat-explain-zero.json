@@ -1,0 +1,1599 @@
+{
+  "request": {
+    "session_id": "c5298fbe28d14ef798c20207e698df2a",
+    "selected_text": "**决策① 为什么非要两个网络——一个冻着、一个在更新**\n\n这是本关最核心的一问，把它拆成三层：\n\n**第一层（数学上）**：目标里带 θ，损失就不是一个良定义的回归损失，半梯度也不是真梯度（Level 2 决策④）。冻住之后，两次同步之间目标是常数，**它就变回了一个标准的监督回归问题**，半梯度也就成了真梯度。\n\n**第二层（动力学上）**：Level 2 那个正反馈环路——「推高 $Q(s,a)$ → 泛化推高 $Q(s',a')$ → 目标变高 → 再推高 $Q(s,a)$」——在两次同步之间被**物理切断**了。$Q_{\\theta^-}(s',a')$ 里根本没有当前的 θ，你怎么推 θ 都影响不了目标。环路每 C 步才接通一瞬间。\n\n**第三层（工程上）**：即使不发散，共享参数也会让训练**震荡**。你把某个状态的 Q 推高，相邻状态的目标跟着涨，下一批样本又去追这个涨了的目标……Q 值在几个高原之间来回横跳。冻住目标就等于给这个系统加了一个低通滤波。\n\n**这三层是同一件事的三种说法，但对应三种不同的追问。** 有人问「为什么」时想听数学，有人想听动力学，有人想听「实际跑起来会怎样」。",
+    "start_line": 954,
+    "end_line": 964,
+    "chip": "explain_zero",
+    "user_text": "",
+    "deep": true
+  },
+  "events": [
+    {
+      "type": "status",
+      "phase": "thinking",
+      "text": "苏格拉底在想…"
+    },
+    {
+      "type": "spend",
+      "turn": 8492,
+      "chat": {
+        "calls": 2,
+        "in_tokens": 12704,
+        "out_tokens": 865,
+        "cached_tokens": 8704,
+        "reasoning_tokens": 564
+      }
+    },
+    {
+      "type": "status",
+      "phase": "reading",
+      "text": "在翻手册…"
+    },
+    {
+      "type": "status",
+      "phase": "tool",
+      "text": "在用 read_file…"
+    },
+    {
+      "type": "tool",
+      "name": "read_file",
+      "detail": "/Users/you/vault/从零手写DQN.md",
+      "resolved": "/Users/you/vault/从零手写DQN.md",
+      "ok": true,
+      "preview": "1117\t## 第七拍 · 实操代码\n1118\t\n1119\t```python\n1120\t\"\"\"Level 3 · DQN 跑 CartPole。\n1121\t\n1122\t依赖：torch、numpy。环境是本文档手写的极简 CartPole，不需要装 gym。\n1123\t\n1124\t「object · type · origin」速查：\n1125\t  | 名字        | 类型       "
+    },
+    {
+      "type": "status",
+      "phase": "thinking",
+      "text": "苏格拉底在想…"
+    },
+    {
+      "type": "token",
+      "text": "好，"
+    },
+    {
+      "type": "token",
+      "text": "零"
+    },
+    {
+      "type": "token",
+      "text": "基"
+    },
+    {
+      "type": "token",
+      "text": "础模式。我先把"
+    },
+    {
+      "type": "token",
+      "text": "决"
+    },
+    {
+      "type": "token",
+      "text": "策①"
+    },
+    {
+      "type": "token",
+      "text": "按「"
+    },
+    {
+      "type": "token",
+      "text": "TL;"
+    },
+    {
+      "type": "token",
+      "text": "DR →"
+    },
+    {
+      "type": "token",
+      "text": " 概"
+    },
+    {
+      "type": "token",
+      "text": "念 → 机制"
+    },
+    {
+      "type": "token",
+      "text": " →"
+    },
+    {
+      "type": "token",
+      "text": " 反例」"
+    },
+    {
+      "type": "token",
+      "text": "讲"
+    },
+    {
+      "type": "token",
+      "text": "清楚，"
+    },
+    {
+      "type": "token",
+      "text": "然后"
+    },
+    {
+      "type": "token",
+      "text": "给"
+    },
+    {
+      "type": "token",
+      "text": "你两个"
+    },
+    {
+      "type": "token",
+      "text": "你能"
+    },
+    {
+      "type": "token",
+      "text": "跑的例"
+    },
+    {
+      "type": "token",
+      "text": "子——它俩都"
+    },
+    {
+      "type": "token",
+      "text": "在第七拍的真代"
+    },
+    {
+      "type": "token",
+      "text": "码里。\n\n---"
+    },
+    {
+      "type": "token",
+      "text": "\n\n#"
+    },
+    {
+      "type": "token",
+      "text": "# T"
+    },
+    {
+      "type": "token",
+      "text": "L;DR"
+    },
+    {
+      "type": "token",
+      "text": "\n\n**冻"
+    },
+    {
+      "type": "token",
+      "text": "住目"
+    },
+    {
+      "type": "token",
+      "text": "标网"
+    },
+    {
+      "type": "token",
+      "text": "络 "
+    },
+    {
+      "type": "token",
+      "text": "="
+    },
+    {
+      "type": "token",
+      "text": " "
+    },
+    {
+      "type": "token",
+      "text": "把 RL "
+    },
+    {
+      "type": "token",
+      "text": "的"
+    },
+    {
+      "type": "token",
+      "text": "移动靶"
+    },
+    {
+      "type": "token",
+      "text": "子钉"
+    },
+    {
+      "type": "token",
+      "text": "在墙上，让它"
+    },
+    {
+      "type": "token",
+      "text": "变回"
+    },
+    {
+      "type": "token",
+      "text": "普通"
+    },
+    {
+      "type": "token",
+      "text": "回归。*"
+    },
+    {
+      "type": "token",
+      "text": "*  "
+    },
+    {
+      "type": "token",
+      "text": "\n在线"
+    },
+    {
+      "type": "token",
+      "text": "网络每"
+    },
+    {
+      "type": "token",
+      "text": "步更新"
+    },
+    {
+      "type": "token",
+      "text": "，目标网"
+    },
+    {
+      "type": "token",
+      "text": "络每 "
+    },
+    {
+      "type": "token",
+      "text": "C 步才"
+    },
+    {
+      "type": "token",
+      "text": "被同步"
+    },
+    {
+      "type": "token",
+      "text": "一次。两"
+    },
+    {
+      "type": "token",
+      "text": "次同步"
+    },
+    {
+      "type": "token",
+      "text": "之间"
+    },
+    {
+      "type": "token",
+      "text": "，损"
+    },
+    {
+      "type": "token",
+      "text": "失函数里的"
+    },
+    {
+      "type": "token",
+      "text": "目标是"
+    },
+    {
+      "type": "token",
+      "text": "常数，半梯度变成了真梯"
+    },
+    {
+      "type": "token",
+      "text": "度。\n\n-"
+    },
+    {
+      "type": "token",
+      "text": "--\n"
+    },
+    {
+      "type": "token",
+      "text": "\n##"
+    },
+    {
+      "type": "token",
+      "text": "#"
+    },
+    {
+      "type": "token",
+      "text": " "
+    },
+    {
+      "type": "token",
+      "text": "(a) 概念"
+    },
+    {
+      "type": "token",
+      "text": "/对比：在"
+    },
+    {
+      "type": "token",
+      "text": "动 "
+    },
+    {
+      "type": "token",
+      "text": "vs"
+    },
+    {
+      "type": "token",
+      "text": " 冻住\n\n"
+    },
+    {
+      "type": "token",
+      "text": "| "
+    },
+    {
+      "type": "token",
+      "text": "| "
+    },
+    {
+      "type": "token",
+      "text": "不冻"
+    },
+    {
+      "type": "token",
+      "text": "（L"
+    },
+    {
+      "type": "token",
+      "text": "eve"
+    },
+    {
+      "type": "token",
+      "text": "l 2 的"
+    },
+    {
+      "type": "token",
+      "text": "表格 /"
+    },
+    {
+      "type": "token",
+      "text": " 函"
+    },
+    {
+      "type": "token",
+      "text": "数逼"
+    },
+    {
+      "type": "token",
+      "text": "近） | 冻住（DQN"
+    },
+    {
+      "type": "token",
+      "text": "） |\n|-"
+    },
+    {
+      "type": "token",
+      "text": "--|-"
+    },
+    {
+      "type": "token",
+      "text": "--"
+    },
+    {
+      "type": "token",
+      "text": "|-"
+    },
+    {
+      "type": "token",
+      "text": "-"
+    },
+    {
+      "type": "token",
+      "text": "-|\n|"
+    },
+    {
+      "type": "token",
+      "text": " 目标"
+    },
+    {
+      "type": "token",
+      "text": "里"
+    },
+    {
+      "type": "token",
+      "text": "有 "
+    },
+    {
+      "type": "token",
+      "text": "θ？"
+    },
+    {
+      "type": "token",
+      "text": " | 有"
+    },
+    {
+      "type": "token",
+      "text": "，损失一更"
+    },
+    {
+      "type": "token",
+      "text": "新目标也"
+    },
+    {
+      "type": "token",
+      "text": "跟着"
+    },
+    {
+      "type": "token",
+      "text": "变 | 没有，"
+    },
+    {
+      "type": "token",
+      "text": "C 步之内目"
+    },
+    {
+      "type": "token",
+      "text": "标不"
+    },
+    {
+      "type": "token",
+      "text": "变 |\n"
+    },
+    {
+      "type": "token",
+      "text": "|"
+    },
+    {
+      "type": "token",
+      "text": " 这是"
+    },
+    {
+      "type": "token",
+      "text": "什么"
+    },
+    {
+      "type": "token",
+      "text": "问"
+    },
+    {
+      "type": "token",
+      "text": "题"
+    },
+    {
+      "type": "token",
+      "text": " | "
+    },
+    {
+      "type": "token",
+      "text": "非定常目标"
+    },
+    {
+      "type": "token",
+      "text": "回归"
+    },
+    {
+      "type": "token",
+      "text": "（半梯"
+    },
+    {
+      "type": "token",
+      "text": "度） |"
+    },
+    {
+      "type": "token",
+      "text": " 标准监督回归"
+    },
+    {
+      "type": "token",
+      "text": "（真"
+    },
+    {
+      "type": "token",
+      "text": "梯度） "
+    },
+    {
+      "type": "token",
+      "text": "|\n| "
+    },
+    {
+      "type": "token",
+      "text": "收"
+    },
+    {
+      "type": "token",
+      "text": "敛风险 "
+    },
+    {
+      "type": "token",
+      "text": "| 正"
+    },
+    {
+      "type": "token",
+      "text": "反馈环路"
+    },
+    {
+      "type": "token",
+      "text": "→发"
+    },
+    {
+      "type": "token",
+      "text": "散 | "
+    },
+    {
+      "type": "token",
+      "text": "环路被切断，只每 "
+    },
+    {
+      "type": "token",
+      "text": "C 步接通一"
+    },
+    {
+      "type": "token",
+      "text": "瞬间 |"
+    },
+    {
+      "type": "token",
+      "text": "\n\n"
+    },
+    {
+      "type": "token",
+      "text": "##"
+    },
+    {
+      "type": "token",
+      "text": "# "
+    },
+    {
+      "type": "token",
+      "text": "("
+    },
+    {
+      "type": "token",
+      "text": "b) 机"
+    },
+    {
+      "type": "token",
+      "text": "制：三"
+    },
+    {
+      "type": "token",
+      "text": "层面\n"
+    },
+    {
+      "type": "token",
+      "text": "\n"
+    },
+    {
+      "type": "token",
+      "text": "1."
+    },
+    {
+      "type": "token",
+      "text": " **数学"
+    },
+    {
+      "type": "token",
+      "text": "层*"
+    },
+    {
+      "type": "token",
+      "text": "*：冻"
+    },
+    {
+      "type": "token",
+      "text": "住后 los"
+    },
+    {
+      "type": "token",
+      "text": "s "
+    },
+    {
+      "type": "token",
+      "text": "里 $\\t"
+    },
+    {
+      "type": "token",
+      "text": "h"
+    },
+    {
+      "type": "token",
+      "text": "eta"
+    },
+    {
+      "type": "token",
+      "text": "$ 只出现"
+    },
+    {
+      "type": "token",
+      "text": "在预测"
+    },
+    {
+      "type": "token",
+      "text": "端，"
+    },
+    {
+      "type": "token",
+      "text": "不出现"
+    },
+    {
+      "type": "token",
+      "text": "在目标端。梯度就是 $\\na"
+    },
+    {
+      "type": "token",
+      "text": "bla"
+    },
+    {
+      "type": "token",
+      "text": "_\\theta"
+    },
+    {
+      "type": "token",
+      "text": " (Q_\\thet"
+    },
+    {
+      "type": "token",
+      "text": "a - \\"
+    },
+    {
+      "type": "token",
+      "text": "te"
+    },
+    {
+      "type": "token",
+      "text": "xt"
+    },
+    {
+      "type": "token",
+      "text": "{"
+    },
+    {
+      "type": "token",
+      "text": "常数}"
+    },
+    {
+      "type": "token",
+      "text": ")"
+    },
+    {
+      "type": "token",
+      "text": "^2$——标"
+    },
+    {
+      "type": "token",
+      "text": "准"
+    },
+    {
+      "type": "token",
+      "text": "均方误差的梯度"
+    },
+    {
+      "type": "token",
+      "text": "，没问题"
+    },
+    {
+      "type": "token",
+      "text": "了。\n2. **"
+    },
+    {
+      "type": "token",
+      "text": "动力学层*"
+    },
+    {
+      "type": "token",
+      "text": "*"
+    },
+    {
+      "type": "token",
+      "text": "：Lev"
+    },
+    {
+      "type": "token",
+      "text": "el 2 "
+    },
+    {
+      "type": "token",
+      "text": "那个死循环"
+    },
+    {
+      "type": "token",
+      "text": "——「推高 "
+    },
+    {
+      "type": "token",
+      "text": "$Q(s,"
+    },
+    {
+      "type": "token",
+      "text": "a)$ → "
+    },
+    {
+      "type": "token",
+      "text": "泛化推高 "
+    },
+    {
+      "type": "token",
+      "text": "$Q(s"
+    },
+    {
+      "type": "token",
+      "text": "',a"
+    },
+    {
+      "type": "token",
+      "text": "')$"
+    },
+    {
+      "type": "token",
+      "text": " → 目标变"
+    },
+    {
+      "type": "token",
+      "text": "高 → 再"
+    },
+    {
+      "type": "token",
+      "text": "推高 "
+    },
+    {
+      "type": "token",
+      "text": "$Q(s,a"
+    },
+    {
+      "type": "token",
+      "text": ")$」——"
+    },
+    {
+      "type": "token",
+      "text": "在两次同"
+    },
+    {
+      "type": "token",
+      "text": "步之间"
+    },
+    {
+      "type": "token",
+      "text": "被物理"
+    },
+    {
+      "type": "token",
+      "text": "切"
+    },
+    {
+      "type": "token",
+      "text": "断。因为你推 θ"
+    },
+    {
+      "type": "token",
+      "text": " 根本碰不到 $Q_{"
+    },
+    {
+      "type": "token",
+      "text": "\\thet"
+    },
+    {
+      "type": "token",
+      "text": "a^-"
+    },
+    {
+      "type": "token",
+      "text": "}$。\n3"
+    },
+    {
+      "type": "token",
+      "text": ". **工程"
+    },
+    {
+      "type": "token",
+      "text": "层**："
+    },
+    {
+      "type": "token",
+      "text": "即使不"
+    },
+    {
+      "type": "token",
+      "text": "发散，共享"
+    },
+    {
+      "type": "token",
+      "text": "参数也"
+    },
+    {
+      "type": "token",
+      "text": "会让 "
+    },
+    {
+      "type": "token",
+      "text": "Q "
+    },
+    {
+      "type": "token",
+      "text": "值在几个"
+    },
+    {
+      "type": "token",
+      "text": "高"
+    },
+    {
+      "type": "token",
+      "text": "原间"
+    },
+    {
+      "type": "token",
+      "text": "来回横跳"
+    },
+    {
+      "type": "token",
+      "text": "。冻住等于加了个低"
+    },
+    {
+      "type": "token",
+      "text": "通滤波"
+    },
+    {
+      "type": "token",
+      "text": "。\n\n"
+    },
+    {
+      "type": "token",
+      "text": "### "
+    },
+    {
+      "type": "token",
+      "text": "(c"
+    },
+    {
+      "type": "token",
+      "text": ") "
+    },
+    {
+      "type": "token",
+      "text": "反"
+    },
+    {
+      "type": "token",
+      "text": "例"
+    },
+    {
+      "type": "token",
+      "text": "："
+    },
+    {
+      "type": "token",
+      "text": "C = 1"
+    },
+    {
+      "type": "token",
+      "text": " "
+    },
+    {
+      "type": "token",
+      "text": "时就是白冻了"
+    },
+    {
+      "type": "token",
+      "text": "\n\n如果"
+    },
+    {
+      "type": "token",
+      "text": "你让"
+    },
+    {
+      "type": "token",
+      "text": " C = "
+    },
+    {
+      "type": "token",
+      "text": "1（每"
+    },
+    {
+      "type": "token",
+      "text": "更新一步就同"
+    },
+    {
+      "type": "token",
+      "text": "步"
+    },
+    {
+      "type": "token",
+      "text": "一次），那目标网"
+    },
+    {
+      "type": "token",
+      "text": "络永"
+    },
+    {
+      "type": "token",
+      "text": "远"
+    },
+    {
+      "type": "token",
+      "text": "和在线"
+    },
+    {
+      "type": "token",
+      "text": "网络一"
+    },
+    {
+      "type": "token",
+      "text": "模一样——"
+    },
+    {
+      "type": "token",
+      "text": "冻住了个寂"
+    },
+    {
+      "type": "token",
+      "text": "寞。你"
+    },
+    {
+      "type": "token",
+      "text": "退回到了"
+    },
+    {
+      "type": "token",
+      "text": " 2"
+    },
+    {
+      "type": "token",
+      "text": "0"
+    },
+    {
+      "type": "token",
+      "text": "13"
+    },
+    {
+      "type": "token",
+      "text": " "
+    },
+    {
+      "type": "token",
+      "text": "年"
+    },
+    {
+      "type": "token",
+      "text": "那"
+    },
+    {
+      "type": "token",
+      "text": "版 D"
+    },
+    {
+      "type": "token",
+      "text": "Q"
+    },
+    {
+      "type": "token",
+      "text": "N，"
+    },
+    {
+      "type": "token",
+      "text": "震"
+    },
+    {
+      "type": "token",
+      "text": "不"
+    },
+    {
+      "type": "token",
+      "text": "减"
+    },
+    {
+      "type": "token",
+      "text": "、环没"
+    },
+    {
+      "type": "token",
+      "text": "断，烧着显"
+    },
+    {
+      "type": "token",
+      "text": "卡和钱，跟没冻"
+    },
+    {
+      "type": "token",
+      "text": "一样。\n"
+    },
+    {
+      "type": "token",
+      "text": "\n---\n\n"
+    },
+    {
+      "type": "token",
+      "text": "##"
+    },
+    {
+      "type": "token",
+      "text": " 两个可"
+    },
+    {
+      "type": "token",
+      "text": "运行"
+    },
+    {
+      "type": "token",
+      "text": "例子\n\n都在第七"
+    },
+    {
+      "type": "token",
+      "text": "拍的 `"
+    },
+    {
+      "type": "token",
+      "text": "t"
+    },
+    {
+      "type": "token",
+      "text": "r"
+    },
+    {
+      "type": "token",
+      "text": "ain()"
+    },
+    {
+      "type": "token",
+      "text": "`"
+    },
+    {
+      "type": "token",
+      "text": " "
+    },
+    {
+      "type": "token",
+      "text": "函数"
+    },
+    {
+      "type": "token",
+      "text": "里，用"
+    },
+    {
+      "type": "token",
+      "text": "同一个"
+    },
+    {
+      "type": "token",
+      "text": "函数"
+    },
+    {
+      "type": "token",
+      "text": "体、不"
+    },
+    {
+      "type": "token",
+      "text": "同参"
+    },
+    {
+      "type": "token",
+      "text": "数跑"
+    },
+    {
+      "type": "token",
+      "text": "：\n\n**"
+    },
+    {
+      "type": "token",
+      "text": "例子 1：标准"
+    },
+    {
+      "type": "token",
+      "text": " DQN（"
+    },
+    {
+      "type": "token",
+      "text": "C = 200）**"
+    },
+    {
+      "type": "token",
+      "text": "\n"
+    },
+    {
+      "type": "token",
+      "text": "\n``"
+    },
+    {
+      "type": "token",
+      "text": "`p"
+    },
+    {
+      "type": "token",
+      "text": "ytho"
+    },
+    {
+      "type": "token",
+      "text": "n\n"
+    },
+    {
+      "type": "token",
+      "text": "# 第七拍里就是"
+    },
+    {
+      "type": "token",
+      "text": "这样调的\nret"
+    },
+    {
+      "type": "token",
+      "text": "urns = tr"
+    },
+    {
+      "type": "token",
+      "text": "ain(episod"
+    },
+    {
+      "type": "token",
+      "text": "es=400"
+    },
+    {
+      "type": "token",
+      "text": ", sy"
+    },
+    {
+      "type": "token",
+      "text": "nc_ever"
+    },
+    {
+      "type": "token",
+      "text": "y="
+    },
+    {
+      "type": "token",
+      "text": "200)\n```\n"
+    },
+    {
+      "type": "token",
+      "text": "\n`sync"
+    },
+    {
+      "type": "token",
+      "text": "_eve"
+    },
+    {
+      "type": "token",
+      "text": "ry="
+    },
+    {
+      "type": "token",
+      "text": "200` "
+    },
+    {
+      "type": "token",
+      "text": "就是 C。在"
+    },
+    {
+      "type": "token",
+      "text": "线网"
+    },
+    {
+      "type": "token",
+      "text": "络每更"
+    },
+    {
+      "type": "token",
+      "text": "新 2"
+    },
+    {
+      "type": "token",
+      "text": "0"
+    },
+    {
+      "type": "token",
+      "text": "0 次，才把权"
+    },
+    {
+      "type": "token",
+      "text": "重抄一份给"
+    },
+    {
+      "type": "token",
+      "text": " targe"
+    },
+    {
+      "type": "token",
+      "text": "t_"
+    },
+    {
+      "type": "token",
+      "text": "n"
+    },
+    {
+      "type": "token",
+      "text": "et。这 "
+    },
+    {
+      "type": "token",
+      "text": "200"
+    },
+    {
+      "type": "token",
+      "text": " 步"
+    },
+    {
+      "type": "token",
+      "text": "里，"
+    },
+    {
+      "type": "token",
+      "text": "目"
+    },
+    {
+      "type": "token",
+      "text": "标是死的"
+    },
+    {
+      "type": "token",
+      "text": "，梯度是准的。"
+    },
+    {
+      "type": "token",
+      "text": "跑完能"
+    },
+    {
+      "type": "token",
+      "text": "看到 "
+    },
+    {
+      "type": "token",
+      "text": "r"
+    },
+    {
+      "type": "token",
+      "text": "etu"
+    },
+    {
+      "type": "token",
+      "text": "rn 曲"
+    },
+    {
+      "type": "token",
+      "text": "线一路上扬。\n\n*"
+    },
+    {
+      "type": "token",
+      "text": "*例子"
+    },
+    {
+      "type": "token",
+      "text": " 2："
+    },
+    {
+      "type": "token",
+      "text": "Dou"
+    },
+    {
+      "type": "token",
+      "text": "ble"
+    },
+    {
+      "type": "token",
+      "text": " DQN（只改"
+    },
+    {
+      "type": "token",
+      "text": "一个参数）**\n"
+    },
+    {
+      "type": "token",
+      "text": "\n``"
+    },
+    {
+      "type": "token",
+      "text": "`py"
+    },
+    {
+      "type": "token",
+      "text": "tho"
+    },
+    {
+      "type": "token",
+      "text": "n\n# 同一份代码，打开"
+    },
+    {
+      "type": "token",
+      "text": " double=Tr"
+    },
+    {
+      "type": "token",
+      "text": "ue\nretu"
+    },
+    {
+      "type": "token",
+      "text": "rns = train("
+    },
+    {
+      "type": "token",
+      "text": "episod"
+    },
+    {
+      "type": "token",
+      "text": "es=400"
+    },
+    {
+      "type": "token",
+      "text": ", syn"
+    },
+    {
+      "type": "token",
+      "text": "c_every=200, double"
+    },
+    {
+      "type": "token",
+      "text": "=True"
+    },
+    {
+      "type": "token",
+      "text": ")\n```\n\n"
+    },
+    {
+      "type": "token",
+      "text": "手册里 "
+    },
+    {
+      "type": "token",
+      "text": "`dou"
+    },
+    {
+      "type": "token",
+      "text": "b"
+    },
+    {
+      "type": "token",
+      "text": "le` "
+    },
+    {
+      "type": "token",
+      "text": "参数写"
+    },
+    {
+      "type": "token",
+      "text": "死了——它只在"
+    },
+    {
+      "type": "token",
+      "text": "计算 "
+    },
+    {
+      "type": "token",
+      "text": "TD "
+    },
+    {
+      "type": "token",
+      "text": "tar"
+    },
+    {
+      "type": "token",
+      "text": "get"
+    },
+    {
+      "type": "token",
+      "text": " 时多改了一行"
+    },
+    {
+      "type": "token",
+      "text": "：选动"
+    },
+    {
+      "type": "token",
+      "text": "作用在"
+    },
+    {
+      "type": "token",
+      "text": "线网络"
+    },
+    {
+      "type": "token",
+      "text": "，估值用"
+    },
+    {
+      "type": "token",
+      "text": "目标网"
+    },
+    {
+      "type": "token",
+      "text": "络。你"
+    },
+    {
+      "type": "token",
+      "text": "可"
+    },
+    {
+      "type": "token",
+      "text": "以对比这两条曲线，看看"
+    },
+    {
+      "type": "token",
+      "text": "解耦 selection "
+    },
+    {
+      "type": "token",
+      "text": "和 e"
+    },
+    {
+      "type": "token",
+      "text": "v"
+    },
+    {
+      "type": "token",
+      "text": "alu"
+    },
+    {
+      "type": "token",
+      "text": "a"
+    },
+    {
+      "type": "token",
+      "text": "ti"
+    },
+    {
+      "type": "token",
+      "text": "on 之后，是不是更稳"
+    },
+    {
+      "type": "token",
+      "text": "了。\n"
+    },
+    {
+      "type": "token",
+      "text": "\n-"
+    },
+    {
+      "type": "token",
+      "text": "--"
+    },
+    {
+      "type": "token",
+      "text": "\n\n"
+    },
+    {
+      "type": "token",
+      "text": "这两个例子"
+    },
+    {
+      "type": "token",
+      "text": "你"
+    },
+    {
+      "type": "token",
+      "text": "都能直"
+    },
+    {
+      "type": "token",
+      "text": "接跑。第"
+    },
+    {
+      "type": "token",
+      "text": "七拍末尾有完整的 `if"
+    },
+    {
+      "type": "token",
+      "text": " __n"
+    },
+    {
+      "type": "token",
+      "text": "ame__ "
+    },
+    {
+      "type": "token",
+      "text": "== "
+    },
+    {
+      "type": "token",
+      "text": "'__ma"
+    },
+    {
+      "type": "token",
+      "text": "i"
+    },
+    {
+      "type": "token",
+      "text": "n_"
+    },
+    {
+      "type": "token",
+      "text": "_'` 入"
+    },
+    {
+      "type": "token",
+      "text": "口，它会跑"
+    },
+    {
+      "type": "token",
+      "text": "标准 DQN 并打印"
+    },
+    {
+      "type": "token",
+      "text": "每个 episo"
+    },
+    {
+      "type": "token",
+      "text": "de"
+    },
+    {
+      "type": "token",
+      "text": " 的"
+    },
+    {
+      "type": "token",
+      "text": " return。你改"
+    },
+    {
+      "type": "token",
+      "text": " `"
+    },
+    {
+      "type": "token",
+      "text": "sy"
+    },
+    {
+      "type": "token",
+      "text": "nc_every`"
+    },
+    {
+      "type": "token",
+      "text": " 或开 `"
+    },
+    {
+      "type": "token",
+      "text": "do"
+    },
+    {
+      "type": "token",
+      "text": "uble` 就能看到"
+    },
+    {
+      "type": "token",
+      "text": "效果。\n\n"
+    },
+    {
+      "type": "spend",
+      "turn": 19698,
+      "chat": {
+        "calls": 3,
+        "in_tokens": 22827,
+        "out_tokens": 1948,
+        "cached_tokens": 16640,
+        "reasoning_tokens": 802
+      }
+    },
+    {
+      "type": "done",
+      "usage": {
+        "context_tokens": 10123,
+        "completion_tokens": 1083,
+        "prompt_tokens": 10123
+      },
+      "dynamic_chips": [
+        "如果我把 sync_every 从 200 改成 10000，你觉得训练会变好还是变坏，为什么？",
+        "你跑完例子 1 和 2 之后，怎么判断「Double DQN 是不是真的更好」——光看 return 够吗？"
+      ],
+      "dyn_chips": [
+        {
+          "id": "q0",
+          "kind": "quick",
+          "text": "如果我把 sync_every 从 200 改成 10000，你觉得训练会变好还是变坏，为什么？"
+        },
+        {
+          "id": "q1",
+          "kind": "quick",
+          "text": "你跑完例子 1 和 2 之后，怎么判断「Double DQN 是不是真的更好」——光看 return 够吗？"
+        }
+      ],
+      "has_substantive": true,
+      "deep_running": true,
+      "spend": {
+        "chat": {
+          "calls": 3,
+          "in_tokens": 22827,
+          "out_tokens": 1948,
+          "cached_tokens": 16640,
+          "reasoning_tokens": 802
+        },
+        "probe": {
+          "calls": 1,
+          "in_tokens": 3676,
+          "out_tokens": 174,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "fold": {
+          "calls": 0,
+          "in_tokens": 0,
+          "out_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        }
+      },
+      "deep_items": [
+        {
+          "id": "d0-0",
+          "kind": "deep",
+          "text": "如果Q_target永远是自己猜的，那变回监督回归这笔账，是不是得靠target network足够慢来还？",
+          "why": "苏格拉底刚点出账没算完，读者如果只记住‘变回监督回归’就以为懂了，会漏掉target network更新频率这个关键设计杠杆。把‘慢’抬成一条原则，才能接上后面同步周期C的决策。"
+        }
+      ],
+      "deep_cursor": 1
+    }
+  ],
+  "answer": "好，零基础模式。我先把决策①按「TL;DR → 概念 → 机制 → 反例」讲清楚，然后给你两个你能跑的例子——它俩都在第七拍的真代码里。\n\n---\n\n## TL;DR\n\n**冻住目标网络 = 把 RL 的移动靶子钉在墙上，让它变回普通回归。**  \n在线网络每步更新，目标网络每 C 步才被同步一次。两次同步之间，损失函数里的目标是常数，半梯度变成了真梯度。\n\n---\n\n### (a) 概念/对比：在动 vs 冻住\n\n| | 不冻（Level 2 的表格 / 函数逼近） | 冻住（DQN） |\n|---|---|---|\n| 目标里有 θ？ | 有，损失一更新目标也跟着变 | 没有，C 步之内目标不变 |\n| 这是什么问题 | 非定常目标回归（半梯度） | 标准监督回归（真梯度） |\n| 收敛风险 | 正反馈环路→发散 | 环路被切断，只每 C 步接通一瞬间 |\n\n### (b) 机制：三层面\n\n1. **数学层**：冻住后 loss 里 $\\theta$ 只出现在预测端，不出现在目标端。梯度就是 $\\nabla_\\theta (Q_\\theta - \\text{常数})^2$——标准均方误差的梯度，没问题了。\n2. **动力学层**：Level 2 那个死循环——「推高 $Q(s,a)$ → 泛化推高 $Q(s',a')$ → 目标变高 → 再推高 $Q(s,a)$」——在两次同步之间被物理切断。因为你推 θ 根本碰不到 $Q_{\\theta^-}$。\n3. **工程层**：即使不发散，共享参数也会让 Q 值在几个高原间来回横跳。冻住等于加了个低通滤波。\n\n### (c) 反例：C = 1 时就是白冻了\n\n如果你让 C = 1（每更新一步就同步一次），那目标网络永远和在线网络一模一样——冻住了个寂寞。你退回到了 2013 年那版 DQN，震不减、环没断，烧着显卡和钱，跟没冻一样。\n\n---\n\n## 两个可运行例子\n\n都在第七拍的 `train()` 函数里，用同一个函数体、不同参数跑：\n\n**例子 1：标准 DQN（C = 200）**\n\n```python\n# 第七拍里就是这样调的\nreturns = train(episodes=400, sync_every=200)\n```\n\n`sync_every=200` 就是 C。在线网络每更新 200 次，才把权重抄一份给 target_net。这 200 步里，目标是死的，梯度是准的。跑完能看到 return 曲线一路上扬。\n\n**例子 2：Double DQN（只改一个参数）**\n\n```python\n# 同一份代码，打开 double=True\nreturns = train(episodes=400, sync_every=200, double=True)\n```\n\n手册里 `double` 参数写死了——它只在计算 TD target 时多改了一行：选动作用在线网络，估值用目标网络。你可以对比这两条曲线，看看解耦 selection 和 evaluation 之后，是不是更稳了。\n\n---\n\n这两个例子你都能直接跑。第七拍末尾有完整的 `if __name__ == '__main__'` 入口，它会跑标准 DQN 并打印每个 episode 的 return。你改 `sync_every` 或开 `double` 就能看到效果。\n\n",
+  "seconds": 30.0
+}

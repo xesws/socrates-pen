@@ -1,0 +1,34 @@
+{
+  "GET /v1/handbooks/{hid}/snapshots（回滚前）": {
+    "can_undo": true,
+    "can_redo": false,
+    "undo_n": 1,
+    "redo_n": 0
+  },
+  "POST /v1/writeback/rollback": {
+    "request": {
+      "handbook_id": "dqn-550d425c"
+    },
+    "response": {
+      "ok": true,
+      "restored_from": "/Users/you/.socrates-pen/libraries/dqn-550d425c/snapshots/20260822T015739533075Z-pre-edit.md",
+      "original_path": "/Users/you/vault/从零手写DQN.md",
+      "can_undo": false,
+      "can_redo": true,
+      "undo_n": 0,
+      "redo_n": 1
+    }
+  },
+  "GET /v1/handbooks/{hid}/snapshots（回滚后）": {
+    "can_undo": false,
+    "can_redo": true,
+    "undo_n": 0,
+    "redo_n": 1
+  },
+  "磁盘": {
+    "写回后字节": 97051,
+    "回滚后字节": 96874,
+    "回滚后md5": "153a8982b0c7ac3bd94750675d09d238",
+    "还原成原文": true
+  }
+}

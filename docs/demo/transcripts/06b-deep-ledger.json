@@ -1,0 +1,89 @@
+{
+  "这是什么": "`.pen/probes/sessions/<sid>.json` 的原样内容。GET /deep 只回前端要用的字段，axis / depth / anchors / grounding 这些闸门用的槽位在账本里。",
+  "probe_calls": 2,
+  "spend": {
+    "calls": 2,
+    "in_tokens": 8043,
+    "out_tokens": 649,
+    "cached_tokens": 3328,
+    "reasoning_tokens": 0
+  },
+  "pool": [
+    {
+      "id": "d0-0",
+      "text": "如果Q_target永远是自己猜的，那变回监督回归这笔账，是不是得靠target network足够慢来还？",
+      "why": "苏格拉底刚点出账没算完，读者如果只记住‘变回监督回归’就以为懂了，会漏掉target network更新频率这个关键设计杠杆。把‘慢’抬成一条原则，才能接上后面同步周期C的决策。",
+      "axis": "altitude",
+      "grounding": "book",
+      "anchors": [
+        {
+          "level": "Level 3",
+          "start_line": 954,
+          "end_line": 964
+        }
+      ],
+      "timing": "now",
+      "target": "",
+      "depth": 4,
+      "atom": "teaching|Level 3|第四拍 · 设计：本关的四个设计决策",
+      "born_round": 0,
+      "seq": 1,
+      "state": "shown",
+      "created_at": "2026-08-22T01:51:15.109474+00:00"
+    },
+    {
+      "id": "d1-0",
+      "text": "手册说冻住目标就变回监督回归，那监督回归的标签必须不动——那目标网络同步那一刻，标签突然跳一下，梯度会不会跟着炸？",
+      "why": "读者刚听完‘冻住→监督回归’的承诺，但监督回归从来不把标签突然换掉。这里有个隐含假设：C步一跳的幅度可控。读者需要自己意识到——跳的那一下就是正反馈环路的‘瞬间接通’，得想清楚为什么它不会炸，还是说它也会但比不冻好一点",
+      "axis": "failure",
+      "grounding": "book",
+      "anchors": [
+        {
+          "level": "Level 3",
+          "start_line": 954,
+          "end_line": 964
+        },
+        {
+          "level": "Level 3",
+          "start_line": 1044,
+          "end_line": 1051
+        }
+      ],
+      "timing": "now",
+      "target": "",
+      "depth": 4,
+      "atom": "teaching|Level 3|第四拍 · 设计：本关的四个设计决策",
+      "born_round": 1,
+      "seq": 2,
+      "state": "shown",
+      "created_at": "2026-08-22T01:51:54.002192+00:00"
+    },
+    {
+      "id": "d1-1",
+      "text": "你在Level 2学到三个东西凑齐就发散，DQN砍掉了自举的实时性——那剩下的两样在这个结构下还会不会联手炸给你看？",
+      "why": "他刚读完决策①的三层拆法，手里正好捏着Level 2的deadly triad。让他把两关的知识挂上钩——DQN没有杀死发散，只是把那个环从每步都通改成每C步通一瞬。读者需要补上这个抽象跳跃",
+      "axis": "altitude",
+      "grounding": "book",
+      "anchors": [
+        {
+          "level": "Level 2",
+          "start_line": 740,
+          "end_line": 747
+        },
+        {
+          "level": "Level 3",
+          "start_line": 954,
+          "end_line": 964
+        }
+      ],
+      "timing": "now",
+      "target": "",
+      "depth": 5,
+      "atom": "teaching|Level 3|第四拍 · 设计：本关的四个设计决策",
+      "born_round": 1,
+      "seq": 3,
+      "state": "shown",
+      "created_at": "2026-08-22T01:51:54.003208+00:00"
+    }
+  ]
+}

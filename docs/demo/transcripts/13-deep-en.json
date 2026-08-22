@@ -1,0 +1,261 @@
+{
+  "第一轮（socratic / explain_zero 之后）": {
+    "轮询": [
+      {
+        "t": 0.0,
+        "running": [
+          "091ca885aef2"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 2,
+          "max": 8,
+          "window_used": 6,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 3.0,
+        "running": [
+          "091ca885aef2"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 2,
+          "max": 8,
+          "window_used": 6,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 6.0,
+        "running": [],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 2,
+          "max": 8,
+          "window_used": 0,
+          "window_max": 40
+        }
+      }
+    ],
+    "拿到的深挖题": [],
+    "账本": {
+      "probe_calls": 2,
+      "spend": {
+        "calls": 2,
+        "in_tokens": 8393,
+        "out_tokens": 2002,
+        "cached_tokens": 0,
+        "reasoning_tokens": 1485
+      },
+      "pool": []
+    }
+  },
+  "第二轮（英文提问之后）": {
+    "轮询": [
+      {
+        "t": 0.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 3.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 6.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 9.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 12.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 15.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 18.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 21.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 24.0,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 27.1,
+        "running": [
+          "e50541a9fc08"
+        ],
+        "new": 0,
+        "cursor": 0,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      },
+      {
+        "t": 30.1,
+        "running": [],
+        "new": 1,
+        "cursor": 1,
+        "budget": {
+          "used": 3,
+          "max": 8,
+          "window_used": 1,
+          "window_max": 40
+        }
+      }
+    ],
+    "拿到的深挖题": [
+      {
+        "id": "d2-0",
+        "kind": "deep",
+        "text": "NFQ trains until convergence before updating the target, while DQN updates every C steps. Why doesn't DQN just adopt NFQ's approach for guaranteed convergence?",
+        "why": "You just learned that FQI has a convergence bound but DQN doesn't. The natural next step is to ask why we don't just use the method that has a proof."
+      }
+    ]
+  },
+  "账本": {
+    "probe_calls": 3,
+    "spend": {
+      "calls": 3,
+      "in_tokens": 12697,
+      "out_tokens": 4855,
+      "cached_tokens": 0,
+      "reasoning_tokens": 4122
+    },
+    "pool": [
+      {
+        "id": "d2-0",
+        "text": "NFQ trains until convergence before updating the target, while DQN updates every C steps. Why doesn't DQN just adopt NFQ's approach for guaranteed convergence?",
+        "why": "You just learned that FQI has a convergence bound but DQN doesn't. The natural next step is to ask why we don't just use the method that has a proof.",
+        "axis": "tradeoff",
+        "grounding": "book",
+        "anchors": [
+          {
+            "level": "Level 3",
+            "start_line": 924,
+            "end_line": 943
+          },
+          {
+            "level": "Level 3",
+            "start_line": 954,
+            "end_line": 964
+          }
+        ],
+        "timing": "now",
+        "target": "",
+        "depth": 4,
+        "atom": "teaching|Level 3|第四拍 · 设计：本关的四个设计决策",
+        "born_round": 2,
+        "seq": 1,
+        "state": "shown",
+        "created_at": "2026-08-22T02:02:08.053518+00:00"
+      }
+    ]
+  }
+}

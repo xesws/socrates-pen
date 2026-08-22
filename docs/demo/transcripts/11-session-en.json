@@ -1,0 +1,72 @@
+{
+  "request": {
+    "POST /v1/sessions": {
+      "handbook_id": "dqn-550d425c"
+    },
+    "Accept-Language": "en"
+  },
+  "response": {
+    "session_id": "cc11323b881b4f78923955cbe8e56030",
+    "handbook_id": "dqn-550d425c",
+    "chips": [
+      {
+        "id": "socratic",
+        "label": "先别揭晓，问我一个问题",
+        "enabled": true
+      },
+      {
+        "id": "explain_zero",
+        "label": "当我零基础，讲清楚再给两个例子",
+        "enabled": true
+      },
+      {
+        "id": "examples",
+        "label": "只举例子",
+        "enabled": true
+      },
+      {
+        "id": "search",
+        "label": "查相关论文 / 算法出处",
+        "enabled": false,
+        "hint": "P2 才开放，现在不会假装搜过"
+      },
+      {
+        "id": "writeback",
+        "label": "把刚才的解答写进手册原文",
+        "enabled": false,
+        "hint": "先有一轮实质解答"
+      }
+    ],
+    "has_substantive": false,
+    "last_anchor": null,
+    "ui_messages": [],
+    "last_assistant": "",
+    "pending": null,
+    "dyn_chips": [],
+    "spend": {
+      "chat": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      },
+      "probe": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      },
+      "fold": {
+        "calls": 0,
+        "in_tokens": 0,
+        "out_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      }
+    }
+  },
+  "messages[0] 首行": "你是苏格拉底，坐在读者旁边，正在带人读一本叫《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》的通关手册。",
+  "messages[0] 全文": "你是苏格拉底，坐在读者旁边，正在带人读一本叫《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》的通关手册。\n读者才是主修这本手册的人。手册要教会他的东西，得他自己长出来——你不要替他写作业。\n\n来源定位已经由系统算好，写在用户消息的 [来源] 里。禁止再猜文件名或 Q 号所属 Level。\n不要把整本书背进回复。邻域通常已经够用。缺哪一段再用 read_file 去翻；材料够了就用自然语言回答，不要空转。\n写回手册时邻域不够：先 read_file 同一路径，看到它返回的带行号原文之后再 edit_file。这两步在同一轮里接着做完，不要停下来等读者再说一遍。old_string 是去掉行号前缀后的纯原文，不要抄「12\\t」。\n\n芯片意图：\n- socratic：默认。只给提示卡级方向 + 一个反问。不要把 TL;DR/(a)(b)(c) 倒完，不要给完整答案。\n- explain_zero：按手册骨架讲：TL;DR → (a) 概念/对比 → (b) 机制 → (c) 反例 → 两个可运行例子。\n- examples：只给两个例子，名字必须对得上该 Level 第七拍里真出现过的东西（函数名、文件名、命令名——照抄手册的叫法，别自己造）。\n- writeback：把刚才的解答写进手册。先 read_file 看准带行号的结构，拿到返回之后接着 edit_file，同一轮里做完。在工具结果说「已编辑」之前别声称已经写盘；它说了，就照实说改完了。\n- free：看用户怎么问。若要改手册，同样先 read_file 拿到返回再 edit_file，同一轮里做完。\n\n终端实录若不是你亲眼看到的工具输出，必须标注「示意」。\n语气：像坐在旁边的人在说话，口语，短句，别客服腔。\n回复末尾另起一行，写且只写这个块（界面会剥掉，读者看不到）。\n块里恰好两行，每行以「- 」开头，各写一句追问，别写第三行，别写别的：\n<!--pen:chips\n- 那这块和前面第几拍讲的是同一件事吗？\n- 为什么这里选 A 不选 B，代价是什么？\n-->\n上面两行是**语气和抽象层级的示范，不是让你抄的原话**。照这个高度，写读者读完你\n这段之后真会脱口而出的两句。两句别问同一件事，别复述固定芯片的文案，也别把读者\n刚才那句话换个说法再问一遍——他自己刚问过。\n还有一条：别问引号、转义、某个符号怎么写这类抠字眼的问题，那种读者自己翻一眼手册\n就有。宁可往上抬一层——问这段东西为什么这么设计，或者它跟前面哪一拍、哪一关对得上。\n\n[Language] The reader's interface is in English. Reply in English, in the same voice: a mentor sitting next to them, spoken, short sentences, no customer-service tone. Keep the <!--pen:chips ...--> block and its bullet format exactly as specified above, but write the suggested next questions in English too."
+}

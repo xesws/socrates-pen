@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1040" height="706" viewBox="0 0 1040 706" role="img" aria-label="闸门全景：钱一套闸，安全另一套" content='&lt;mxfile host="hand-authored" agent="socrates-pen" version="24.7.7"&gt;&lt;diagram id="闸门全景：钱一套闸，安全另一套" name="闸门全景：钱一套闸，安全另一套"&gt;&lt;mxGraphModel dx="1040" dy="706" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="706" math="0" shadow="0"&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="成本闸 · 分类不分总，默认全关" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f3f0fe;strokeColor=#6f5bd0;fontSize=12;fontColor=#1F2328;align=center;spacingLeft=0;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="64" width="460" height="44" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" value="安全闸 · 能不能，不由模型说了算" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fff8e3;strokeColor=#bf8700;fontSize=12;fontColor=#1F2328;align=center;spacingLeft=0;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="64" width="460" height="44" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" value="三个 token 闸，各记各的账&amp;lt;br&amp;gt;主对话 · 后台深挖 · 跨书翻页。后台超支，掐不到你正在读的那轮。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="124" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" value="默认三个全是 0 = 不限&amp;lt;br&amp;gt;0 不是保守，是回归保证：不填任何东西，行为和上限上线前逐字节一致。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="198" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" value="⚠️ 主对话那个不是硬上限&amp;lt;br&amp;gt;撞线时不执行那一批工具，但收口那一枪照打——不然已花的钱全扔了。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#fff8e3;strokeColor=#bf8700;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="272" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" value="撞线不报错，只递一句话给模型&amp;lt;br&amp;gt;「别再翻别的教材，用已经读到的作答，并告诉读者你只读了哪几段。」" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="346" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="8" value="深挖的次数闸&amp;lt;br&amp;gt;本场最多 8 次 · 每小时最多 40 次 · 并发 2 · 待答积压满 3 就停。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="420" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="9" value="跨书翻页的字数闸&amp;lt;br&amp;gt;一轮最多 24 000 字符 / 8 次；工具轮上限 100 轮。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="494" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="10" value="会话会过期，账也会跟着掉&amp;lt;br&amp;gt;空会话 1 天 · 聊过的 7 天 · 挂着审批的 30 天，启动时清一次。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="40" y="568" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="11" value="sidecar 只认 loopback&amp;lt;br&amp;gt;插件拉起它时只接受 127.0.0.1 / localhost / ::1，别的地址当场 not-loopback。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="124" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="12" value="沙箱两套根&amp;lt;br&amp;gt;写只允许登记过的那一篇；读可放宽到白名单。.git · .obsidian · .env* 一律拒。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="198" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="13" value="权限三值，没有第四种&amp;lt;br&amp;gt;read_file → allow 自动过；edit_file → ask 每次问人；其他名字 → deny。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="272" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="14" value="read-first 硬闸&amp;lt;br&amp;gt;要改哪一段，必须更早一轮真读过那个文件。同批 read+edit 也拦。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="346" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="15" value="审批闸&amp;lt;br&amp;gt;落盘那一下永远是你按的。点「不允许」时磁盘一个字节都没动。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#f3f0fe;strokeColor=#6f5bd0;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="420" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="16" value="数据不出 .pen&amp;lt;br&amp;gt;会话 · 快照 · 配额 · 深挖题全在本机；唯一出网的是你自己填的模型节点。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="494" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="17" value="前后端两张限值表不许漂&amp;lt;br&amp;gt;18 个旋钮，TS 的 LIMIT_SPEC 与 config.py 的 LIMIT_RANGE 由 npm test 逐项比对。" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8c959f;fontSize=12;fontColor=#1F2328;align=left;spacingLeft=10;" vertex="1" parent="1"&gt;&lt;mxGeometry x="540" y="568" width="460" height="64" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;&lt;/diagram&gt;&lt;/mxfile&gt;'>
+<title>闸门全景：钱一套闸，安全另一套</title>
+<style>
+.dg-bg{fill:none}
+text{fill:#1f2328}
+.e{stroke:#59636e;fill:none;stroke-width:1.5}
+.e-acc{stroke:#6f5bd0;fill:none;stroke-width:1.8}
+.el{fill:#59636e}
+.gl{fill:#59636e}
+.grp{fill:none;stroke:#8c959f;stroke-width:1.2;stroke-dasharray:6 5;opacity:.75}
+.ttl{fill:#1f2328}
+.cap{fill:#59636e}
+.f-box{fill:#ffffff;stroke:#d0d7de}
+.t-box{fill:#1f2328}
+.f-accent{fill:#f3f0fe;stroke:#6f5bd0}
+.t-accent{fill:#2c2059}
+.f-warn{fill:#fff8e3;stroke:#bf8700}
+.t-warn{fill:#4a3600}
+.f-ghost{fill:#f6f8fa;stroke:#8c959f}
+.t-ghost{fill:#3d444d}
+.f-store{fill:#eef6ff;stroke:#4a86c8}
+.t-store{fill:#10314f}
+.f-note{fill:none;stroke:none}
+.t-note{fill:#59636e}
+.f-ok{fill:#eaf7ee;stroke:#2f9e50}
+.t-ok{fill:#0d3d1e}
+.f-bad{fill:#fdeeee;stroke:#cf4b4b}
+.t-bad{fill:#4d1414}
+.ah{fill:#59636e}
+.ah-acc{fill:#6f5bd0}
+@media (prefers-color-scheme: dark){
+text{fill:#e6edf3}
+.e{stroke:#9198a1}
+.e-acc{stroke:#a99cf0}
+.el{fill:#9198a1}
+.gl{fill:#9198a1}
+.grp{stroke:#6e7681}
+.ttl{fill:#e6edf3}
+.cap{fill:#9198a1}
+.ah{fill:#9198a1}
+.ah-acc{fill:#a99cf0}
+.f-box{fill:#161b22;stroke:#3d444d}
+.t-box{fill:#e6edf3}
+.f-accent{fill:#221d3a;stroke:#a99cf0}
+.t-accent{fill:#ddd7fb}
+.f-warn{fill:#2a2310;stroke:#d9a441}
+.t-warn{fill:#f2dca6}
+.f-ghost{fill:#0f141a;stroke:#6e7681}
+.t-ghost{fill:#b6bec9}
+.f-store{fill:#111d2b;stroke:#6ea8dc}
+.t-store{fill:#cbe2f8}
+.f-note{fill:none;stroke:none}
+.t-note{fill:#9198a1}
+.f-ok{fill:#10241a;stroke:#57ab6a}
+.t-ok{fill:#c3ebcd}
+.f-bad{fill:#2a1414;stroke:#e07c7c}
+.t-bad{fill:#f5cfcf}
+}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah"/></marker><marker id="ah-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah-acc"/></marker><marker id="ahs-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="ah-acc"/></marker></defs>
+<text x="520.0" y="30" class="ttl" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="16" font-weight="700" text-anchor="middle">闸门全景：钱一套闸，安全另一套</text>
+<rect x="40" y="64" width="460" height="44" rx="8" class="f-accent" stroke-width="1.4"/>
+<text x="270.0" y="90.5" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="13" font-weight="700" text-anchor="middle">成本闸 · 分类不分总，默认全关</text>
+<rect x="540" y="64" width="460" height="44" rx="8" class="f-warn" stroke-width="1.4"/>
+<text x="770.0" y="90.5" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="13" font-weight="700" text-anchor="middle">安全闸 · 能不能，不由模型说了算</text>
+<rect x="40" y="124" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="152.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">三个 token 闸，各记各的账</text>
+<text x="54.0" y="168.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">主对话 · 后台深挖 · 跨书翻页。后台超支，掐不到你正在读的那轮。</text>
+<rect x="40" y="198" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="226.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">默认三个全是 0 = 不限</text>
+<text x="54.0" y="242.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">0 不是保守，是回归保证：不填任何东西，行为和上限上线前逐字节一致。</text>
+<rect x="40" y="272" width="460" height="64" rx="8" class="f-warn" stroke-width="1.4"/>
+<text x="54.0" y="300.8" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">⚠️ 主对话那个不是硬上限</text>
+<text x="54.0" y="316.2" class="t-warn" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">撞线时不执行那一批工具，但收口那一枪照打——不然已花的钱全扔了。</text>
+<rect x="40" y="346" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="374.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">撞线不报错，只递一句话给模型</text>
+<text x="54.0" y="390.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">「别再翻别的教材，用已经读到的作答，并告诉读者你只读了哪几段。」</text>
+<rect x="40" y="420" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="448.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">深挖的次数闸</text>
+<text x="54.0" y="464.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">本场最多 8 次 · 每小时最多 40 次 · 并发 2 · 待答积压满 3 就停。</text>
+<rect x="40" y="494" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="522.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">跨书翻页的字数闸</text>
+<text x="54.0" y="538.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">一轮最多 24 000 字符 / 8 次；工具轮上限 100 轮。</text>
+<rect x="40" y="568" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="54.0" y="596.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">会话会过期，账也会跟着掉</text>
+<text x="54.0" y="612.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">空会话 1 天 · 聊过的 7 天 · 挂着审批的 30 天，启动时清一次。</text>
+<rect x="540" y="124" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="152.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">sidecar 只认 loopback</text>
+<text x="554.0" y="168.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">插件拉起它时只接受 127.0.0.1 / localhost / ::1，别的地址当场 not-loopback。</text>
+<rect x="540" y="198" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="226.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">沙箱两套根</text>
+<text x="554.0" y="242.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">写只允许登记过的那一篇；读可放宽到白名单。.git · .obsidian · .env* 一律拒。</text>
+<rect x="540" y="272" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="300.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">权限三值，没有第四种</text>
+<text x="554.0" y="316.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">read_file → allow 自动过；edit_file → ask 每次问人；其他名字 → deny。</text>
+<rect x="540" y="346" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="374.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">read-first 硬闸</text>
+<text x="554.0" y="390.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">要改哪一段，必须更早一轮真读过那个文件。同批 read+edit 也拦。</text>
+<rect x="540" y="420" width="460" height="64" rx="8" class="f-accent" stroke-width="1.4"/>
+<text x="554.0" y="448.8" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">审批闸</text>
+<text x="554.0" y="464.2" class="t-accent" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">落盘那一下永远是你按的。点「不允许」时磁盘一个字节都没动。</text>
+<rect x="540" y="494" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="522.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">数据不出 .pen</text>
+<text x="554.0" y="538.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">会话 · 快照 · 配额 · 深挖题全在本机；唯一出网的是你自己填的模型节点。</text>
+<rect x="540" y="568" width="460" height="64" rx="8" class="f-box" stroke-width="1.4"/>
+<text x="554.0" y="596.8" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="12" font-weight="700" text-anchor="start">前后端两张限值表不许漂</text>
+<text x="554.0" y="612.2" class="t-box" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" font-weight="400" text-anchor="start" opacity="0.72">18 个旋钮，TS 的 LIMIT_SPEC 与 config.py 的 LIMIT_RANGE 由 npm test 逐项比对。</text>
+<text x="520.0" y="692" class="cap" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" font-size="10.5" text-anchor="middle">设置项只夹紧，不报错——一个填错的数字绝不能把你这一轮对话弄挂。</text>
+</svg>

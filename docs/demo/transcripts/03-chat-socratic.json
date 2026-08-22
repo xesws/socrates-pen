@@ -1,0 +1,320 @@
+{
+  "request": {
+    "session_id": "c5298fbe28d14ef798c20207e698df2a",
+    "selected_text": "**决策① 为什么非要两个网络——一个冻着、一个在更新**\n\n这是本关最核心的一问，把它拆成三层：\n\n**第一层（数学上）**：目标里带 θ，损失就不是一个良定义的回归损失，半梯度也不是真梯度（Level 2 决策④）。冻住之后，两次同步之间目标是常数，**它就变回了一个标准的监督回归问题**，半梯度也就成了真梯度。\n\n**第二层（动力学上）**：Level 2 那个正反馈环路——「推高 $Q(s,a)$ → 泛化推高 $Q(s',a')$ → 目标变高 → 再推高 $Q(s,a)$」——在两次同步之间被**物理切断**了。$Q_{\\theta^-}(s',a')$ 里根本没有当前的 θ，你怎么推 θ 都影响不了目标。环路每 C 步才接通一瞬间。\n\n**第三层（工程上）**：即使不发散，共享参数也会让训练**震荡**。你把某个状态的 Q 推高，相邻状态的目标跟着涨，下一批样本又去追这个涨了的目标……Q 值在几个高原之间来回横跳。冻住目标就等于给这个系统加了一个低通滤波。\n\n**这三层是同一件事的三种说法，但对应三种不同的追问。** 有人问「为什么」时想听数学，有人想听动力学，有人想听「实际跑起来会怎样」。",
+    "start_line": 954,
+    "end_line": 964,
+    "chip": "socratic",
+    "user_text": "",
+    "deep": true
+  },
+  "events": [
+    {
+      "type": "status",
+      "phase": "thinking",
+      "text": "苏格拉底在想…"
+    },
+    {
+      "type": "token",
+      "text": "好，"
+    },
+    {
+      "type": "token",
+      "text": "你刚"
+    },
+    {
+      "type": "token",
+      "text": "读完"
+    },
+    {
+      "type": "token",
+      "text": "了"
+    },
+    {
+      "type": "token",
+      "text": "决策"
+    },
+    {
+      "type": "token",
+      "text": "①的三"
+    },
+    {
+      "type": "token",
+      "text": "层"
+    },
+    {
+      "type": "token",
+      "text": "拆法。那"
+    },
+    {
+      "type": "token",
+      "text": "一块"
+    },
+    {
+      "type": "token",
+      "text": "其实已"
+    },
+    {
+      "type": "token",
+      "text": "经把“"
+    },
+    {
+      "type": "token",
+      "text": "为什么"
+    },
+    {
+      "type": "token",
+      "text": "冻住"
+    },
+    {
+      "type": "token",
+      "text": "”讲透"
+    },
+    {
+      "type": "token",
+      "text": "了——但"
+    },
+    {
+      "type": "token",
+      "text": "有"
+    },
+    {
+      "type": "token",
+      "text": "一个裂"
+    },
+    {
+      "type": "token",
+      "text": "缝你可能"
+    },
+    {
+      "type": "token",
+      "text": "注意到了，"
+    },
+    {
+      "type": "token",
+      "text": "也可"
+    },
+    {
+      "type": "token",
+      "text": "能没注意到"
+    },
+    {
+      "type": "token",
+      "text": "。\n\n"
+    },
+    {
+      "type": "token",
+      "text": "手"
+    },
+    {
+      "type": "token",
+      "text": "册说冻住目"
+    },
+    {
+      "type": "token",
+      "text": "标之后，这就变回了"
+    },
+    {
+      "type": "token",
+      "text": "一个“"
+    },
+    {
+      "type": "token",
+      "text": "标准的"
+    },
+    {
+      "type": "token",
+      "text": "监督"
+    },
+    {
+      "type": "token",
+      "text": "回归问"
+    },
+    {
+      "type": "token",
+      "text": "题”。好，那"
+    },
+    {
+      "type": "token",
+      "text": "我问你："
+    },
+    {
+      "type": "token",
+      "text": "\n"
+    },
+    {
+      "type": "token",
+      "text": "\n**监督回归里"
+    },
+    {
+      "type": "token",
+      "text": "，标签得是 gr"
+    },
+    {
+      "type": "token",
+      "text": "ou"
+    },
+    {
+      "type": "token",
+      "text": "nd"
+    },
+    {
+      "type": "token",
+      "text": " truth 吧？可"
+    },
+    {
+      "type": "token",
+      "text": " Q"
+    },
+    {
+      "type": "token",
+      "text": "_t"
+    },
+    {
+      "type": "token",
+      "text": "arget"
+    },
+    {
+      "type": "token",
+      "text": " 还是自"
+    },
+    {
+      "type": "token",
+      "text": "己估"
+    },
+    {
+      "type": "token",
+      "text": "计出来的——它"
+    },
+    {
+      "type": "token",
+      "text": "又不"
+    },
+    {
+      "type": "token",
+      "text": "是"
+    },
+    {
+      "type": "token",
+      "text": "上帝给"
+    },
+    {
+      "type": "token",
+      "text": "的正确答案"
+    },
+    {
+      "type": "token",
+      "text": "。那"
+    },
+    {
+      "type": "token",
+      "text": "“变回标准监"
+    },
+    {
+      "type": "token",
+      "text": "督"
+    },
+    {
+      "type": "token",
+      "text": "回归"
+    },
+    {
+      "type": "token",
+      "text": "”"
+    },
+    {
+      "type": "token",
+      "text": "这个"
+    },
+    {
+      "type": "token",
+      "text": "说法"
+    },
+    {
+      "type": "token",
+      "text": "，是不是藏"
+    },
+    {
+      "type": "token",
+      "text": "了一"
+    },
+    {
+      "type": "token",
+      "text": "笔账没算"
+    },
+    {
+      "type": "token",
+      "text": "？这笔账"
+    },
+    {
+      "type": "token",
+      "text": "谁来还？"
+    },
+    {
+      "type": "token",
+      "text": "**\n\n"
+    },
+    {
+      "type": "spend",
+      "turn": 5077,
+      "chat": {
+        "calls": 1,
+        "in_tokens": 4567,
+        "out_tokens": 510,
+        "cached_tokens": 4352,
+        "reasoning_tokens": 340
+      }
+    },
+    {
+      "type": "done",
+      "usage": {
+        "context_tokens": 4567,
+        "completion_tokens": 510,
+        "prompt_tokens": 4567
+      },
+      "dynamic_chips": [
+        "如果标签本身就有偏差，回归训得再准，能保证 Q 值往正确的方向走吗？",
+        "冻住目标切断了正反馈环路，但它切断了“误差传播”吗——还是只把它推迟了？"
+      ],
+      "dyn_chips": [
+        {
+          "id": "q0",
+          "kind": "quick",
+          "text": "如果标签本身就有偏差，回归训得再准，能保证 Q 值往正确的方向走吗？"
+        },
+        {
+          "id": "q1",
+          "kind": "quick",
+          "text": "冻住目标切断了正反馈环路，但它切断了“误差传播”吗——还是只把它推迟了？"
+        }
+      ],
+      "has_substantive": true,
+      "deep_running": true,
+      "spend": {
+        "chat": {
+          "calls": 1,
+          "in_tokens": 4567,
+          "out_tokens": 510,
+          "cached_tokens": 4352,
+          "reasoning_tokens": 340
+        },
+        "probe": {
+          "calls": 0,
+          "in_tokens": 0,
+          "out_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "fold": {
+          "calls": 0,
+          "in_tokens": 0,
+          "out_tokens": 0,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        }
+      }
+    }
+  ],
+  "answer": "好，你刚读完了决策①的三层拆法。那一块其实已经把“为什么冻住”讲透了——但有一个裂缝你可能注意到了，也可能没注意到。\n\n手册说冻住目标之后，这就变回了一个“标准的监督回归问题”。好，那我问你：\n\n**监督回归里，标签得是 ground truth 吧？可 Q_target 还是自己估计出来的——它又不是上帝给的正确答案。那“变回标准监督回归”这个说法，是不是藏了一笔账没算？这笔账谁来还？**\n\n",
+  "seconds": 10.6
+}

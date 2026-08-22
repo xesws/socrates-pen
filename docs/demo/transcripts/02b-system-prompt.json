@@ -1,0 +1,25 @@
+{
+  "为什么留这一份": "v0.15.0：书名从教材第 1 行 H1 注进 system prompt 第一句，不再写死 SWE Agent。",
+  "session_id": "c5298fbe28d14ef798c20207e698df2a",
+  "messages[0].role": "system",
+  "messages[0].content 前两行": "你是苏格拉底，坐在读者旁边，正在带人读一本叫《从零手写 DQN · 强化学习通关手册（全册：开篇 + Level 0~3 + Capstone）》的通关手册。\n读者才是主修这本手册的人。手册要教会他的东西，得他自己长出来——你不要替他写作业。",
+  "全文含 'SWE'": false,
+  "落盘的键": [
+    "handbook_id",
+    "has_substantive",
+    "lang",
+    "last_anchor",
+    "last_assistant",
+    "last_chips",
+    "messages",
+    "pending",
+    "read_ok_paths",
+    "session_id",
+    "spend",
+    "turn_spend",
+    "turns",
+    "ui_messages",
+    "updated_at"
+  ],
+  "book_title 有没有进落盘 schema": false
+}
