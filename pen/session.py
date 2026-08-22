@@ -89,12 +89,22 @@ def _book_phrase(book_title: str) -> str:
     所以退回那条路上剥掉扩展名；书名自带书名号的（`# 《…》`）也剥掉，
     免得套成《《…》》。
     """
-    t = (book_title or "").strip()
+    # 压平换行和连续空白：H1 里的换行会在 system prompt 里渲染成**独立的一段**，
+    # 那就等于让读者的笔记标题往系统提示里插一条新指令。
+    t = " ".join((book_title or "").split())
     for ext in (".markdown", ".md"):
         if t.lower().endswith(ext):
             t = t[: -len(ext)].strip()
             break
-    t = t.strip("《》").strip()
+    # **只剥成对的外层，且只剥一层。** 早先写的是 `t.strip("《》")`——`str.strip`
+    # 收的是字符集合不是配对，于是 `深入理解《计算机系统》` 被剥成
+    # `深入理解《计算机系统`，渲染出来书名号错位。中文技术书标题套书名号很常见。
+    if t.startswith("《") and t.endswith("》"):
+        t = t[1:-1].strip()
+    # 封顶。挡不住书名里的 `》` 让这句话提前闭合（那得是读者自己往自己笔记的 H1 里写），
+    # 但挡得住「整篇灌进 system prompt」这个真正危险的形状。
+    # 上限取 120 不是 60：实测演示教材书名 49 字、SWE 手册 56 字，60 贴得太近。
+    t = t[:120].strip()
     return f"一本叫《{t}》的通关手册" if t else _BOOK_ANON
 
 
