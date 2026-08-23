@@ -522,6 +522,11 @@ export class PenView extends ItemView {
   private paintChips(): void {
     const e = this.els;
     if (!e) return;
+    // 没引文就不给芯片（0.18.5 复测）：send 的守卫本来就挡「无引文点芯片」，
+    // 一排点不动的死按钮只会被读成「上一条笔记的状态没清干净」。划一段
+    // 捕获后芯片随会话回来。toggle 放 sig 早退之前——可见性跟引文走，
+    // 不跟 chips 数组走。
+    e.chips.classList.toggle("is-off", !this.quote);
     const sig = JSON.stringify([
       this.chips.map((c) => [c.id, c.label, c.enabled, c.hint ?? ""]),
       this.dyn,
@@ -555,7 +560,10 @@ export class PenView extends ItemView {
       if (d.why) setTooltip(b, d.why);
       b.onclick = () => void this.send("free", d.text);
     }
-    e.chips.classList.toggle("is-off", e.chips.childElementCount === 0);
+    // 重建路径的可见性必须和顶部同一判据（复审 ship-blocker）：这里原来
+    // 只看 childElementCount，恢复出来的 5 枚死芯片会把顶部的隐藏翻回来，
+    // 最终态取决于哪次调用最后发生——竞态式闪烁。
+    e.chips.classList.toggle("is-off", !this.quote || e.chips.childElementCount === 0);
     this.syncChipDisabled();
     // 窄侧栏下三个固定芯片就占满了 6.4em，深题「排在最前」也还是在它们之后，
     // 实测 300px 时完全落在滚动区外——等于没抛。滚一下才真的看得见。
@@ -877,6 +885,13 @@ export class PenView extends ItemView {
     });
   }
 
+  /** 跨笔记切换时清输入框草稿：打了一半的话属于上一场对话，跟着面板
+   *  挪到新笔记会被读成「状态没切开」（0.18.5 复测）。 */
+  private clearDraft(): void {
+    const inp = this.els?.input;
+    if (inp && inp.value) inp.value = "";
+  }
+
   /**
    * 把面板上下文切到 file（0.18.4）：有绑定且会话存活 → adopt 恢复，跨笔记清
    * 引文/行号；会话已被清理 / 无绑定 → 清成该笔记空态。返回结果给调用方决定
@@ -905,6 +920,7 @@ export class PenView extends ItemView {
           this.quote = "";
           this.startLine = 0;
           this.endLine = 0;
+          this.clearDraft();
         }
         this.err = "";
         this.adopt(sess);
@@ -925,6 +941,7 @@ export class PenView extends ItemView {
     this.quote = "";
     this.startLine = 0;
     this.endLine = 0;
+    this.clearDraft();
     this.sessionId = null;
     this.msgs = [];
     this.chips = [];
@@ -1000,6 +1017,13 @@ export class PenView extends ItemView {
         this.err = t().errSessionGone(active.name);
         new Notice(this.err);
       } else if (r === "nobind") {
+        this.err = t().errNoSelection;
+        new Notice(this.err);
+      }
+      // 恢复了会话但引文是空的：提示先划一段。仅限同笔记（复审 P2）——
+      // 跨笔记时上面那条「已切回…先在笔记里划一段」已经把话说了，
+      // 再叠一条是双 Notice。
+      if (r === "restored" && !this.quote && prevPath === active.path) {
         this.err = t().errNoSelection;
         new Notice(this.err);
       }

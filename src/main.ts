@@ -1,4 +1,4 @@
-import { Notice, Plugin, setTooltip, type Command, type Workspace, type WorkspaceLeaf } from "obsidian";
+import { MarkdownView, Notice, Plugin, setTooltip, type Command, type Workspace, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
 import { ApiError } from "./apierror";
 import {
@@ -164,14 +164,23 @@ export default class SocratesPenPlugin extends Plugin {
   takePick(): EditorPick | null {
     const live = readLivePick(this.app);
     if (live) return live;
-    // 缓存只在「还停在同一篇笔记」时可信。跨笔记回退是 0.18.0 复测实锤的坑：
-    // 读者切到 B 没划选区，命令会拿 A 的陈旧选区静默操作 A 的会话——引文、
-    // 行号、面板上下文全是 A 的，读者却看着 B（send 的守卫只查非空拦不住）。
     const active = this.app.workspace.getActiveFile();
-    if (active && this.lastPick && this.lastPick.file.path === active.path) {
-      return this.lastPick;
+    if (!active || !this.lastPick || this.lastPick.file.path !== active.path) {
+      return null;
     }
-    return null;
+    // lastPick 只救预览模式（0.18.5 复测）：编辑器选区是状态、失焦不丢，
+    // 拿不到就是读者真把选区收了——回退会把上一次的选段「召回」，无选中
+    // 跑命令本该提示「先划一段」。预览模式的 DOM 选区一点面板就塌，
+    // 缓存在那条路上才是必要的。
+    // 模式从目标笔记自己的 markdown leaf 上读（复审 P2）：面板聚焦时
+    // getActiveViewOfType 是 null，不能拿它当探测点。
+    const leaf = this.app.workspace
+      .getLeavesOfType("markdown")
+      .find((l) => (l.view as MarkdownView).file?.path === active.path);
+    const view = leaf?.view;
+    return view instanceof MarkdownView && view.getMode?.() === "preview"
+      ? this.lastPick
+      : null;
   }
 
   clearPick(): void {
