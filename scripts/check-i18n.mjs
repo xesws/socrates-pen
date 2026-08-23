@@ -250,6 +250,27 @@ check(
 check("中英表函数形参个数一致（无 arity 警告）", warnings.length === 0);
 if (warnings.length) warnings.forEach((w) => console.error("   " + w));
 
+// v0.18.2：设置页的 setDesc 不渲染 Markdown。词表字符串值里写过 `**强调**`，
+// 读者看到的是裸星号（0.18.1 修了一对、0.18.2 复测又抓出一对——手工扫会漏，
+// 这条闸按源码扫：两表所有字符串字面量不许含 `**` 或反引号）。
+{
+  const residue = [];
+  for (const f of ["src/i18n/zh.ts", "src/i18n/en.ts"]) {
+    const src = readFileSync(f, "utf8");
+    for (const [i, line] of src.split("\n").entries()) {
+      const stripped = line.trim();
+      if (stripped.startsWith("//") || stripped.startsWith("*") || stripped.startsWith("/*")) continue;
+      for (const lit of line.match(/"([^"]*)"/g) || []) {
+        if (lit.includes("**") || lit.includes("`")) {
+          residue.push(`${f}:${i + 1} ${lit.slice(0, 60)}`);
+        }
+      }
+    }
+  }
+  check(`词表字符串值无 Markdown 残留（${residue.length} 处）`, residue.length === 0);
+  residue.forEach((r) => console.error("   " + r));
+}
+
 let bad = 0;
 for (const [name, pass] of checks) {
   if (!pass) bad++;

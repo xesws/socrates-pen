@@ -31,7 +31,7 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
   ],
   max_tokens_chat: [
     "Token cap per turn",
-    "0 = no cap. This budgets the **tool loop**: once it's hit, the tutor still writes one answer from what it already has, and that shot is not capped. Actual spend therefore runs over the number you set — by how much depends on how much was read this turn, not by any fixed ratio.",
+    "0 = no cap. This budgets the tool loop: once it's hit, the tutor still writes one answer from what it already has, and that shot is not capped. Actual spend therefore runs over the number you set — by how much depends on how much was read this turn, not by any fixed ratio.",
   ],
   max_tokens_probe: ["Token cap per background dig", "0 = no cap. Set it below the cost of one dig and no dig runs at all."],
   max_tokens_cross_book: [
@@ -39,7 +39,7 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
     "0 = no cap. It answers «this turn has burned X already, don't open another book» — other books get resent every round, so the cost compounds.",
   ],
   max_tool_rounds: ["Tool calls per answer", "Reading this handbook is free; other textbooks have the two gates below."],
-  cross_book_chars: ["Character budget for other textbooks", "Reading **this** handbook doesn't count — normal reading is never affected."],
+  cross_book_chars: ["Character budget for other textbooks", "Reading this handbook doesn't count — normal reading is never affected."],
   cross_book_reads: ["Read count for other textbooks", "A byte budget alone can't cap this: reading one line at a time never exhausts it."],
   probe_max_per_session: ["Deep digs per conversation", "Doesn't stop «open lots of new sessions» — the hourly quota does."],
   probe_pending_cap: ["Stop digging once this many are queued", "This saves waste, not frequency."],
@@ -52,7 +52,7 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
   probe_min_reply_chars: ["Minimum reply length to dig", "Short replies are usually a single counter-question — nothing to dig into."],
   probe_concurrency: [
     "Concurrent digs",
-    "Per sidecar, not per book. **With several vaults open the knob points the wrong way**: the test is «digs in flight globally < your number», so turning it down makes it easier for another vault to crowd you out. To spend less, use the hourly count or the token caps above.",
+    "Per sidecar, not per book. With several vaults open the knob points the wrong way: the test is «digs in flight globally < your number», so turning it down makes it easier for another vault to crowd you out. To spend less, use the hourly count or the token caps above.",
   ],
 };
 

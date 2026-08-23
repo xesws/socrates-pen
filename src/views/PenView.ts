@@ -620,6 +620,15 @@ export class PenView extends ItemView {
         const log = this.els?.log;
         if (!log) return;
         log.empty();
+        // 对话前态（还没发过一句话）：对话区没有内容要占位，芯片区解除高度
+        // 上限——五枚全展开，写回入口首屏可见（0.18.0 复测：窄侧栏下只露三枚）。
+        // 0.18.2 复测：条件从「没有消息」放宽为「没有用户轮」——错误气泡也是
+        // 一条消息，按旧条件会立刻退出放开态，芯片又缩回去。深挖的动态芯片
+        // 只在真实轮次后出现，这个窗口内没有堆高风险。
+        this.contentEl.toggleClass(
+          "is-prechat",
+          !this.msgs.some((m) => m.role === "user"),
+        );
         if (this.msgs.length === 0) {
           // 还没抓选区 -> 完整开屏；抓了但还没问 -> 只留字标，把高度让给引文和芯片。
           const level: SplashLevel = this.quote ? "mini" : "hero";
@@ -628,12 +637,8 @@ export class PenView extends ItemView {
           renderSplash(empty, { level, animate: level !== this.splashLevel });
           this.splashLevel = level;
           empty.createEl("p", { cls: "sp-hint", text: t().emptyHint });
-          // 空会话态：对话区没有内容要占位，芯片区解除高度上限——五枚全展开，
-          // 写回入口首屏可见（0.18.0 复测：窄侧栏下 8em 只露三枚，上面空一大块）。
-          this.contentEl.addClass("is-splash");
           return;
         }
-        this.contentEl.removeClass("is-splash");
         this.splashLevel = "none";
         for (const m of this.msgs) {
           if (g !== this.paintGen || !this.els) break;
@@ -858,8 +863,25 @@ export class PenView extends ItemView {
     if (!got) {
       // v0.18.1 复测：无选区不再只会报错。切到另一篇笔记跑 Ask 时，读者
       // 想找的多半是「那篇的上一场对话」——有绑定就恢复它，没有才提示划选。
+      // v0.18.2 复测补刀：**每个出口都要把面板上下文切到活动笔记**。命令
+      // 指过 A 之后，B 的线程/引文一个像素都不许留——上版 errSessionGone
+      // 和无绑定两个出口只设红条不碰面板，读者回到 A 看到的还是 B 那轮。
       const active = this.app.workspace.getActiveFile();
       const bind = active ? this.plugin.noteBind(active.path) : undefined;
+      // 面板清成 A 的空态：那场对话没了/还没开过，芯片随新会话回来
+      const retargetEmpty = () => {
+        this.handbookId = null;
+        this.capturedPath = active ? active.path : null;
+        this.quote = "";
+        this.startLine = 0;
+        this.endLine = 0;
+        this.sessionId = null;
+        this.msgs = [];
+        this.chips = [];
+        this.dyn = [];
+        this.substantive = false;
+        this.stopDeepPoll();
+      };
       if (bind?.session_id) {
         try {
           const sess = await this.api().getSession(bind.session_id);
@@ -879,11 +901,13 @@ export class PenView extends ItemView {
           await this.refreshSnapshots();
         } catch (e) {
           if (isGone(e)) {
+            retargetEmpty();
             this.err = t().errSessionGone(active!.name);
             new Notice(this.err);
           } else this.err = e instanceof Error ? e.message : String(e);
         }
       } else {
+        retargetEmpty();
         this.err = t().errNoSelection;
         new Notice(this.err);
       }
