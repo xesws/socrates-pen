@@ -186,6 +186,22 @@ export class PenView extends ItemView {
   async onOpen(): Promise<void> {
     // 换主题可能换掉等宽字体，字宽比要重测。registerEvent 由 Component 自动注销。
     this.registerEvent(this.app.workspace.on("css-change", () => this.refreshAdvance()));
+    // v0.18.4：面板自动跟随活动笔记。0.18.2 只在跑命令时重定向，光切笔记
+    // 面板纹丝不动——复测三轮都在这条上。守卫：null（预览弹窗）、同笔记、
+    // 流式/审批中（在途轮次不许换上下文）。自动跟随静默（切笔记弹提示是噪音），
+    // Notice 只留给命令路径。
+    this.registerEvent(
+      this.app.workspace.on("file-open", (file) => {
+        if (!file || file.path === this.capturedPath) return;
+        if (this.busy || this.pending) return;
+        void this.retarget(file)
+          .then(() => {
+            this.paintBar();
+            void this.paintLog();
+          })
+          .catch(() => {});
+      }),
+    );
     this.renderShell();
     await this.probeHealth();
     // 启动窗口期（sidecar 还在 ensure 装起）首探必红，以前之后无人再探，
@@ -857,6 +873,54 @@ export class PenView extends ItemView {
     });
   }
 
+  /**
+   * 把面板上下文切到 file（0.18.4）：有绑定且会话存活 → adopt 恢复，跨笔记清
+   * 引文/行号；会话已被清理 / 无绑定 → 清成该笔记空态。返回结果给调用方决定
+   * 要不要 Notice（命令路径要反馈，file-open 自动跟随静默——切笔记弹提示是噪音）。
+   * 前端错误气泡从不持久化：恢复的是服务端 ui_messages，瞬时错误不进线程。
+   */
+  private async retarget(file: TFile): Promise<"restored" | "gone" | "nobind" | "error"> {
+    const bind = this.plugin.noteBind(file.path);
+    const crossNote = this.capturedPath !== file.path;
+    if (bind?.session_id) {
+      try {
+        const sess = await this.api().getSession(bind.session_id);
+        this.handbookId = bind.handbook_id;
+        this.capturedPath = file.path;
+        // 跨笔记恢复：旧引文/行号属于别的笔记，必须清（send 守卫会提示先
+        // 划一段）。同一笔记只是选区自然消失——引文仍有效，留着继续聊。
+        if (crossNote) {
+          this.quote = "";
+          this.startLine = 0;
+          this.endLine = 0;
+        }
+        this.err = "";
+        this.adopt(sess);
+        await this.refreshSnapshots();
+        return "restored";
+      } catch (e) {
+        if (!isGone(e)) {
+          this.err = e instanceof Error ? e.message : String(e);
+          return "error";
+        }
+        // 落到下面的清空
+      }
+    }
+    this.handbookId = null;
+    this.capturedPath = file.path;
+    this.quote = "";
+    this.startLine = 0;
+    this.endLine = 0;
+    this.sessionId = null;
+    this.msgs = [];
+    this.chips = [];
+    this.dyn = [];
+    this.substantive = false;
+    this.stopDeepPoll();
+    this.err = "";
+    return bind?.session_id ? "gone" : "nobind";
+  }
+
   async captureSelection(pick?: EditorPick | null): Promise<void> {
     const got = pick ?? this.plugin.takePick();
     await this.probeHealth();
@@ -871,47 +935,15 @@ export class PenView extends ItemView {
       // 指过 A 之后，B 的线程/引文一个像素都不许留——上版 errSessionGone
       // 和无绑定两个出口只设红条不碰面板，读者回到 A 看到的还是 B 那轮。
       const active = this.app.workspace.getActiveFile();
-      const bind = active ? this.plugin.noteBind(active.path) : undefined;
-      // 面板清成 A 的空态：那场对话没了/还没开过，芯片随新会话回来
-      const retargetEmpty = () => {
-        this.handbookId = null;
-        this.capturedPath = active ? active.path : null;
-        this.quote = "";
-        this.startLine = 0;
-        this.endLine = 0;
-        this.sessionId = null;
-        this.msgs = [];
-        this.chips = [];
-        this.dyn = [];
-        this.substantive = false;
-        this.stopDeepPoll();
-      };
-      if (bind?.session_id) {
-        try {
-          const sess = await this.api().getSession(bind.session_id);
-          this.handbookId = bind.handbook_id;
-          // 跨笔记恢复：旧引文/行号属于别的笔记，必须清（send 守卫会提示先
-          // 划一段）。同一笔记只是选区自然消失——引文仍有效，留着继续聊。
-          const crossNote = this.capturedPath !== active!.path;
-          this.capturedPath = active!.path;
-          if (crossNote) {
-            this.quote = "";
-            this.startLine = 0;
-            this.endLine = 0;
-          }
-          this.err = "";
-          this.adopt(sess);
-          if (crossNote) new Notice(t().noticeNoteRestored(active!.name));
-          await this.refreshSnapshots();
-        } catch (e) {
-          if (isGone(e)) {
-            retargetEmpty();
-            this.err = t().errSessionGone(active!.name);
-            new Notice(this.err);
-          } else this.err = e instanceof Error ? e.message : String(e);
-        }
-      } else {
-        retargetEmpty();
+      // 命令路径要反馈（读者主动动作）；file-open 自动跟随走 retarget 的静默模式。
+      const prevPath = this.capturedPath;
+      const r = active ? await this.retarget(active) : null;
+      if (r === "restored" && active && prevPath !== active.path) {
+        new Notice(t().noticeNoteRestored(active.name));
+      } else if (r === "gone") {
+        this.err = t().errSessionGone(active!.name);
+        new Notice(this.err);
+      } else if (r === "nobind") {
         this.err = t().errNoSelection;
         new Notice(this.err);
       }
