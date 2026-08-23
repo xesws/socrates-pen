@@ -192,14 +192,12 @@ export class PenView extends ItemView {
     // Notice 只留给命令路径。
     this.registerEvent(
       this.app.workspace.on("file-open", (file) => {
-        if (!file || file.path === this.capturedPath) return;
-        if (this.busy || this.pending) return;
-        void this.retarget(file)
-          .then(() => {
-            this.paintBar();
-            void this.paintLog();
-          })
-          .catch(() => {});
+        // 只跟 Markdown：canvas/图片/embed 也会触发 file-open（复审 P1），
+        // 跟过去会把面板清成空态。
+        if (!file || file.extension !== "md") return;
+        if (this.busy || this.pending) return; // 落定后由 followActiveFile 补
+        if (file.path === this.capturedPath) return;
+        this.followActiveFile();
       }),
     );
     this.renderShell();
@@ -211,6 +209,9 @@ export class PenView extends ItemView {
       const snap = this.plugin.sidecarSnap();
       if (snap.phase === "running" && !this.sidecarReachable) void this.probeHealth();
     });
+    // 开面板时同步当前文件（复审 P1）：file-open 在面板开着之前就发过了，
+    // 不同步的话 ribbon 打开永远是开屏而不是当前笔记的线程。
+    this.followActiveFile();
   }
 
   /** 框架回调：侧栏被拖动，或从折叠状态展开（那时首次测量拿到的是 0）。 */
@@ -237,6 +238,9 @@ export class PenView extends ItemView {
   }
 
   private unwatchSidecar: (() => void) | null = null;
+  /** 在途重定向/捕获的代次。任何新的 retarget 或捕获都会使旧代次作废——
+   *  两个在飞的重定向/捕获谁后完成都不许覆盖新的事实（复审 P1）。 */
+  private retargetGen = 0;
 
   private api() {
     return makeApi(this.plugin.settings.sidecarUrl);
@@ -492,7 +496,7 @@ export class PenView extends ItemView {
     // setBusy 和 syncChipDisabled 都会写 ask 的 disabled，两处必须同式：
     // busy/pending 和「没钥匙」任一为真就灰。
     e.ask.disabled = blocked || !this.llmOk;
-    e.pick.disabled = this.busy;
+    e.pick.disabled = this.busy || Boolean(this.pending);
     e.fresh.disabled = blocked;
     e.undo.disabled = this.busy || this.undoN <= 0;
     e.redo.disabled = this.busy || this.redoN <= 0;
@@ -878,18 +882,26 @@ export class PenView extends ItemView {
    * 引文/行号；会话已被清理 / 无绑定 → 清成该笔记空态。返回结果给调用方决定
    * 要不要 Notice（命令路径要反馈，file-open 自动跟随静默——切笔记弹提示是噪音）。
    * 前端错误气泡从不持久化：恢复的是服务端 ui_messages，瞬时错误不进线程。
+   *
+   * 代次守卫（复审 P1）：每次进入领一个新代次；每个 await 之后校验——期间
+   * 又有 retarget/捕获发生（gen 变了）或一轮发送开始了（busy/pending），
+   * 本次就地放弃，不许拿旧快照覆盖新事实。crossNote 现读现算，不缓存。
    */
-  private async retarget(file: TFile): Promise<"restored" | "gone" | "nobind" | "error"> {
+  private async retarget(file: TFile): Promise<"restored" | "gone" | "nobind" | "error" | "aborted"> {
+    if (file.extension !== "md") return "aborted";
+    const gen = ++this.retargetGen;
     const bind = this.plugin.noteBind(file.path);
-    const crossNote = this.capturedPath !== file.path;
     if (bind?.session_id) {
       try {
         const sess = await this.api().getSession(bind.session_id);
+        if (gen !== this.retargetGen || this.busy || this.pending) return "aborted";
+        // 跨笔记判定在 await 之后现读现算：期间面板可能已被捕获路径写过。
+        // 跨笔记 → 旧引文/行号属于别的笔记，必须清（send 守卫会提示先划
+        // 一段）；同笔记（选区自然消失后恢复）→ 引文仍有效，留着继续聊。
+        const wasOther = this.capturedPath !== file.path;
         this.handbookId = bind.handbook_id;
         this.capturedPath = file.path;
-        // 跨笔记恢复：旧引文/行号属于别的笔记，必须清（send 守卫会提示先
-        // 划一段）。同一笔记只是选区自然消失——引文仍有效，留着继续聊。
-        if (crossNote) {
+        if (wasOther) {
           this.quote = "";
           this.startLine = 0;
           this.endLine = 0;
@@ -903,9 +915,11 @@ export class PenView extends ItemView {
           this.err = e instanceof Error ? e.message : String(e);
           return "error";
         }
+        if (gen !== this.retargetGen || this.busy || this.pending) return "aborted";
         // 落到下面的清空
       }
     }
+    if (gen !== this.retargetGen) return "aborted";
     this.handbookId = null;
     this.capturedPath = file.path;
     this.quote = "";
@@ -916,12 +930,42 @@ export class PenView extends ItemView {
     this.chips = [];
     this.dyn = [];
     this.substantive = false;
+    this.pending = null;
     this.stopDeepPoll();
+    // 空态也是换了上下文：旧会话的花销/状态/深挖书签一个都不许跟着过来
+    // （复审 P1：空路径此前漏了这些，A 的「本会话 Nk」会挂在 B 的开屏上）。
+    this.spend = {};
+    this.turnTokens = 0;
+    this.usage = null;
+    this.status = "";
+    this.statusTipSig = "";
+    this.deepNote = "";
+    this.deepCursor = 0;
     this.err = "";
+    await this.refreshSnapshots(); // handbookId=null → undo/redo 归零
     return bind?.session_id ? "gone" : "nobind";
   }
 
+  /** busy/pending 期间被跳过的跟随，等状态落定后补一次（复审 P1）：
+   *  「等回复的时候点了另一篇」是最自然的切笔记时机，不补就回到
+   *  「光切笔记面板纹丝不动」的老病。 */
+  private followActiveFile(): void {
+    if (this.busy || this.pending) return;
+    const active = this.app.workspace.getActiveFile();
+    if (!active || active.extension !== "md") return;
+    if (active.path === this.capturedPath) return;
+    void this.retarget(active)
+      .then(() => {
+        this.paintBar();
+        void this.paintLog();
+      })
+      .catch(() => {});
+  }
+
   async captureSelection(pick?: EditorPick | null): Promise<void> {
+    // 新的捕获使任何在途重定向作废（复审 P1：旧代次的 retarget 后完成时
+    // 会拿过期快照覆盖刚捕获的状态）。
+    ++this.retargetGen;
     const got = pick ?? this.plugin.takePick();
     await this.probeHealth();
     if (!this.sidecarReachable) {
@@ -935,13 +979,25 @@ export class PenView extends ItemView {
       // 指过 A 之后，B 的线程/引文一个像素都不许留——上版 errSessionGone
       // 和无绑定两个出口只设红条不碰面板，读者回到 A 看到的还是 B 那轮。
       const active = this.app.workspace.getActiveFile();
+      if (!active) {
+        // 面板抢走焦点等情况拿不到活动文件——0.18.3 这里会静默，补齐（复审 P2）。
+        this.err = t().errNoSelection;
+        new Notice(this.err);
+        this.paintBar();
+        return;
+      }
+      if (this.pending) {
+        // 审批挂着时不换上下文：换走会把「批准写入哪本书」变得含糊。
+        new Notice(t().noticeResolveApproval);
+        return;
+      }
       // 命令路径要反馈（读者主动动作）；file-open 自动跟随走 retarget 的静默模式。
       const prevPath = this.capturedPath;
-      const r = active ? await this.retarget(active) : null;
-      if (r === "restored" && active && prevPath !== active.path) {
+      const r = await this.retarget(active);
+      if (r === "restored" && prevPath !== active.path) {
         new Notice(t().noticeNoteRestored(active.name));
       } else if (r === "gone") {
-        this.err = t().errSessionGone(active!.name);
+        this.err = t().errSessionGone(active.name);
         new Notice(this.err);
       } else if (r === "nobind") {
         this.err = t().errNoSelection;
@@ -1244,6 +1300,9 @@ export class PenView extends ItemView {
       }
       this.paintBar();
       await this.paintLog();
+      // busy 落定后补一次被跳过的跟随（复审 P1）：等回复的窗口正是读者
+      // 切笔记的自然时机，不补就回到「光切笔记面板纹丝不动」。
+      if (!this.busy && !this.pending && !gone) this.followActiveFile();
     }
     if (!gone) return;
     if (!(await this.reviveSession())) {
@@ -1370,6 +1429,8 @@ export class PenView extends ItemView {
       }
       this.paintBar();
       await this.paintLog("force");
+      // 审批落定后补一次被跳过的跟随（同 send 的 finally）。
+      if (!this.busy && !this.pending) this.followActiveFile();
     }
     if (!gone) return;
     if (await this.reviveSession()) {
