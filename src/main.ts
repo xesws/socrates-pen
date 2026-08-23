@@ -1,4 +1,4 @@
-import { MarkdownView, Notice, Plugin, setTooltip, type Command, type Workspace, type WorkspaceLeaf } from "obsidian";
+import { MarkdownView, Notice, Plugin, setTooltip, type Command, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
 import { ApiError } from "./apierror";
 import {
@@ -133,18 +133,11 @@ export default class SocratesPenPlugin extends Plugin {
     const leaf = existing[0] ?? this.app.workspace.getRightLeaf(false);
     if (!leaf) throw new Error(t().errNoRightLeaf);
     // 右侧栏折叠时 setActiveLeaf 什么都不露，点丝带像没反应（评测报告 P1）。
-    // revealLeaf 1.7.2 才有——minAppVersion 1.5.0，能力探测，老版本掰 rightSplit。
+    // 只用 rightSplit.collapsed：revealLeaf 1.7.2 才有，商店审核的
+    // no-unsupported-api 闸按 @since 标注拦引用（哪怕在能力探测的 cast 里），
+    // minAppVersion 1.5.0 下不能出现它（v0.18.6 审核打回的正是这行）。
     try {
-      const ws = this.app.workspace as Workspace & {
-        revealLeaf?: (leaf: WorkspaceLeaf) => void;
-      };
-      if (typeof ws.revealLeaf === "function") ws.revealLeaf(leaf);
-      else {
-        const split = this.app.workspace as unknown as {
-          rightSplit?: { collapsed?: boolean };
-        };
-        if (split.rightSplit) split.rightSplit.collapsed = false;
-      }
+      this.app.workspace.rightSplit.collapsed = false;
     } catch {
       new Notice(t().noticeRightOpened);
     }
