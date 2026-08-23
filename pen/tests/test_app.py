@@ -51,6 +51,48 @@ def test_health_and_locate_q1() -> None:
         line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
         loc = client.get(f"/v1/handbooks/swe-agent-v2/locate?line={line}").json()
         assert loc["level"] == "Level 0"
+
+
+# ── 托管密钥端点（v0.18.0）──
+
+
+def test_llm_key_endpoints_roundtrip() -> None:
+    with TestClient(app) as client:
+        # 空钥匙 → 400，不落盘
+        r = client.put("/v1/llm/key", json={"api_key": "   "})
+        assert r.status_code == 400
+        assert not (config.PEN_DIR / "llm.json").exists()
+        # PUT：写 0600 文件，回的是不含全文的公开摘要
+        r = client.put(
+            "/v1/llm/key",
+            json={"api_key": "sk-put-0987654321", "base_url": "https://api.deepseek.com"},
+        )
+        assert r.status_code == 200
+        body = r.json()
+        assert body["ok"] is True
+        assert body["key_source"] == "sidecar"
+        assert body["key_tail"] == "4321"
+        assert "sk-put-0987654321" not in json.dumps(body)
+        path = config.PEN_DIR / "llm.json"
+        assert path.is_file()
+        assert (path.stat().st_mode & 0o777) == 0o600
+        # health 自动带摘要
+        h = client.get("/v1/health").json()["llm"]
+        assert h["key_source"] == "sidecar"
+        assert h["key_tail"] == "4321"
+        assert "sk-put-0987654321" not in json.dumps(h)
+        # DELETE：文件与摘要一起清
+        r = client.delete("/v1/llm/key")
+        assert r.status_code == 200
+        assert r.json()["ok"] is False
+        assert not path.exists()
+
+
+def test_health_locate_q_title() -> None:
+    with TestClient(app) as client:
+        text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+        line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
+        loc = client.get(f"/v1/handbooks/swe-agent-v2/locate?line={line}").json()
         assert loc["q_title"] == "**Q1. shell 和 Bash 是什么关系？**"
         assert loc["kind"] == "q"
 

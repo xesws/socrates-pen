@@ -922,9 +922,13 @@ sidebar asks all the same; the deny demo in
 ([`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)). The real gate is
 `pen/agent/permissions.py:18-19`: `edit_file` is always `ask`, for every chip.
 
-**Three things left for you to watch.** One, your API key is stored in this vault at
-`.obsidian/plugins/socrates-pen/data.json`, so if the vault is in Sync, iCloud or git, the key goes
-with it. Two, the network is touched in three places: installing pulls the sidecar and its
+**Three things left for you to watch.** One, your API key lives only on this machine, in
+`~/.socrates-pen/llm.json` (mode 0600) — **never inside this vault**, so Sync / iCloud / git can't
+carry it away. Upgrading from an older version migrates the key out of `data.json` automatically and
+scrubs it. If this vault was ever synced or committed to git back then, that key is in history and
+can't be scrubbed — **rotate it** at your provider. For development you can skip the settings page
+entirely: leave `OPENAI_API_KEY` or `DEEPSEEK_API_KEY` in the sidecar's environment (or a `.env` in
+the source tree) and it works the same. Two, the network is touched in three places: installing pulls the sidecar and its
 dependencies from GitHub and PyPI into `~/.socrates-pen`, and the first restart after a plugin
 upgrade fetches them once more; the model call itself leaves from that local process to the
 endpoint you configured; and when the model calls `fetch` it issues a GET to that URL (public

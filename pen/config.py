@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
@@ -95,6 +96,13 @@ _KEY_ALIASES = ("OPENAI_API_KEY", "DEEPSEEK_API_KEY")
 DEEPSEEK_BASE = "https://api.deepseek.com"
 # 与 lab/level2 README、Socrates-agent 注释一致
 DEEPSEEK_MODEL = "deepseek-v4-flash"
+
+# ── 托管密钥（v0.18.0）。设置页的钥匙只落这儿，vault 的 data.json 永远拿不到。 ──
+# 之前 apiKey 明文存在 .obsidian/plugins/socrates-pen/data.json，跟着
+# Sync / iCloud / git 走。现在唯一归宿是 PEN_DIR/llm.json（0600），
+# resolve_llm 的优先级：托管文件 > 环境变量。env 路径保持原样，伺候无 UI 场景。
+MANAGED_KEY_FILE = "llm.json"
+MANAGED_KEY_SOURCE = "sidecar"
 
 
 THINKING_LEVELS = ("off", "low", "medium", "high")
@@ -390,8 +398,59 @@ def _get(name: str, file_vals: dict[str, str]) -> str:
     return (os.environ.get(name) or file_vals.get(name) or "").strip()
 
 
+def managed_key_path() -> Path:
+    """每次现读 PEN_DIR。import 时冻结的话，测试 monkeypatch 根就够不着了。"""
+    return PEN_DIR / MANAGED_KEY_FILE
+
+
+def read_managed_key() -> dict[str, str] | None:
+    """读托管密钥文件。打不开 / 坏 JSON / 空 key 一律当没有——不炸设置页。"""
+    try:
+        data = json.loads(managed_key_path().read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    key = str(data.get("api_key") or "").strip()
+    if not key:
+        return None
+    return {"api_key": key, "base_url": str(data.get("base_url") or "").strip()}
+
+
+def write_managed_key(api_key: str, base_url: str = "") -> None:
+    """0600 落盘。先写临时文件再 rename：半截写不在正主位置留明文。"""
+    path = managed_key_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.parent.chmod(0o700)
+    except OSError:
+        pass  # Windows / 受限目录：尽力而为，文件本身仍然 0600
+    tmp = path.with_name(path.name + ".tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
+        json.dump({"api_key": api_key, "base_url": base_url}, fh)
+    # O_CREAT 的 mode 会被 umask 削，显式补一刀；文件已存在时 mode 根本不吃 O_CREAT。
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, path)
+
+
+def clear_managed_key() -> None:
+    managed_key_path().unlink(missing_ok=True)
+
+
 def resolve_llm(env_file: Path | None = None) -> LLMConfig | None:
     file_vals = parse_dotenv(env_file)
+    managed = read_managed_key()
+    if managed is not None:
+        # 托管 key 优先于环境：设置页是普通读者唯一的入口，env 是无 UI 场景的后备。
+        base = managed["base_url"] or DEEPSEEK_BASE
+        return LLMConfig(
+            base_url=base,
+            api_key=managed["api_key"],
+            model=_get(ENV_MODEL, file_vals) or DEEPSEEK_MODEL,
+            key_source=MANAGED_KEY_SOURCE,
+            thinking="off",
+        )
     key = ""
     source = ""
     for name in _KEY_ALIASES:
@@ -430,24 +489,24 @@ def merge_llm(
     thinking: str | None = None,
     env_file: Path | None = None,
 ) -> LLMConfig | None:
-    """请求体非空字段优先，缺的回退 resolve_llm()。两边都没有 key → None。
-    请求把 base_url 换到别的主机却没自带 key → 不挪用 env 钥匙，返回 None，
-    让设置页自己填那台主机的 key。"""
-    env = resolve_llm(env_file)
+    """请求体非空字段优先，缺的回退 resolve_llm()（托管文件或 env）。两边都没有
+    key → None。请求把 base_url 换到别的主机却没自带 key → 不挪用已解析的钥匙，
+    返回 None，让设置页自己填那台主机的 key。"""
+    resolved = resolve_llm(env_file)
     req_key = (api_key or "").strip()
     req_url = (base_url or "").strip()
     if req_key:
         key = req_key
         source = "settings"
-    elif env and req_url and _host_of(req_url) != _host_of(env.base_url):
+    elif resolved and req_url and _host_of(req_url) != _host_of(resolved.base_url):
         return None
-    elif env:
-        key = env.api_key
-        source = env.key_source
+    elif resolved:
+        key = resolved.api_key
+        source = resolved.key_source
     else:
         return None
-    url = req_url or (env.base_url if env else DEEPSEEK_BASE)
-    name = (model or "").strip() or (env.model if env else DEEPSEEK_MODEL)
+    url = req_url or (resolved.base_url if resolved else DEEPSEEK_BASE)
+    name = (model or "").strip() or (resolved.model if resolved else DEEPSEEK_MODEL)
     return LLMConfig(
         base_url=url,
         api_key=key,
@@ -465,7 +524,7 @@ def openai_config() -> tuple[str | None, str | None, str | None]:
 
 
 def llm_public_status() -> dict[str, str | bool]:
-    """给前端看的配置摘要，不含密钥。"""
+    """给前端看的配置摘要，不含密钥。key_tail 只露末 4 位，短钥匙干脆不露。"""
     cfg = resolve_llm()
     if cfg is None:
         return {
@@ -474,6 +533,7 @@ def llm_public_status() -> dict[str, str | bool]:
             "model": "",
             "key_source": "",
             "thinking": "off",
+            "key_tail": "",
         }
     return {
         "ok": True,
@@ -481,6 +541,7 @@ def llm_public_status() -> dict[str, str | bool]:
         "model": cfg.model,
         "key_source": cfg.key_source,
         "thinking": cfg.thinking,
+        "key_tail": cfg.api_key[-4:] if len(cfg.api_key) >= 12 else "",
     }
 
 

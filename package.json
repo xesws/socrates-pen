@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc --noEmit && npm test && node esbuild.config.mjs production",
-    "test": "node scripts/check-i18n.mjs && node scripts/check-poll.mjs && node scripts/check-api.mjs && node scripts/check-css.mjs && node scripts/check-limits.mjs"
+    "test": "node scripts/check-i18n.mjs && node scripts/check-poll.mjs && node scripts/check-api.mjs && node scripts/check-key.mjs && node scripts/check-css.mjs && node scripts/check-limits.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

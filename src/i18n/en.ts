@@ -76,7 +76,8 @@ export const en: Dict = {
   tipRedo: (count) => `Put back what you just undid (${count} left)`,
 
   healthUnprobed: "sidecar not checked yet",
-  healthOkSettings: (model) => `sidecar ok · from settings · ${model}`,
+  healthOkKey: (tail, model) =>
+    `sidecar ok · key stored locally${tail ? ` …${tail}` : ""} · ${model}`,
   healthOkFallback: (source, model) => `sidecar ok · dev fallback ${source} · ${model}`,
   healthNoKey: "sidecar is up — add your API key under Settings → Socrates",
   healthDown: "can't reach sidecar",
@@ -175,6 +176,13 @@ export const en: Dict = {
   errNeedDesktopVault: "Needs a desktop vault (FileSystemAdapter)",
   noticeSidecarDown:
     "The local service isn't up. Open Settings → Socrates and check the status at the top.",
+  noticeKeySaved:
+    "Key saved to the local sidecar (~/.socrates-pen/llm.json). It never enters this vault.",
+  noticeKeySaveFailed: (detail) =>
+    `Couldn't save (${detail}). The key was written nowhere; retry once the sidecar is up.`,
+  noticeKeyCleared: "Key removed from the local sidecar.",
+  noticeKeyMigrated:
+    "Your API key moved from data.json to ~/.socrates-pen/llm.json on this machine — Sync / iCloud / git no longer carry it. If this vault was ever synced or committed, rotate that key at your provider.",
 
   chips: {
     socratic: { label: "Don't tell me yet — ask me something", hint: "" },
@@ -217,9 +225,14 @@ export const en: Dict = {
   setIntro1:
     "Key and endpoint go below. The plugin starts the local service — no terminal. This vault's path is handed over the moment you pick a passage.",
   setIntro2:
-    "The API key lives in this vault, at .obsidian/plugins/socrates-pen/data.json. If the whole vault goes into Sync / iCloud / git, the key rides along.",
+    "The API key lives only on this machine, in the sidecar home (~/.socrates-pen/llm.json, mode 0600) — never inside this vault, so Sync / iCloud / git can't carry it away.",
   setApiKeyDesc:
-    "Key for your OpenAI-compatible endpoint. Masked here, never shown in the status line.",
+    "Write-only: paste, then Enter or click away — it's stored on the local sidecar, never in the vault. Empty input is ignored; use the button to clear.",
+  setKeyStatusSaved: (source, tail) =>
+    `Saved${source ? ` (source: ${source})` : ""}${tail ? `, tail …${tail}` : ""}.`,
+  setKeyStatusNone: "No key saved yet.",
+  setKeyStatusUnreachable: "Sidecar not running — key status unknown.",
+  setKeyClear: "Clear key",
   setBaseUrlDesc: "A Chat Completions-compatible address. No trailing slash.",
   setModelName: "Model",
   setModelDesc:

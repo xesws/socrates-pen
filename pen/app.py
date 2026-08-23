@@ -100,6 +100,13 @@ class LlmOverrideBody(BaseModel):
         )
 
 
+class ManagedKeyBody(BaseModel):
+    """设置页的只写入口。key 只落 PEN_DIR/llm.json（0600），任何 GET 都不回全文。"""
+
+    api_key: str
+    base_url: str | None = None
+
+
 class ImportBody(BaseModel):
     original_path: str
     handbook_id: str | None = None
@@ -342,6 +349,22 @@ def _proposal_del(pid: str) -> None:
 @app.get("/v1/health")
 def health() -> dict[str, Any]:
     return {"status": "ok", "llm": llm_public_status()}
+
+
+@app.put("/v1/llm/key")
+def put_llm_key(body: ManagedKeyBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """v0.18.0：API key 的唯一归宿从 vault 的 data.json 挪到这儿。"""
+    key = body.api_key.strip()
+    if not key:
+        raise HTTPException(400, msg("llm.empty_key", lang))
+    configmod.write_managed_key(key, (body.base_url or "").strip())
+    return llm_public_status()
+
+
+@app.delete("/v1/llm/key")
+def delete_llm_key() -> dict[str, Any]:
+    configmod.clear_managed_key()
+    return llm_public_status()
 
 
 @app.post("/v1/maintenance/purge")

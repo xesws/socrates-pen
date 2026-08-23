@@ -13,15 +13,20 @@ import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
 import { SidecarManager } from "./sidecar";
 
-// 旧版插件把 PenSettings 键直接写在 data.json 顶层，故顶层也要容忍这些键
+// 旧版插件把 PenSettings 键直接写在 data.json 顶层，故顶层也要容忍这些键。
+// v0.17.x 及更早的 apiKey 也容忍——读到只装进内存等迁移（见 migrateKeyOut），
+// 永不写回。
 type PluginData = Partial<PenSettings> & {
-  settings?: Partial<PenSettings>;
+  apiKey?: string;
+  settings?: Partial<PenSettings> & { apiKey?: string };
   notes?: Record<string, NoteBinding>;
 };
 
 export default class SocratesPenPlugin extends Plugin {
   settings: PenSettings = { ...DEFAULT_SETTINGS };
   notes: Record<string, NoteBinding> = {};
+  /** 老 data.json 带出来的明文钥匙，等 sidecar 起来就迁走。只活在内存里。 */
+  migrateKey = "";
   private saveTimer: number | null = null;
   private lastPick: EditorPick | null = null;
   private ribbonEl: HTMLElement | null = null;
@@ -44,6 +49,7 @@ export default class SocratesPenPlugin extends Plugin {
     if (this.settings.sidecarAutoStart !== false) {
       void this.ensureSidecar().catch(() => {});
     }
+    if (this.migrateKey) void this.migrateKeyOut();
     this.registerView(VIEW_TYPE_PEN, (leaf) => new PenView(leaf, this));
     this.addSettingTab(new PenSettingTab(this.app, this));
     this.registerDomEvent(document, "selectionchange", () => this.cachePick());
@@ -148,10 +154,14 @@ export default class SocratesPenPlugin extends Plugin {
     // 旧版顶层键收进来当后备；嵌套 settings 里已给的键以嵌套为准
     const legacy: Partial<PenSettings> = {};
     if (raw.sidecarUrl !== undefined) legacy.sidecarUrl = raw.sidecarUrl;
-    if (raw.apiKey !== undefined) legacy.apiKey = raw.apiKey;
     if (raw.baseUrl !== undefined) legacy.baseUrl = raw.baseUrl;
     if (raw.model !== undefined) legacy.model = raw.model;
     if (raw.thinking !== undefined) legacy.thinking = raw.thinking;
+    // v0.18.0：老 data.json 里的明文 apiKey（嵌套优先，顶层更老）装进内存等迁移。
+    // 期间一次也不写盘——迁移成没成，vault 里都不再留明文。
+    this.migrateKey = String(
+      (raw.settings && raw.settings.apiKey) ?? raw.apiKey ?? "",
+    ).trim();
     this.settings = {
       ...DEFAULT_SETTINGS,
       ...legacy,
@@ -161,6 +171,8 @@ export default class SocratesPenPlugin extends Plugin {
       // 「只改过一个数」的库会静默丢掉其余十几个自定义值。
       limits: { ...DEFAULT_SETTINGS.limits, ...((raw.settings || {}).limits || {}) },
     };
+    // 嵌套展开在运行时仍会把 apiKey 带进来（类型看不见，磁盘看得见），显式拔掉。
+    delete (this.settings as PenSettings & { apiKey?: string }).apiKey;
     this.settings.thinking = coerceThinking(this.settings.thinking);
     this.settings.lang = coerceLangPref(this.settings.lang);
     this.settings.sidecarAutoStart = this.settings.sidecarAutoStart !== false;
@@ -190,6 +202,35 @@ export default class SocratesPenPlugin extends Plugin {
       version: this.manifest.version,
       autoStart: this.settings.sidecarAutoStart,
     });
+  }
+
+  /** 把老 data.json 里的明文钥匙迁进 sidecar 家目录，然后从磁盘抹掉。
+   *
+   * 失败（sidecar 没起来 / 旧版 sidecar 不认新端点）就整场放弃：钥匙留在
+   * 内存里下次启动再试，data.json 原样不动——绝不为了"这次先能用"把明文
+   * 写回去。 */
+  private async migrateKeyOut(): Promise<void> {
+    const key = this.migrateKey;
+    const api = makeApi(this.settings.sidecarUrl);
+    // onload 刚 kick 过 ensure()：sidecar 可能还在装/起，健康之前 PUT 必失败。
+    for (let i = 0; i < 45; i++) {
+      try {
+        await api.health();
+        break;
+      } catch {
+        if (i === 44) return;
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+    }
+    try {
+      await api.putLlmKey(key, this.settings.baseUrl);
+    } catch {
+      return;
+    }
+    this.migrateKey = "";
+    // 这次落盘的 settings 里已经没有 apiKey 字段（loadSettings 拔过）
+    await this.saveSettings();
+    new Notice(t().noticeKeyMigrated);
   }
 
   stopOwnedSidecar(): void {

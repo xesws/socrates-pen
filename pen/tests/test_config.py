@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from pen import config
@@ -78,6 +79,91 @@ def test_default_pen_dir_installed_package(tmp_path: Path) -> None:
     pkg.mkdir()
     (pkg / "app.py").write_text("#", encoding="utf-8")
     assert config.default_pen_dir(tmp_path) == Path.home() / ".socrates-pen"
+
+
+# ── 托管密钥（v0.18.0）：vault 里的 data.json 不再存 key ──
+
+
+def _no_env_keys(monkeypatch) -> None:
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY", "OPENAI_BASE_URL", "MODEL_NAME"):
+        monkeypatch.delenv(name, raising=False)
+
+
+def test_managed_key_roundtrip_and_perms(monkeypatch) -> None:
+    config.write_managed_key("sk-managed-0987654321", "https://api.deepseek.com")
+    path = config.PEN_DIR / "llm.json"
+    assert path.is_file()
+    # 明文钥匙只许 0600；半截写的临时文件不许留下
+    assert (path.stat().st_mode & 0o777) == 0o600
+    assert not path.with_name("llm.json.tmp").exists()
+    got = config.read_managed_key()
+    assert got == {"api_key": "sk-managed-0987654321", "base_url": "https://api.deepseek.com"}
+    config.clear_managed_key()
+    assert config.read_managed_key() is None
+    assert not path.exists()
+
+
+def test_managed_key_bad_file_is_none(monkeypatch) -> None:
+    config.PEN_DIR.mkdir(parents=True, exist_ok=True)
+    (config.PEN_DIR / "llm.json").write_text("{not json", encoding="utf-8")
+    assert config.read_managed_key() is None
+    (config.PEN_DIR / "llm.json").write_text('{"api_key": "  "}', encoding="utf-8")
+    assert config.read_managed_key() is None
+
+
+def test_managed_key_wins_over_env(tmp_path: Path, monkeypatch) -> None:
+    _no_env_keys(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-from-env")
+    config.write_managed_key("sk-managed-1234567890", "https://api.deepseek.com")
+    cfg = resolve_llm(tmp_path / "missing.env")
+    assert cfg is not None
+    assert cfg.api_key == "sk-managed-1234567890"
+    assert cfg.key_source == config.MANAGED_KEY_SOURCE
+    assert cfg.base_url == "https://api.deepseek.com"
+
+
+def test_managed_key_default_base_and_env_model(monkeypatch) -> None:
+    _no_env_keys(monkeypatch)
+    monkeypatch.setenv("MODEL_NAME", "env-model")
+    config.write_managed_key("sk-managed-1234567890", "")
+    cfg = resolve_llm(None)
+    assert cfg is not None
+    # 托管文件没写 base_url → DeepSeek 默认；模型名仍认 env 的 MODEL_NAME
+    assert cfg.base_url == config.DEEPSEEK_BASE
+    assert cfg.model == "env-model"
+
+
+def test_managed_key_not_lent_across_hosts(tmp_path: Path, monkeypatch) -> None:
+    _no_env_keys(monkeypatch)
+    config.write_managed_key("sk-managed-1234567890", "https://api.deepseek.com")
+    miss = tmp_path / "missing.env"
+    # 请求把 base_url 换到别的主机又没自带 key → 不挪用托管钥匙
+    assert merge_llm(base_url="https://api.other.com", env_file=miss) is None
+    cfg = merge_llm(base_url="https://api.deepseek.com", model="m2", env_file=miss)
+    assert cfg is not None
+    assert cfg.key_source == config.MANAGED_KEY_SOURCE
+    assert cfg.model == "m2"
+
+
+def test_request_key_still_wins_over_managed(tmp_path: Path, monkeypatch) -> None:
+    _no_env_keys(monkeypatch)
+    config.write_managed_key("sk-managed-1234567890", "https://api.deepseek.com")
+    cfg = merge_llm(api_key="sk-from-page", env_file=tmp_path / "missing.env")
+    assert cfg is not None
+    assert cfg.api_key == "sk-from-page"
+    assert cfg.key_source == "settings"
+
+
+def test_llm_public_status_masks_key(monkeypatch) -> None:
+    _no_env_keys(monkeypatch)
+    config.write_managed_key("sk-mask-123456789abcd", "https://api.deepseek.com")
+    st = config.llm_public_status()
+    assert st["ok"] is True
+    assert st["key_tail"] == "abcd"
+    assert "sk-mask-123456789abcd" not in json.dumps(st)
+    # 短钥匙连尾 4 位都不露
+    config.write_managed_key("short", "")
+    assert config.llm_public_status()["key_tail"] == ""
 
 
 def test_merge_llm_request_wins_and_key_alone_works(tmp_path: Path, monkeypatch) -> None:

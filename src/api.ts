@@ -76,6 +76,14 @@ export async function purgeExpired(baseUrl: string): Promise<void> {
 export function makeApi(baseUrl: string) {
   return {
     health: () => j<{ status: string; llm: LlmStatus }>(baseUrl, "/v1/health"),
+    /** v0.18.0：钥匙的只写入口。落 sidecar 家目录（0600），vault 拿不到全文。 */
+    putLlmKey: (api_key: string, base_url?: string) =>
+      j<LlmStatus>(baseUrl, "/v1/llm/key", {
+        method: "PUT",
+        body: JSON.stringify({ api_key, base_url: base_url || "" }),
+      }),
+    deleteLlmKey: () =>
+      j<LlmStatus>(baseUrl, "/v1/llm/key", { method: "DELETE" }),
     importHandbook: (original_path: string, handbook_id: string, vault_root?: string) =>
       j<HandbookMeta>(baseUrl, "/v1/handbooks/import", {
         method: "POST",

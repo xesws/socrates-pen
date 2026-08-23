@@ -114,6 +114,8 @@ export type LlmStatus = {
   base_url: string;
   model: string;
   key_source: string;
+  /** 末 4 位掩码；短钥匙为空串。v0.18.0 起健康行/设置页只显示这个。 */
+  key_tail?: string;
   thinking?: string;
 };
 

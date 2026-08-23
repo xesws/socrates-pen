@@ -792,8 +792,11 @@ pip 安装 sidecar，这一步要访问 GitHub 和 PyPI。装完之后**设置 �
 （[`08b-approve-deny.json`](docs/demo/transcripts/08b-approve-deny.json)）。真正的闸在
 `pen/agent/permissions.py:18-19`：`edit_file` 恒为 `ask`，对每一枚芯片都成立。
 
-**剩下三件要你自己留意。** 一，API Key 存在本库的 `.obsidian/plugins/socrates-pen/data.json`
-里，这个库要是进了 Sync / iCloud / git，钥匙会跟着走。二，网络有三处：装的时候从
+**剩下三件要你自己留意。** 一，API Key 只存本机 sidecar 家目录的 `~/.socrates-pen/llm.json`
+（权限 0600），**不写进这个库**——Sync / iCloud / git 带不走它；从旧版本升级时会把钥匙从
+`data.json` 自动迁过去并抹掉。若这个库在旧版本时代被同步或提交过 git，历史里的那把钥匙
+清不掉，请去服务商**轮换一把**。开发场景也可以不用设置页：给 sidecar 留 `OPENAI_API_KEY`
+或 `DEEPSEEK_API_KEY` 环境变量（或源码树里的 `.env`）同样有效。二，网络有三处：装的时候从
 GitHub 和 PyPI 拉 sidecar 和依赖到 `~/.socrates-pen`，插件升级后重新拉起服务时会再取一
 次；模型调用由这个本机进程发到你填的那个节点；模型调用 `fetch` 时会向那个 URL 发 GET
 （只接受公网 http/https，内网和本机一律拒绝）。三，禁用插件不会停掉

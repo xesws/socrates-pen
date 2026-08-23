@@ -743,12 +743,13 @@ export class PenView extends ItemView {
     try {
       const h = await this.api().health();
       this.sidecarReachable = true;
-      const fromPage = this.plugin.settings.apiKey.trim();
       const model = this.plugin.settings.model.trim() || h.llm.model;
-      if (fromPage) {
-        this.health = t().healthOkSettings(model);
-      } else if (h.llm.ok) {
-        this.health = t().healthOkFallback(h.llm.key_source, model);
+      if (h.llm.ok) {
+        // v0.18.0 起设置页的钥匙只住 sidecar（llm.json）；env 名字照实显示成开发回退
+        this.health =
+          h.llm.key_source === "sidecar"
+            ? t().healthOkKey(h.llm.key_tail || "", model)
+            : t().healthOkFallback(h.llm.key_source, model);
       } else {
         this.health = t().healthNoKey;
       }

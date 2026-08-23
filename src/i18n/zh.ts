@@ -99,7 +99,8 @@ export const zh = {
 
   // ── 健康行 ──
   healthUnprobed: "sidecar 未探测",
-  healthOkSettings: (model: string): string => `sidecar 正常 · 设置页 · ${model}`,
+  healthOkKey: (tail: string, model: string): string =>
+    `sidecar 正常 · 钥匙已存本机${tail ? ` …${tail}` : ""} · ${model}`,
   healthOkFallback: (source: string, model: string): string =>
     `sidecar 正常 · 开发回退 ${source} · ${model}`,
   healthNoKey: "sidecar 在，请到设置 → Socrates 填写 API Key",
@@ -234,6 +235,12 @@ export const zh = {
   errNeedDesktopVault: "需要桌面库（FileSystemAdapter）",
   noticeSidecarDown:
     "本机服务还没起来。打开设置 → Socrates，看最上面那一块的状态。",
+  noticeKeySaved: "钥匙已存入本机 sidecar（~/.socrates-pen/llm.json），不进这个库。",
+  noticeKeySaveFailed: (detail: string): string =>
+    `没存进去（${detail}）。钥匙未落任何文件；sidecar 起来后再试一次。`,
+  noticeKeyCleared: "钥匙已从本机 sidecar 清除。",
+  noticeKeyMigrated:
+    "API Key 已从 data.json 迁到本机 ~/.socrates-pen/llm.json，不再随 Sync / iCloud / git 走。若这个库曾被同步或提交过，建议去服务商轮换这把钥匙。",
 
   // ── 芯片。键对齐后端 pen/session.py 的 FIXED_CHIPS[].id ──
   chips: {
@@ -272,8 +279,14 @@ export const zh = {
   setIntro1:
     "钥匙和节点填在下面。本机服务由插件自己拉起，不用开终端。当前库的路径会在框选时自动带给服务。",
   setIntro2:
-    "API Key 存在本库 .obsidian/plugins/socrates-pen/data.json。若整个库进了 Sync / iCloud / git，钥匙会跟着走。",
-  setApiKeyDesc: "OpenAI 兼容节点的钥匙。密码框，不会显示在健康行里。",
+    "API Key 只存本机 sidecar 家目录（~/.socrates-pen/llm.json，权限 0600），不写进这个库——Sync / iCloud / git 带不走它。",
+  setApiKeyDesc:
+    "只写：粘贴后回车或失焦即存入本机 sidecar，不落 vault。留空忽略；要清除用右侧按钮。",
+  setKeyStatusSaved: (source: string, tail: string): string =>
+    `已保存${source ? `（来源 ${source}）` : ""}${tail ? `，尾号 …${tail}` : ""}。`,
+  setKeyStatusNone: "尚未保存钥匙。",
+  setKeyStatusUnreachable: "sidecar 未运行，钥匙状态未知。",
+  setKeyClear: "清除密钥",
   setBaseUrlDesc: "Chat Completions 兼容地址，不要带尾斜杠。",
   setModelName: "模型名",
   setModelDesc: "节点上的 model 字符串，例如 deepseek-v4-flash 或 gpt-4.1-mini。",

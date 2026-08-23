@@ -1,5 +1,5 @@
-import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
-import { usageTotal } from "./api";
+import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { makeApi, usageTotal } from "./api";
 import { coerceLangPref, t, type LangPref } from "./i18n";
 import type { SidecarSnap } from "./sidecar";
 
@@ -13,7 +13,6 @@ export interface PenSettings {
   sidecarAutoStart: boolean;
   /** 空 = 自动找 python3 / python / py。 */
   pythonPath: string;
-  apiKey: string;
   baseUrl: string;
   model: string;
   thinking: ThinkingLevel;
@@ -122,7 +121,6 @@ export const DEFAULT_SETTINGS: PenSettings = {
   sidecarUrl: "http://127.0.0.1:8765",
   sidecarAutoStart: true,
   pythonPath: "",
-  apiKey: "",
   baseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-flash",
   thinking: "off",
@@ -136,15 +134,16 @@ export function coerceThinking(raw: unknown): ThinkingLevel {
   return THINKING.includes(raw as ThinkingLevel) ? (raw as ThinkingLevel) : "off";
 }
 
+/** 随请求带的 LLM 覆盖项。**v0.18.0 起永远不含 api_key**：钥匙住在 sidecar 的
+ *  llm.json 里，请求里那把旧的"设置页钥匙"通道已拆——data.json 会跟着
+ *  Sync / iCloud / git 走，明文钥匙放在那儿等于随身携带。 */
 export function llmPayload(s: PenSettings): {
-  api_key?: string;
   base_url?: string;
   model?: string;
   thinking: ThinkingLevel;
 } {
   const base = s.baseUrl.trim().replace(/\/+$/, "");
   return {
-    ...(s.apiKey.trim() ? { api_key: s.apiKey.trim() } : {}),
     ...(base ? { base_url: base } : {}),
     ...(s.model.trim() ? { model: s.model.trim() } : {}),
     thinking: coerceThinking(s.thinking),
@@ -200,6 +199,20 @@ export class PenSettingTab extends PluginSettingTab {
     this.unwatch?.();
     this.unwatch = null;
     super.hide();
+  }
+
+  /** 钥匙状态的唯一事实在 sidecar（llm_public_status）；vault 里永远没有副本。 */
+  private async paintKeyStatus(el: HTMLElement): Promise<void> {
+    try {
+      const h = await makeApi(this.plugin.settings.sidecarUrl).health();
+      el.setText(
+        h.llm.ok
+          ? t().setKeyStatusSaved(h.llm.key_source, h.llm.key_tail || "")
+          : t().setKeyStatusNone,
+      );
+    } catch {
+      el.setText(t().setKeyStatusUnreachable);
+    }
   }
 
   /**
@@ -296,19 +309,50 @@ export class PenSettingTab extends PluginSettingTab {
           });
       });
 
+    // v0.18.0：钥匙只写不读。输入即 PUT 给 sidecar（落在它家目录的 llm.json，
+    // 0600），本地任何文件——包括这份 data.json——都不存。
+    const keyStatusEl = containerEl.createEl("p", { cls: "setting-item-description" });
+    void this.paintKeyStatus(keyStatusEl);
     new Setting(containerEl)
       .setName("API Key")
       .setDesc(s.setApiKeyDesc)
       .addText((c) => {
         c.inputEl.type = "password";
         c.inputEl.autocomplete = "off";
-        c.setPlaceholder("sk-…")
-          .setValue(this.plugin.settings.apiKey)
-          .onChange((v) => {
-            this.plugin.settings.apiKey = v.trim();
-            this.plugin.saveSettingsSoon();
-          });
-      });
+        c.setPlaceholder("sk-…").setValue("");
+        const submit = () => {
+          const v = c.getValue().trim();
+          if (!v) return; // 清空输入 ≠ 清钥匙；要清点旁边的按钮
+          void makeApi(this.plugin.settings.sidecarUrl)
+            .putLlmKey(v, this.plugin.settings.baseUrl)
+            .then(() => {
+              c.setValue("");
+              new Notice(t().noticeKeySaved);
+              void this.paintKeyStatus(keyStatusEl);
+            })
+            .catch((e: unknown) => {
+              // 失败就失败在这儿：绝不回退写 data.json
+              new Notice(
+                t().noticeKeySaveFailed(e instanceof Error ? e.message : String(e)),
+              );
+            });
+        };
+        c.inputEl.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") c.inputEl.blur();
+        });
+        c.inputEl.addEventListener("blur", submit);
+      })
+      .addButton((b) =>
+        b.setButtonText(s.setKeyClear).onClick(() => {
+          void makeApi(this.plugin.settings.sidecarUrl)
+            .deleteLlmKey()
+            .then(() => {
+              new Notice(t().noticeKeyCleared);
+              void this.paintKeyStatus(keyStatusEl);
+            })
+            .catch(() => new Notice(t().noticeSidecarDown));
+        }),
+      );
 
     new Setting(containerEl)
       .setName("Base URL")

@@ -53,6 +53,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "找不到模型配置。请到设置 → Socrates 填写 API Key。",
         "en": "No model configured. Add an API key under Settings → Socrates.",
     },
+    "llm.empty_key": {
+        "zh": "钥匙是空的。粘贴一份再保存。",
+        "en": "The key is empty. Paste one before saving.",
+    },
     "llm.missing_config_fold": {
         "zh": "找不到模型配置，无法生成折叠块。请到设置 → Socrates 填写 API Key。",
         "en": "No model configured, so the fold block can't be generated. Add an API key under Settings → Socrates.",
