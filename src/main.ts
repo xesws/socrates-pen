@@ -1,4 +1,4 @@
-import { Notice, Plugin, setTooltip, type Command, type WorkspaceLeaf } from "obsidian";
+import { Notice, Plugin, setTooltip, type Command, type Workspace, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
 import {
   coerceLimits,
@@ -82,6 +82,9 @@ export default class SocratesPenPlugin extends Plugin {
 
   onunload(): void {
     /* views unregistered by host */
+    // 默认保活（多库共用一只 sidecar，A 退场不该杀 B 在用的）。
+    // 关掉保活的读者明确选择了「退出就停」——只停我们自己拉起的那只。
+    if (this.settings.sidecarKeepAlive === false) this.sidecar.stopOwned();
     if (this.saveTimer !== null) {
       window.clearTimeout(this.saveTimer);
       this.saveTimer = null;
@@ -119,6 +122,22 @@ export default class SocratesPenPlugin extends Plugin {
     const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN);
     const leaf = existing[0] ?? this.app.workspace.getRightLeaf(false);
     if (!leaf) throw new Error(t().errNoRightLeaf);
+    // 右侧栏折叠时 setActiveLeaf 什么都不露，点丝带像没反应（评测报告 P1）。
+    // revealLeaf 1.7.2 才有——minAppVersion 1.5.0，能力探测，老版本掰 rightSplit。
+    try {
+      const ws = this.app.workspace as Workspace & {
+        revealLeaf?: (leaf: WorkspaceLeaf) => void;
+      };
+      if (typeof ws.revealLeaf === "function") ws.revealLeaf(leaf);
+      else {
+        const split = this.app.workspace as unknown as {
+          rightSplit?: { collapsed?: boolean };
+        };
+        if (split.rightSplit) split.rightSplit.collapsed = false;
+      }
+    } catch {
+      new Notice(t().noticeRightOpened);
+    }
     await leaf.setViewState({ type: VIEW_TYPE_PEN, active: true });
     // revealLeaf 从 1.7.2 才有，minAppVersion 是 1.5.0。
     this.app.workspace.setActiveLeaf(leaf, { focus: true });
@@ -176,6 +195,7 @@ export default class SocratesPenPlugin extends Plugin {
     this.settings.thinking = coerceThinking(this.settings.thinking);
     this.settings.lang = coerceLangPref(this.settings.lang);
     this.settings.sidecarAutoStart = this.settings.sidecarAutoStart !== false;
+    this.settings.sidecarKeepAlive = this.settings.sidecarKeepAlive !== false;
     this.settings.pythonPath =
       typeof this.settings.pythonPath === "string" ? this.settings.pythonPath.trim() : "";
     // 手改过、或者被 Sync 弄坏的 data.json 会带来字符串、null、NaN。

@@ -117,6 +117,8 @@ export class PenView extends ItemView {
   private usage: { ctx?: number; out?: number } | null = null;
   private err = "";
   private health = t().healthUnprobed;
+  /** 上一次 health 探测里 sidecar 是否已有可用钥匙。门禁 chip/Ask，防假流式。 */
+  private llmOk = false;
   private msgs: ChatMessage[] = [];
   private chips: Chip[] = [];
   private dyn: DynChip[] = [];
@@ -471,12 +473,14 @@ export class PenView extends ItemView {
   private syncChipDisabled(): void {
     const e = this.els;
     if (!e) return;
-    const blocked = this.busy || Boolean(this.pending);
+    // 没钥匙也全禁：让按钮灰着说「先配」，比点下去看一条空流式诚实。
+    const blocked = this.busy || Boolean(this.pending) || !this.llmOk;
     const btns = e.chips.querySelectorAll("button");
     for (let i = 0; i < btns.length; i++) {
       const b = btns[i] as HTMLButtonElement;
       b.disabled = blocked || b.dataset.off === "1";
     }
+    e.ask.disabled = !this.llmOk;
   }
 
   /** 内容没变就只翻 disabled，不重建按钮——否则流式期间每 48 字符重建一次芯片。 */
@@ -614,6 +618,20 @@ export class PenView extends ItemView {
         this.splashLevel = "none";
         for (const m of this.msgs) {
           if (g !== this.paintGen || !this.els) break;
+          if (m.role === "error") {
+            const turn = log.createDiv({ cls: "sp-turn is-error" });
+            turn.createDiv({ cls: "sp-kicker", text: t().kickerPen });
+            const body = turn.createDiv({ cls: "sp-body" });
+            body.setText(m.text);
+            if (!this.llmOk) {
+              const btn = turn.createEl("button", {
+                cls: "sp-err-btn",
+                text: t().bubbleGoSettings,
+              });
+              btn.onclick = () => this.openSettings();
+            }
+            continue;
+          }
           if (m.role === "tool") {
             const cap = toolCaption(m);
             const row = log.createDiv({
@@ -743,6 +761,7 @@ export class PenView extends ItemView {
     try {
       const h = await this.api().health();
       this.sidecarReachable = true;
+      this.llmOk = Boolean(h.llm.ok);
       const model = this.plugin.settings.model.trim() || h.llm.model;
       if (h.llm.ok) {
         // v0.18.0 起设置页的钥匙只住 sidecar（llm.json）；env 名字照实显示成开发回退
@@ -756,10 +775,41 @@ export class PenView extends ItemView {
       this.err = "";
     } catch (e) {
       this.sidecarReachable = false;
+      this.llmOk = false;
       this.health = t().healthDown;
       this.err = t().errUnreachable(e instanceof Error ? e.message : String(e));
     }
     this.paintBar();
+  }
+
+  /**
+   * 请求失败落一条错误气泡。一个字没流出来时，把刚压入的空 assistant 气泡
+   * 原地换掉——空的 Socrates 气泡挂着一个闪的光标，看起来像在流式输出，
+   * 实际上永远不会再有字来（评测报告 P0）。
+   */
+  private failBubble(message: string): void {
+    const last = this.msgs[this.msgs.length - 1];
+    if (last && last.role === "assistant" && !last.text) {
+      this.msgs = [...this.msgs.slice(0, -1), { role: "error", text: message }];
+    } else {
+      this.msgs = [...this.msgs, { role: "error", text: message }];
+    }
+  }
+
+  /** 错误气泡上的「去设置」。openTabById 老版本没有，兜底只开设置窗。 */
+  private openSettings(): void {
+    const setting = (
+      this.app as unknown as {
+        setting?: { open(): void; openTabById(id: string): void };
+      }
+    ).setting;
+    if (!setting) return;
+    try {
+      setting.open();
+      setting.openTabById(this.plugin.manifest.id);
+    } catch {
+      setting.open();
+    }
   }
 
   private bindKeepFocus(el: HTMLElement, fn: () => void): void {
@@ -796,6 +846,14 @@ export class PenView extends ItemView {
       const hid = handbookIdFromPath(got.absPath);
       await this.api().importHandbook(got.absPath, hid, vaultRoot(this.app));
       const bind = this.plugin.noteBind(got.file.path);
+      // 换了笔记必然换会话（会话按笔记绑定，写回正确性的地基，不能含糊）。
+      // 但以前一声不吭就把面板清空，读者以为前一轮丢了（评测报告 P0）——
+      // 说清楚：原对话仍绑在原笔记上，再划它就回来。放分支之外：目标笔记
+      // 有没有自己的旧绑定都该说；同一笔记重划（同一场会话）不打扰。
+      const switchingNotes =
+        this.handbookId !== null &&
+        this.handbookId !== hid &&
+        this.msgs.some((m) => m.role === "user");
       let sess: SessionView;
       let renewed = false;
       if (bind?.session_id && bind.handbook_id === hid) {
@@ -833,6 +891,8 @@ export class PenView extends ItemView {
       });
       // 换会话是不可逆的（旧 sid 已经从笔记上解绑），必须告诉读者。
       // 走 Notice 不走 this.err：这不是错误，是「换好了，接着问就行」。
+      // renewed 那条自己会报（同笔记换新场），换笔记只报这一条，不叠两条。
+      if (!renewed && switchingNotes) new Notice(t().noticeSessionSwitched(got.file.name));
       if (renewed) new Notice(t().noticeSessionRenewed);
       await this.refreshSnapshots();
     } catch (e) {
@@ -953,6 +1013,13 @@ export class PenView extends ItemView {
       new Notice(t().noticeUseSelectionFirst);
       return;
     }
+    // 没钥匙就直说，不压空气泡装流式（评测报告 P0：读者会空等一条永远不来的回复）。
+    if (!this.llmOk) {
+      this.msgs = [...this.msgs, { role: "error", text: t().errNoKey }];
+      this.paintBar();
+      await this.paintLog("force");
+      return;
+    }
     // 正要问的这条深题，当场从列表里摘掉。**不能等服务端回话**：
     // 收尾时 keepDeep 只认 kind==="deep"，会把刚点过的那条原样留下，
     // 于是它一直挂在那儿，读者对着一个自己刚问过的问题看——跟复读机没区别。
@@ -1036,6 +1103,9 @@ export class PenView extends ItemView {
           } else if (ev.type === "error") {
             this.status = "";
             this.err = String(ev.message);
+            this.failBubble(String(ev.message));
+            void this.paintLog();
+            this.paintBar();
           }
         },
         this.plugin.settings,
@@ -1044,7 +1114,11 @@ export class PenView extends ItemView {
       // 会话过了保留期被清理掉了。**只重来一次**（revived 那个参数），
       // 不然新会话再撞 404 就成了无限套娃。
       if (isGone(e) && !revived) gone = true;
-      else this.err = e instanceof Error ? e.message : String(e);
+      else {
+        const msg = e instanceof Error ? e.message : String(e);
+        this.err = msg;
+        this.failBubble(msg);
+      }
     } finally {
       // `gone` 为真时**不**放下 busy：下面还有 reviveSession 的一次往返 +
       // 一次重发。放下的话读者在这个窗口里再按一次回车，第二个 send() 用的

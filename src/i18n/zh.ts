@@ -106,6 +106,10 @@ export const zh = {
   healthNoKey: "sidecar 在，请到设置 → Socrates 填写 API Key",
   healthDown: "连不上 sidecar",
 
+  // ── 错误气泡（v0.18.0：请求失败不再伪装成流式） ──
+  errNoKey: "还没配模型钥匙。到设置 → Socrates 填 API Key 后再问。",
+  bubbleGoSettings: "去设置",
+
   // ── 错误 ──
   errUnreachable: (detail: string): string =>
     `连不上 sidecar（CORS / 没启动 / 端口不对）：${detail}`,
@@ -241,6 +245,9 @@ export const zh = {
   noticeKeyCleared: "钥匙已从本机 sidecar 清除。",
   noticeKeyMigrated:
     "API Key 已从 data.json 迁到本机 ~/.socrates-pen/llm.json，不再随 Sync / iCloud / git 走。若这个库曾被同步或提交过，建议去服务商轮换这把钥匙。",
+  noticeSessionSwitched: (note: string): string =>
+    `已切换到《${note}》的会话。原笔记的对话仍在原笔记上——再划它就能回来。`,
+  noticeRightOpened: "Socrates 面板已在右侧栏打开。",
 
   // ── 芯片。键对齐后端 pen/session.py 的 FIXED_CHIPS[].id ──
   chips: {
@@ -287,6 +294,9 @@ export const zh = {
   setKeyStatusNone: "尚未保存钥匙。",
   setKeyStatusUnreachable: "sidecar 未运行，钥匙状态未知。",
   setKeyClear: "清除密钥",
+  setKeepAliveName: "退出后保持本机服务运行",
+  setKeepAliveDesc:
+    "本机服务是你机器上的一个 Python 进程，多个库共用同一只。默认开启：退出 Obsidian 后它继续在，下次秒开。关掉则退出时停掉由本插件拉起的那只——别的库正在用时请别关。",
   setBaseUrlDesc: "Chat Completions 兼容地址，不要带尾斜杠。",
   setModelName: "模型名",
   setModelDesc: "节点上的 model 字符串，例如 deepseek-v4-flash 或 gpt-4.1-mini。",
@@ -315,7 +325,7 @@ export const zh = {
   setAdvancedNote:
     "下面这些默认值是实测调出来的。改之前先想清楚要省的是什么——" +
     "多数时候该动的是上面那三个 token 上限，不是这里。",
-  setDefaultHint: (v: number): string => `默认 ${v}。`,
+  setDefaultHint: (v: number): string => ` 默认 ${v}。`,
   limitName: (k: string): string => LIMIT_TEXT_ZH[k]?.[0] ?? k,
   limitDesc: (k: string): string => LIMIT_TEXT_ZH[k]?.[1] ?? "",
 

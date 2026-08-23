@@ -933,8 +933,11 @@ dependencies from GitHub and PyPI into `~/.socrates-pen`, and the first restart 
 upgrade fetches them once more; the model call itself leaves from that local process to the
 endpoint you configured; and when the model calls `fetch` it issues a GET to that URL (public
 http/https only — loopback and private addresses are refused). Three, disabling the plugin does
-not stop the sidecar —
-that Python process keeps running, so re-enabling is instant. But the "stop" button on the settings
+not stop the sidecar by default —
+that Python process keeps running, so re-enabling is instant, and multiple vaults share it. If you'd
+rather it not linger, "Keep local service running after exit" in settings turns that off: quitting
+Obsidian then stops the one this plugin spawned itself (one spawned by someone else is never touched).
+The "stop" button on the settings
 page only governs the process this enable session started itself; if the process was left over from
 a previous one, the button will not touch it and you have to kill whatever holds the port.
 

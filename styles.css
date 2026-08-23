@@ -162,6 +162,41 @@
   max-width: 92%;
 }
 
+/* 请求失败落的是错误气泡，不是空流式（v0.18.0 评测报告 P0）：
+   红边 + 错误色 + 一颗「去设置」。它是终态，永远不该再闪光标。 */
+.socrates-pen .sp-turn.is-error {
+  align-self: stretch;
+}
+
+.socrates-pen .sp-turn.is-error .sp-kicker {
+  color: var(--text-error);
+}
+
+.socrates-pen .sp-turn.is-error .sp-body {
+  background: var(--background-secondary);
+  border-left: 3px solid var(--text-error);
+  padding: 6px 10px;
+  border-radius: 2px 6px 6px 6px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-error);
+  overflow-wrap: anywhere;
+}
+
+.socrates-pen .sp-err-btn {
+  margin: 4px 0 0 10px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  color: var(--text-on-accent);
+  background: var(--interactive-accent);
+  cursor: pointer;
+}
+
+.socrates-pen .sp-err-btn:hover {
+  background: var(--interactive-accent-hover);
+}
+
 .socrates-pen .sp-turn.is-user .sp-kicker {
   text-align: right;
 }
@@ -421,11 +456,13 @@
 }
 
 /* 芯片：换行排列，但有界。窄栏下自己滚，宽栏下根本碰不到上限。
+   按自然宽排（0 1 auto）：五个英文长标签两行内放下，写回芯片首屏可见
+   （v0.18.0 评测报告 P1——撑满宽度时 5 枚占 3 行，核心入口被折进滚动）。
    overscroll-behavior 不能省——否则在芯片区滑到底会带着对话区一起跳。 */
 .socrates-pen .sp-chips {
   flex: 0 10 auto;
   min-height: 0;
-  max-height: 6.4em;
+  max-height: 8em;
   overflow-y: auto;
   overscroll-behavior: contain;
   display: flex;
@@ -438,18 +475,18 @@
 /* 追问变多了（v0.8.0 起两条实时 + 后续的深挖），宽侧栏别把它们压进滚动条 */
 @container (min-width: 420px) {
   .socrates-pen .sp-chips {
-    max-height: 9em;
+    max-height: 10em;
   }
 }
 
 @container (min-width: 640px) {
   .socrates-pen .sp-chips {
-    max-height: 12em;
+    max-height: 13em;
   }
 }
 
 .socrates-pen .sp-chips button {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
   height: auto;

@@ -82,6 +82,10 @@ export const en: Dict = {
   healthNoKey: "sidecar is up — add your API key under Settings → Socrates",
   healthDown: "can't reach sidecar",
 
+  // ── Error bubbles (v0.18.0: a failed request no longer fakes streaming) ──
+  errNoKey: "No model key yet. Add your API key under Settings → Socrates, then ask again.",
+  bubbleGoSettings: "Open settings",
+
   errUnreachable: (detail) =>
     `Can't reach the sidecar (CORS / not running / wrong port): ${detail}`,
   errNoSelection:
@@ -183,6 +187,9 @@ export const en: Dict = {
   noticeKeyCleared: "Key removed from the local sidecar.",
   noticeKeyMigrated:
     "Your API key moved from data.json to ~/.socrates-pen/llm.json on this machine — Sync / iCloud / git no longer carry it. If this vault was ever synced or committed, rotate that key at your provider.",
+  noticeSessionSwitched: (note) =>
+    `Switched to the conversation for “${note}”. The previous note's conversation stays with that note — select in it again to come back.`,
+  noticeRightOpened: "The Socrates panel is open in the right sidebar.",
 
   chips: {
     socratic: { label: "Don't tell me yet — ask me something", hint: "" },
@@ -233,6 +240,9 @@ export const en: Dict = {
   setKeyStatusNone: "No key saved yet.",
   setKeyStatusUnreachable: "Sidecar not running — key status unknown.",
   setKeyClear: "Clear key",
+  setKeepAliveName: "Keep local service running after exit",
+  setKeepAliveDesc:
+    "The local service is a Python process on your machine, shared by all vaults. On by default: it survives quitting Obsidian, so reopening is instant. Turn off to stop the one this plugin spawned when it unloads — don't if another vault is using it.",
   setBaseUrlDesc: "A Chat Completions-compatible address. No trailing slash.",
   setModelName: "Model",
   setModelDesc:
@@ -259,7 +269,7 @@ export const en: Dict = {
   setAdvancedNote:
     "These defaults were tuned against real runs. Before changing one, be clear about what you're saving — " +
     "most of the time the knob you want is one of the three token caps above, not these.",
-  setDefaultHint: (v) => `Default ${v}.`,
+  setDefaultHint: (v) => ` Default ${v}.`,
   limitName: (k) => LIMIT_TEXT_EN[k]?.[0] ?? k,
   limitDesc: (k) => LIMIT_TEXT_EN[k]?.[1] ?? "",
 

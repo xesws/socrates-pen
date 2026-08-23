@@ -60,7 +60,8 @@ export type SessionView = {
 };
 
 export type ChatMessage = {
-  role: "user" | "assistant" | "tool";
+  /** "error" 只在前端：请求失败时的错误气泡，从不上行。 */
+  role: "user" | "assistant" | "tool" | "error";
   text: string;
   ok?: boolean;
   /**

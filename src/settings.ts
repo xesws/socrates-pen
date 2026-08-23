@@ -11,6 +11,8 @@ export interface PenSettings {
   sidecarUrl: string;
   /** Obsidian 打开时由插件拉起本机服务。 */
   sidecarAutoStart: boolean;
+  /** 退出 Obsidian 时是否让本插件拉起的服务继续跑（多库共用，默认跑）。 */
+  sidecarKeepAlive: boolean;
   /** 空 = 自动找 python3 / python / py。 */
   pythonPath: string;
   baseUrl: string;
@@ -120,6 +122,7 @@ export const DEFAULT_SETTINGS: PenSettings = {
   lang: "auto",
   sidecarUrl: "http://127.0.0.1:8765",
   sidecarAutoStart: true,
+  sidecarKeepAlive: true,
   pythonPath: "",
   baseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-flash",
@@ -287,6 +290,16 @@ export class PenSettingTab extends PluginSettingTab {
       .addToggle((c) =>
         c.setValue(this.plugin.settings.sidecarAutoStart !== false).onChange((v) => {
           this.plugin.settings.sidecarAutoStart = v;
+          this.plugin.saveSettingsSoon();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName(s.setKeepAliveName)
+      .setDesc(s.setKeepAliveDesc)
+      .addToggle((c) =>
+        c.setValue(this.plugin.settings.sidecarKeepAlive !== false).onChange((v) => {
+          this.plugin.settings.sidecarKeepAlive = v;
           this.plugin.saveSettingsSoon();
         }),
       );
