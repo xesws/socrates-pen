@@ -13,7 +13,7 @@ import { readLivePick, type EditorPick } from "./selection";
 import type { NoteBinding, LlmStatus } from "./types";
 import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
-import { SidecarManager } from "./sidecar";
+import { SidecarManager, type EnsureKind, type StopResult } from "./sidecar";
 
 // 旧版插件把 PenSettings 键直接写在 data.json 顶层，故顶层也要容忍这些键。
 // v0.17.x 及更早的 apiKey 也容忍——读到只装进内存等迁移（见 migrateKeyOut）。
@@ -30,6 +30,8 @@ export default class SocratesPenPlugin extends Plugin {
   notes: Record<string, NoteBinding> = {};
   /** 老 data.json 带出来的明文钥匙，等 sidecar 起来就迁走。只活在内存里。 */
   migrateKey = "";
+  /** 设置页 PUT 失败后的内存暂存，升完自动写入。绝不进 data.json。 */
+  pendingPutKey = "";
   private migrating = false;
   /** saveSettings 串行链：迁移收尾和 bindNote 会几乎同时各存一次，
    *  让后快照的写入总是最后落盘——不然迁移成功后，一张在途的带钥匙
@@ -234,7 +236,7 @@ export default class SocratesPenPlugin extends Plugin {
     return this.sidecar.watch(fn);
   }
 
-  ensureSidecar(): Promise<void> {
+  ensureSidecar(): Promise<EnsureKind> {
     const p = this.sidecar.ensure({
       sidecarUrl: this.settings.sidecarUrl,
       pythonPath: this.settings.pythonPath,
@@ -243,9 +245,14 @@ export default class SocratesPenPlugin extends Plugin {
     });
     // 上一次迁移 45 秒到点放弃后，读者在设置页点「启动」把 sidecar 换成
     // 新版——这一刻该接着迁，而不是等他重启 Obsidian（二轮复审 P2）。
-    if (this.migrateKey) {
-      void p.then(() => void this.migrateKeyOut()).catch(() => {});
-    }
+    void p
+      .then((kind) => {
+        if (kind === "already" || kind === "started") {
+          if (this.pendingPutKey) void this.flushPendingKey();
+          else if (this.migrateKey) void this.migrateKeyOut();
+        }
+      })
+      .catch(() => {});
     return p;
   }
 
@@ -254,9 +261,8 @@ export default class SocratesPenPlugin extends Plugin {
    * PUT 重试 45 秒（sidecar 可能还在装/起）。每轮**重读** this.migrateKey：
    * 读者若在这个窗口里自己去设置页贴了新钥匙（noticeSidecarTooOld 指的路
    * 正是这个），旧钥匙的 PUT 不许再落进 llm.json 把它盖掉——发现已被清空
-   * 或换过就整场退出。404/405（旧版 sidecar）时指路「停旧进程再启动」；
-   * 到点放弃时也说一声，下次启动/下次 Start 再迁。绝不自动杀非本插件
-   * 拉起的进程（README 既定政策）。 */
+   * 或换过就整场退出。404/405 或 stale：指路停再启动，不再对着旧服务锤 45 秒。
+   * 自动路径绝不杀非本插件拉起的进程；设置页「停止」才按端口停。 */
   private async migrateKeyOut(): Promise<void> {
     if (this.migrating) return;
     this.migrating = true;
@@ -266,14 +272,18 @@ export default class SocratesPenPlugin extends Plugin {
       for (;;) {
         const key = this.migrateKey;
         if (!key) return; // 设置页已存/清过，那份事实比我们手里的旧钥匙新
+        if (this.sidecar.snapshot().phase === "stale") {
+          if (!warnedOld) new Notice(t().noticeSidecarTooOld);
+          return;
+        }
         let llm: LlmStatus | null;
         try {
           llm = await this.sidecarPutKey(key, this.settings.baseUrl, key);
         } catch (e) {
           const status = e instanceof ApiError ? e.status : 0;
-          if ((status === 404 || status === 405) && !warnedOld) {
-            warnedOld = true;
+          if (status === 404 || status === 405) {
             new Notice(t().noticeSidecarTooOld);
+            return;
           }
           if (Date.now() - t0 > 45000) {
             new Notice(t().noticeKeyMigrateTimeout);
@@ -295,8 +305,26 @@ export default class SocratesPenPlugin extends Plugin {
     }
   }
 
-  stopOwnedSidecar(): void {
-    this.sidecar.stopOwned();
+  stopSidecar(): Promise<StopResult> {
+    return this.sidecar.stopListen(this.settings.sidecarUrl);
+  }
+
+  /** 设置页 PUT 失败后的内存暂存，版本对齐后再写一次。不落 data.json。 */
+  private async flushPendingKey(): Promise<void> {
+    const key = this.pendingPutKey;
+    if (!key) return;
+    if (this.sidecar.snapshot().phase !== "running") return;
+    try {
+      const llm = await this.sidecarPutKey(key, this.settings.baseUrl);
+      if (!llm || this.pendingPutKey !== key) return;
+      this.pendingPutKey = "";
+      this.migrateKey = "";
+      await this.saveSettings();
+      new Notice(t().noticeKeySaved);
+      this.refreshPenViews();
+    } catch {
+      /* 下次 Start 再试；设置页输入还在 */
+    }
   }
 
   /** 钥匙 PUT 的唯一通道：串行 + 迁移方落地前重读。

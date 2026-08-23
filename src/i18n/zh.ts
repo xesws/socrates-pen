@@ -105,6 +105,7 @@ export const zh = {
     `sidecar 正常 · 开发回退 ${source} · ${model}`,
   healthNoKey: "sidecar 在，请到设置 → Socrates 填写 API Key",
   healthDown: "连不上 sidecar",
+  healthStale: "旧服务占着端口，先到设置里停止再启动升级",
 
   // ── 错误气泡（v0.18.0：请求失败不再伪装成流式） ──
   errNoKey: "还没配模型钥匙。到设置 → Socrates 填 API Key 后再问。",
@@ -246,12 +247,31 @@ export const zh = {
     "本机服务还没起来。打开设置 → Socrates，看最上面那一块的状态。",
   noticeKeySaved: "钥匙已存入本机 sidecar（~/.socrates-pen/llm.json），不进这个库。",
   noticeKeySaveFailed: (detail: string): string =>
-    `没存进去（${detail}）。钥匙未落任何文件；sidecar 起来后再试一次。`,
+    `没存进去（${detail}）。钥匙未落任何文件。`,
+  noticeKeySaveOldSidecar:
+    "没存进去：占着端口的是旧服务，收不了新钥匙。先点停止再点启动升级。钥匙还在输入框里，未落任何文件。",
   noticeKeyCleared: "钥匙已从本机 sidecar 清除。",
   noticeKeyMigrated:
     "API Key 已从 data.json 迁到本机 ~/.socrates-pen/llm.json，不再随 Sync / iCloud / git 走。若这个库曾被同步或提交过，建议去服务商轮换这把钥匙。",
   noticeSidecarTooOld:
-    "本机服务还是旧版，收不了新钥匙。到设置 → Socrates 停止它（或杀掉占着端口的 Python 进程），再点启动完成升级——钥匙随后自动迁入，迁好之前仍留在 data.json 里。",
+    "本机服务还是旧版，收不了新钥匙。到设置 → Socrates 点停止再点启动升级——钥匙随后自动迁入，迁好之前仍留在 data.json 里。",
+  noticeSidecarAlready: "本机服务已经在跑。",
+  noticeSidecarStale: "旧服务占着端口，先点停止再点启动升级。",
+  noticeSidecarAlreadyStopped: "本机服务本来就没在跑。",
+  noticeSidecarStoppedOwned: "已停止本机服务。",
+  noticeSidecarStoppedLeftover: (command: string): string =>
+    command && command !== "?"
+      ? `已停止占用端口的旧服务（${command}）。`
+      : "已停止占用端口的旧服务。",
+  noticeSidecarStoppedShared: (command: string): string =>
+    command && command !== "?"
+      ? `已停止占用端口的本机服务（${command}，别的库或上次留下的）。`
+      : "已停止占用端口的本机服务（别的库或上次留下的）。",
+  noticeSidecarStoppedOther: (command: string): string =>
+    command && command !== "?"
+      ? `已停止占用端口的其他进程（${command}）。`
+      : "已停止占用端口的其他进程。",
+  noticeSidecarStopFailed: "没停掉。看上面那一行状态。",
   noticeKeyMigrateTimeout:
     "45 秒内没把 API Key 迁进本机服务（它可能还在安装）。钥匙仍留在 data.json 里，本机服务就绪后会自动再迁一次；急着用就到设置里手动贴一次。",
   noticeKeyHostMismatch: (keyHost: string, urlHost: string): string =>
@@ -278,6 +298,7 @@ export const zh = {
     "插件会在你家目录的 ~/.socrates-pen 里建一个隔离的 Python 环境，装上脑子，并在本机 127.0.0.1 拉起。需要系统已安装 Python 3.11+。第一次可能要一两分钟（要下载依赖）。",
   setSidecarStart: "启动",
   setSidecarStop: "停止",
+  setSidecarStopping: "正在停止…",
   setSidecarAutoName: "打开 Obsidian 时自动启动",
   setSidecarAutoDesc: "默认开。关掉就只在你点启动时才拉起。",
   setSidecarPythonName: "Python 路径",
@@ -287,19 +308,28 @@ export const zh = {
   setSidecarPhaseInstalling: "在安装本机服务（第一次会久一点）…",
   setSidecarPhaseStarting: "在启动…",
   setSidecarPhaseRunning: "运行中",
+  setSidecarPhaseStopping: "正在停止…",
+  setSidecarPhaseStopped: "已停止",
+  setSidecarPhaseStale: (ver: string): string =>
+    ver
+      ? `旧服务占着端口（${ver}），先停止再启动升级`
+      : "旧服务占着端口，先停止再启动升级",
   setSidecarErrNoPython: "没找到 Python 3.11+。请先安装，必要时在下面填解释器路径。",
   setSidecarErrNotLoopback: "插件只能在 127.0.0.1 / localhost 上拉起服务。Sidecar URL 改回 loopback。",
   setSidecarErrBadUrl: "Sidecar URL 不是合法地址。",
   setSidecarErrInstall: "安装失败。需要能访问 GitHub 和 PyPI。",
   setSidecarErrSpawn: "进程没能拉起来。",
   setSidecarErrHealth: "进程起来了，但健康检查一直没过。",
+  setSidecarErrStop: "停止失败。",
+  setSidecarErrStopNoPid: "停止失败：找不到占用端口的进程。",
   setSidecarErrOther: (code: string): string => `启动失败（${code}）`,
   setIntro1:
     "钥匙和节点填在下面。本机服务由插件自己拉起，不用开终端。当前库的路径会在框选时自动带给服务。",
   setIntro2:
     "API Key 只存本机 sidecar 家目录（~/.socrates-pen/llm.json，权限 0600），不写进这个库——Sync / iCloud / git 带不走它。",
   setApiKeyDesc:
-    "只写：粘贴后回车或失焦即存入本机 sidecar，不落 vault。留空忽略；要清除用右侧按钮。",
+    "只写：粘贴后点保存（回车或失焦也可），存入本机 sidecar，不落 vault。服务没就绪或还是旧版时保存是灰的。留空忽略；要清除用右侧按钮。",
+  setKeySave: "保存",
   setKeyStatusSaved: (source: string, tail: string): string =>
     `已保存${source ? `（来源 ${source}）` : ""}${tail ? `，尾号 …${tail}` : ""}。`,
   setKeyStatusNone: "尚未保存钥匙。",

@@ -5,6 +5,7 @@ import { limitsPayload, llmPayload } from "./settings";
 import type {
   DeepInbox,
   HandbookMeta,
+  Health,
   LlmStatus,
   SessionView,
   SnapshotStatus,
@@ -75,7 +76,10 @@ export async function purgeExpired(baseUrl: string): Promise<void> {
 
 export function makeApi(baseUrl: string) {
   return {
-    health: () => j<{ status: string; llm: LlmStatus }>(baseUrl, "/v1/health"),
+    health: (init?: RequestInit) => j<Health>(baseUrl, "/v1/health", init),
+    /** 新 sidecar 的优雅退出。旧版 404/405，调用方改杀占用端口的进程。 */
+    shutdown: (init?: RequestInit) =>
+      j<{ status: string }>(baseUrl, "/v1/shutdown", { method: "POST", ...init }),
     /** v0.18.0：钥匙的只写入口。落 sidecar 家目录（0600），vault 拿不到全文。 */
     putLlmKey: (api_key: string, base_url?: string) =>
       j<LlmStatus>(baseUrl, "/v1/llm/key", {

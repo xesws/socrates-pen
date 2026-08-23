@@ -23,6 +23,7 @@ import type {
 } from "../types";
 import { chipHint, chipLabel, phaseText, t } from "../i18n";
 import { dropAsked, keepDeep, mergeDeep, pollDeep } from "../deeppoll";
+import { sidecarUsable } from "../sidecar";
 import { measureMonoAdvance, renderSplash, type SplashLevel } from "./splash";
 import { AVATAR } from "../logo";
 
@@ -205,10 +206,22 @@ export class PenView extends ItemView {
     // 启动窗口期（sidecar 还在 ensure 装起）首探必红，以前之后无人再探，
     // 读者得手动点一次「用当前选区」才变绿（0.18.0 复测）。ensure() ping 通
     // 的那一刻 watch 必触发——正好盖住这个窗口。
-    this.unwatchSidecar = this.plugin.sidecarWatch(() => {
+    const onSidecarSnap = (): void => {
       const snap = this.plugin.sidecarSnap();
       if (snap.phase === "running" && !this.sidecarReachable) void this.probeHealth();
-    });
+      // checking/installing/starting/stopping 不是挂了：Start 已在跑会先 set checking。
+      if (
+        (snap.phase === "idle" || snap.phase === "error" || snap.phase === "stale") &&
+        (this.sidecarReachable || snap.phase === "stale")
+      ) {
+        this.sidecarReachable = false;
+        this.llmOk = false;
+        this.health = snap.phase === "stale" ? t().healthStale : t().healthDown;
+        this.paintBar();
+      }
+    };
+    this.unwatchSidecar = this.plugin.sidecarWatch(onSidecarSnap);
+    onSidecarSnap();
     // 开面板时同步当前文件（复审 P1）：file-open 在面板开着之前就发过了，
     // 不同步的话 ribbon 打开永远是开屏而不是当前笔记的线程。
     this.followActiveFile();
@@ -816,6 +829,14 @@ export class PenView extends ItemView {
   async probeHealth(): Promise<void> {
     try {
       const h = await this.api().health();
+      if (!sidecarUsable(h.version, this.plugin.manifest.version)) {
+        this.sidecarReachable = false;
+        this.llmOk = false;
+        this.health = t().healthStale;
+        this.err = "";
+        this.paintBar();
+        return;
+      }
       this.sidecarReachable = true;
       this.llmOk = Boolean(h.llm.ok);
       const model = this.plugin.settings.model.trim() || h.llm.model;

@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import signal
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -346,9 +348,21 @@ def _proposal_del(pid: str) -> None:
     proposalsmod.delete(pid)
 
 
+def request_exit() -> None:
+    """SIGTERM 本进程，让 uvicorn 收尾。pytest 必须 patch 掉，否则 TestClient 会把自己杀掉。"""
+    os.kill(os.getpid(), signal.SIGTERM)
+
+
 @app.get("/v1/health")
 def health() -> dict[str, Any]:
-    return {"status": "ok", "llm": llm_public_status()}
+    return {"status": "ok", "version": __version__, "llm": llm_public_status()}
+
+
+@app.post("/v1/shutdown")
+def shutdown(bg: BackgroundTasks) -> dict[str, str]:
+    """设置页「停止」的优雅出口。旧 sidecar 没有这条 → 插件改杀占用端口的进程。"""
+    bg.add_task(request_exit)
+    return {"status": "stopping"}
 
 
 @app.put("/v1/llm/key")

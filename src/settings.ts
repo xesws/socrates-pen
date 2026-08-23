@@ -1,8 +1,9 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { ApiError } from "./apierror";
 import { makeApi, usageTotal } from "./api";
 import type { LlmStatus } from "./types";
 import { coerceLangPref, t, type LangPref } from "./i18n";
-import type { SidecarSnap } from "./sidecar";
+import type { EnsureKind, SidecarSnap, StopResult } from "./sidecar";
 
 export type ThinkingLevel = "off" | "low" | "medium" | "high";
 
@@ -156,10 +157,14 @@ export function llmPayload(s: PenSettings): {
 
 function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   const s = t();
-  if (snap.phase === "idle") return s.setSidecarPhaseIdle;
+  if (snap.phase === "idle") {
+    return snap.detail === "stopped" ? s.setSidecarPhaseStopped : s.setSidecarPhaseIdle;
+  }
   if (snap.phase === "checking") return s.setSidecarPhaseChecking;
   if (snap.phase === "installing") return s.setSidecarPhaseInstalling;
   if (snap.phase === "starting") return s.setSidecarPhaseStarting;
+  if (snap.phase === "stopping") return s.setSidecarPhaseStopping;
+  if (snap.phase === "stale") return s.setSidecarPhaseStale(snap.detail);
   if (snap.phase === "running") return s.setSidecarPhaseRunning;
   if (snap.detail === "no-python") return s.setSidecarErrNoPython;
   if (snap.detail === "not-loopback") return s.setSidecarErrNotLoopback;
@@ -173,8 +178,28 @@ function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   if (snap.detail === "no-health") {
     return errTail ? `${s.setSidecarErrHealth}\n${errTail}` : s.setSidecarErrHealth;
   }
+  if (snap.detail === "stop-failed") {
+    return errTail ? `${s.setSidecarErrStop}\n${errTail}` : s.setSidecarErrStop;
+  }
+  if (snap.detail === "stop-no-pid") return s.setSidecarErrStopNoPid;
   const base = s.setSidecarErrOther(snap.detail || "error");
   return errTail ? `${base}\n${errTail}` : base;
+}
+
+function stopNotice(r: StopResult): string {
+  const s = t();
+  if (r.kind === "idle") return s.noticeSidecarAlreadyStopped;
+  if (r.kind === "failed") return s.noticeSidecarStopFailed;
+  if (r.who === "other") return s.noticeSidecarStoppedOther(r.command);
+  if (r.who === "leftover") return s.noticeSidecarStoppedLeftover(r.command);
+  if (r.who === "shared") return s.noticeSidecarStoppedShared(r.command);
+  return s.noticeSidecarStoppedOwned;
+}
+
+function ensureNotice(kind: EnsureKind): string | null {
+  if (kind === "already") return t().noticeSidecarAlready;
+  if (kind === "stale") return t().noticeSidecarStale;
+  return null;
 }
 
 /** 落盘形状。迁移没成功之前（migrateKey 非空），盘上那把明文钥匙必须原样
@@ -196,14 +221,16 @@ type PenHost = {
   migrateKey: string;
   /** 钥匙 PUT 的单通道（与迁移循环串行，防在途互盖）。 */
   sidecarPutKey: (key: string, baseUrl: string) => Promise<LlmStatus | null>;
+  /** 设置页 PUT 失败后的内存暂存，升完自动写入。绝不进 data.json。 */
+  pendingPutKey: string;
   saveSettings: () => Promise<void>;
   saveSettingsSoon: () => void;
   applyLanguage: () => void;
   sidecarSnap: () => SidecarSnap;
   sidecarError: () => string;
   sidecarWatch: (fn: () => void) => () => void;
-  ensureSidecar: () => Promise<void>;
-  stopOwnedSidecar: () => void;
+  ensureSidecar: () => Promise<EnsureKind>;
+  stopSidecar: () => Promise<StopResult>;
   refreshPenViews: () => void;
 };
 
@@ -300,8 +327,26 @@ export class PenSettingTab extends PluginSettingTab {
     new Setting(containerEl).setName(s.setSidecarSvc).setHeading();
     containerEl.createEl("p", { cls: "setting-item-description", text: s.setSidecarSvcDesc });
     const statusEl = containerEl.createEl("p", { cls: "setting-item-description" });
+    const btns: {
+      start?: { setDisabled: (v: boolean) => unknown };
+      stop?: { setDisabled: (v: boolean) => unknown; setButtonText: (s: string) => unknown };
+      save?: { setDisabled: (v: boolean) => unknown };
+      clear?: { setDisabled: (v: boolean) => unknown };
+    } = {};
     const paintStatus = () => {
-      statusEl.setText(sidecarStatusText(this.plugin.sidecarSnap(), this.plugin.sidecarError()));
+      const snap = this.plugin.sidecarSnap();
+      statusEl.setText(sidecarStatusText(snap, this.plugin.sidecarError()));
+      const busy =
+        snap.phase === "checking" ||
+        snap.phase === "installing" ||
+        snap.phase === "starting" ||
+        snap.phase === "stopping";
+      btns.start?.setDisabled(busy);
+      btns.stop?.setButtonText(snap.phase === "stopping" ? s.setSidecarStopping : s.setSidecarStop);
+      btns.stop?.setDisabled(snap.phase === "stopping");
+      const canSave = snap.phase === "running";
+      btns.save?.setDisabled(!canSave);
+      btns.clear?.setDisabled(!canSave);
     };
     paintStatus();
     this.unwatch?.();
@@ -309,16 +354,22 @@ export class PenSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName(s.setSidecarSvc)
-      .addButton((b) =>
+      .addButton((b) => {
+        btns.start = b;
         b.setButtonText(s.setSidecarStart).onClick(() => {
-          void this.plugin.ensureSidecar();
-        }),
-      )
-      .addButton((b) =>
+          void this.plugin.ensureSidecar().then((kind) => {
+            const msg = ensureNotice(kind);
+            if (msg) new Notice(msg);
+          });
+        });
+      })
+      .addButton((b) => {
+        btns.stop = b;
         b.setButtonText(s.setSidecarStop).onClick(() => {
-          this.plugin.stopOwnedSidecar();
-        }),
-      );
+          void this.plugin.stopSidecar().then((r) => new Notice(stopNotice(r)));
+        });
+      });
+    paintStatus();
 
     new Setting(containerEl)
       .setName(s.setSidecarAutoName)
@@ -363,6 +414,8 @@ export class PenSettingTab extends PluginSettingTab {
     const keyStatusEl = containerEl.createEl("p", { cls: "setting-item-description" });
     void this.paintKeyStatus(keyStatusEl);
     let clearBtnEl: HTMLElement | null = null;
+    let saveBtnEl: HTMLElement | null = null;
+    let submitKey = (): void => {};
     new Setting(containerEl)
       .setName("API Key")
       .setDesc(s.setApiKeyDesc)
@@ -370,9 +423,15 @@ export class PenSettingTab extends PluginSettingTab {
         c.inputEl.type = "password";
         c.inputEl.autocomplete = "off";
         c.setPlaceholder("sk-…").setValue("");
-        const submit = () => {
+        submitKey = () => {
           const v = c.getValue().trim();
           if (!v) return; // 清空输入 ≠ 清钥匙；要清点旁边的按钮
+          const phase = this.plugin.sidecarSnap().phase;
+          if (phase !== "running") {
+            this.plugin.pendingPutKey = v;
+            new Notice(phase === "stale" ? t().noticeKeySaveOldSidecar : t().noticeSidecarDown);
+            return;
+          }
           // 走插件的单通道（sidecarPutKey）：和挂起的启动迁移串行，
           // 谁也不会盖掉谁（二轮复审 P1）。
           void this.plugin
@@ -380,6 +439,7 @@ export class PenSettingTab extends PluginSettingTab {
             .then((llm) => {
               if (!llm) return;
               c.setValue("");
+              this.plugin.pendingPutKey = "";
               // 设置页存进来的就是最新事实：挂起的启动迁移不许拿旧钥匙盖它
               this.plugin.migrateKey = "";
               void this.plugin.saveSettings();
@@ -389,39 +449,70 @@ export class PenSettingTab extends PluginSettingTab {
               this.warnKeyHostMismatch(llm);
             })
             .catch((e: unknown) => {
-              // 失败就失败在这儿：绝不回退写 data.json
+              // 失败就失败在这儿：绝不回退写 data.json。输入留在框里。
+              this.plugin.pendingPutKey = v;
+              const status = e instanceof ApiError ? e.status : 0;
+              if (status === 404 || status === 405) {
+                new Notice(t().noticeKeySaveOldSidecar);
+                return;
+              }
               new Notice(
                 t().noticeKeySaveFailed(e instanceof Error ? e.message : String(e)),
               );
             });
         };
         c.inputEl.addEventListener("keydown", (ev) => {
-          if (ev.key === "Enter") c.inputEl.blur();
+          if (ev.key === "Enter") {
+            ev.preventDefault();
+            submitKey();
+          }
         });
         c.inputEl.addEventListener("blur", (ev) => {
-          // 焦点是去「清除密钥」按钮的：blur 的 PUT 和按钮的 DELETE 同时
-          // 在飞，后完成的那次赢——但读者要的是清除。跳过这次 blur。
-          if (clearBtnEl && ev.relatedTarget && clearBtnEl.contains(ev.relatedTarget as Node)) {
-            return;
-          }
-          submit();
+          // 焦点是去「保存」或「清除」：别让 blur 再 PUT 一次。
+          const next = ev.relatedTarget as Node | null;
+          if (clearBtnEl && next && clearBtnEl.contains(next)) return;
+          if (saveBtnEl && next && saveBtnEl.contains(next)) return;
+          submitKey();
         });
       })
       .addButton((b) => {
+        btns.save = b;
+        saveBtnEl = b.buttonEl;
+        b.setButtonText(s.setKeySave).onClick(() => submitKey());
+      })
+      .addButton((b) => {
+        btns.clear = b;
         clearBtnEl = b.buttonEl;
         b.setButtonText(s.setKeyClear).onClick(() => {
+          if (this.plugin.sidecarSnap().phase !== "running") {
+            new Notice(
+              this.plugin.sidecarSnap().phase === "stale"
+                ? t().noticeKeySaveOldSidecar
+                : t().noticeSidecarDown,
+            );
+            return;
+          }
           void makeApi(this.plugin.settings.sidecarUrl)
             .deleteLlmKey()
             .then(() => {
               this.plugin.migrateKey = "";
+              this.plugin.pendingPutKey = "";
               void this.plugin.saveSettings();
               new Notice(t().noticeKeyCleared);
               this.plugin.refreshPenViews();
               void this.paintKeyStatus(keyStatusEl);
             })
-            .catch(() => new Notice(t().noticeSidecarDown));
+            .catch((e: unknown) => {
+              const status = e instanceof ApiError ? e.status : 0;
+              new Notice(
+                status === 404 || status === 405
+                  ? t().noticeKeySaveOldSidecar
+                  : t().noticeSidecarDown,
+              );
+            });
         });
       });
+    paintStatus();
 
     new Setting(containerEl)
       .setName("Base URL")

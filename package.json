@@ -1,13 +1,13 @@
 {
   "name": "socrates-pen-obsidian",
   "private": true,
-  "version": "0.18.6",
+  "version": "0.18.7",
   "description": "Obsidian client for the Socrates sidecar",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc --noEmit && npm test && node esbuild.config.mjs production",
-    "test": "node scripts/check-i18n.mjs && node scripts/check-poll.mjs && node scripts/check-api.mjs && node scripts/check-key.mjs && node scripts/check-fold.mjs && node scripts/check-css.mjs && node scripts/check-limits.mjs"
+    "test": "node scripts/check-i18n.mjs && node scripts/check-poll.mjs && node scripts/check-api.mjs && node scripts/check-key.mjs && node scripts/check-fold.mjs && node scripts/check-css.mjs && node scripts/check-limits.mjs && node scripts/check-sidecar.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

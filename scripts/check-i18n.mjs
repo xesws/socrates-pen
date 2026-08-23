@@ -271,6 +271,25 @@ if (warnings.length) warnings.forEach((w) => console.error("   " + w));
   residue.forEach((r) => console.error("   " + r));
 }
 
+i18n.setLang("zh");
+const zhKeyFail = i18n.t().noticeKeySaveFailed("Not Found");
+check("存钥匙失败不再说起来再试", !zhKeyFail.includes("起来后再试"));
+check(
+  "404 钥匙文案指向停止再启动",
+  i18n.t().noticeKeySaveOldSidecar.includes("停止") &&
+    i18n.t().noticeKeySaveOldSidecar.includes("启动"),
+);
+check("旧版状态不叫运行中", i18n.t().setSidecarPhaseStale("0.16.0").includes("旧服务"));
+i18n.setLang("en");
+check(
+  "en 存钥匙失败也不说 retry once the sidecar is up",
+  !i18n.t().noticeKeySaveFailed("Not Found").includes("retry once the sidecar is up"),
+);
+check(
+  "en 404 钥匙文案指向 Stop then Start",
+  /Stop/.test(i18n.t().noticeKeySaveOldSidecar) && /Start/.test(i18n.t().noticeKeySaveOldSidecar),
+);
+
 let bad = 0;
 for (const [name, pass] of checks) {
   if (!pass) bad++;

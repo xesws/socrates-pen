@@ -44,13 +44,27 @@ def _isolate_pen(tmp_path: Path, monkeypatch) -> Path:
 
 def test_health_and_locate_q1() -> None:
     with TestClient(app) as client:
-        assert client.get("/v1/health").json()["status"] == "ok"
+        h = client.get("/v1/health").json()
+        assert h["status"] == "ok"
+        from pen import __version__ as pen_version
+
+        assert h["version"] == pen_version
         books = client.get("/v1/handbooks").json()["handbooks"]
         assert any(b["handbook_id"] == "swe-agent-v2" for b in books)
         text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
         line = next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
         loc = client.get(f"/v1/handbooks/swe-agent-v2/locate?line={line}").json()
         assert loc["level"] == "Level 0"
+
+
+def test_shutdown_schedules_exit(monkeypatch: pytest.MonkeyPatch) -> None:
+    hits: list[int] = []
+    monkeypatch.setattr("pen.app.request_exit", lambda: hits.append(1))
+    with TestClient(app) as client:
+        r = client.post("/v1/shutdown")
+        assert r.status_code == 200
+        assert r.json()["status"] == "stopping"
+    assert hits == [1]
 
 
 # ── 托管密钥端点（v0.18.0）──

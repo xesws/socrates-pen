@@ -81,6 +81,7 @@ export const en: Dict = {
   healthOkFallback: (source, model) => `sidecar ok · dev fallback ${source} · ${model}`,
   healthNoKey: "sidecar is up — add your API key under Settings → Socrates",
   healthDown: "can't reach sidecar",
+  healthStale: "Old service holding the port. Stop then Start in settings to upgrade.",
 
   // ── Error bubbles (v0.18.0: a failed request no longer fakes streaming) ──
   errNoKey: "No model key yet. Add your API key under Settings → Socrates, then ask again.",
@@ -189,12 +190,31 @@ export const en: Dict = {
   noticeKeySaved:
     "Key saved to the local sidecar (~/.socrates-pen/llm.json). It never enters this vault.",
   noticeKeySaveFailed: (detail) =>
-    `Couldn't save (${detail}). The key was written nowhere; retry once the sidecar is up.`,
+    `Couldn't save (${detail}). The key was written nowhere.`,
+  noticeKeySaveOldSidecar:
+    "Couldn't save: an old service is holding the port and can't take the new key. Hit Stop then Start to upgrade. The key is still in the box and was written nowhere.",
   noticeKeyCleared: "Key removed from the local sidecar.",
   noticeKeyMigrated:
     "Your API key moved from data.json to ~/.socrates-pen/llm.json on this machine — Sync / iCloud / git no longer carry it. If this vault was ever synced or committed, rotate that key at your provider.",
   noticeSidecarTooOld:
-    "The local service is an old version and can't take the new key. Stop it under Settings → Socrates (or kill the Python process holding the port), then hit Start to upgrade — the key migrates right after, and until then it stays in data.json.",
+    "The local service is an old version and can't take the new key. Under Settings → Socrates, hit Stop then Start to upgrade — the key migrates right after, and until then it stays in data.json.",
+  noticeSidecarAlready: "The local service is already running.",
+  noticeSidecarStale: "An old service is holding the port. Hit Stop then Start to upgrade.",
+  noticeSidecarAlreadyStopped: "The local service wasn't running.",
+  noticeSidecarStoppedOwned: "Stopped the local service.",
+  noticeSidecarStoppedLeftover: (command) =>
+    command && command !== "?"
+      ? `Stopped the old service holding the port (${command}).`
+      : "Stopped the old service holding the port.",
+  noticeSidecarStoppedShared: (command) =>
+    command && command !== "?"
+      ? `Stopped the local service holding the port (${command} — another vault or left over from last time).`
+      : "Stopped the local service holding the port (another vault or left over from last time).",
+  noticeSidecarStoppedOther: (command) =>
+    command && command !== "?"
+      ? `Stopped another process holding the port (${command}).`
+      : "Stopped another process holding the port.",
+  noticeSidecarStopFailed: "Couldn't stop it. See the status line above.",
   noticeKeyMigrateTimeout:
     "Couldn't migrate your API key into the local service within 45s (it may still be installing). The key stays in data.json and migrates automatically once the service is ready; to use it right now, paste it once in settings.",
   noticeKeyHostMismatch: (keyHost, urlHost) =>
@@ -225,6 +245,7 @@ export const en: Dict = {
     "The plugin creates an isolated Python environment under ~/.socrates-pen, installs the tutor, and binds it to 127.0.0.1. You need Python 3.11+ on this machine. The first run can take a minute (downloads dependencies).",
   setSidecarStart: "Start",
   setSidecarStop: "Stop",
+  setSidecarStopping: "Stopping…",
   setSidecarAutoName: "Start when Obsidian opens",
   setSidecarAutoDesc: "On by default. Turn it off to start only from this page.",
   setSidecarPythonName: "Python path",
@@ -234,19 +255,28 @@ export const en: Dict = {
   setSidecarPhaseInstalling: "Installing the local service (first time is slower)…",
   setSidecarPhaseStarting: "Starting…",
   setSidecarPhaseRunning: "Running",
+  setSidecarPhaseStopping: "Stopping…",
+  setSidecarPhaseStopped: "Stopped",
+  setSidecarPhaseStale: (ver) =>
+    ver
+      ? `Old service holding the port (${ver}). Stop then Start to upgrade`
+      : "Old service holding the port. Stop then Start to upgrade",
   setSidecarErrNoPython: "No Python 3.11+ found. Install it, or set the interpreter path below.",
   setSidecarErrNotLoopback: "The plugin will only start the service on 127.0.0.1 / localhost. Put a loopback Sidecar URL back.",
   setSidecarErrBadUrl: "Sidecar URL isn't a valid address.",
   setSidecarErrInstall: "Install failed. This machine needs access to GitHub and PyPI.",
   setSidecarErrSpawn: "The process didn't start.",
   setSidecarErrHealth: "The process started, but health checks never passed.",
+  setSidecarErrStop: "Couldn't stop it.",
+  setSidecarErrStopNoPid: "Couldn't stop it: no process found on that port.",
   setSidecarErrOther: (code: string): string => `Couldn't start (${code})`,
   setIntro1:
     "Key and endpoint go below. The plugin starts the local service — no terminal. This vault's path is handed over the moment you pick a passage.",
   setIntro2:
     "The API key lives only on this machine, in the sidecar home (~/.socrates-pen/llm.json, mode 0600) — never inside this vault, so Sync / iCloud / git can't carry it away.",
   setApiKeyDesc:
-    "Write-only: paste, then Enter or click away — it's stored on the local sidecar, never in the vault. Empty input is ignored; use the button to clear.",
+    "Write-only: paste, then Save (Enter or click away still work). Stored on the local sidecar, never in the vault. Save is disabled until the service is up and current. Empty input is ignored; use the button to clear.",
+  setKeySave: "Save",
   setKeyStatusSaved: (source, tail) =>
     `Saved${source ? ` (source: ${source})` : ""}${tail ? `, tail …${tail}` : ""}.`,
   setKeyStatusNone: "No key saved yet.",

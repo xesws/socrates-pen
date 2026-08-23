@@ -120,6 +120,13 @@ export type LlmStatus = {
   thinking?: string;
 };
 
+/** GET /v1/health。旧 sidecar 没有 version —— 插件据此判定不能干活。 */
+export type Health = {
+  status: string;
+  version?: string;
+  llm: LlmStatus;
+};
+
 export type NoteBinding = {
   handbook_id: string;
   session_id: string;
