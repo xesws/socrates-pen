@@ -460,7 +460,9 @@ export class PenView extends ItemView {
     // 等于没有——这条横在整条底座上，扫一眼就知道它还在动。
     e.bar.classList.toggle("is-off", !this.busy);
     e.input.disabled = blocked;
-    e.ask.disabled = blocked;
+    // setBusy 和 syncChipDisabled 都会写 ask 的 disabled，两处必须同式：
+    // busy/pending 和「没钥匙」任一为真就灰。
+    e.ask.disabled = blocked || !this.llmOk;
     e.pick.disabled = this.busy;
     e.fresh.disabled = blocked;
     e.undo.disabled = this.busy || this.undoN <= 0;
@@ -480,7 +482,7 @@ export class PenView extends ItemView {
       const b = btns[i] as HTMLButtonElement;
       b.disabled = blocked || b.dataset.off === "1";
     }
-    e.ask.disabled = !this.llmOk;
+    e.ask.disabled = blocked;
   }
 
   /** 内容没变就只翻 disabled，不重建按钮——否则流式期间每 48 字符重建一次芯片。 */
@@ -891,9 +893,10 @@ export class PenView extends ItemView {
       });
       // 换会话是不可逆的（旧 sid 已经从笔记上解绑），必须告诉读者。
       // 走 Notice 不走 this.err：这不是错误，是「换好了，接着问就行」。
-      // renewed 那条自己会报（同笔记换新场），换笔记只报这一条，不叠两条。
-      if (!renewed && switchingNotes) new Notice(t().noticeSessionSwitched(got.file.name));
-      if (renewed) new Notice(t().noticeSessionRenewed);
+      // 换笔记永远先说「A 的对话还在 A」；renewed 只在同笔记换新场时才报——
+      // 跨笔记 + 目标旧会话过期时两条都真，但说了前一条读者要的那条信息就到了。
+      if (switchingNotes) new Notice(t().noticeSessionSwitched(got.file.name));
+      else if (renewed) new Notice(t().noticeSessionRenewed);
       await this.refreshSnapshots();
     } catch (e) {
       this.err = e instanceof Error ? e.message : String(e);

@@ -56,7 +56,11 @@ def test_health_and_locate_q1() -> None:
 # ── 托管密钥端点（v0.18.0）──
 
 
-def test_llm_key_endpoints_roundtrip() -> None:
+def test_llm_key_endpoints_roundtrip(monkeypatch) -> None:
+    # 不隔离的话，开发机上正好 export 过 OPENAI_API_KEY / DEEPSEEK_API_KEY 时，
+    # DELETE 之后 resolve_llm 会回退到环境变量，"ok is False" 这条当场翻红。
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
     with TestClient(app) as client:
         # 空钥匙 → 400，不落盘
         r = client.put("/v1/llm/key", json={"api_key": "   "})

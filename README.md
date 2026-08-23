@@ -522,7 +522,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 **这两套根宽窄差得很远，得说清楚。** 从 Obsidian 里用，读根是**整个库根**
 （外加 sidecar 自己那个根：`read_roots()` 返回的是 `[REPO_ROOT, *extra_roots]`，
 `REPO_ROOT` 永远在里面——pip 装的时候它是 site-packages）——
-插件登记教材时把 `vaultRoot(app)` 一起发过去（`src/views/PenView.ts:788` →
+插件登记教材时把 `vaultRoot(app)` 一起发过去（`src/views/PenView.ts:849` →
 `pen/libraries.py` 的 `meta.allow_root` → `pen/tutor.py:69` 的 `read_roots()` →
 `pen/sandbox.py` 的 `assert_readable`），不需要你手动放宽。实测：登记 `book.md`
 之后 `read_file("私人/日记/2026.md")` 是**放行**的。
@@ -781,7 +781,7 @@ pip 安装 sidecar，这一步要访问 GitHub 和 PyPI。装完之后**设置 �
 
 **但那是行为，不是沙箱保证。** 只读到那两种，是因为提示词里只告诉了它这些。沙箱真正的
 读边界是**整个库根**（`.git` / `.obsidian` / `.env*` 除外），库根由插件在登记教材时一并
-发过去（`src/views/PenView.ts:788` 把 `vaultRoot(app)` 发给 `POST /handbooks/import`），
+发过去（`src/views/PenView.ts:849` 把 `vaultRoot(app)` 发给 `POST /handbooks/import`），
 不需要你手动放宽。你在对话里直接报出一个路径，它就能读到。写的边界严格得多，见
 [4.4 沙箱有两套根](#44--沙箱有两套根读和写不是一回事)。
 

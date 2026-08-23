@@ -187,6 +187,10 @@ export const en: Dict = {
   noticeKeyCleared: "Key removed from the local sidecar.",
   noticeKeyMigrated:
     "Your API key moved from data.json to ~/.socrates-pen/llm.json on this machine — Sync / iCloud / git no longer carry it. If this vault was ever synced or committed, rotate that key at your provider.",
+  noticeSidecarTooOld:
+    "The local service is an old version and can't take the new key. Stop it under Settings → Socrates (or kill the Python process holding the port), then hit Start to upgrade — the key migrates right after, and until then it stays in data.json.",
+  noticeKeyHostMismatch: (keyHost, urlHost) =>
+    `The stored key belongs to ${keyHost}, but Base URL now points at ${urlHost} — keys aren't lent across hosts. Paste a key for ${urlHost}.`,
   noticeSessionSwitched: (note) =>
     `Switched to the conversation for “${note}”. The previous note's conversation stays with that note — select in it again to come back.`,
   noticeRightOpened: "The Socrates panel is open in the right sidebar.",

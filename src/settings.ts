@@ -1,5 +1,6 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { makeApi, usageTotal } from "./api";
+import type { LlmStatus } from "./types";
 import { coerceLangPref, t, type LangPref } from "./i18n";
 import type { SidecarSnap } from "./sidecar";
 
@@ -187,6 +188,7 @@ type PenHost = {
   sidecarWatch: (fn: () => void) => () => void;
   ensureSidecar: () => Promise<void>;
   stopOwnedSidecar: () => void;
+  refreshPenViews: () => void;
 };
 
 export class PenSettingTab extends PluginSettingTab {
@@ -215,6 +217,24 @@ export class PenSettingTab extends PluginSettingTab {
       );
     } catch {
       el.setText(t().setKeyStatusUnreachable);
+    }
+  }
+
+  /** 钥匙按主机落锁（merge_llm 的「不跨主机挪用」）。刚存的这把要是和设置页
+   *  填的 Base URL 不同主机，对话会一直撞「找不到模型配置」——当场说破，
+   *  别让读者对着一格明明填了钥匙的设置页猜。 */
+  private warnKeyHostMismatch(llm: LlmStatus): void {
+    if (!llm.ok || llm.key_source !== "sidecar") return;
+    let keyHost = "";
+    let urlHost = "";
+    try {
+      keyHost = new URL(llm.base_url).host;
+      urlHost = new URL(this.plugin.settings.baseUrl).host;
+    } catch {
+      return;
+    }
+    if (keyHost && urlHost && keyHost !== urlHost) {
+      new Notice(t().noticeKeyHostMismatch(keyHost, urlHost));
     }
   }
 
@@ -338,10 +358,11 @@ export class PenSettingTab extends PluginSettingTab {
           if (!v) return; // 清空输入 ≠ 清钥匙；要清点旁边的按钮
           void makeApi(this.plugin.settings.sidecarUrl)
             .putLlmKey(v, this.plugin.settings.baseUrl)
-            .then(() => {
+            .then((llm) => {
               c.setValue("");
               new Notice(t().noticeKeySaved);
-              void this.paintKeyStatus(keyStatusEl);
+              this.plugin.refreshPenViews();
+              this.warnKeyHostMismatch(llm);
             })
             .catch((e: unknown) => {
               // 失败就失败在这儿：绝不回退写 data.json
@@ -361,6 +382,7 @@ export class PenSettingTab extends PluginSettingTab {
             .deleteLlmKey()
             .then(() => {
               new Notice(t().noticeKeyCleared);
+              this.plugin.refreshPenViews();
               void this.paintKeyStatus(keyStatusEl);
             })
             .catch(() => new Notice(t().noticeSidecarDown));
@@ -377,6 +399,12 @@ export class PenSettingTab extends PluginSettingTab {
           .onChange((v) => {
             this.plugin.settings.baseUrl = (v.trim().replace(/\/+$/, "") || DEFAULT_SETTINGS.baseUrl);
             this.plugin.saveSettingsSoon();
+            // 换了主机就得换钥匙（钥匙按主机落锁）。探一下现有钥匙属不属于
+            // 新主机，不属于就当场说。fire-and-forget。
+            void makeApi(this.plugin.settings.sidecarUrl)
+              .health()
+              .then((h) => this.warnKeyHostMismatch(h.llm))
+              .catch(() => {});
           }),
       );
 

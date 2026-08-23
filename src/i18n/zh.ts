@@ -245,6 +245,10 @@ export const zh = {
   noticeKeyCleared: "钥匙已从本机 sidecar 清除。",
   noticeKeyMigrated:
     "API Key 已从 data.json 迁到本机 ~/.socrates-pen/llm.json，不再随 Sync / iCloud / git 走。若这个库曾被同步或提交过，建议去服务商轮换这把钥匙。",
+  noticeSidecarTooOld:
+    "本机服务还是旧版，收不了新钥匙。到设置 → Socrates 停止它（或杀掉占着端口的 Python 进程），再点启动完成升级——钥匙随后自动迁入，迁好之前仍留在 data.json 里。",
+  noticeKeyHostMismatch: (keyHost: string, urlHost: string): string =>
+    `本机存的钥匙是给 ${keyHost} 的，Base URL 现在指向 ${urlHost}——钥匙不跨主机挪用，请贴一份 ${urlHost} 的钥匙。`,
   noticeSessionSwitched: (note: string): string =>
     `已切换到《${note}》的会话。原笔记的对话仍在原笔记上——再划它就能回来。`,
   noticeRightOpened: "Socrates 面板已在右侧栏打开。",

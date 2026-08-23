@@ -1,5 +1,6 @@
 import { Notice, Plugin, setTooltip, type Command, type Workspace, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
+import { ApiError } from "./apierror";
 import {
   coerceLimits,
   coerceThinking,
@@ -176,8 +177,6 @@ export default class SocratesPenPlugin extends Plugin {
     if (raw.baseUrl !== undefined) legacy.baseUrl = raw.baseUrl;
     if (raw.model !== undefined) legacy.model = raw.model;
     if (raw.thinking !== undefined) legacy.thinking = raw.thinking;
-    // v0.18.0：老 data.json 里的明文 apiKey（嵌套优先，顶层更老）装进内存等迁移。
-    // 期间一次也不写盘——迁移成没成，vault 里都不再留明文。
     this.migrateKey = String(
       (raw.settings && raw.settings.apiKey) ?? raw.apiKey ?? "",
     ).trim();
@@ -226,29 +225,31 @@ export default class SocratesPenPlugin extends Plugin {
 
   /** 把老 data.json 里的明文钥匙迁进 sidecar 家目录，然后从磁盘抹掉。
    *
-   * 失败（sidecar 没起来 / 旧版 sidecar 不认新端点）就整场放弃：钥匙留在
-   * 内存里下次启动再试，data.json 原样不动——绝不为了"这次先能用"把明文
-   * 写回去。 */
+   * PUT 重试 45 秒（sidecar 可能还在装/起）。旧版 sidecar 不认这个端点
+   * （404/405）时把「先升级那只进程」的动作交给读者——不自动杀别人的
+   * 进程是既定政策（README）。失败整场放弃：钥匙仍留在 data.json
+   * （saveSettings 保写），下次启动再迁。 */
   private async migrateKeyOut(): Promise<void> {
     const key = this.migrateKey;
     const api = makeApi(this.settings.sidecarUrl);
-    // onload 刚 kick 过 ensure()：sidecar 可能还在装/起，健康之前 PUT 必失败。
-    for (let i = 0; i < 45; i++) {
+    const t0 = Date.now();
+    let warnedOld = false;
+    for (;;) {
       try {
-        await api.health();
+        await api.putLlmKey(key, this.settings.baseUrl);
         break;
-      } catch {
-        if (i === 44) return;
-        await new Promise((r) => setTimeout(r, 1000));
+      } catch (e) {
+        const status = e instanceof ApiError ? e.status : 0;
+        if ((status === 404 || status === 405) && !warnedOld) {
+          warnedOld = true;
+          new Notice(t().noticeSidecarTooOld);
+        }
+        if (Date.now() - t0 > 45000) return;
+        await new Promise((r) => setTimeout(r, 2000));
       }
     }
-    try {
-      await api.putLlmKey(key, this.settings.baseUrl);
-    } catch {
-      return;
-    }
     this.migrateKey = "";
-    // 这次落盘的 settings 里已经没有 apiKey 字段（loadSettings 拔过）
+    // 这次起，saveSettings 写出的 data.json 不再带 apiKey
     await this.saveSettings();
     new Notice(t().noticeKeyMigrated);
   }
@@ -257,8 +258,24 @@ export default class SocratesPenPlugin extends Plugin {
     this.sidecar.stopOwned();
   }
 
+  /** 设置页存/清钥匙之后叫醒所有打开的面板重探 llmOk——不然灰着的 chip
+   * 要等下一次「用当前选区」才恢复，读者以为没存上。 */
+  refreshPenViews(): void {
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN)) {
+      const view = leaf.view;
+      if (view instanceof PenView) void view.probeHealth();
+    }
+  }
+
   async saveSettings(): Promise<void> {
-    await this.saveData({ settings: this.settings, notes: this.notes });
+    // 迁移没成功之前，盘上那把明文钥匙必须原样跟着写回。PUT 一旦失败，
+    // data.json 里那份就是唯一副本（内存里的 migrateKey 关掉 Obsidian 就没了）——
+    // 「绝不回写明文」指的是不新增明文落点，不是把已经在盘上的那把弄丢。
+    // 首次「用当前选区」就会走这里（bindNote），不能指望迁移先完成。
+    const settings = this.migrateKey
+      ? { ...this.settings, apiKey: this.migrateKey }
+      : this.settings;
+    await this.saveData({ settings, notes: this.notes });
   }
 
   saveSettingsSoon(): void {

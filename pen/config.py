@@ -427,11 +427,16 @@ def write_managed_key(api_key: str, base_url: str = "") -> None:
         pass  # Windows / 受限目录：尽力而为，文件本身仍然 0600
     tmp = path.with_name(path.name + ".tmp")
     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w", encoding="utf-8") as fh:
-        json.dump({"api_key": api_key, "base_url": base_url}, fh)
-    # O_CREAT 的 mode 会被 umask 削，显式补一刀；文件已存在时 mode 根本不吃 O_CREAT。
-    os.chmod(tmp, 0o600)
-    os.replace(tmp, path)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump({"api_key": api_key, "base_url": base_url}, fh)
+        # O_CREAT 的 mode 会被 umask 削，显式补一刀；文件已存在时 mode 根本不吃 O_CREAT。
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, path)
+    except BaseException:
+        # 半截写不带出去：失败路径也不许留一个装着明文的临时文件。
+        tmp.unlink(missing_ok=True)
+        raise
 
 
 def clear_managed_key() -> None:
