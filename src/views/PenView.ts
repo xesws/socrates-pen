@@ -189,6 +189,13 @@ export class PenView extends ItemView {
     this.registerEvent(this.app.workspace.on("css-change", () => this.refreshAdvance()));
     this.renderShell();
     await this.probeHealth();
+    // 启动窗口期（sidecar 还在 ensure 装起）首探必红，以前之后无人再探，
+    // 读者得手动点一次「用当前选区」才变绿（0.18.0 复测）。ensure() ping 通
+    // 的那一刻 watch 必触发——正好盖住这个窗口。
+    this.unwatchSidecar = this.plugin.sidecarWatch(() => {
+      const snap = this.plugin.sidecarSnap();
+      if (snap.phase === "running" && !this.sidecarReachable) void this.probeHealth();
+    });
   }
 
   /** 框架回调：侧栏被拖动，或从折叠状态展开（那时首次测量拿到的是 0）。 */
@@ -208,9 +215,13 @@ export class PenView extends ItemView {
 
   async onClose(): Promise<void> {
     this.stopDeepPoll();
+    this.unwatchSidecar?.();
+    this.unwatchSidecar = null;
     this.els = null;
     this.chipsSig = "";
   }
+
+  private unwatchSidecar: (() => void) | null = null;
 
   private api() {
     return makeApi(this.plugin.settings.sidecarUrl);
@@ -617,8 +628,12 @@ export class PenView extends ItemView {
           renderSplash(empty, { level, animate: level !== this.splashLevel });
           this.splashLevel = level;
           empty.createEl("p", { cls: "sp-hint", text: t().emptyHint });
+          // 空会话态：对话区没有内容要占位，芯片区解除高度上限——五枚全展开，
+          // 写回入口首屏可见（0.18.0 复测：窄侧栏下 8em 只露三枚，上面空一大块）。
+          this.contentEl.addClass("is-splash");
           return;
         }
+        this.contentEl.removeClass("is-splash");
         this.splashLevel = "none";
         for (const m of this.msgs) {
           if (g !== this.paintGen || !this.els) break;
@@ -841,9 +856,39 @@ export class PenView extends ItemView {
       return;
     }
     if (!got) {
-      this.err = t().errNoSelection;
-      new Notice(this.err);
+      // v0.18.1 复测：无选区不再只会报错。切到另一篇笔记跑 Ask 时，读者
+      // 想找的多半是「那篇的上一场对话」——有绑定就恢复它，没有才提示划选。
+      const active = this.app.workspace.getActiveFile();
+      const bind = active ? this.plugin.noteBind(active.path) : undefined;
+      if (bind?.session_id) {
+        try {
+          const sess = await this.api().getSession(bind.session_id);
+          this.handbookId = bind.handbook_id;
+          // 跨笔记恢复：旧引文/行号属于别的笔记，必须清（send 守卫会提示先
+          // 划一段）。同一笔记只是选区自然消失——引文仍有效，留着继续聊。
+          const crossNote = this.capturedPath !== active!.path;
+          this.capturedPath = active!.path;
+          if (crossNote) {
+            this.quote = "";
+            this.startLine = 0;
+            this.endLine = 0;
+          }
+          this.err = "";
+          this.adopt(sess);
+          if (crossNote) new Notice(t().noticeNoteRestored(active!.name));
+          await this.refreshSnapshots();
+        } catch (e) {
+          if (isGone(e)) {
+            this.err = t().errSessionGone(active!.name);
+            new Notice(this.err);
+          } else this.err = e instanceof Error ? e.message : String(e);
+        }
+      } else {
+        this.err = t().errNoSelection;
+        new Notice(this.err);
+      }
       this.paintBar();
+      await this.paintLog("force");
       return;
     }
     try {
@@ -894,11 +939,14 @@ export class PenView extends ItemView {
         session_id: sess.session_id,
       });
       // 换会话是不可逆的（旧 sid 已经从笔记上解绑），必须告诉读者。
-      // 走 Notice 不走 this.err：这不是错误，是「换好了，接着问就行」。
-      // 换笔记永远先说「A 的对话还在 A」；renewed 只在同笔记换新场时才报——
-      // 跨笔记 + 目标旧会话过期时两条都真，但说了前一条读者要的那条信息就到了。
+      // 换笔记永远先说「A 的对话还在 A」；renewed 只在同笔记换新场时才报。
       if (switchingNotes) new Notice(t().noticeSessionSwitched(got.file.name));
-      else if (renewed) new Notice(t().noticeSessionRenewed);
+      else if (renewed) {
+        // 5 秒 toast 复测里被漏看（读者以为旧线程凭空没了）。除 toast 外
+        // 再在面板里立一条错误气泡——错误样式自带视觉重量，且不会自动消失。
+        new Notice(t().noticeSessionRenewed);
+        this.msgs = [...this.msgs, { role: "error", text: t().bubbleSessionRenewed }];
+      }
       await this.refreshSnapshots();
     } catch (e) {
       this.err = e instanceof Error ? e.message : String(e);

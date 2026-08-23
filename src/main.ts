@@ -162,7 +162,16 @@ export default class SocratesPenPlugin extends Plugin {
   }
 
   takePick(): EditorPick | null {
-    return readLivePick(this.app) ?? this.lastPick;
+    const live = readLivePick(this.app);
+    if (live) return live;
+    // 缓存只在「还停在同一篇笔记」时可信。跨笔记回退是 0.18.0 复测实锤的坑：
+    // 读者切到 B 没划选区，命令会拿 A 的陈旧选区静默操作 A 的会话——引文、
+    // 行号、面板上下文全是 A 的，读者却看着 B（send 的守卫只查非空拦不住）。
+    const active = this.app.workspace.getActiveFile();
+    if (active && this.lastPick && this.lastPick.file.path === active.path) {
+      return this.lastPick;
+    }
+    return null;
   }
 
   clearPick(): void {

@@ -45,7 +45,7 @@ const LIMIT_TEXT_ZH: Record<string, [string, string]> = {
   ],
   probe_keep_per_run: [
     "每次深挖最多存几条",
-    "注意：**每轮仍然只放出 1 条**，多存的排队等下一轮，攒过 6 轮就丢。所以调大主要是在增大丢弃堆。",
+    "注意：每轮仍然只放出 1 条，多存的排队等下一轮，攒过 6 轮就丢。所以调大主要是在增大丢弃堆。",
   ],
   max_tokens_chat: [
     "每轮对话的 token 上限",
@@ -125,6 +125,11 @@ export const zh = {
   // 也必须通报——不然读者只看到一条原始报错，历史没了却一个字的解释都没有。
   noticeSessionArchivedResendFailed: "这场对话在 sidecar 上已经找不到了（多半是过了保留期被清理）。已经给你开了新的一场，但刚才那句没能重新问出去——原因在下面那条错误里。",
   noticeSessionRenewed: "这篇笔记上次那场对话在 sidecar 上已经找不到了（多半是过了保留期被清理）。已经给你开了新的一场。",
+  bubbleSessionRenewed:
+    "这场对话的上一次记录已被清理（过保留期），这里是新开的一场。原笔记上的旧对话若还在保留期内，重新划一段即可找回。",
+  noticeNoteRestored: (note: string): string => `已切回《${note}》的对话。要接着问，先在笔记里划一段。`,
+  errSessionGone: (note: string): string =>
+    `《${note}》上次那场对话已被清理，需要重新划一段开新的一场。`,
   // 括号里原本是「（sidecar 连不上？）」——又一句在猜因由。现在 reviveSession
   // 会把服务端那句真话留在 this.err 里，这条只在**确实不知道**为什么时才出现。
   errSessionArchivedHard: "这场对话在 sidecar 上已经找不到了，而且新会话也没开起来。",

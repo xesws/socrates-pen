@@ -485,6 +485,13 @@
   }
 }
 
+/* 空会话态（v0.18.1 复测）：对话区没内容占位，解除上限让五枚全展开——
+   写回是核心入口，不该在窄侧栏里折进滚动条。特异性比容器查询高一档，
+   位置无所谓，放这儿和别的芯片规则做邻居。 */
+.socrates-pen.is-splash .sp-chips {
+  max-height: none;
+}
+
 .socrates-pen .sp-chips button {
   flex: 0 1 auto;
   min-width: 0;

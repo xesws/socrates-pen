@@ -27,7 +27,7 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
   probe_every_n_rounds: ["Rounds between deep digs", "0 means dig on every substantive reply (today's behaviour)."],
   probe_keep_per_run: [
     "Questions kept per dig",
-    "Note: **only one is released per round** — the rest queue up and are dropped after 6 rounds. Raising this mostly grows the discard pile.",
+    "Note: only one is released per round — the rest queue up and are dropped after 6 rounds. Raising this mostly grows the discard pile.",
   ],
   max_tokens_chat: [
     "Token cap per turn",
@@ -100,6 +100,12 @@ export const en: Dict = {
     "This conversation is gone from the sidecar (most likely cleaned up past its retention window). A fresh one is open, but your last question could not be re-sent — the error below says why.",
   noticeSessionRenewed:
     "This note's previous conversation is gone from the sidecar (most likely cleaned up past its retention window). A fresh one is open.",
+  bubbleSessionRenewed:
+    "This conversation's previous record was cleaned up past its retention window — this is a freshly opened one. If the old thread on the original note is still within retention, select a passage there to bring it back.",
+  noticeNoteRestored: (note) =>
+    `Switched back to the conversation for “${note}”. To keep asking, highlight a passage in the note first.`,
+  errSessionGone: (note) =>
+    `The previous conversation for “${note}” was cleaned up. Highlight a passage to start a fresh one.`,
   errSessionArchivedHard:
     "This conversation is gone from the sidecar, and a fresh one couldn't be opened either.",
   errApprovalArchived:
