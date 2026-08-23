@@ -247,6 +247,8 @@ export const zh = {
     "API Key 已从 data.json 迁到本机 ~/.socrates-pen/llm.json，不再随 Sync / iCloud / git 走。若这个库曾被同步或提交过，建议去服务商轮换这把钥匙。",
   noticeSidecarTooOld:
     "本机服务还是旧版，收不了新钥匙。到设置 → Socrates 停止它（或杀掉占着端口的 Python 进程），再点启动完成升级——钥匙随后自动迁入，迁好之前仍留在 data.json 里。",
+  noticeKeyMigrateTimeout:
+    "45 秒内没把 API Key 迁进本机服务（它可能还在安装）。钥匙仍留在 data.json 里，本机服务就绪后会自动再迁一次；急着用就到设置里手动贴一次。",
   noticeKeyHostMismatch: (keyHost: string, urlHost: string): string =>
     `本机存的钥匙是给 ${keyHost} 的，Base URL 现在指向 ${urlHost}——钥匙不跨主机挪用，请贴一份 ${urlHost} 的钥匙。`,
   noticeSessionSwitched: (note: string): string =>

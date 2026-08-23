@@ -577,7 +577,9 @@ export class PenView extends ItemView {
     if (!e || e.input.disabled) return;
     const text = e.input.value.trim();
     if (!text) return;
-    e.input.value = "";
+    // 没钥匙时保留草稿：send 只会落一条「先配钥匙」的错误气泡，
+    // 这句话还没问出去，不该替读者清掉（二轮复审 P2）。
+    if (this.llmOk) e.input.value = "";
     // 只有从输入框发起时才收回焦点；点芯片不抢编辑器光标。
     void this.send("free", text).then(() => this.els?.input.focus());
   }

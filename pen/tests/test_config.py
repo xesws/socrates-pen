@@ -93,9 +93,10 @@ def test_managed_key_roundtrip_and_perms(monkeypatch) -> None:
     config.write_managed_key("sk-managed-0987654321", "https://api.deepseek.com")
     path = config.PEN_DIR / "llm.json"
     assert path.is_file()
-    # 明文钥匙只许 0600；半截写的临时文件不许留下
+    # 明文钥匙只许 0600；半截写的临时文件不许留下（mkstemp 起的是唯一名）
     assert (path.stat().st_mode & 0o777) == 0o600
-    assert not path.with_name("llm.json.tmp").exists()
+    leftovers = [p for p in config.PEN_DIR.glob("llm.json.*")]
+    assert leftovers == []
     got = config.read_managed_key()
     assert got == {"api_key": "sk-managed-0987654321", "base_url": "https://api.deepseek.com"}
     config.clear_managed_key()

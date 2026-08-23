@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from dataclasses import dataclass, fields, replace
 from pathlib import Path
 from collections.abc import Mapping
@@ -425,8 +426,10 @@ def write_managed_key(api_key: str, base_url: str = "") -> None:
         path.parent.chmod(0o700)
     except OSError:
         pass  # Windows / 受限目录：尽力而为，文件本身仍然 0600
-    tmp = path.with_name(path.name + ".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    # 临时文件用 mkstemp 起唯一名：固定名的话两个 vault 同时 PUT 会互删对方的
+    # 半成品（unlink 清理是按名字找的）。mkstemp 生来 0600，同目录保证 rename 原子。
+    fd, tmpname = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+    tmp = Path(tmpname)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             json.dump({"api_key": api_key, "base_url": base_url}, fh)

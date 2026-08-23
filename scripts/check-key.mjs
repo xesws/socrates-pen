@@ -55,6 +55,17 @@ check(
     "thinking" in payload,
 );
 check("DEFAULT_SETTINGS 没有 apiKey 字段", !("apiKey" in mod.DEFAULT_SETTINGS));
+
+// 落盘形状（二轮复审补）：迁移未成时钥匙必须原样跟回 data.json（那是唯一
+// 副本）；迁移完成后落盘形状里不许再有 apiKey——谁改坏了 persistableSettings
+// 的这两个分支，这里当场红。
+const pend = mod.persistableSettings(mod.DEFAULT_SETTINGS, "sk-mig-canary-9999");
+check("persistableSettings：迁移未成 → apiKey 原样回写", pend.apiKey === "sk-mig-canary-9999");
+const done = mod.persistableSettings(mod.DEFAULT_SETTINGS, "");
+check(
+  "persistableSettings：迁移完成 → 落盘形状无 apiKey",
+  !("apiKey" in done) && !JSON.stringify(done).includes("sk-mig-canary-9999"),
+);
 check(
   "limitsPayload 不受影响",
   typeof mod.limitsPayload(mod.DEFAULT_SETTINGS) === "object" || mod.limitsPayload(mod.DEFAULT_SETTINGS) === undefined,

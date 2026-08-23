@@ -57,10 +57,12 @@ def test_health_and_locate_q1() -> None:
 
 
 def test_llm_key_endpoints_roundtrip(monkeypatch) -> None:
-    # 不隔离的话，开发机上正好 export 过 OPENAI_API_KEY / DEEPSEEK_API_KEY 时，
-    # DELETE 之后 resolve_llm 会回退到环境变量，"ok is False" 这条当场翻红。
+    # 不隔离的话：开发机上 export 过 OPENAI_API_KEY / DEEPSEEK_API_KEY，或仓库里
+    # 躺着一份真 .env（resolve_llm 的兜底路径），DELETE 之后 "ok is False"
+    # 都会当场翻红。环境变量和文件一起隔。
     for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
     with TestClient(app) as client:
         # 空钥匙 → 400，不落盘
         r = client.put("/v1/llm/key", json={"api_key": "   "})

@@ -615,7 +615,7 @@ equal the registered original path exactly). **Reading** may be widened to a whi
 read root is **the whole vault root** (plus the sidecar's own root: `read_roots()` returns
 `[REPO_ROOT, *extra_roots]`, and `REPO_ROOT` is always in there — under a pip install that's
 site-packages) — the plugin sends `vaultRoot(app)` along when it registers a
-handbook (`src/views/PenView.ts:788` → `meta.allow_root` in `pen/libraries.py` → `read_roots()` in
+handbook (`src/views/PenView.ts:849` → `meta.allow_root` in `pen/libraries.py` → `read_roots()` in
 `pen/tutor.py:69` → `assert_readable` in `pen/sandbox.py`), so you never widen anything by hand.
 Measured: after registering `book.md`, `read_file("私人/日记/2026.md")` is **allowed**.
 
@@ -908,7 +908,7 @@ and does not phone home; sessions, snapshots and the deep-dive ledger all live u
 **But that is behaviour, not a sandbox guarantee.** Only those two get read because those are the
 only ones the prompt tells it about. The sandbox's actual *read* boundary is the **whole vault
 root** (minus `.git` / `.obsidian` / `.env*`), and that root is registered automatically when the
-plugin imports a handbook (`src/views/PenView.ts:788` sends `vaultRoot(app)` to
+plugin imports a handbook (`src/views/PenView.ts:849` sends `vaultRoot(app)` to
 `POST /handbooks/import`), so you never widen anything by hand. Name a path in the conversation and
 it can read it. The *write* boundary is far tighter; see
 [4.4 The sandbox has two sets of roots](#44--the-sandbox-has-two-sets-of-roots-reading-and-writing-are-not-the-same-thing).

@@ -189,6 +189,8 @@ export const en: Dict = {
     "Your API key moved from data.json to ~/.socrates-pen/llm.json on this machine — Sync / iCloud / git no longer carry it. If this vault was ever synced or committed, rotate that key at your provider.",
   noticeSidecarTooOld:
     "The local service is an old version and can't take the new key. Stop it under Settings → Socrates (or kill the Python process holding the port), then hit Start to upgrade — the key migrates right after, and until then it stays in data.json.",
+  noticeKeyMigrateTimeout:
+    "Couldn't migrate your API key into the local service within 45s (it may still be installing). The key stays in data.json and migrates automatically once the service is ready; to use it right now, paste it once in settings.",
   noticeKeyHostMismatch: (keyHost, urlHost) =>
     `The stored key belongs to ${keyHost}, but Base URL now points at ${urlHost} — keys aren't lent across hosts. Paste a key for ${urlHost}.`,
   noticeSessionSwitched: (note) =>

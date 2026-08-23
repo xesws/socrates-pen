@@ -177,10 +177,26 @@ function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   return errTail ? `${base}\n${errTail}` : base;
 }
 
+/** 落盘形状。迁移没成功之前（migrateKey 非空），盘上那把明文钥匙必须原样
+ *  跟着写回——PUT 失败后 data.json 里那份就是唯一副本，首次「用当前选区」
+ *  就会触发保存，不能指望迁移先完成。「绝不回写明文」指不新增明文落点，
+ *  不是把已经在盘上的那把弄丢。这份形状由 scripts/check-key.mjs 机械守着。 */
+export function persistableSettings(
+  s: PenSettings,
+  migrateKey: string,
+): PenSettings & { apiKey?: string } {
+  return migrateKey ? { ...s, apiKey: migrateKey } : s;
+}
+
 /** 不要写成 `Plugin & { settings }`：Plugin.settings 在类型里标了 @since 1.13.0，
  *  审查器会把每一个 `this.plugin.settings` 判成「用不了 1.5.0」。我们自己的字段。 */
 type PenHost = {
   settings: PenSettings;
+  /** 老 data.json 里带出来、等迁移的明文钥匙。设置页存/清成功后置空。 */
+  migrateKey: string;
+  /** 钥匙 PUT 的单通道（与迁移循环串行，防在途互盖）。 */
+  sidecarPutKey: (key: string, baseUrl: string) => Promise<LlmStatus | null>;
+  saveSettings: () => Promise<void>;
   saveSettingsSoon: () => void;
   applyLanguage: () => void;
   sidecarSnap: () => SidecarSnap;
@@ -346,6 +362,7 @@ export class PenSettingTab extends PluginSettingTab {
     // 0600），本地任何文件——包括这份 data.json——都不存。
     const keyStatusEl = containerEl.createEl("p", { cls: "setting-item-description" });
     void this.paintKeyStatus(keyStatusEl);
+    let clearBtnEl: HTMLElement | null = null;
     new Setting(containerEl)
       .setName("API Key")
       .setDesc(s.setApiKeyDesc)
@@ -356,12 +373,19 @@ export class PenSettingTab extends PluginSettingTab {
         const submit = () => {
           const v = c.getValue().trim();
           if (!v) return; // 清空输入 ≠ 清钥匙；要清点旁边的按钮
-          void makeApi(this.plugin.settings.sidecarUrl)
-            .putLlmKey(v, this.plugin.settings.baseUrl)
+          // 走插件的单通道（sidecarPutKey）：和挂起的启动迁移串行，
+          // 谁也不会盖掉谁（二轮复审 P1）。
+          void this.plugin
+            .sidecarPutKey(v, this.plugin.settings.baseUrl)
             .then((llm) => {
+              if (!llm) return;
               c.setValue("");
+              // 设置页存进来的就是最新事实：挂起的启动迁移不许拿旧钥匙盖它
+              this.plugin.migrateKey = "";
+              void this.plugin.saveSettings();
               new Notice(t().noticeKeySaved);
               this.plugin.refreshPenViews();
+              void this.paintKeyStatus(keyStatusEl);
               this.warnKeyHostMismatch(llm);
             })
             .catch((e: unknown) => {
@@ -374,39 +398,50 @@ export class PenSettingTab extends PluginSettingTab {
         c.inputEl.addEventListener("keydown", (ev) => {
           if (ev.key === "Enter") c.inputEl.blur();
         });
-        c.inputEl.addEventListener("blur", submit);
+        c.inputEl.addEventListener("blur", (ev) => {
+          // 焦点是去「清除密钥」按钮的：blur 的 PUT 和按钮的 DELETE 同时
+          // 在飞，后完成的那次赢——但读者要的是清除。跳过这次 blur。
+          if (clearBtnEl && ev.relatedTarget && clearBtnEl.contains(ev.relatedTarget as Node)) {
+            return;
+          }
+          submit();
+        });
       })
-      .addButton((b) =>
+      .addButton((b) => {
+        clearBtnEl = b.buttonEl;
         b.setButtonText(s.setKeyClear).onClick(() => {
           void makeApi(this.plugin.settings.sidecarUrl)
             .deleteLlmKey()
             .then(() => {
+              this.plugin.migrateKey = "";
+              void this.plugin.saveSettings();
               new Notice(t().noticeKeyCleared);
               this.plugin.refreshPenViews();
               void this.paintKeyStatus(keyStatusEl);
             })
             .catch(() => new Notice(t().noticeSidecarDown));
-        }),
-      );
+        });
+      });
 
     new Setting(containerEl)
       .setName("Base URL")
       .setDesc(s.setBaseUrlDesc)
-      .addText((c) =>
-        c
-          .setPlaceholder("https://api.deepseek.com")
+      .addText((c) => {
+        c.setPlaceholder("https://api.deepseek.com")
           .setValue(this.plugin.settings.baseUrl)
           .onChange((v) => {
             this.plugin.settings.baseUrl = (v.trim().replace(/\/+$/, "") || DEFAULT_SETTINGS.baseUrl);
             this.plugin.saveSettingsSoon();
-            // 换了主机就得换钥匙（钥匙按主机落锁）。探一下现有钥匙属不属于
-            // 新主机，不属于就当场说。fire-and-forget。
-            void makeApi(this.plugin.settings.sidecarUrl)
-              .health()
-              .then((h) => this.warnKeyHostMismatch(h.llm))
-              .catch(() => {});
-          }),
-      );
+          });
+        // 换了主机就得换钥匙（钥匙按主机落锁）。on blur 而不是 onChange：
+        // onChange 每个键击都探一次，敲一个长 URL 会被 Notice 轰炸。
+        c.inputEl.addEventListener("blur", () => {
+          void makeApi(this.plugin.settings.sidecarUrl)
+            .health()
+            .then((h) => this.warnKeyHostMismatch(h.llm))
+            .catch(() => {});
+        });
+      });
 
     new Setting(containerEl)
       .setName(s.setModelName)
