@@ -10,6 +10,7 @@ import {
 } from "obsidian";
 import type SocratesPenPlugin from "../main";
 import { isGone, makeApi, streamApprove, streamChat } from "../api";
+import { stripFoldTags, visibleReply } from "../foldview";
 import { handbookIdFromPath, vaultRoot, type EditorPick } from "../selection";
 import type {
   ChatMessage,
@@ -55,9 +56,7 @@ type Els = {
   redo: HTMLButtonElement;
 };
 
-function visibleReply(text: string): string {
-  return text.replace(/<!--pen:chips[\s\S]*?-->/g, "").trim();
-}
+/* visibleReply 已移至 src/foldview.ts（纯函数，check-fold.mjs 打包真代码守着） */
 
 /** 深挖的排前面。同类保持后端给的顺序。 */
 function dynRank(c: DynChip): number {
@@ -348,9 +347,12 @@ export class PenView extends ItemView {
     // 全文进 DOM，视觉裁剪交给 CSS line-clamp。slice(0, 420) 又不标省略
     // 的话，读者会以为模型把话讲断了——审批面板已经为这件事写过一回。
     e.quote.classList.toggle("is-off", !this.quote);
-    if (e.quote.textContent !== this.quote) {
-      e.quote.textContent = this.quote;
-      setTooltip(e.quote, this.quote);
+    // 展示层剥折叠块标签：源码模式划选跨过手册里的 <details> 时，引文条
+    // 会持续裸显标签。发给 sidecar 的 this.quote 永远是原文，一字不动。
+    const displayQuote = stripFoldTags(this.quote);
+    if (e.quote.textContent !== displayQuote) {
+      e.quote.textContent = displayQuote;
+      setTooltip(e.quote, displayQuote);
     }
   }
 
@@ -777,7 +779,9 @@ export class PenView extends ItemView {
       (main.querySelector(".sp-body") as HTMLElement | null) ??
       main.createDiv({ cls: "sp-body" });
     const stick = this.atBottom(log);
-    body.setText(visibleReply(text) || t().streamPlaceholder);
+    // 流式预览是纯文本（setText）：折叠块标签若不剥，"details" 会以裸字样
+    // 闪现在回复里（v0.18.3 用户实测）。done 后 MarkdownRenderer 重渲染。
+    body.setText(stripFoldTags(visibleReply(text)) || t().streamPlaceholder);
     if (stick) log.scrollTop = log.scrollHeight;
   }
 
