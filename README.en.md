@@ -41,7 +41,7 @@
 [System design](#4--system-design) ·
 [Install · Use · Privacy](#5--install--use--privacy) ·
 [Development](#6--development--tests--license) ·
-[Future Works](#7--future-works)
+[Future work](#7--future-work)
 
 ---
 
@@ -112,27 +112,25 @@ A full pass is five steps, and all five happen between your note and the sidebar
 leaving Obsidian, no terminal, nothing to feed to anyone in advance. The first four only read and
 ask. Only the last one touches your disk, and only once you have said so yourself.
 
-1. Highlight a passage in a note.
-2. Open the sidebar, click "use current selection" (the command palette has the same command),
-   then click a chip (don't give it away / explain to a beginner / examples only), or simply type
-   your question.
-3. He reads your note first, then answers you — or turns the question back on you.
+1. Highlight a passage in a note (live preview or reading view — both work).
+2. Open the Socrates sidebar and click **Use selection**. The chips under the quote light up:
+   *Don't tell me yet — ask me something*, *Assume I know nothing, then give me two examples*,
+   *Just show me examples*. Or type in the box and hit **Ask**.
+3. It reads your note first, then answers — or turns the question back on you.
 4. Meanwhile a separate background line (the deep-dive ◆ below) reads elsewhere in the same book,
    assembling deeper questions into a pool and releasing at most one per turn.
-5. Want the answer kept in the note? He proposes one edit, and nothing lands on disk until you
-   click Allow.
+5. Want the answer kept in the note? It proposes one edit, and nothing lands on disk until you
+   click **Allow this edit**.
 
-<img src="docs/img/shot-08-overview.png" width="100%"
-     alt="An Obsidian window split in two: on the left, the body of *Building DQN from Scratch* with one passage highlighted; on the right, the Socrates sidebar questioning that passage back and forth, with a ◆ deep-dive question hanging at the bottom.">
+<img src="docs/img/shot-select.en.png" width="100%"
+     alt="Obsidian split view on 0.18.7 with the UI in English: a passage about discount factor γ is highlighted in the note; the Socrates sidebar shows the quote, five chips (Don't tell me yet, Assume I know nothing, Just show me examples, Find the paper, Write that answer back), and the cursor on Use selection.">
 
-<sup>These interface shots are real runs, not mock-ups. The UI language follows Obsidian's, and
-these were taken in Chinese. The chips this README calls *don't give it away*, *explain to a
-beginner*, *examples only*, *find the paper* and *write it back* read, in an English interface,
-<em>"Don't tell me yet — ask me something"</em>, <em>"Assume I know nothing, then give me two
-examples"</em>, <em>"Just show me examples"</em>, <em>"Find the paper / where this came from"</em>
-and <em>"Write that answer back into the manual"</em>. The status line's "dev fallback
-DEEPSEEK_API_KEY" only shows when running from a source tree; on a normal install that spot names
-the endpoint you filled in on the settings page.</sup>
+<img src="docs/img/shot-08-overview.en.png" width="100%"
+     alt="The same window after a few turns: the note on the left, the Socrates sidebar on the right answering about γ = 0.9 versus the clock, with a purple ◆ deep-dive chip at the bottom asking why set γ by hand.">
+
+<sup>Shots from 0.18.7, English UI. Real runs, not mock-ups. The status line's
+<code>key stored locally …05fb</code> is the last four characters of the key in sidecar home
+(<code>~/.socrates-pen/llm.json</code>); the full key never appears on screen.</sup>
 
 **It is not equally good on any note.** The main conversation runs against any Markdown, but the
 background deep-dive needs anchors in the book, which means the handbook has to follow the
@@ -162,19 +160,19 @@ and that section's caption says so.
 
 One thing about reading them: the demo handbook is written in Chinese and the model answers in the
 language of the book, so the answers quoted below are translations, with the verbatim original one
-click away under each. [Future Works](#7--future-works) explains why the language switches.
+click away under each. [Future work](#7--future-work) explains why the language switches.
 
-### 3.1 · Don't give it away — `socratic`
+### 3.1 · Don't tell me yet — ask me something — `socratic`
 
 **The default chip.** It reads your selection and then **doesn't answer** — it goes looking for
 the crack in that passage you haven't noticed yet.
 
-<img src="docs/img/shot-02-socratic.png" width="100%"
-     alt="The sidebar after clicking the socratic chip: it sets the two update rules side by side, points out that the difference is not step size but whether the old record is remembered, and closes by asking the reader which one is closer to what the learner actually wants.">
+<img src="docs/img/shot-02-socratic.en.png" width="100%"
+     alt="After clicking Don't tell me yet — ask me something: the sidebar quotes the γ passage, notices what the text did not do, and asks whether 'optimal policy' means the mouse's or yours.">
 
 <table><tr><td>
 
-**You**: *(highlight decision ①, click "don't give it away", type nothing)*
+**You**: *(highlight decision ①, click "Don't tell me yet — ask me something", type nothing)*
 
 </td></tr><tr><td>
 
@@ -201,7 +199,7 @@ are given, and this one is estimated.
 > costs you one act of thinking every time it's used. A default of "ask you a question" has an
 > entirely different cost structure.
 
-### 3.2 · Explain to a beginner — `explain_zero`
+### 3.2 · Assume I know nothing, then give me two examples — `explain_zero`
 
 Same passage, different chip, completely different shape:
 **TL;DR → (a) concept contrast → (b) mechanism → (c) counterexample → two runnable examples.**
@@ -342,8 +340,8 @@ and assemble questions you can't ask yet but would ask one step further on, into
 you all at once, but released **at most one per turn** (`MAX_RELEASE_PER_TURN = 1`,
 `pen/probe_store.py:42`), with at most two hanging in the sidebar at a time.
 
-<img src="docs/img/shot-03-deep.png" width="100%"
-     alt="The chip area at the bottom of the sidebar: below the four fixed chips, one ◆ deep-dive question sits in a highlighted outline — "γ discounts the future, α discounts the old record; with both in play, what is Q actually chasing?"">
+<img src="docs/img/shot-03-deep.en.png" width="100%"
+     alt="Chip row at the bottom of the English sidebar: below the fixed chips, a purple ◆ deep-dive question — At gamma = 0.9, cheese ten steps away is worth about a third — a property of the cheese, or of the clock?">
 
 That run put three in the pool. Here is the third:
 
@@ -388,8 +386,8 @@ ingredients, it only lowered the *connection frequency* of one of them from ever
 
 ### 3.5 · Writing back, and the approval gate
 
-<img src="docs/img/shot-04-approval.png" width="100%"
-     alt="The approval panel: a heading reading "Approve this edit", the note that edit_file points at, then a line-by-line "--- original ---" / "+++ replaced with +++" comparison, and two buttons at the bottom — allow this edit, or refuse. The panel notes that the model picked the passage itself and nothing touches the note until you allow it.">
+<img src="docs/img/shot-04-approval.en.png" width="100%"
+     alt="Approval panel in the English sidebar: heading Approve this edit, edit_file pointing at /Users/you/vault/…, a --- before --- / +++ after +++ diff, and two buttons — Allow this edit and Reject. The panel notes that the model picked the snippet and nothing touches the note until you allow it.">
 
 <img src="docs/img/writeback.en.drawio.svg" alt="Write-back: three tools, three gates, one snapshot stack" width="100%">
 
@@ -446,8 +444,8 @@ Rolling back restores the original **byte for byte**.
 
 The two arrows in the sidebar walk a **snapshot stack**, not the editor's undo history.
 
-<img src="docs/img/shot-05-rollback.png" width="100%"
-     alt="Hovering the roll-back arrow at the top of the sidebar pops a tooltip: the whole note returns to its previous version, one step still available. Below it the full conversation, with the status lines for a successful handbook read and a successful edit to the original.">
+<img src="docs/img/shot-05-writeback.en.png" width="100%"
+     alt="After Allow: the sidebar status lines read reading ok then editing ok, and Socrates reports the paragraph was written in, with the new lines counted. The note on the left already contains the inserted prose. Roll back / redo in the header walk a snapshot stack of the whole note, not the editor undo.">
 
 ```
 GET  /v1/handbooks/dqn-550d425c/snapshots
@@ -528,10 +526,7 @@ GET /v1/usage
 }
 ```
 
-<img src="docs/img/shot-07-usage.png" width="100%"
-     alt="The spending panel on the settings page: 101,785 tokens in total across 2,694 conversations, broken out into main conversation 59,806, deep dive 41,979 and write-back 0, plus 34,432 served from cache.">
-
-<sup>Raw: [`10-usage.json`](docs/demo/transcripts/10-usage.json) — the actual bill after everything in 3.1–3.6 above</sup>
+<sup>Raw: [`10-usage.json`](docs/demo/transcripts/10-usage.json) — the actual bill after everything in 3.1–3.6 above. Settings → Socrates also shows this ledger at the bottom of the page.</sup>
 
 Three ledgers kept apart: `chat` is the line you're talking to, `probe` is the background deep-dive,
 `fold` is the fold generation used by write-back.
@@ -847,7 +842,6 @@ CHECK OK
 **All five architecture diagrams are `.drawio.svg`.** This English README points at the
 `.en.drawio.svg` copies. GitHub renders them as images; [draw.io](https://app.diagrams.net/) opens
 them for editing (the mxGraph model is stored in the root `<svg>` element's `content` attribute).
-Screenshots below were taken in a Chinese interface and are not translated yet.
 
 </details>
 
@@ -866,7 +860,7 @@ Three things to check before you start:
 One more thing worth knowing up front: the plugin UI is fully localised, but the model tends to
 answer in the language of the book you feed it, so an English handbook is what you want for an
 English session — the bundled demo handbook is Chinese. Two rough edges remain here, both listed
-under [Future Works](#7--future-works).
+under [Future work](#7--future-work).
 
 Once it's in the community plugin directory, go **Settings → Community plugins → Browse →
 Socrates**. Until then install it by hand: download `main.js`, `manifest.json` and `styles.css`
@@ -881,21 +875,22 @@ running. No terminal required at any point.
 
 ### Use
 
-1. Wait until the settings page says the local service is **running**, or click **Start**; then
-   fill in your API key under **Settings → Socrates**, optionally changing base URL, model and
-   thinking level.
-2. Open a note and **highlight a passage** (live preview or reading view), then open the Socrates
-   sidebar to use the current selection, or run the command-palette item.
-3. To write an answer into the note, say **where to insert or replace**, or use the write-back chip
-   after a real answer. The model must read the file first, then propose an edit in a separate
-   turn; the sidebar asks you to **Allow** before anything is saved.
+1. Wait until **Settings → Socrates** says the local service is **Running**, or click **Start**;
+   then paste your API key and click **Save** (Enter still works). You can also change base URL,
+   model and thinking level there.
+2. Open a note and **highlight a passage** (live preview or reading view), open the Socrates
+   sidebar, click **Use selection**, then pick a chip or type a question.
+3. To write an answer into the note, say **where to insert or replace**, or use
+   **Write that answer back into the manual** after a real answer. The model must read the file
+   first, then propose an edit in a separate turn; the sidebar asks you to **Allow this edit**
+   before anything is saved.
 4. **Roll back / Redo** restore **the whole note** from the snapshot stack, not just the selection.
 
-<img src="docs/img/shot-01-splash.png" width="100%"
-     alt="The sidebar as it looks freshly installed, before a key is filled in: a line at the top says the sidecar is up and to fill in an API key under Settings → Socrates; in the middle, the character-art portrait of Socrates and the wordmark; along the bottom, a row of chips — the first three lit, the search chip and the write-back chip greyed out.">
+<img src="docs/img/shot-01-splash.en.png" width="100%"
+     alt="English sidebar just opened, 0.18.7: status line Socrates · sidecar ok · key stored locally; the character-art portrait and The Socratic Method wordmark; hint text to highlight a passage then hit Use selection.">
 
-<img src="docs/img/shot-06-settings.png" width="100%"
-     alt="The settings page: start/stop and running state for the local service at the top, then language, API key (a password field), base URL, model name, thinking level, the background deep-dive toggle, and the hourly deep-dive ceiling among other dials.">
+<img src="docs/img/shot-06-settings.en.png" width="100%"
+     alt="Settings → Socrates in English: Thinking off, Dig deeper in the background on, deep-dig caps, token caps, and Sidecar URL http://127.0.0.1:8765. Start/Stop sit further up the same page.">
 
 ### Privacy and network
 
@@ -992,7 +987,7 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 ---
 
-## 7 · Future Works
+## 7 · Future work
 
 What it cannot do yet, or does poorly:
 
