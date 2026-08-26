@@ -34,6 +34,7 @@ from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
 from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, reading_roots
 from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
+from pen.compact import CompactPending, compact_session, should_auto_compact
 from pen.tutor import (
     ProviderError,
     build_user_packet,
@@ -198,6 +199,16 @@ def _no_session(lang: str) -> HTTPException:
 
 def _sse(ev: dict[str, Any]) -> str:
     return f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
+
+
+def _compact_allow_paths(original_path: Path) -> list[Path]:
+    """摘要只许写当前笔记和已登记书架上的文件，不把 vault 目录当白名单。"""
+    paths = [original_path]
+    try:
+        paths.extend(Path(m.original_path) for m in libraries.list_handbooks())
+    except Exception:
+        pass
+    return paths
 
 
 def _try_lock_session(sess, lang: str = "zh"):
@@ -697,6 +708,42 @@ def _ripe_deep(sess, anchor: dict[str, Any]) -> dict[str, Any]:
     return {"deep_items": items, "deep_cursor": box.get("cursor", 0)}
 
 
+@app.post("/v1/sessions/{session_id}/compact")
+def compact_chat(session_id: str, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """手动把这场主对话的旧回合折进滚动摘要。pending / 进行中拒绝。"""
+    try:
+        sess = STORE.get(session_id)
+    except KeyError as exc:
+        raise _no_session(lang) from exc
+    lock, sess = _try_lock_session(sess, lang)
+    try:
+        if sess.pending:
+            raise HTTPException(
+                409,
+                {"code": "approval_pending", "message": msg("approval.pending", lang)},
+            )
+        meta = _meta_or_404(sess.handbook_id, lang)
+        path = Path(meta.original_path)
+        try:
+            result = compact_session(
+                sess,
+                allow_paths=_compact_allow_paths(path),
+                original_path=path,
+            )
+        except CompactPending:
+            raise HTTPException(
+                409,
+                {"code": "approval_pending", "message": msg("approval.pending", lang)},
+            ) from None
+        STORE.save(sess)
+        out = _public_session(sess)
+        out["did"] = result.did
+        out["dropped_reads"] = result.dropped_reads
+        return out
+    finally:
+        lock.release()
+
+
 @app.get("/v1/sessions/{session_id}/deep")
 def deep_inbox(
     session_id: str,
@@ -797,8 +844,19 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             )
         except Exception:
             shelf = ""  # 登记表烂了不能把正常对话带崩
+        apply_session_lang(sess, lang, book_title=str(meta.title or ""))
+        auto_compacted = False
+        auto_dropped = 0
+        limits = body.merged_limits()
+        if should_auto_compact(sess, limits):
+            folded = compact_session(
+                sess,
+                allow_paths=_compact_allow_paths(path),
+                original_path=path,
+            )
+            auto_compacted = folded.did
+            auto_dropped = folded.dropped_reads
         try:
-            apply_session_lang(sess, lang, book_title=str(meta.title or ""))
             packet, anchor = build_user_packet(
                 idx,
                 path,
@@ -811,6 +869,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 intent_extra=intent_extra,
                 shelf=shelf,
                 lang=lang,
+                compact_fed=bool(sess.compacted),
             )
         except ValueError as exc:
             raise HTTPException(400, localized(exc, lang)) from exc
@@ -833,6 +892,16 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         ok = True
         has_sub = False
         try:
+            if auto_compacted:
+                yield _sse({"type": "compacted", "dropped_reads": auto_dropped})
+            if anchor.get("selection_capped"):
+                yield _sse(
+                    {
+                        "type": "status",
+                        "phase": "selection_capped",
+                        "text": "selection_capped",
+                    }
+                )
             for ev in stream_chat(
                 sess,
                 path,

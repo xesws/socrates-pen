@@ -788,7 +788,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 28 modules, 7,814 lines |
-| Python tests | 8,700 lines, **487 passed** |
+| Python tests | 9,366 lines, **524 passed** |
 | TypeScript (plugin) | 15 files, 3,839 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -821,7 +821,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **487 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **524 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -978,7 +978,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 487 passed
+python -m pytest pen/tests -q       # 524 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -994,12 +994,12 @@ event stream is in [`docs/demo/transcripts/`](docs/demo/transcripts/).
 
 What it cannot do yet, or does poorly:
 
-**A huge selection will blow up the first turn.** The opening packet does not stuff the whole book
-into the model: neighborhood 4,000 characters, table of contents 4,500. The selection itself has
-no cap — however much you highlight, that much rides in the first shot. Highlight a million-character
-note and that request is sized to the passage. Later this can fetch context on demand, in pieces.
-Almost no handbook is that large: the 13,083-line, 626 KB book this started from is already long,
-about 410,000 characters, and still nowhere near a million tokens.
+**A huge selection no longer rides in the first packet in full.** Neighborhood 4,000 characters and
+table of contents 4,500 already had caps; a selection over 4,000 characters keeps only the opening
+and the line numbers, and the rest is `read_file` on demand. Long sessions can fold earlier turns
+into a rolling summary with line anchors (command palette *Compact this session*, or automatically
+once the window-size knob in settings is hit) — sidebar bubbles stay; the next request does not
+resend the full text.
 
 **Deep follow-up questions work best on a structured handbook.** Background probes look for sections
 named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those

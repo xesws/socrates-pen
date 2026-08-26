@@ -57,11 +57,16 @@ export type SessionView = {
    * 而不是归零。sidecar >= v0.10.0 才有。
    */
   spend?: SpendBook;
+  /** 这场已经把旧回合折进滚动摘要。sidecar >= v0.19.0 才有。 */
+  compacted?: boolean;
+  /** 这次 compact 有没有真的折到东西。只在 POST compact 回包里有。 */
+  did?: boolean;
 };
 
 export type ChatMessage = {
-  /** "error" 只在前端：请求失败时的错误气泡，从不上行。 */
-  role: "user" | "assistant" | "tool" | "error";
+  /** "error" 只在前端：请求失败时的错误气泡，从不上行。
+   *  "note" 是 compact 分隔条：旧气泡还在，标明上面几轮已折进摘要。 */
+  role: "user" | "assistant" | "tool" | "error" | "note";
   text: string;
   ok?: boolean;
   /**
@@ -69,6 +74,8 @@ export type ChatMessage = {
    * 有它就能把落盘的中文 label 换成当前语言，旧快照没有则回落 text。
    */
   chip?: string;
+  /** sidecar >= v0.19.0：`note` 且 kind=compact 时前端用当前语言重绘文案。 */
+  kind?: string;
 };
 
 /** GET /v1/sessions/{id}/deep 的回包。running 为空 = 可以停轮询了。 */

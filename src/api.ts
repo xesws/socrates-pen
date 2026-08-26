@@ -100,6 +100,12 @@ export function makeApi(baseUrl: string) {
       }),
     getSession: (session_id: string) =>
       j<SessionView>(baseUrl, `/v1/sessions/${session_id}`),
+    compactSession: (session_id: string) =>
+      j<SessionView & { did?: boolean; dropped_reads?: number }>(
+        baseUrl,
+        `/v1/sessions/${session_id}/compact`,
+        { method: "POST" },
+      ),
     deepInbox: (session_id: string, since: number) =>
       j<DeepInbox>(baseUrl, `/v1/sessions/${session_id}/deep?since=${since}`),
     snapshots: (handbook_id: string) =>

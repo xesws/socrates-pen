@@ -50,6 +50,9 @@ CROSS_BOOK_CHARS = 24000
 # 实测跑满 50 轮时总 prompt 仍有 240 万字符。次数是第二道闸，两道任一触顶就收敛。
 CROSS_BOOK_READS = 8
 NEIGHBORHOOD_CHARS = 4000
+# 主对话划选硬上限。超过的第一包不带全文，改成「先读标题附近，再按需展开」。
+# 不上设置页——和 TOC_CHARS 同类，不是读者旋钮。
+SELECTED_TEXT_CHARS = 4000
 # 苏格拉底回答一轮里最多翻多少次工具。**从 tutor.py 搬过来的，那边不留别名**——
 # 留一个 `MAX_TOOL_ROUNDS = config.MAX_TOOL_ROUNDS` 就是第二个定义点，
 # 下次有人改 tutor 那个而不是这个，两边就分家了。
@@ -168,6 +171,10 @@ PROBE_OPEN_PER_RUN = 1
 MAX_TOKENS_CHAT = 0
 MAX_TOKENS_PROBE = 0
 MAX_TOKENS_CROSS_BOOK = 0
+# 主对话自动 compact 的窗口阈值。单位是上一枪的 prompt_tokens（此刻上下文占多大），
+# 不是累计花销。0 = 不自动折（手动命令仍可用）。默认 32000：远低于常见 128k
+# 窗口，长会话会真的折，而不是默默关掉。
+COMPACT_CHAT_TOKENS = 32000
 
 
 def probe_enabled(env_file: Path | None = None) -> bool:
@@ -231,6 +238,8 @@ class RuntimeLimits:
     max_tokens_chat: int
     max_tokens_probe: int
     max_tokens_cross_book: int
+    # 自动把旧回合折进滚动摘要的窗口阈值。0 = 不自动折。
+    compact_chat_tokens: int
 
 
 def default_limits() -> RuntimeLimits:
@@ -260,6 +269,7 @@ def default_limits() -> RuntimeLimits:
         max_tokens_chat=MAX_TOKENS_CHAT,
         max_tokens_probe=MAX_TOKENS_PROBE,
         max_tokens_cross_book=MAX_TOKENS_CROSS_BOOK,
+        compact_chat_tokens=COMPACT_CHAT_TOKENS,
     )
 
 
@@ -286,6 +296,7 @@ LIMIT_RANGE: dict[str, tuple[float, float]] = {
     "max_tokens_chat": (0, 4_000_000),
     "max_tokens_probe": (0, 1_000_000),
     "max_tokens_cross_book": (0, 4_000_000),
+    "compact_chat_tokens": (0, 500_000),
 }
 
 

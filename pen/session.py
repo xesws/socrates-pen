@@ -280,6 +280,10 @@ class PenSession:
     # /v1/chat/approve 里那一枪结束，中间隔着两个 HTTP 请求和一次落盘，
     # 所以它必须在会话上，不能只活在 _agent_loop 的闭包里。
     turn_spend: dict[str, int] = field(default_factory=metermod.blank)
+    # 上一枪 usage_snapshot.prompt_tokens：此刻窗口占多大，给自动 compact 用。
+    last_context_tokens: int = 0
+    # 这场已经折过至少一次。下一包不再整段重喂目录 / 邻域 / 书架。
+    compacted: bool = False
 
     def __post_init__(self) -> None:
         if not self.messages:
@@ -303,6 +307,8 @@ class PenSession:
             "turns": self.turns,
             "spend": {k: dict(v) for k, v in self.spend.items()},
             "turn_spend": dict(self.turn_spend),
+            "last_context_tokens": int(self.last_context_tokens or 0),
+            "compacted": bool(self.compacted),
             "updated_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -326,6 +332,7 @@ class PenSession:
             "dyn_chips": list(self.last_chips),
             # probe 那一格在这里恒为 0；app._public_session 会从账本补上。
             "spend": {k: dict(v) for k, v in self.spend.items()},
+            "compacted": bool(self.compacted),
         }
 
     @classmethod
@@ -348,6 +355,8 @@ class PenSession:
             # coerce_* 吃任何脏输入。旧快照里根本没这两个键 → 全 0，不需要迁移。
             spend=metermod.coerce_book(data.get("spend")),
             turn_spend=metermod.coerce(data.get("turn_spend")),
+            last_context_tokens=int(data.get("last_context_tokens") or 0),
+            compacted=bool(data.get("compacted")),
         )
 
 

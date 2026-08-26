@@ -680,7 +680,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | 部分 | 规模 |
 | --- | --- |
 | Python（sidecar，不含测试） | 28 个模块，7814 行 |
-| Python 测试 | 8700 行，**487 passed** |
+| Python 测试 | 9366 行，**524 passed** |
 | TypeScript（插件） | 15 个文件，3839 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -713,7 +713,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **487 passed**，
+后端 `python -m pytest pen/tests -q` → **524 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -845,7 +845,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 487 passed
+python -m pytest pen/tests -q       # 524 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -862,11 +862,10 @@ python -m pen.index --check 你的笔记.md
 
 现在还做不到、或做得不好的几件事：
 
-**超大选区会把第一轮撑爆。** 开场并不是把全书塞进模型：邻域有 4000 字符上限，
-目录有 4500。会爆的是框选本身没有上限——你划了多大一段，第一枪就带多大一段。
-框一整本百万字符的笔记，那一轮的请求会按这段原文的体积去撑。以后可以改成按需、
-按段取上下文，而不是把选区全文一次送走。绝大多数教材到不了这个量级：那本
-13083 行、626 KB 的通关手册已经很长，正文大约 41 万字符，离 100 万 token 还远。
+**超长划选第一包不再带全文。** 邻域 4000 字、目录 4500 字本来就有上限；划选超过
+4000 字时，第一包只留开头和行号，其余按需 `read_file`。长会话可以把旧回合折进
+带行号的滚动摘要（命令面板「把这场对话折进摘要」，或到了设置里那道窗口阈值
+自动折）——侧栏旧气泡还在，下次请求不再带全文。
 
 **深挖更适合按固定体例写的教材。** 后台追问会去「第三拍 · 出身」「第七拍 · 实操」这类小节
 下锚。普通随笔、或没有这些小节的英文教材，主对话不受影响，跨章节的深挖会变弱。可以对照

@@ -48,6 +48,7 @@ export const LIMIT_SPEC = {
   max_tokens_chat: { def: 0, min: 0, max: 4000000, step: 1000 },
   max_tokens_probe: { def: 0, min: 0, max: 1000000, step: 1000 },
   max_tokens_cross_book: { def: 0, min: 0, max: 4000000, step: 1000 },
+  compact_chat_tokens: { def: 32000, min: 0, max: 500000, step: 1000 },
   // ── 高级 ──
   max_tool_rounds: { def: 100, min: 1, max: 200 },
   cross_book_chars: { def: 24000, min: 0, max: 400000, step: 1000 },
@@ -72,6 +73,7 @@ export const COMMON_LIMITS: LimitKey[] = [
   "max_tokens_chat",
   "max_tokens_probe",
   "max_tokens_cross_book",
+  "compact_chat_tokens",
 ];
 
 export const ADVANCED_LIMITS: LimitKey[] = (

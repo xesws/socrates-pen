@@ -140,45 +140,67 @@ def build_user_packet(
     intent_extra: str = "",
     shelf: str = "",
     lang: str = "zh",
+    compact_fed: bool = False,
 ) -> tuple[str, dict[str, Any]]:
+    from pen.compact import cap_selected_text, compact_fed_packet_suffix
+
     section = idx.locate(start_line)
-    nb = neighborhood(original_path, section, (start_line, end_line))
-    toc_lines = []
-    for t in idx.toc:
-        if t.beat is None:
-            toc_lines.append(f"- {t.level}  L{t.start_line}  {t.heading}")
-        else:
-            toc_lines.append(f"  - {t.level} / {t.beat}  L{t.start_line}")
-    # 按字符预算截，不按条数。以前是 toc_lines[:80]，而这本手册有 87 条——
-    # 被砍掉的正好是尾部的 Capstone 和附录，跨关的问题就是这么问不出来的。
-    toc = _budget_lines(toc_lines, TOC_CHARS)
-    # 只有一本书时 shelf 是空串，整段消失——不写「（无）」。
-    # 写「（无）」会让模型以为我们替它确认过没有别的书；整段不在时，
-    # 它答「另一本我没读到」是对的，那本来就是实情。
-    # 预算截完可能一行不剩（首行就超预算）。段头还在、条目却是空的，等于向模型
-    # 断言「有别的教材」然后一本都不给——它只能凭空编。宁可整段不出现。
-    shelf_rows = _budget_lines(shelf.splitlines(), SHELF_CHARS).strip()
+    capped_sel, selection_capped = cap_selected_text(
+        selected_text, lang=lang, start_line=start_line, end_line=end_line
+    )
     en = lang == "en"
-    if shelf_rows:
+    if compact_fed:
+        # 目录 / 邻域 / 书架已经在滚动摘要里。再整段重喂就是把折过的东西喂回去。
+        mid = compact_fed_packet_suffix(lang)
+    else:
+        toc_lines = []
+        for t in idx.toc:
+            if t.beat is None:
+                toc_lines.append(f"- {t.level}  L{t.start_line}  {t.heading}")
+            else:
+                toc_lines.append(f"  - {t.level} / {t.beat}  L{t.start_line}")
+        # 按字符预算截，不按条数。以前是 toc_lines[:80]，而这本手册有 87 条——
+        # 被砍掉的正好是尾部的 Capstone 和附录，跨关的问题就是这么问不出来的。
+        toc = _budget_lines(toc_lines, TOC_CHARS)
+        nb = neighborhood(original_path, section, (start_line, end_line))
+        # 只有一本书时 shelf 是空串，整段消失——不写「（无）」。
+        # 写「（无）」会让模型以为我们替它确认过没有别的书；整段不在时，
+        # 它答「另一本我没读到」是对的，那本来就是实情。
+        # 预算截完可能一行不剩（首行就超预算）。段头还在、条目却是空的，等于向模型
+        # 断言「有别的教材」然后一本都不给——它只能凭空编。宁可整段不出现。
+        shelf_rows = _budget_lines(shelf.splitlines(), SHELF_CHARS).strip()
+        if shelf_rows:
+            if en:
+                shelf_block = (
+                    "[Other handbooks in the workspace]\n"
+                    "(Titles skimmed from the first 400 lines of each book, not the body. "
+                    "To say what a book teaches, read_file its path first. If you cannot read it, "
+                    "or this turn's budget is gone, say you have not read it — guessing from the "
+                    "title is the same as pretending you searched.)\n"
+                    f"{shelf_rows}\n\n"
+                )
+            else:
+                shelf_block = (
+                    "[工作目录里的其他教材]\n"
+                    "（下面只是每本前 400 行扒出来的标题，不是正文。要说它讲了什么，\n"
+                    "  先用 read_file 按 path 读，读了再说。读不到、或者本轮额度用完了，\n"
+                    "  就照实说「那本我没读到」——按标题猜内容，和假装搜过是一回事。）\n"
+                    f"{shelf_rows}\n\n"
+                )
+        else:
+            shelf_block = ""
         if en:
-            shelf_block = (
-                "[Other handbooks in the workspace]\n"
-                "(Titles skimmed from the first 400 lines of each book, not the body. "
-                "To say what a book teaches, read_file its path first. If you cannot read it, "
-                "or this turn's budget is gone, say you have not read it — guessing from the "
-                "title is the same as pretending you searched.)\n"
-                f"{shelf_rows}\n\n"
+            mid = (
+                f"{shelf_block}[Table of contents (do not recite the book)]\n{toc}\n\n"
+                f"[Selection]\n{capped_sel}\n\n"
+                f"[Neighborhood]\n{nb}\n\n"
             )
         else:
-            shelf_block = (
-                "[工作目录里的其他教材]\n"
-                "（下面只是每本前 400 行扒出来的标题，不是正文。要说它讲了什么，\n"
-                "  先用 read_file 按 path 读，读了再说。读不到、或者本轮额度用完了，\n"
-                "  就照实说「那本我没读到」——按标题猜内容，和假装搜过是一回事。）\n"
-                f"{shelf_rows}\n\n"
+            mid = (
+                f"{shelf_block}[全书目录（不要整本背诵）]\n{toc}\n\n"
+                f"[框选]\n{capped_sel}\n\n"
+                f"[邻域]\n{nb}\n\n"
             )
-    else:
-        shelf_block = ""
     intent = _chip_intent(chip, lang)
     none_user = (
         "(none — follow the chip)"
@@ -186,6 +208,11 @@ def build_user_packet(
         else "（无，按芯片意图行动）"
     )
     none_asked = "(none yet)" if en else "（还没抛过）"
+    if compact_fed:
+        if en:
+            mid = f"{mid}[Selection]\n{capped_sel}\n\n"
+        else:
+            mid = f"{mid}[框选]\n{capped_sel}\n\n"
     if en:
         packet = f"""[Source]
 handbook_path: {original_path}
@@ -195,16 +222,7 @@ q_title: {section.q_title or "—"}
 kind: {section.kind}
 lines: {start_line}-{end_line}
 
-{shelf_block}[Table of contents (do not recite the book)]
-{toc}
-
-[Selection]
-{selected_text}
-
-[Neighborhood]
-{nb}
-
-[Intent]
+{mid}[Intent]
 chip = {chip}
 {intent}
 {intent_extra}
@@ -224,16 +242,7 @@ q_title: {section.q_title or "—"}
 kind: {section.kind}
 lines: {start_line}-{end_line}
 
-{shelf_block}[全书目录（不要整本背诵）]
-{toc}
-
-[框选]
-{selected_text}
-
-[邻域]
-{nb}
-
-[意图]
+{mid}[意图]
 chip = {chip}
 {intent}
 {intent_extra}
@@ -252,7 +261,9 @@ chip = {chip}
         "kind": section.kind,
         "start_line": start_line,
         "end_line": end_line,
-        "selected_text": selected_text,
+        "selected_text": capped_sel,
+        "selection_capped": selection_capped,
+        "selected_chars": len(selected_text or ""),
     }
     return packet, anchor
 
@@ -596,6 +607,7 @@ def _agent_loop(
                     getattr(got_usage, "completion_tokens", 0) or 0,
                 )
             )
+            session.last_context_tokens = int(usage["prompt_tokens"] or 0)
         # 记账在 if 外面：usage 缺失时这一枪照样是花过钱的，calls 该 +1。
         # read_usage(None) 会安静地回零，不会炸。
         row = meter.add(got_usage)

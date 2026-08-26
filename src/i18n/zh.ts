@@ -56,6 +56,10 @@ const LIMIT_TEXT_ZH: Record<string, [string, string]> = {
     "翻别的教材的 token 上限",
     "0 = 不限。它管的是「这一轮已经烧到多少就别再开新书」——别的书读进来之后每轮都要重发，代价是复利。",
   ],
+  compact_chat_tokens: [
+    "主对话自动折进摘要的窗口",
+    "0 = 不自动折（命令面板仍可手动折）。到了就在下一轮开场把旧回合收成带行号的摘要，侧栏旧气泡还在。这不是花钱硬上限，也不是丢掉旧回合。",
+  ],
   max_tool_rounds: ["苏格拉底一轮最多翻几次书", "翻本册不额外收费，跨教材另有下面两道闸。"],
   cross_book_chars: ["一轮里翻别的教材的字符预算", "读当前这本不计，本职阅读一次都不受影响。"],
   cross_book_reads: ["一轮里翻别的教材的次数上限", "光封字节封不住：模型每次只读一行时，字节预算永远用不完。"],
@@ -83,6 +87,7 @@ export const zh = {
   ribbonTooltip: "打开苏格拉底",
   cmdAskSelection: "用当前选区提问",
   cmdOpenPanel: "打开面板",
+  cmdCompactSession: "把这场对话折进摘要",
 
   // ── 底座按钮 ──
   btnUseSelection: "用当前选区",
@@ -92,6 +97,13 @@ export const zh = {
 
   // ── 品牌条工具按钮 ──
   tipNewSession: "另起一场，丢掉这场的模型记忆和选区",
+  tipCompact: "把更早的回合折进摘要。侧栏旧气泡还在，下次请求不再带全文。",
+  compactMarker: "上面几轮已经折进摘要",
+  kickerCompact: "摘要",
+  noticeCompactEmpty: "还没有可折的对话",
+  noticeCompactPending: "有一次编辑在等你审批，先点允许或拒绝，再折摘要。",
+  noticeCompactBusy: "这场对话还在跑，先等它结束。",
+  noticeCompactOk: "旧回合已经折进摘要。侧栏气泡还在。",
   tipUndoEmpty: "还没有可回退的版本。允许一次编辑后才会亮。",
   tipUndo: (count: number): string => `整篇笔记回到上一版（还能退 ${count} 次）`,
   tipRedoEmpty: "没有可重做的版本",
@@ -186,6 +198,7 @@ export const zh = {
     writing: "在写…",
     reading: "在翻手册…",
     tool: "在动手…",
+    selection_capped: "划选太长，第一包只带了开头，其余按需再读",
   } as Record<string, string>,
   // 推理阶段的活体计数。读者看的不是这个数本身，是**它在跳**——
   // 实测正文要等 14.5 秒才开始，那段时间以前屏幕上什么都没有。

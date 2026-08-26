@@ -44,6 +44,7 @@ export default class SocratesPenPlugin extends Plugin {
   private ribbonEl: HTMLElement | null = null;
   private cmdAsk: Command | null = null;
   private cmdOpen: Command | null = null;
+  private cmdCompact: Command | null = null;
   readonly sidecar = new SidecarManager();
 
   async onload(): Promise<void> {
@@ -90,6 +91,13 @@ export default class SocratesPenPlugin extends Plugin {
         void this.activateView();
       },
     });
+    this.cmdCompact = this.addCommand({
+      id: "socrates-pen-compact",
+      name: t().cmdCompactSession,
+      callback: () => {
+        void this.activateView().then((view) => view.compactSession());
+      },
+    });
   }
 
   onunload(): void {
@@ -118,6 +126,7 @@ export default class SocratesPenPlugin extends Plugin {
     const prefix = `${this.manifest.name}: `;
     if (this.cmdAsk) this.cmdAsk.name = prefix + s.cmdAskSelection;
     if (this.cmdOpen) this.cmdOpen.name = prefix + s.cmdOpenPanel;
+    if (this.cmdCompact) this.cmdCompact.name = prefix + s.cmdCompactSession;
     for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN)) {
       const view = leaf.view;
       if (view instanceof PenView) view.relocalize();

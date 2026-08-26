@@ -157,6 +157,24 @@
   margin-bottom: 2px;
 }
 
+.socrates-pen .sp-turn.is-note {
+  align-self: stretch;
+  margin: 6px 0;
+}
+
+.socrates-pen .sp-turn.is-note .sp-kicker {
+  text-align: center;
+}
+
+.socrates-pen .sp-turn.is-note .sp-body {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  border-top: 1px dashed var(--background-modifier-border);
+  border-bottom: 1px dashed var(--background-modifier-border);
+  padding: 6px 8px;
+}
+
 .socrates-pen .sp-turn.is-user {
   align-self: flex-end;
   max-width: 92%;

@@ -92,6 +92,15 @@ err = await grab(() => api.makeApi("http://x").getSession("abc"));
 check("500 不是「没了」", api.isGone(err) === false);
 check("500 的状态码也带出来", err?.status === 500);
 
+stubFetch({
+  status: 409,
+  detail: { code: "approval_pending", message: "有一次编辑在等你审批，先点允许或拒绝。" },
+});
+err = await grab(() => api.makeApi("http://x").compactSession("abc"));
+check("compact pending 是 409", err instanceof api.ApiError && err.status === 409);
+check("compact pending 带机器码", err?.code === "approval_pending");
+check("compact pending 文案原样保留", err?.message === "有一次编辑在等你审批，先点允许或拒绝。");
+
 check("isGone 对普通 Error 是 false", api.isGone(new Error("404")) === false);
 check("isGone 对 undefined 不炸", api.isGone(undefined) === false);
 // 光带 code 不带 404，或者光 404 不带 code，都不算

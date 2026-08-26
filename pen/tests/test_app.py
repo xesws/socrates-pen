@@ -1729,3 +1729,26 @@ def test_imported_book_name_reaches_the_session_on_disk(tmp_path: Path, monkeypa
     assert "《从零手写 DQN · 强化学习通关手册》" in first
     assert "SWE" not in first, "别的书的会话里不该还写着那本手册"
     assert "book_title" not in saved, "它不落盘"
+
+
+def test_compact_refuses_pending_with_409() -> None:
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        sess = STORE.get(sid)
+        sess.pending = {
+            "id": "p1",
+            "name": "edit_file",
+            "args": {"old_string": "a", "new_string": "b"},
+        }
+        STORE.save(sess)
+        r = client.post(f"/v1/sessions/{sid}/compact")
+        assert r.status_code == 409
+        assert r.json()["detail"]["code"] == "approval_pending"
+        assert STORE.get(sid).pending["id"] == "p1"
+
+
+def test_compact_missing_session_is_gone() -> None:
+    with TestClient(app) as client:
+        r = client.post("/v1/sessions/deadbeefdeadbeefdeadbeefdeadbeef/compact")
+        assert r.status_code == 404
+        assert r.json()["detail"]["code"] == "session_gone"

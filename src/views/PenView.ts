@@ -53,6 +53,7 @@ type Els = {
   ask: HTMLButtonElement;
   pick: HTMLButtonElement;
   fresh: HTMLButtonElement;
+  compact: HTMLButtonElement;
   undo: HTMLButtonElement;
   redo: HTMLButtonElement;
 };
@@ -296,6 +297,8 @@ export class PenView extends ItemView {
     const tools = brand.createDiv({ cls: "sp-brand-tools" });
     const fresh = tools.createEl("button", { cls: "sp-icon" });
     setIcon(fresh, "square-pen");
+    const compact = tools.createEl("button", { cls: "sp-icon" });
+    setIcon(compact, "fold-vertical");
     const undo = tools.createEl("button", { cls: "sp-icon" });
     setIcon(undo, "undo-2");
     const redo = tools.createEl("button", { cls: "sp-icon" });
@@ -321,7 +324,7 @@ export class PenView extends ItemView {
 
     this.els = {
       dot, brandSub, alert, log, panel,
-      quote, chips, bar, status, input, ask, pick, fresh, undo, redo,
+      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo,
     };
 
     // 事件只绑一次。pick 用 bindKeepFocus：pointerdown 阶段就取选区，
@@ -332,6 +335,8 @@ export class PenView extends ItemView {
     setTooltip(pick, t().tipUseSelection);
     setTooltip(fresh, t().tipNewSession);
     fresh.onclick = () => void this.newSession();
+    setTooltip(compact, t().tipCompact);
+    compact.onclick = () => void this.compactSession();
     undo.onclick = () => void this.doRollback();
     redo.onclick = () => void this.doRedo();
     input.placeholder = t().askPlaceholder;
@@ -511,6 +516,7 @@ export class PenView extends ItemView {
     e.ask.disabled = blocked || !this.llmOk;
     e.pick.disabled = this.busy || Boolean(this.pending);
     e.fresh.disabled = blocked;
+    e.compact.disabled = blocked || !this.sessionId;
     e.undo.disabled = this.busy || this.undoN <= 0;
     e.redo.disabled = this.busy || this.redoN <= 0;
     setTooltip(e.undo, this.undoN > 0 ? t().tipUndo(this.undoN) : t().tipUndoEmpty);
@@ -685,6 +691,15 @@ export class PenView extends ItemView {
         this.splashLevel = "none";
         for (const m of this.msgs) {
           if (g !== this.paintGen || !this.els) break;
+          if (m.role === "note") {
+            const turn = log.createDiv({ cls: "sp-turn is-note" });
+            turn.createDiv({ cls: "sp-kicker", text: t().kickerCompact });
+            turn.createDiv({
+              cls: "sp-body",
+              text: m.kind === "compact" || !m.text ? t().compactMarker : m.text,
+            });
+            continue;
+          }
           if (m.role === "error") {
             const turn = log.createDiv({ cls: "sp-turn is-error" });
             turn.createDiv({ cls: "sp-kicker", text: t().kickerPen });
@@ -1144,6 +1159,46 @@ export class PenView extends ItemView {
     if (this.pending) this.status = t().statusAwaitApproval;
   }
 
+  /**
+   * 自动 compact 的 SSE 到达时，当前发送已经在 msgs 末尾垫了 user + 空 assistant。
+   * note 要插在这两条之前，并且一场只留一条。
+   */
+  private insertCompactNote(): void {
+    const note: ChatMessage = { role: "note", kind: "compact", text: "" };
+    const rest = this.msgs.filter((m) => m.role !== "note");
+    if (rest.length >= 2) {
+      this.msgs = [...rest.slice(0, -2), note, ...rest.slice(-2)];
+    } else {
+      this.msgs = [...rest, note];
+    }
+    void this.paintLog("force");
+  }
+
+  async compactSession(): Promise<void> {
+    if (this.busy) {
+      new Notice(t().noticeCompactBusy);
+      return;
+    }
+    if (this.pending) {
+      new Notice(t().noticeCompactPending);
+      return;
+    }
+    if (!this.sessionId) {
+      new Notice(t().noticeCompactEmpty);
+      return;
+    }
+    try {
+      const sess = await this.api().compactSession(this.sessionId);
+      this.msgs = sess.ui_messages || [];
+      this.paintBar();
+      await this.paintLog("force");
+      new Notice(sess.did === false ? t().noticeCompactEmpty : t().noticeCompactOk);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      new Notice(msg);
+    }
+  }
+
   async newSession(): Promise<void> {
     if (!this.handbookId) {
       new Notice(t().noticeRegisterFirst);
@@ -1270,6 +1325,8 @@ export class PenView extends ItemView {
           if (ev.type === "status") {
             this.status = phaseText(String(ev.phase || ""), String(ev.text || ""));
             this.setStatus();
+          } else if (ev.type === "compacted") {
+            this.insertCompactNote();
           } else if (ev.type === "think") {
             this.thinkChars = Number(ev.chars) || 0;
             this.setStatus();
