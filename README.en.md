@@ -161,9 +161,9 @@ edited afterwards — the capture environment's temporary absolute paths became 
 the one exception: they come from the author's own local sessions, are full of private vault paths,
 and that section's caption says so.
 
-One thing about reading them: the demo handbook is written in Chinese and the model answers in the
-language of the book, so the answers quoted below are translations, with the verbatim original one
-click away under each. [Future work](#7--future-work) explains why the language switches.
+One thing about reading them: the demo handbook is written in Chinese. Quotes stay in the book's
+language, and the model tends to answer in that language too, so the answers quoted below are
+translations, with the verbatim original one click away under each.
 
 ### 3.1 · Don't tell me yet — ask me something — `socratic`
 
@@ -860,10 +860,10 @@ Three things to check before you start:
 - **Python 3.11 or later** on this computer ([python.org](https://www.python.org/downloads/))
 - An **API key** for an OpenAI-compatible Chat Completions endpoint
 
-One more thing worth knowing up front: the plugin UI is fully localised, but the model tends to
-answer in the language of the book you feed it, so an English handbook is what you want for an
-English session — the bundled demo handbook is Chinese. Two rough edges remain here, both listed
-under [Future work](#7--future-work).
+One more thing worth knowing up front: the plugin UI is fully localised, and switching the
+interface to English also switches the persona and follow-ups. The model still tends to answer in
+the language of the book you feed it, so an English handbook is what you want for an English
+session — the bundled demo handbook is Chinese.
 
 Once it's in the community plugin directory, go **Settings → Community plugins → Browse →
 Socrates**. Until then install it by hand: download `main.js`, `manifest.json` and `styles.css`
@@ -1005,9 +1005,6 @@ about 410,000 characters, and still nowhere near a million tokens.
 named like 「第三拍 · 出身」 and 「第七拍 · 实操」. Ordinary notes, or English books without those
 headings, still work for the main conversation; cross-chapter probes get weaker. See
 [`docs/demo/从零手写DQN.md`](docs/demo/从零手写DQN.md) for a template.
-
-**The handbook is not translated.** Switch the UI to English and the persona and follow-ups follow
-it; the highlighted passage still goes in as written, and quotations stay in the book's language.
 
 **Very few model combinations have been tested.** The examples in this README all ran on
 `deepseek/deepseek-v4-flash`. Other OpenAI-compatible endpoints should work by protocol; they have
