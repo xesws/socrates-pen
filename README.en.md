@@ -9,6 +9,9 @@
 <img src="docs/img/hero.en.png" width="840"
      alt="A violet gradient card: on the left, a bust of Socrates drawn with the density characters . : s A 3 G &amp; @; on the right, the SOCRATES wordmark, the tagline The Socratic Method and the subtitle Socrates-agent">
 
+<img src="docs/img/image.gif" width="840"
+     alt="Demo: highlight a passage in the note, click Use selection, and the Socrates sidebar starts asking.">
+
 **The Socratic method for going deep on any handbook**
 
 [中文](README.md) · **English**

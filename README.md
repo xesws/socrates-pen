@@ -8,6 +8,9 @@
 <img src="docs/img/hero.png" width="840"
      alt="紫色渐变卡片：左边是用 . : s A 3 G &amp; @ 这套密度字符拼出的苏格拉底半身像，右边是 SOCRATES 字标、标语「苏格拉底学习法」和副题 Socrates-agent">
 
+<img src="docs/img/image.gif" width="840"
+     alt="演示：在笔记里划中一段，点 Use selection，苏格拉底侧栏开始追问。">
+
 **苏格拉底学习法，深度学习任何一本教材**
 
 **中文** · [English](README.en.md)
