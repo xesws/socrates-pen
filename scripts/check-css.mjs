@@ -8,16 +8,40 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const css = readFileSync(
-  resolve(dirname(fileURLToPath(import.meta.url)), "../styles.css"),
-  "utf8",
-);
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const css = readFileSync(resolve(root, "styles.css"), "utf8");
+const heroPy = readFileSync(resolve(root, "scripts/render-hero.py"), "utf8");
 const checks = [];
 const check = (name, pass, extra) => checks.push([name, Boolean(pass), extra]);
 
-// 1) 零硬编码色值：颜色一律走主题变量，否则换主题就穿帮
+// 启动卡是深色岛，色标与 README hero 锁定（render-hero.py TINTS["noble"] / TEMPLATE）。
+// 别处仍然零硬编码：换主题穿帮的坑就是这么来的。
+const SPLASH_HEX = [
+  "#30293D",
+  "#2A2436",
+  "#241F2E",
+  "#B3B9C0",
+  "#DCDDDE",
+  "#9AA0A6",
+];
 const hex = css.match(/#[0-9a-fA-F]{3,8}\b/g) || [];
-check("零硬编码色值", hex.length === 0, hex.join(" "));
+const splashSet = new Set(SPLASH_HEX.map((h) => h.toUpperCase()));
+const stray = hex.filter((h) => !splashSet.has(h.toUpperCase()));
+check("零硬编码色值（启动卡深色岛除外）", stray.length === 0, stray.join(" "));
+const present = new Set(hex.map((h) => h.toUpperCase()));
+const missing = SPLASH_HEX.filter((h) => !present.has(h.toUpperCase()));
+check("启动卡深色岛色标齐", missing.length === 0, missing.join(" "));
+const drifted = SPLASH_HEX.filter((h) => !heroPy.includes(h));
+check("启动卡色标与 README hero 同源", drifted.length === 0, drifted.join(" "));
+const splashRule = css.match(/\.socrates-pen \.sp-splash \{[^}]+\}/);
+check(
+  "启动卡是 color-scheme: dark 的岛",
+  Boolean(splashRule && /color-scheme:\s*dark/.test(splashRule[0])),
+);
+check(
+  "启动卡底不跟 background-secondary",
+  Boolean(splashRule && !splashRule[0].includes("--background-secondary")),
+);
 
 // 2) 容器查询必须写在主规则之后。同特异性下后写的赢——
 //    写在前面等于没写，v0.8.0 加的两档芯片区放宽就这么白写了四个版本。

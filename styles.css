@@ -17,7 +17,8 @@
    面板 → 引文 → 芯片，输入行永远在，对话区永远至少 4em。
    即使某个主题让百分比无法解析，这个保证依然成立。
 
-   颜色一律走库主题变量，全文件零硬编码色值。
+   颜色一律走库主题变量。唯一例外是启动卡 .sp-splash：那是深色岛，
+   色标钉死，浅色主题下也不反选（见该块注释）。
    ============================================================ */
 
 .socrates-pen {
@@ -610,9 +611,10 @@
    --sp-adv（字宽比）由 PenView 实测一次写在根上，随主题换字体重测。
    ============================================================ */
 
-/* 底色跟着用户在「设置 → 外观 → 强调色」里选的颜色走：color-mix 把
-   --interactive-accent 掺进 --background-secondary，深浅两套主题、各种强调色
-   下都成立（紫/绿/橙/红/青实测过）。全程零硬编码色值。
+/* 这张卡是深色岛，不跟库的浅色主题反选。密度字符靠暗底衬浅色才成立；
+   若把 --background-secondary 当底、--text-muted 当字，浅色主题会把脸洗成一团浅灰。
+   色标与 README hero 同源：scripts/render-hero.py 的 TINTS["noble"] 与 TEMPLATE。
+   强调色只进边框，不进底——兑进底会抬饱和度，v0.16.6 已经被读者退过。
 
    container-type 在这里，所以 100cqi 解析的是**内容盒**，padding 已经扣掉，
    下面字符画的字号反解不受影响。 */
@@ -621,11 +623,12 @@
   width: 100%;
   padding: 16px 12px 14px;
   border-radius: 10px;
+  color-scheme: dark;
   background: linear-gradient(
     150deg,
-    color-mix(in srgb, var(--interactive-accent) 16%, var(--background-secondary)) 0%,
-    color-mix(in srgb, var(--interactive-accent) 4%, var(--background-secondary)) 60%,
-    var(--background-secondary) 100%
+    #30293D 0%,
+    #2A2436 60%,
+    #241F2E 100%
   );
   border: 1px solid color-mix(in srgb, var(--interactive-accent) 18%, transparent);
   user-select: none;
@@ -657,20 +660,20 @@
   white-space: pre;
 }
 
-/* 肖像用一种颜色即可：形状信息在字符密度里。深色主题下浅色字符在暗底上
-   把脸提亮，浅色主题下深色字符在白底上把脸压暗，两边都成立。 */
-.socrates-pen .sp-art.is-portrait {
+/* 肖像用一种颜色即可：形状信息在字符密度里。字色钉成浅灰，永远衬在岛的暗底上，
+   不跟 --text-muted 走——浅色主题里那支变量是深的，脸会被压成墨渍。 */
+.socrates-pen .sp-splash .sp-art.is-portrait {
   --sp-art-max: 11px;
-  color: var(--text-muted);
+  color: #B3B9C0;
 }
 
 /* 字标：和肖像同一套密度阶画出来的，所以也用同一种处理——单色，不加投影。
-   密度字符自带明暗层次，再叠一层 3D 挤出只会把笔画糊掉。字标比肖像亮一档
-   （text-normal vs text-muted），层次靠这个拉开。 */
-.socrates-pen .sp-art.is-word {
+   密度字符自带明暗层次，再叠一层 3D 挤出只会把笔画糊掉。字标比肖像亮一档，
+   层次靠这个拉开。 */
+.socrates-pen .sp-splash .sp-art.is-word {
   --sp-art-max: 13px;
   margin-top: 15px;
-  color: var(--text-normal);
+  color: #DCDDDE;
 }
 
 /* 标语是一行字，不是一幅画：跟字标同一支等宽字体、同一个色阶，靠字距对齐
@@ -684,7 +687,7 @@
   line-height: 1.3;
   letter-spacing: 0.34em;
   text-indent: 0.34em; /* 抵消末字后多出的字距，视觉才真居中 */
-  color: var(--text-normal);
+  color: #DCDDDE;
 }
 
 .socrates-pen .sp-splash-sub {
@@ -693,7 +696,7 @@
   font-family: var(--font-monospace);
   font-size: 10px;
   letter-spacing: 0.16em;
-  color: var(--text-faint);
+  color: #9AA0A6;
 }
 
 /* 宽窄两档都在 DOM 里，由容器查询挑一档显示——比在 JS 里测宽度选资产
@@ -712,20 +715,20 @@
 }
 
 @container (min-width: 480px) {
-  .socrates-pen .sp-art.is-portrait {
+  .socrates-pen .sp-splash .sp-art.is-portrait {
     --sp-art-max: 14px;
   }
-  .socrates-pen .sp-art.is-word {
+  .socrates-pen .sp-splash .sp-art.is-word {
     --sp-art-max: 16px;
   }
 }
 
 /* 超宽侧栏：别让 Logo 停止生长 */
 @container (min-width: 680px) {
-  .socrates-pen .sp-art.is-portrait {
+  .socrates-pen .sp-splash .sp-art.is-portrait {
     --sp-art-max: 18px;
   }
-  .socrates-pen .sp-art.is-word {
+  .socrates-pen .sp-splash .sp-art.is-word {
     --sp-art-max: 21px;
   }
 }
