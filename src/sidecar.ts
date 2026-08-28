@@ -1,6 +1,6 @@
 /**
- * 本机 sidecar：找系统 Python → 家目录 venv → pip 装本仓 → spawn。
- * 不走 shell。只绑 loopback。
+ * 本机 sidecar：家目录 venv 已对齐就直接 spawn；没有才找系统 Python 建 venv，
+ * 再 pip 装本仓。不走 shell。只绑 loopback。
  *
  * 设置页「停止」按配置的 loopback 端口停掉正在听的进程（含 keep-alive
  * 留下的、别的库拉起的、旧版残留）。退出 Obsidian 仍只杀本次 spawn 的
@@ -188,13 +188,16 @@ async function python311(bin: string, prefix: string[] = []): Promise<boolean> {
   }
 }
 
+/** Dock 启动的 Obsidian PATH 经常没有 Homebrew。venv 已在时根本不该走到这里。 */
+export const PYTHON_FALLBACKS = ["/opt/homebrew/bin/python3", "/usr/local/bin/python3"];
+
 async function findSystemPython(override: string): Promise<{ bin: string; prefix: string[] } | null> {
   const trimmed = override.trim();
   if (trimmed) {
     if (await python311(trimmed)) return { bin: trimmed, prefix: [] };
     return null;
   }
-  const nix = ["python3", "python"];
+  const nix = ["python3", "python", ...PYTHON_FALLBACKS];
   for (const bin of nix) {
     if (await python311(bin)) return { bin, prefix: [] };
   }
@@ -202,6 +205,16 @@ async function findSystemPython(override: string): Promise<{ bin: string; prefix
     return { bin: "py", prefix: ["-3"] };
   }
   return null;
+}
+
+/** 家目录 venv 已经能干活时，启动不必再找系统 python3。 */
+export function venvCoversPlugin(ver: string | null | undefined, pluginVersion: string): boolean {
+  return sidecarUsable(ver ?? undefined, pluginVersion);
+}
+
+/** 只有还没建过 venv 才需要系统 python3。落后版本用 venv 自己 pip，不找 PATH。 */
+export function needsSystemPython(haveVenv: boolean): boolean {
+  return !haveVenv;
 }
 
 async function penVersion(py: string): Promise<string | null> {
@@ -380,20 +393,23 @@ export class SidecarManager {
       this.set("error", code);
       return "error";
     }
-    const sys = await findSystemPython(opts.pythonPath);
-    if (my !== this.epoch) return "error";
-    if (!sys) {
-      this.set("error", "no-python");
-      return "error";
-    }
     const vpy = venvPython();
     const haveVenv = existsSync(vpy);
     const ver = haveVenv ? await penVersion(vpy) : null;
-    const needInstall = !haveVenv || !ver || cmpVer(ver, opts.version) < 0;
+    if (my !== this.epoch) return "error";
+    // 家目录 venv 已经对齐插件版本：直接 spawn，不再问系统 PATH 上有没有 python3。
+    // Dock 打开的 Obsidian 经常看不见 Homebrew，停掉再开会误报「没找到 3.11」。
+    const needInstall = !haveVenv || !venvCoversPlugin(ver, opts.version);
     if (needInstall) {
       this.set("installing", "");
       try {
-        if (!haveVenv) {
+        if (needsSystemPython(haveVenv)) {
+          const sys = await findSystemPython(opts.pythonPath);
+          if (my !== this.epoch) return "error";
+          if (!sys) {
+            this.set("error", "no-python");
+            return "error";
+          }
           await run(sys.bin, [...sys.prefix, "-m", "venv", VENV], 120000);
         }
         const py = venvPython();

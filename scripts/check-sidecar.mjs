@@ -43,6 +43,15 @@ check("落后一版不能干活", mod.sidecarUsable("0.18.6", "0.18.7") === fals
 check("对齐就能干活", mod.sidecarUsable("0.18.7", "0.18.7") === true);
 check("sidecar 更新也能干活", mod.sidecarUsable("0.19.0", "0.18.7") === true);
 check("cmpVer 同号为 0", mod.cmpVer("0.18.7", "0.18.7") === 0);
+check("venv 对齐就能直接拉起，不必再找系统 python3", mod.venvCoversPlugin("0.19.1", "0.19.1") === true);
+check("venv 没有版本不能当系统 python 的替代", mod.venvCoversPlugin(null, "0.19.1") === false);
+check("venv 落后一版仍要升级（用 venv 自己的 python pip）", mod.venvCoversPlugin("0.18.0", "0.19.1") === false);
+check("已有 venv 时不找系统 python（即使还要 pip 升级）", mod.needsSystemPython(true) === false);
+check("没有 venv 才需要系统 python", mod.needsSystemPython(false) === true);
+check(
+  "系统 python 回落包含 Homebrew 绝对路径",
+  Array.isArray(mod.PYTHON_FALLBACKS) && mod.PYTHON_FALLBACKS.includes("/opt/homebrew/bin/python3"),
+);
 
 const lsof = `p12345
 cPython

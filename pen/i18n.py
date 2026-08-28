@@ -27,8 +27,8 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "The endpoint rejected this key. Check your API key under Settings → Socrates.",
     },
     "provider.bad_thinking": {
-        "zh": "这个节点不接受当前 Thinking 档，先改回 off 再试。",
-        "en": "This endpoint won't take the current Thinking level. Set it back to off and retry.",
+        "zh": "节点拒绝了这次请求。请核对设置里的 Base URL、model 字符串和 API Key。",
+        "en": "The endpoint rejected this request. Check the Base URL, model name, and API key in settings.",
     },
     "provider.unreachable": {
         "zh": "连不上节点。检查设置里的 Base URL 有没有填对。",

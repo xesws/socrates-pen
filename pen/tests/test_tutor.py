@@ -100,6 +100,61 @@ def test_llm_create_kwargs_thinking_off_vs_high() -> None:
     assert kw_high["tools"] == [{"type": "function"}]
 
 
+def test_glm53_off_is_forced_low_not_disabled() -> None:
+    from pen.tutor import thinking_wire
+
+    w = thinking_wire("glm-5.3", "off")
+    assert w["extra_body"]["thinking"]["type"] == "enabled"
+    assert w["reasoning_effort"] == "low"
+    w_flash = thinking_wire("GLM-5.3-FLASH", "off")
+    assert w_flash["extra_body"]["thinking"]["type"] == "enabled"
+    assert w_flash["reasoning_effort"] == "low"
+    assert "disabled" not in str(w_flash)
+
+
+def test_glm53_ui_high_is_provider_max() -> None:
+    from pen.tutor import thinking_wire
+
+    assert thinking_wire("glm-5.3", "low")["reasoning_effort"] == "low"
+    assert thinking_wire("glm-5.3", "medium")["reasoning_effort"] == "high"
+    assert thinking_wire("glm-5.3", "high")["reasoning_effort"] == "max"
+
+
+def test_glm47_off_sends_disabled() -> None:
+    from pen.tutor import thinking_wire
+
+    assert thinking_wire("glm-4.7", "off") == {"extra_body": {"thinking": {"type": "disabled"}}}
+    assert thinking_wire("glm-4.5v", "off") == {"extra_body": {"thinking": {"type": "disabled"}}}
+    high = thinking_wire("glm-4.7", "high")
+    assert high == {"extra_body": {"thinking": {"type": "enabled"}}}
+    assert "reasoning_effort" not in high
+
+
+def test_other_glm_off_sends_disabled() -> None:
+    from pen.tutor import thinking_wire
+
+    w = thinking_wire("glm-4.6", "off")
+    assert w == {"extra_body": {"thinking": {"type": "disabled"}}}
+    high = thinking_wire("glm-4.6", "high")
+    assert high == {"extra_body": {"thinking": {"type": "enabled"}}}
+    assert "reasoning_effort" not in high
+
+
+def test_glm52_ui_high_is_max_off_still_disabled() -> None:
+    from pen.tutor import thinking_wire
+
+    assert thinking_wire("glm-5.2", "off") == {"extra_body": {"thinking": {"type": "disabled"}}}
+    assert thinking_wire("glm-5.2", "medium")["reasoning_effort"] == "high"
+    assert thinking_wire("glm-5.2", "high")["reasoning_effort"] == "max"
+
+
+def test_deepseek_off_still_omits_thinking() -> None:
+    from pen.tutor import thinking_wire
+
+    assert thinking_wire("deepseek-v4-flash", "off") == {}
+    assert thinking_wire("deepseek-v4-flash", "medium")["reasoning_effort"] == "medium"
+
+
 def test_stream_chat_error_points_to_settings(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr("pen.tutor.resolve_llm", lambda *a, **k: None)
     sess = PenSession(session_id="s" * 32, handbook_id="demo")
@@ -117,7 +172,8 @@ def test_provider_error_message_maps_common_failures() -> None:
     denied = provider_error_message(_status_exc(openai.PermissionDeniedError, 403))
     assert "设置" in denied and "API Key" in denied
     bad = provider_error_message(_status_exc(openai.BadRequestError, 400))
-    assert "Thinking" in bad and "off" in bad
+    assert "Base URL" in bad and "API Key" in bad
+    assert "off" not in bad.lower()
     req = httpx.Request("POST", "https://api.deepseek.com/chat/completions")
     conn = provider_error_message(openai.APIConnectionError(request=req))
     assert "Base URL" in conn
@@ -142,7 +198,7 @@ def test_stream_chat_auth_error_yields_error_event(monkeypatch, tmp_path: Path) 
     assert "sk-secret-do-not-leak" not in errors[0]["message"]
 
 
-def test_stream_chat_thinking_rejected_points_to_off(monkeypatch, tmp_path: Path) -> None:
+def test_stream_chat_thinking_rejected_points_to_settings(monkeypatch, tmp_path: Path) -> None:
     _patch_openai_boom(monkeypatch, _status_exc(openai.BadRequestError, 400))
     sess = PenSession(session_id="s" * 32, handbook_id="demo")
     book = tmp_path / "book.md"
@@ -150,7 +206,8 @@ def test_stream_chat_thinking_rejected_points_to_off(monkeypatch, tmp_path: Path
     events = list(stream_chat(sess, book, "packet", llm=_cfg()))
     errors = [e for e in events if e["type"] == "error"]
     assert len(errors) == 1
-    assert "Thinking" in errors[0]["message"]
+    assert "Base URL" in errors[0]["message"]
+    assert "off" not in errors[0]["message"].lower()
 
 
 def test_propose_fold_md_provider_error_raises_runtime_error(monkeypatch) -> None:

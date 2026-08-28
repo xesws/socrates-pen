@@ -231,7 +231,7 @@ export const en: Dict = {
   noticeKeyMigrateTimeout:
     "Couldn't migrate your API key into the local service within 45s (it may still be installing). The key stays in data.json and migrates automatically once the service is ready; to use it right now, paste it once in settings.",
   noticeKeyHostMismatch: (keyHost, urlHost) =>
-    `The stored key belongs to ${keyHost}, but Base URL now points at ${urlHost} — keys aren't lent across hosts. Paste a key for ${urlHost}.`,
+    `The endpoint changed. The key on this machine is still for ${keyHost} and will not be sent to ${urlHost}. Paste a key for ${urlHost}.`,
   noticeSessionSwitched: (note) =>
     `Switched to the conversation for “${note}”. The previous note's conversation stays with that note — select in it again to come back.`,
   noticeRightOpened: "The Socrates panel is open in the right sidebar.",
@@ -274,7 +274,8 @@ export const en: Dict = {
     ver
       ? `Old service holding the port (${ver}). Stop then Start to upgrade`
       : "Old service holding the port. Stop then Start to upgrade",
-  setSidecarErrNoPython: "No Python 3.11+ found. Install it, or set the interpreter path below.",
+  setSidecarErrNoPython:
+    "No Python 3.11+ on PATH — it's needed to create the local environment. Install it, or set an absolute interpreter path below (e.g. /opt/homebrew/bin/python3).",
   setSidecarErrNotLoopback: "The plugin will only start the service on 127.0.0.1 / localhost. Put a loopback Sidecar URL back.",
   setSidecarErrBadUrl: "Sidecar URL isn't a valid address.",
   setSidecarErrInstall: "Install failed. This machine needs access to GitHub and PyPI.",
@@ -303,7 +304,7 @@ export const en: Dict = {
   setModelDesc:
     "The model string your endpoint expects, e.g. deepseek-v4-flash or gpt-4.1-mini.",
   setThinkingDesc:
-    "off is the safe bet. Turn it up only for reasoning models — endpoints that don't support it may hand you a 400.",
+    "off is the lowest; high is the top tier for that endpoint. Keep off if the model doesn't reason.",
   setThinkingOff: "off (default)",
   deepQuotaSpent: "deep dives used up",
   setDeepName: "Dig deeper in the background",

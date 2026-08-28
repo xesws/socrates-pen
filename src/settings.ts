@@ -523,12 +523,19 @@ export class PenSettingTab extends PluginSettingTab {
         c.setPlaceholder("https://api.deepseek.com")
           .setValue(this.plugin.settings.baseUrl)
           .onChange((v) => {
-            this.plugin.settings.baseUrl = (v.trim().replace(/\/+$/, "") || DEFAULT_SETTINGS.baseUrl);
-            this.plugin.saveSettingsSoon();
+            // 空串先留着：全选再贴的瞬间若立刻回落默认 DeepSeek，
+            // 会先存一次旧主机再触发换节点 Notice。
+            this.plugin.settings.baseUrl = v.trim().replace(/\/+$/, "");
+            if (this.plugin.settings.baseUrl) this.plugin.saveSettingsSoon();
           });
         // 换了主机就得换钥匙（钥匙按主机落锁）。on blur 而不是 onChange：
         // onChange 每个键击都探一次，敲一个长 URL 会被 Notice 轰炸。
         c.inputEl.addEventListener("blur", () => {
+          if (!this.plugin.settings.baseUrl) {
+            this.plugin.settings.baseUrl = DEFAULT_SETTINGS.baseUrl;
+            c.setValue(this.plugin.settings.baseUrl);
+            this.plugin.saveSettingsSoon();
+          }
           void makeApi(this.plugin.settings.sidecarUrl)
             .health()
             .then((h) => this.warnKeyHostMismatch(h.llm))

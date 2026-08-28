@@ -228,6 +228,10 @@ export default class SocratesPenPlugin extends Plugin {
     this.settings.sidecarKeepAlive = this.settings.sidecarKeepAlive !== false;
     this.settings.pythonPath =
       typeof this.settings.pythonPath === "string" ? this.settings.pythonPath.trim() : "";
+    this.settings.baseUrl =
+      typeof this.settings.baseUrl === "string"
+        ? this.settings.baseUrl.trim().replace(/\/+$/, "") || DEFAULT_SETTINGS.baseUrl
+        : DEFAULT_SETTINGS.baseUrl;
     // 手改过、或者被 Sync 弄坏的 data.json 会带来字符串、null、NaN。
     this.settings.limits = coerceLimits(this.settings.limits);
     this.notes = raw.notes || {};

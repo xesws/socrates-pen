@@ -288,7 +288,7 @@ export const zh = {
   noticeKeyMigrateTimeout:
     "45 秒内没把 API Key 迁进本机服务（它可能还在安装）。钥匙仍留在 data.json 里，本机服务就绪后会自动再迁一次；急着用就到设置里手动贴一次。",
   noticeKeyHostMismatch: (keyHost: string, urlHost: string): string =>
-    `本机存的钥匙是给 ${keyHost} 的，Base URL 现在指向 ${urlHost}——钥匙不跨主机挪用，请贴一份 ${urlHost} 的钥匙。`,
+    `节点换了。本机那把钥匙还是给 ${keyHost} 的，不会拿到 ${urlHost} 上用。请贴一份 ${urlHost} 的 API Key。`,
   noticeSessionSwitched: (note: string): string =>
     `已切换到《${note}》的会话。原笔记的对话仍在原笔记上——再划它就能回来。`,
   noticeRightOpened: "Socrates 面板已在右侧栏打开。",
@@ -327,7 +327,8 @@ export const zh = {
     ver
       ? `旧服务占着端口（${ver}），先停止再启动升级`
       : "旧服务占着端口，先停止再启动升级",
-  setSidecarErrNoPython: "没找到 Python 3.11+。请先安装，必要时在下面填解释器路径。",
+  setSidecarErrNoPython:
+    "PATH 上没找到 Python 3.11+，新建本机环境需要它。请先安装，或在下面填解释器的绝对路径（例如 /opt/homebrew/bin/python3）。",
   setSidecarErrNotLoopback: "插件只能在 127.0.0.1 / localhost 上拉起服务。Sidecar URL 改回 loopback。",
   setSidecarErrBadUrl: "Sidecar URL 不是合法地址。",
   setSidecarErrInstall: "安装失败。需要能访问 GitHub 和 PyPI。",
@@ -354,7 +355,7 @@ export const zh = {
   setBaseUrlDesc: "Chat Completions 兼容地址，不要带尾斜杠。",
   setModelName: "模型名",
   setModelDesc: "节点上的 model 字符串，例如 deepseek-v4-flash 或 gpt-4.1-mini。",
-  setThinkingDesc: "off 最稳。只有推理模型才打开；不支持的节点开了可能 400。",
+  setThinkingDesc: "off 最低，high 是该节点顶档。不支持思考的节点请保持 off。",
   setThinkingOff: "off（默认）",
   deepQuotaSpent: "深挖已用满",
   setDeepName: "后台深挖",

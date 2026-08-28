@@ -358,13 +358,66 @@ def _finish_text(
     }
 
 
+def _model_id(model: str) -> str:
+    return (model or "").strip().lower()
+
+
+def _is_glm(model: str) -> bool:
+    m = _model_id(model)
+    return "glm-" in m or m.startswith("glm")
+
+
+def _glm_forced_thinking(model: str) -> bool:
+    """官方写明 thinking.type=disabled 会 400 的型号：仅 5.3 / 5.3-FLASH。
+
+    4.7 / 4.5V 的「强制思考」是 enabled 时每轮都想，不是不能 disabled。
+    """
+    return "glm-5.3" in _model_id(model)
+
+
+def _glm_sends_effort(model: str) -> bool:
+    """reasoning_effort 仅 GLM-5.2 及以上。5.3 只认 low/high/max。"""
+    m = _model_id(model)
+    return "glm-5.3" in m or "glm-5.2" in m
+
+
+def thinking_wire(model: str, level: str) -> dict[str, Any]:
+    """UI 四档 → 节点真正收的字段。空 dict = 不传推理。
+
+    设置页保持 off/low/medium/high。high = 该节点顶档（DeepSeek 仍是 high，
+    GLM-5.2/5.3 是 max）。强制思考的型号不能 disabled：off 改成 enabled + 最低档。
+    """
+    lv = (level or "off").strip().lower()
+    if lv not in ("off", "low", "medium", "high"):
+        lv = "off"
+    glm = _is_glm(model)
+    if lv == "off":
+        if _glm_forced_thinking(model):
+            return {
+                "reasoning_effort": "low",
+                "extra_body": {"thinking": {"type": "enabled"}},
+            }
+        if glm:
+            return {"extra_body": {"thinking": {"type": "disabled"}}}
+        return {}
+    out: dict[str, Any] = {}
+    if glm:
+        out["extra_body"] = {"thinking": {"type": "enabled"}}
+        if _glm_sends_effort(model):
+            out["reasoning_effort"] = {"low": "low", "medium": "high", "high": "max"}[lv]
+        return out
+    out["reasoning_effort"] = lv
+    out["extra_body"] = {"thinking": {"type": "enabled"}}
+    return out
+
+
 def llm_create_kwargs(
     cfg: LLMConfig,
     *,
     messages: list[dict[str, Any]],
     tools: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """组 chat.completions.create 参数。thinking=off 不加推理字段。"""
+    """组 chat.completions.create 参数。thinking 档按型号收口，不原样上线。"""
     kwargs: dict[str, Any] = {
         "model": cfg.model,
         "messages": messages,
@@ -376,9 +429,7 @@ def llm_create_kwargs(
     }
     if tools:
         kwargs["tools"] = tools
-    if cfg.thinking != "off":
-        kwargs["reasoning_effort"] = cfg.thinking
-        kwargs["extra_body"] = {"thinking": {"type": "enabled"}}
+    kwargs.update(thinking_wire(cfg.model, cfg.thinking))
     return kwargs
 
 
