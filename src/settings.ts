@@ -20,6 +20,8 @@ export interface PenSettings {
   baseUrl: string;
   model: string;
   thinking: ThinkingLevel;
+  /** 对话框可贴图。默认关：DeepSeek 文本模型没有视觉。 */
+  vision: boolean;
   /** 后台深挖。关掉时前端不轮询，且请求带 deep:false 让后端也不起线程。 */
   deepQuestions: boolean;
   /** 花销与频率的旋钮。键名用 snake_case，见 LIMIT_SPEC 的注释。 */
@@ -131,6 +133,7 @@ export const DEFAULT_SETTINGS: PenSettings = {
   baseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-flash",
   thinking: "off",
+  vision: false,
   deepQuestions: true,
   limits: coerceLimits({}),
 };
@@ -148,12 +151,14 @@ export function llmPayload(s: PenSettings): {
   base_url?: string;
   model?: string;
   thinking: ThinkingLevel;
+  vision: boolean;
 } {
   const base = s.baseUrl.trim().replace(/\/+$/, "");
   return {
     ...(base ? { base_url: base } : {}),
     ...(s.model.trim() ? { model: s.model.trim() } : {}),
     thinking: coerceThinking(s.thinking),
+    vision: s.vision === true,
   };
 }
 
@@ -554,6 +559,16 @@ export class PenSettingTab extends PluginSettingTab {
             this.plugin.settings.model = v.trim() || DEFAULT_SETTINGS.model;
             this.plugin.saveSettingsSoon();
           }),
+      );
+
+    new Setting(containerEl)
+      .setName(s.setVisionName)
+      .setDesc(s.setVisionDesc)
+      .addToggle((c) =>
+        c.setValue(this.plugin.settings.vision === true).onChange((v) => {
+          this.plugin.settings.vision = v;
+          this.plugin.saveSettingsSoon();
+        }),
       );
 
     new Setting(containerEl)

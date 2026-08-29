@@ -72,6 +72,7 @@ export const en: Dict = {
   btnUseSelection: "Use selection",
   btnAsk: "Ask",
   askPlaceholder: "Ask something…",
+  askPlaceholderVision: "Ask something, or paste an image…",
   tipUseSelection: "Highlight a passage in your note, then hand it over here",
 
   tipNewSession: "Start over — drops this session's memory and selection",
@@ -97,6 +98,11 @@ export const en: Dict = {
 
   // ── Error bubbles (v0.18.0: a failed request no longer fakes streaming) ──
   errNoKey: "No model key yet. Add your API key under Settings → Socrates, then ask again.",
+  errNoVision:
+    "Image understanding is off for this model. Turn it on under Settings → Socrates. If the endpoint has no vision, it will still reject the image.",
+  errVisionTooBig: "Image too large (2MB each, up to 4 images).",
+  errVisionTooMany: "At most 4 images per turn.",
+  errVisionBadType: "Only png / jpeg / webp / gif.",
   bubbleGoSettings: "Open settings",
 
   errUnreachable: (detail) =>
@@ -303,6 +309,9 @@ export const en: Dict = {
   setModelName: "Model",
   setModelDesc:
     "The model string your endpoint expects, e.g. deepseek-v4-flash or gpt-4.1-mini.",
+  setVisionName: "Image understanding",
+  setVisionDesc:
+    "When on, you can paste or drop images in the chat box. Leave it off for text-only models like DeepSeek. Turn it on for multimodal GLM / Qwen. Pasting while off errors immediately — the image is not sent.",
   setThinkingDesc:
     "off is the lowest; high is the top tier for that endpoint. Keep off if the model doesn't reason.",
   setThinkingOff: "off (default)",

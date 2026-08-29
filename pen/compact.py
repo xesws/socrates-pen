@@ -16,6 +16,7 @@ from typing import Any
 
 from pen.config import SELECTED_TEXT_CHARS
 from pen.session import PenSession
+from pen.vision import IMAGE_PLACEHOLDER, content_text, has_image_parts
 
 SUMMARY_MARK = "<!--pen:compact-->"
 NOTE_KIND = "compact"
@@ -80,7 +81,7 @@ def message_chars(messages: Sequence[dict[str, Any]]) -> int:
     """粗算上下文字符数。供应商不回 usage 时拿它 / 2 当 token 估。"""
     n = 0
     for m in messages:
-        n += len(str(m.get("content") or ""))
+        n += len(content_text(m.get("content")))
         for tc in m.get("tool_calls") or []:
             fn = tc.get("function") or {}
             n += len(str(fn.get("arguments") or "")) + len(str(fn.get("name") or ""))
@@ -107,7 +108,7 @@ def should_auto_compact(session: PenSession, limits: Any) -> bool:
 
 
 def is_summary_message(msg: dict[str, Any]) -> bool:
-    return msg.get("role") == "user" and SUMMARY_MARK in str(msg.get("content") or "")
+    return msg.get("role") == "user" and SUMMARY_MARK in content_text(msg.get("content"))
 
 
 def _is_force_answer(content: str) -> bool:
@@ -151,7 +152,7 @@ def compact_session(
     for i, m in enumerate(rest):
         if m.get("role") != "user":
             continue
-        if is_summary_message(m) or _is_force_answer(str(m.get("content") or "")):
+        if is_summary_message(m) or _is_force_answer(content_text(m.get("content"))):
             continue
         last_user = i
     if last_user < 0:
@@ -294,14 +295,18 @@ def _eat_message(
 ) -> None:
     role = str(msg.get("role") or "")
     if role == "user":
-        content = str(msg.get("content") or "")
+        content = content_text(msg.get("content"))
         if is_summary_message(msg):
             _eat_summary(slots, content, roots)
             return
         _eat_user_packet(slots, content, roots)
+        if has_image_parts(msg.get("content")):
+            note = "pasted image (pixels dropped; paste again to look)"
+            if note not in slots.dropped:
+                slots.dropped.append(note)
         return
     if role == "assistant":
-        _eat_assistant(slots, str(msg.get("content") or ""))
+        _eat_assistant(slots, content_text(msg.get("content")))
         return
     if role == "tool":
         _eat_tool_result(slots, msg, roots, calls)
@@ -443,7 +448,7 @@ def _eat_tool_result(
     meta = calls.get(tid) or {}
     name = str(meta.get("name") or "")
     args = dict(meta.get("args") or {})
-    content = str(msg.get("content") or "")
+    content = content_text(msg.get("content"))
     if name == "read_file":
         path = _allowed(str(args.get("path") or ""), roots)
         span = _line_span(content)
@@ -479,7 +484,7 @@ def _stub_tools(
         name = str(meta.get("name") or "tool")
         args = dict(meta.get("args") or {})
         raw_path = str(args.get("path") or "")
-        content = str(m.get("content") or "")
+        content = content_text(m.get("content"))
         span = _line_span(content)
         if name == "read_file":
             dropped += 1
@@ -507,11 +512,23 @@ def _line_span(content: str) -> tuple[int, int] | None:
 def _slim_if_user(msg: dict[str, Any], lang: str) -> dict[str, Any]:
     if msg.get("role") != "user" or is_summary_message(msg):
         return msg
-    content = str(msg.get("content") or "")
-    if "[来源]" not in content and "[Source]" not in content:
+    content = msg.get("content")
+    text = content_text(content)
+    if "[来源]" not in text and "[Source]" not in text:
         return msg
-    slim = _slim_packet(content, lang)
-    if slim == content:
+    if isinstance(content, list):
+        out: list[Any] = []
+        for part in content:
+            if isinstance(part, dict) and str(part.get("type") or "") == "text":
+                slim = _slim_packet(str(part.get("text") or ""), lang)
+                out.append({**part, "text": slim})
+            elif isinstance(part, dict) and str(part.get("type") or "") in ("image_url", "image"):
+                out.append({"type": "text", "text": IMAGE_PLACEHOLDER})
+            else:
+                out.append(part)
+        return {**msg, "content": out}
+    slim = _slim_packet(text, lang)
+    if slim == text:
         return msg
     return {**msg, "content": slim}
 

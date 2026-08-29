@@ -223,6 +223,7 @@ export default class SocratesPenPlugin extends Plugin {
     // 嵌套展开在运行时仍会把 apiKey 带进来（类型看不见，磁盘看得见），显式拔掉。
     delete (this.settings as PenSettings & { apiKey?: string }).apiKey;
     this.settings.thinking = coerceThinking(this.settings.thinking);
+    this.settings.vision = this.settings.vision === true;
     this.settings.lang = coerceLangPref(this.settings.lang);
     this.settings.sidecarAutoStart = this.settings.sidecarAutoStart !== false;
     this.settings.sidecarKeepAlive = this.settings.sidecarKeepAlive !== false;

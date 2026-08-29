@@ -133,6 +133,7 @@ export async function streamChat(
     chip: string;
     user_text: string;
     deep?: boolean;
+    images?: { mime: string; data: string }[];
   },
   onEvent: (ev: Record<string, unknown>) => void,
   settings?: PenSettings,

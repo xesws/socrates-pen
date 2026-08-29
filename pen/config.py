@@ -189,6 +189,7 @@ class LLMConfig:
     model: str
     key_source: str
     thinking: str = "off"
+    vision: bool = False
 
 
 @dataclass(frozen=True)
@@ -506,6 +507,7 @@ def merge_llm(
     base_url: str | None = None,
     model: str | None = None,
     thinking: str | None = None,
+    vision: bool | None = None,
     env_file: Path | None = None,
 ) -> LLMConfig | None:
     """请求体非空字段优先，缺的回退 resolve_llm()（托管文件或 env）。两边都没有
@@ -532,6 +534,7 @@ def merge_llm(
         model=name,
         key_source=source,
         thinking=normalize_thinking(thinking),
+        vision=bool(vision),
     )
 
 

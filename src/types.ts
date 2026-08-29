@@ -76,6 +76,10 @@ export type ChatMessage = {
   chip?: string;
   /** sidecar >= v0.19.0：`note` 且 kind=compact 时前端用当前语言重绘文案。 */
   kind?: string;
+  /** 本轮贴的图。thumb 只活在前端内存，落盘只有 mime。 */
+  images?: { mime: string; thumb?: string }[];
+  /** 错误气泡上挂「去设置」。 */
+  goSettings?: boolean;
 };
 
 /** GET /v1/sessions/{id}/deep 的回包。running 为空 = 可以停轮询了。 */

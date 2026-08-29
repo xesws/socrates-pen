@@ -315,6 +315,10 @@ def provider_error_message(exc: BaseException, lang: str = "zh") -> str:
     if status in (401, 403):
         return msg("provider.bad_key", lang)
     if status == 400:
+        from pen.vision import looks_like_vision_reject
+
+        if looks_like_vision_reject(exc):
+            return msg("provider.bad_vision", lang)
         return msg("provider.bad_thinking", lang)
     from openai import APIConnectionError, APITimeoutError
 
@@ -549,6 +553,7 @@ def stream_chat(
     lang: str = "zh",
     user_text: str = "",
     limits: RuntimeLimits | None = None,
+    images: list[dict[str, str]] | None = None,
 ) -> Iterator[dict[str, Any]]:
     # 请求换了主机却没带 key 时 merge_llm 会返回 None；不能再 or resolve_llm() 把 .env 钥匙挪用过去。
     cfg = llm if llm is not None else (resolve_llm() if allow_env_fallback else None)
@@ -559,8 +564,23 @@ def stream_chat(
         }
         return
 
+    from pen.vision import apply_vision_clause, user_message_content
+
+    pics = list(images or [])
+    if pics and not cfg.vision:
+        yield {"type": "error", "message": msg("vision.disabled", lang)}
+        return
+
     apply_session_lang(session, lang)
-    session.messages.append({"role": "user", "content": user_packet})
+    if session.messages and session.messages[0].get("role") == "system":
+        session.messages[0]["content"] = apply_vision_clause(
+            str(session.messages[0].get("content") or ""),
+            enabled=cfg.vision,
+            lang=lang,
+        )
+    session.messages.append(
+        {"role": "user", "content": user_message_content(user_packet, pics)}
+    )
     # 新的一轮，本轮账清零。**只能在这里清，绝不能放进 _agent_loop 或
     # resume_chat**——那是同一轮的后半段，清了就等于审批让预算翻倍，
     # 而 v0.10.3 刚修过反向的同一件事。

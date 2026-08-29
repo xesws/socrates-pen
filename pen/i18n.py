@@ -30,6 +30,26 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "节点拒绝了这次请求。请核对设置里的 Base URL、model 字符串和 API Key。",
         "en": "The endpoint rejected this request. Check the Base URL, model name, and API key in settings.",
     },
+    "provider.bad_vision": {
+        "zh": "节点拒收了图片。这个模型多半没有视觉，把设置里的「图像理解」关掉，或换一个多模态模型。",
+        "en": "The endpoint rejected the image. This model likely has no vision — turn off Image understanding in settings, or switch to a multimodal model.",
+    },
+    "vision.disabled": {
+        "zh": "这个模型没开图像理解。到设置 → Socrates 打开「图像理解」。若节点没有视觉，开了也会被拒。",
+        "en": "Image understanding is off for this model. Turn it on under Settings → Socrates. If the endpoint has no vision, it will still reject the image.",
+    },
+    "vision.too_big": {
+        "zh": "图片太大（每张最多 2MB，最多 4 张）。",
+        "en": "Image too large (2MB each, up to 4 images).",
+    },
+    "vision.too_many": {
+        "zh": "一次最多贴 4 张图。",
+        "en": "At most 4 images per turn.",
+    },
+    "vision.bad_type": {
+        "zh": "只收 png / jpeg / webp / gif。",
+        "en": "Only png / jpeg / webp / gif.",
+    },
     "provider.unreachable": {
         "zh": "连不上节点。检查设置里的 Base URL 有没有填对。",
         "en": "Can't reach the endpoint. Check the Base URL in settings.",

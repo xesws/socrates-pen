@@ -29,6 +29,17 @@ import { AVATAR } from "../logo";
 
 export const VIEW_TYPE_PEN = "socrates-pen-view";
 
+const VISION_MAX = 4;
+const VISION_BYTES = 2 * 1024 * 1024;
+const VISION_MIME = new Set(["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"]);
+
+type PendingImage = { mime: string; data: string; thumb: string };
+
+function normMime(raw: string): string {
+  const m = (raw || "").trim().toLowerCase();
+  return m === "image/jpg" ? "image/jpeg" : m;
+}
+
 const sleep = (ms: number): Promise<void> =>
   new Promise((r) => window.setTimeout(r, ms));
 
@@ -56,6 +67,7 @@ type Els = {
   compact: HTMLButtonElement;
   undo: HTMLButtonElement;
   redo: HTMLButtonElement;
+  thumbs: HTMLElement;
 };
 
 /* visibleReply 已移至 src/foldview.ts（纯函数，check-fold.mjs 打包真代码守着） */
@@ -121,6 +133,7 @@ export class PenView extends ItemView {
   /** 上一次 health 探测里 sidecar 是否已有可用钥匙。门禁 chip/Ask，防假流式。 */
   private llmOk = false;
   private msgs: ChatMessage[] = [];
+  private pendingImages: PendingImage[] = [];
   private chips: Chip[] = [];
   private dyn: DynChip[] = [];
   private busy = false;
@@ -317,6 +330,7 @@ export class PenView extends ItemView {
     const bar = dock.createDiv({ cls: "sp-bar is-off" });
     bar.createDiv({ cls: "sp-bar-fill" });
     const status = dock.createDiv({ cls: "sp-status is-off" });
+    const thumbs = dock.createDiv({ cls: "sp-thumbs is-off" });
     const form = dock.createDiv({ cls: "sp-form" });
     const pick = form.createEl("button", { cls: "sp-pick", text: t().btnUseSelection });
     const input = form.createEl("input", { cls: "sp-input" });
@@ -324,7 +338,7 @@ export class PenView extends ItemView {
 
     this.els = {
       dot, brandSub, alert, log, panel,
-      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo,
+      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo, thumbs,
     };
 
     // 事件只绑一次。pick 用 bindKeepFocus：pointerdown 阶段就取选区，
@@ -347,6 +361,8 @@ export class PenView extends ItemView {
       ev.preventDefault();
       this.submitAsk();
     });
+    this.bindComposerMedia(form);
+    this.bindComposerMedia(thumbs);
 
     this.paintBar();
     void this.paintLog();
@@ -359,6 +375,8 @@ export class PenView extends ItemView {
     this.paintQuote();
     this.paintChips();
     this.paintPanel();
+    this.paintThumbs();
+    this.setPlaceholder();
     this.setStatus();
     this.setBusy();
   }
@@ -636,7 +654,7 @@ export class PenView extends ItemView {
     const e = this.els;
     if (!e || e.input.disabled) return;
     const text = e.input.value.trim();
-    if (!text) return;
+    if (!text && this.pendingImages.length === 0) return;
     // 没钥匙时保留草稿：send 只会落一条「先配钥匙」的错误气泡，
     // 这句话还没问出去，不该替读者清掉（二轮复审 P2）。
     if (this.llmOk) e.input.value = "";
@@ -705,7 +723,7 @@ export class PenView extends ItemView {
             turn.createDiv({ cls: "sp-kicker", text: t().kickerPen });
             const body = turn.createDiv({ cls: "sp-body" });
             body.setText(m.text);
-            if (!this.llmOk) {
+            if (!this.llmOk || m.goSettings) {
               const btn = turn.createEl("button", {
                 cls: "sp-err-btn",
                 text: t().bubbleGoSettings,
@@ -737,6 +755,18 @@ export class PenView extends ItemView {
           if (m.role === "user") {
             // 历史气泡：后端存的 label 是建会话时那个语言的，有 chip id 就重查一次
             body.setText(m.chip ? chipLabel(m.chip, m.text) : m.text);
+            if (m.images && m.images.length) {
+              const strip = body.createDiv({ cls: "sp-body-thumbs" });
+              for (const img of m.images) {
+                if (img.thumb) {
+                  const im = strip.createEl("img");
+                  im.src = img.thumb;
+                  im.setAttr("alt", img.mime || "image");
+                } else {
+                  strip.createSpan({ cls: "sp-body-pic", text: "img" });
+                }
+              }
+            }
           } else {
             await MarkdownRenderer.render(
               this.app,
@@ -879,13 +909,129 @@ export class PenView extends ItemView {
    * 原地换掉——空的 Socrates 气泡挂着一个闪的光标，看起来像在流式输出，
    * 实际上永远不会再有字来（评测报告 P0）。
    */
-  private failBubble(message: string): void {
+  private failBubble(message: string, goSettings = false): void {
     const last = this.msgs[this.msgs.length - 1];
+    const row: ChatMessage = { role: "error", text: message, goSettings };
     if (last && last.role === "assistant" && !last.text) {
-      this.msgs = [...this.msgs.slice(0, -1), { role: "error", text: message }];
+      this.msgs = [...this.msgs.slice(0, -1), row];
     } else {
-      this.msgs = [...this.msgs, { role: "error", text: message }];
+      this.msgs = [...this.msgs, row];
     }
+  }
+
+  private setPlaceholder(): void {
+    const e = this.els;
+    if (!e) return;
+    e.input.placeholder =
+      this.plugin.settings.vision === true ? t().askPlaceholderVision : t().askPlaceholder;
+  }
+
+  private paintThumbs(): void {
+    const e = this.els;
+    if (!e) return;
+    e.thumbs.empty();
+    e.thumbs.classList.toggle("is-off", this.pendingImages.length === 0);
+    this.pendingImages.forEach((img, i) => {
+      const cell = e.thumbs.createDiv({ cls: "sp-thumb" });
+      const im = cell.createEl("img");
+      im.src = img.thumb;
+      im.setAttr("alt", img.mime);
+      const x = cell.createEl("button", { cls: "sp-thumb-x", text: "\u00d7" });
+      x.setAttr("aria-label", "remove");
+      x.onclick = () => {
+        this.pendingImages.splice(i, 1);
+        this.paintThumbs();
+      };
+    });
+  }
+
+  private bindComposerMedia(el: HTMLElement): void {
+    el.addEventListener("paste", (ev: ClipboardEvent) => {
+      const files = this.clipboardImages(ev.clipboardData);
+      if (!files.length) return;
+      ev.preventDefault();
+      void this.ingestFiles(files);
+    });
+    el.addEventListener("dragover", (ev: DragEvent) => {
+      if (this.dragHasImage(ev.dataTransfer)) {
+        ev.preventDefault();
+        ev.dataTransfer && (ev.dataTransfer.dropEffect = "copy");
+      }
+    });
+    el.addEventListener("drop", (ev: DragEvent) => {
+      if (!this.dragHasImage(ev.dataTransfer)) return;
+      ev.preventDefault();
+      void this.ingestFiles(this.dtImages(ev.dataTransfer));
+    });
+  }
+
+  private clipboardImages(data: DataTransfer | null): File[] {
+    if (!data) return [];
+    const out: File[] = [];
+    for (const item of Array.from(data.items || [])) {
+      if (!item.type.startsWith("image/")) continue;
+      const f = item.getAsFile();
+      if (f) out.push(f);
+    }
+    return out;
+  }
+
+  private dtImages(data: DataTransfer | null): File[] {
+    if (!data) return [];
+    return Array.from(data.files || []).filter((f) => f.type.startsWith("image/"));
+  }
+
+  private dragHasImage(data: DataTransfer | null): boolean {
+    if (!data) return false;
+    if (this.dtImages(data).length) return true;
+    return Array.from(data.types || []).some((t) => t === "Files" || t.startsWith("image/"));
+  }
+
+  private async ingestFiles(files: File[]): Promise<void> {
+    if (!files.length) return;
+    if (this.plugin.settings.vision !== true) {
+      this.msgs = [...this.msgs, { role: "error", text: t().errNoVision, goSettings: true }];
+      await this.paintLog("force");
+      return;
+    }
+    for (const file of files) {
+      const mime = normMime(file.type);
+      if (!VISION_MIME.has(file.type) && !VISION_MIME.has(mime)) {
+        this.msgs = [...this.msgs, { role: "error", text: t().errVisionBadType }];
+        await this.paintLog("force");
+        return;
+      }
+      if (file.size > VISION_BYTES) {
+        this.msgs = [...this.msgs, { role: "error", text: t().errVisionTooBig }];
+        await this.paintLog("force");
+        return;
+      }
+      if (this.pendingImages.length >= VISION_MAX) {
+        this.msgs = [...this.msgs, { role: "error", text: t().errVisionTooMany }];
+        await this.paintLog("force");
+        return;
+      }
+      const data = await this.fileToB64(file);
+      this.pendingImages.push({
+        mime,
+        data,
+        thumb: `data:${mime};base64,${data}`,
+      });
+    }
+    this.paintThumbs();
+  }
+
+  private fileToB64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const s = String(r.result || "");
+        const i = s.indexOf(",");
+        resolve(i >= 0 ? s.slice(i + 1) : s);
+      };
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    });
   }
 
   /** 错误气泡上的「去设置」。openTabById 老版本没有，兜底只开设置窗。 */
@@ -1272,7 +1418,12 @@ export class PenView extends ItemView {
     }
   }
 
-  private async send(chip: string, userText: string, revived = false): Promise<void> {
+  private async send(
+    chip: string,
+    userText: string,
+    revived = false,
+    pics: PendingImage[] = this.pendingImages.slice(),
+  ): Promise<void> {
     if (chip === "search") return;
     if (this.pending) {
       new Notice(t().noticeResolveApproval);
@@ -1284,7 +1435,13 @@ export class PenView extends ItemView {
     }
     // 没钥匙就直说，不压空气泡装流式（评测报告 P0：读者会空等一条永远不来的回复）。
     if (!this.llmOk) {
-      this.msgs = [...this.msgs, { role: "error", text: t().errNoKey }];
+      this.msgs = [...this.msgs, { role: "error", text: t().errNoKey, goSettings: true }];
+      this.paintBar();
+      await this.paintLog("force");
+      return;
+    }
+    if (pics.length && this.plugin.settings.vision !== true) {
+      this.msgs = [...this.msgs, { role: "error", text: t().errNoVision, goSettings: true }];
       this.paintBar();
       await this.paintLog("force");
       return;
@@ -1304,7 +1461,17 @@ export class PenView extends ItemView {
       userText.trim() ||
       chipLabel(chip, this.chips.find((c) => c.id === chip)?.label ?? "") ||
       chip;
-    this.msgs = [...this.msgs, { role: "user", text: shown }, { role: "assistant", text: "" }];
+    this.msgs = [
+      ...this.msgs,
+      {
+        role: "user",
+        text: shown,
+        images: pics.map((p) => ({ mime: p.mime, thumb: p.thumb })),
+      },
+      { role: "assistant", text: "" },
+    ];
+    this.pendingImages = [];
+    this.paintThumbs();
     this.paintBar();
     await this.paintLog("force");
     let acc = "";
@@ -1320,6 +1487,9 @@ export class PenView extends ItemView {
           chip,
           user_text: userText,
           deep: this.plugin.settings.deepQuestions !== false,
+          ...(pics.length
+            ? { images: pics.map((p) => ({ mime: p.mime, data: p.data })) }
+            : {}),
         },
         (ev) => {
           if (ev.type === "status") {
@@ -1374,7 +1544,7 @@ export class PenView extends ItemView {
           } else if (ev.type === "error") {
             this.status = "";
             this.err = String(ev.message);
-            this.failBubble(String(ev.message));
+            this.failBubble(String(ev.message), /图像理解|Image understanding|vision/i.test(String(ev.message)));
             void this.paintLog();
             this.paintBar();
           }
@@ -1427,7 +1597,7 @@ export class PenView extends ItemView {
     }
     // 原样重发。读者不用重新打字——他刚才那句在 adopt() 里被新会话的空历史
     // 覆盖掉了，这里补发回去，界面上看起来就是「问了一次」。
-    await this.send(chip, userText, true);
+    await this.send(chip, userText, true, pics);
     // **无条件通报。** 换会话是不可逆的：`adopt()` 已经清空 this.msgs、
     // bindNote 已经把笔记绑到新 sid 上。重发再失败的话，读者看到的是一条
     // 原始报错，而整段历史从面板上消失了——一个字的解释都没有。

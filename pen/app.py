@@ -43,6 +43,7 @@ from pen.tutor import (
     resume_chat,
     stream_chat,
 )
+from pen import vision as visionmod
 
 SEARCH_REPLY = (
     "论文检索还没开。这是诚实挂起：P2 才有联网，"
@@ -85,6 +86,7 @@ class LlmOverrideBody(BaseModel):
     base_url: str | None = None
     model: str | None = None
     thinking: str | None = None
+    vision: bool | None = None
     # 嵌套一个对象，不平铺十几个键：平铺会让 ChatBody 变成二十来个字段。
     # 类型写 dict[str, Any] 而不是子模型，是为了**永远不会 422**——设置页填了
     # 个字符串，读者该看到夹紧后的正常回复，不是一个红色 422。
@@ -100,6 +102,7 @@ class LlmOverrideBody(BaseModel):
             base_url=self.base_url,
             model=self.model,
             thinking=self.thinking,
+            vision=self.vision,
         )
 
 
@@ -137,6 +140,8 @@ class ChatBody(LlmOverrideBody):
     # 设置页的深挖开关。关掉时后端也不起线程——只断前端轮询的话，
     # 后台照样在烧钱，读者却看不到任何东西。
     deep: bool = True
+    # 对话框贴的图。data 是无前缀的 base64。闸在 normalize_images。
+    images: list[Any] | None = None
 
 
 class ProposeBody(LlmOverrideBody):
@@ -848,6 +853,12 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         auto_compacted = False
         auto_dropped = 0
         limits = body.merged_limits()
+        try:
+            chat_images = visionmod.normalize_images(body.images)
+        except ValueError as exc:
+            raise HTTPException(400, msg(str(exc), lang)) from exc
+        if chat_images and not bool(body.vision):
+            raise HTTPException(400, msg("vision.disabled", lang))
         if should_auto_compact(sess, limits):
             folded = compact_session(
                 sess,
@@ -881,6 +892,8 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         row: dict[str, Any] = {"role": "user", "text": shown}
         if not typed:
             row["chip"] = body.chip
+        if chat_images:
+            row["images"] = [{"mime": img["mime"]} for img in chat_images]
         sess.ui_messages.append(row)
         prior_assistant = sess.last_assistant
         STORE.save(sess)
@@ -912,6 +925,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 lang=lang,
                 user_text=body.user_text,
                 limits=body.merged_limits(),
+                images=chat_images,
             ):
                 if ev.get("type") == "done":
                     has_sub = bool(ev.get("has_substantive"))

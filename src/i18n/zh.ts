@@ -93,6 +93,7 @@ export const zh = {
   btnUseSelection: "用当前选区",
   btnAsk: "问",
   askPlaceholder: "自己问一句…",
+  askPlaceholderVision: "自己问一句，或粘贴图片…",
   tipUseSelection: "在笔记里划一段，再点这里交给苏格拉底",
 
   // ── 品牌条工具按钮 ──
@@ -121,6 +122,11 @@ export const zh = {
 
   // ── 错误气泡（v0.18.0：请求失败不再伪装成流式） ──
   errNoKey: "还没配模型钥匙。到设置 → Socrates 填 API Key 后再问。",
+  errNoVision:
+    "这个模型没开图像理解。到设置 → Socrates 打开「图像理解」。若节点没有视觉，开了也会被拒。",
+  errVisionTooBig: "图片太大（每张最多 2MB，最多 4 张）。",
+  errVisionTooMany: "一次最多贴 4 张图。",
+  errVisionBadType: "只收 png / jpeg / webp / gif。",
   bubbleGoSettings: "去设置",
 
   // ── 错误 ──
@@ -355,6 +361,9 @@ export const zh = {
   setBaseUrlDesc: "Chat Completions 兼容地址，不要带尾斜杠。",
   setModelName: "模型名",
   setModelDesc: "节点上的 model 字符串，例如 deepseek-v4-flash 或 gpt-4.1-mini。",
+  setVisionName: "图像理解",
+  setVisionDesc:
+    "打开后可在对话框粘贴或拖入图片。DeepSeek 文本模型请关；GLM / Qwen 等多模态再开。关着时贴图会直接报错，不会把图发出去。",
   setThinkingDesc: "off 最低，high 是该节点顶档。不支持思考的节点请保持 off。",
   setThinkingOff: "off（默认）",
   deepQuotaSpent: "深挖已用满",

@@ -49,11 +49,13 @@ check(
   !("api_key" in payload) && !JSON.stringify(payload).includes("sk-canary-leak-1234"),
 );
 check(
-  "其余覆盖项照发（base_url / model / thinking）",
+  "其余覆盖项照发（base_url / model / thinking / vision）",
   payload.base_url === mod.DEFAULT_SETTINGS.baseUrl &&
     payload.model === mod.DEFAULT_SETTINGS.model &&
-    "thinking" in payload,
+    "thinking" in payload &&
+    payload.vision === false,
 );
+check("DEFAULT_SETTINGS.vision 默认关", mod.DEFAULT_SETTINGS.vision === false);
 check("DEFAULT_SETTINGS 没有 apiKey 字段", !("apiKey" in mod.DEFAULT_SETTINGS));
 
 // 落盘形状（二轮复审补）：迁移未成时钥匙必须原样跟回 data.json（那是唯一
