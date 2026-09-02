@@ -481,24 +481,44 @@ export class PenSettingTab extends PluginSettingTab {
 
     // 删除要点两下。**不用 confirm() 弹窗**：那是浏览器模态，Obsidian 设置页
     // 里弹出来很突兀，而且本仓一次都没用过。第二下之前按钮自己就是提示。
+    //
+    // 确认态**只要焦点还在这枚按钮上就不缩回**，移开焦点立刻缩回，
+    // 另配一道兜底超时。原来只有一道 4 秒的计时器，实测不好点：读完
+    // 「再点一次确认删除」再把指针移回来就超时了，得连点两下才提交——
+    // 而连点两下恰恰是这道闸本来要防的手滑。焦点是比秒表更准的「人还在不在」。
     let armed = false;
+    let disarmTimer: number | null = null;
     new Setting(box)
       .setName(s.setChipDelete)
       .addButton((c) => {
+        const disarm = (): void => {
+          if (disarmTimer !== null) {
+            window.clearTimeout(disarmTimer);
+            disarmTimer = null;
+          }
+          if (!armed) return;
+          armed = false;
+          c.setButtonText(s.setChipDeleteBtn);
+        };
+        // 点完就走开的，下次回来是干净的「删除」，不是一枚半按下的雷。
+        c.buttonEl.addEventListener("blur", disarm);
         c.setButtonText(s.setChipDeleteBtn)
           .setWarning()
           .onClick(() => {
             if (!armed) {
               armed = true;
               c.setButtonText(s.setChipDeleteConfirm);
-              // 手滑点了一下就走开的，下次回来是干净的「删除」，不是半按下的雷。
-              window.setTimeout(() => {
-                if (!armed) return;
-                armed = false;
-                c.setButtonText(s.setChipDeleteBtn);
-              }, 4000);
+              // 兜底：焦点因为别的原因没触发 blur 时，别把确认态永久挂在那儿。
+              disarmTimer = window.setTimeout(disarm, 10000);
               return;
             }
+            // 先停表：这一枚马上就从 DOM 上摘下去了，让计时器再去 setButtonText
+            // 是在动一个已经 detach 的节点。
+            if (disarmTimer !== null) {
+              window.clearTimeout(disarmTimer);
+              disarmTimer = null;
+            }
+            armed = false;
             const i = this.plugin.settings.customChips.indexOf(chip);
             if (i >= 0) this.plugin.settings.customChips.splice(i, 1);
             box.detach();
