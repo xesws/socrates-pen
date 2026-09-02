@@ -398,6 +398,7 @@ export const zh = {
     "真正拦住写盘的是审批面板，它一直都在。",
   setChipEnabledName: "在侧栏显示",
   setChipEnabledDesc: "关掉就先收起来，不删。半成品可以停在这儿。",
+  setChipDraftNote: "还没写指令，所以侧栏那排先不显示它。写完就出现。",
   setChipDelete: "删除这枚泡泡",
   setChipDeleteBtn: "删除",
   setChipDeleteConfirm: "再点一次确认删除",

@@ -1,7 +1,12 @@
 import {
   CUSTOM_CHIP_MAX,
+  HINT_MAX,
+  LABEL_MAX,
   PROMPT_MAX,
-  coerceCustomChips,
+  chipDisplayLabel,
+  chipIsDraft,
+  charCount,
+  clampChars,
   type CustomChip,
 } from "./customchips";
 import { PRESET_CHIPS, blankChip, chipFromPreset } from "./chippresets";
@@ -376,41 +381,49 @@ export class PenSettingTab extends PluginSettingTab {
     const box = root.createEl("details", { cls: "sp-set-chip" });
     if (open) box.setAttr("open", "");
     const head = box.createEl("summary");
-    // summary 上显示的是**当前**名字。label 空着时回落到 prompt 首行，
-    // 和侧栏那枚按钮、以及落盘进 ui_messages 的文案同一条规矩
-    // （coerceCustomChips），不在这儿另写一份。
+    // summary 上显示的是**当前**名字，和侧栏那枚按钮、以及落盘进 ui_messages
+    // 的文案同一条规矩（chipDisplayLabel），不在这儿另写一份。
     const retitle = (): void => {
-      head.setText(chip.label.trim() || chip.prompt.split("\n")[0].trim() || s.setChipUnnamed);
+      head.setText(chipDisplayLabel(chip) || s.setChipUnnamed);
     };
     retitle();
 
     new Setting(box)
       .setName(s.setChipLabelName)
       .setDesc(s.setChipLabelDesc)
-      .addText((c) =>
+      .addText((c) => {
         c.setValue(chip.label).onChange((v) => {
-          chip.label = v;
+          // 当场夹紧再存，但**不当场回写输入框**——边打边夹会让光标跳。
+          // 和 num() 那条家法同源。
+          chip.label = clampChars(v, LABEL_MAX);
           this.saveChips();
-        }),
-      )
-      // summary 跟着改名，但**只在失焦时改**：逐字改标题会让读者一边打字
-      // 一边看见上面那行字在抖。
-      .settingEl.addEventListener("focusout", retitle);
+        });
+        // 失焦时把真正存下的值显回去，读者才知道系统认了几个字；
+        // summary 也只在这时候改，逐字改标题会让人一边打字一边看见上面那行在抖。
+        c.inputEl.addEventListener("blur", () => {
+          c.setValue(chip.label);
+          retitle();
+          // label 也算进 chipIsDraft：只写了名字没写指令仍是草稿，
+          // 而只写了指令没写名字**不是**。两栏都要能翻转这条提示。
+          syncDraft();
+        });
+      });
 
     new Setting(box)
       .setName(s.setChipHintName)
       .setDesc(s.setChipHintDesc)
-      .addText((c) =>
+      .addText((c) => {
         c.setValue(chip.hint).onChange((v) => {
-          chip.hint = v;
+          chip.hint = clampChars(v, HINT_MAX);
           this.saveChips();
-        }),
-      );
+        });
+        c.inputEl.addEventListener("blur", () => c.setValue(chip.hint));
+      });
 
     const promptRow = new Setting(box).setName(s.setChipPromptName).setDesc(s.setChipPromptDesc);
     const count = promptRow.descEl.createDiv({ cls: "setting-item-description" });
     const syncCount = (): void => {
-      count.setText(s.setChipChars(chip.prompt.length, PROMPT_MAX));
+      count.setText(s.setChipChars(charCount(chip.prompt), PROMPT_MAX));
     };
     promptRow.addTextArea((c) => {
       c.inputEl.rows = 8;
@@ -418,13 +431,33 @@ export class PenSettingTab extends PluginSettingTab {
       c.setPlaceholder(s.setChipPromptPlaceholder)
         .setValue(chip.prompt)
         .onChange((v) => {
-          chip.prompt = v;
+          chip.prompt = clampChars(v, PROMPT_MAX);
           syncCount();
+          syncDraft();
           this.saveChips();
         });
+      // 这一条比 label 那条要紧：超了上限被切掉的**恰好是写在最后的格式硬约束**。
+      // 失焦时把真正存下的那段显回去，读者当场就看见尾巴没了，而不是等到
+      // 模型不照格式做的时候才去猜为什么。
+      c.inputEl.addEventListener("blur", () => {
+        c.setValue(chip.prompt);
+        syncCount();
+        syncDraft();
+        retitle();
+      });
     });
     syncCount();
-    promptRow.settingEl.addEventListener("focusout", retitle);
+
+    // 草稿说明。设置页留得住半成品，侧栏却筛掉它（没 prompt 就没有可注入的东西）——
+    // 不说一声的话，「我建了泡泡侧栏没有」和 v0.21.0 修掉的那个真 bug 长得一模一样。
+    const draftNote = box.createEl("p", {
+      cls: "setting-item-description sp-set-chips-note",
+      text: s.setChipDraftNote,
+    });
+    const syncDraft = (): void => {
+      draftNote.toggleClass("is-off", !chipIsDraft(chip));
+    };
+    syncDraft();
 
     new Setting(box)
       .setName(s.setChipWritebackName)
@@ -475,13 +508,20 @@ export class PenSettingTab extends PluginSettingTab {
       });
   }
 
-  /** 改完一枚泡泡：夹紧 → 防抖落盘 → 叫醒侧栏那排按钮。
+  /** 改完一枚泡泡：防抖落盘 → 叫醒侧栏那排按钮。
    *
-   *  这里**不重新渲染设置页**，所以夹紧的结果（比如截断超长 prompt）
-   *  要等下次打开设置页才看得见——这是故意的：边打字边被截会跟人打架，
-   *  和 num() 那条「不回写输入框」是同一条家法。 */
+   * **这里绝不能调 coerceCustomChips。** 那是装载期的脏数据闸，它做两件
+   * 在编辑期都是错的事：丢掉 prompt 还空着的项（读者刚点「新建」那一帧），
+   * 以及 `out.push({...})` **重建每一个对象**——下面每个 onChange 闭包都攥着
+   * 建行时那个 chip 引用，数组一被换掉，闭包写的就是一个已经不在表里的孤儿。
+   *
+   * v0.21.0 实测出来的三个症状，全是这一行：空白新建等于没存；同一次打开
+   * 设置页里改第二次就丢；删除按钮只 detach 了 DOM、数据还在
+   * （`indexOf(chip)` 必然是 -1）。
+   *
+   * 夹紧只在两处：loadSettings() 装载时，和后端（权威，无论如何都会再夹一遍）。
+   * 这里只负责把读者当下写的字**原地**存下去。 */
   private saveChips(): void {
-    this.plugin.settings.customChips = coerceCustomChips(this.plugin.settings.customChips);
     this.plugin.saveSettingsSoon();
     this.plugin.refreshChips();
   }

@@ -327,7 +327,7 @@ export const en: Dict = {
     "Anything marked as rewriting the note always opens the approval panel first — " +
     "the note only changes once you allow it.",
   setChipsEmpty: "No buttons of your own yet. Start from one of the templates below and rework it to match your book.",
-  setChipsFull: (max: number): string => `${max} is the limit. More than that just adds scrollbar to the side panel.`,
+  setChipsFull: (max: number): string => `${max} is the limit. More than that just adds a scrollbar to the side panel.`,
   setChipNewFrom: "New from template",
   setChipNewFromDesc: "Copy a starting template, then rework it to match how your own book is laid out.",
   setChipPresetBlank: "Blank",
@@ -350,6 +350,7 @@ export const en: Dict = {
     "what actually stops a write is the approval panel, which is always there.",
   setChipEnabledName: "Show in the side panel",
   setChipEnabledDesc: "Turn off to tuck it away without deleting it. Half-finished ones can wait here.",
+  setChipDraftNote: "No instruction yet, so it stays out of the side panel. It appears once you write one.",
   setChipDelete: "Delete this button",
   setChipDeleteBtn: "Delete",
   setChipDeleteConfirm: "Click again to confirm",

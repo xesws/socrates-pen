@@ -715,9 +715,9 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 | 部分 | 规模 |
 | --- | --- |
-| Python（sidecar，不含测试） | 32 个模块，9689 行 |
-| Python 测试 | 9948 行，**583 passed** |
-| TypeScript（插件） | 18 个文件，6000 行 |
+| Python（sidecar，不含测试） | 32 个模块，9719 行 |
+| Python 测试 | 10006 行，**587 passed** |
+| TypeScript（插件） | 18 个文件，6137 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
 
@@ -750,11 +750,11 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | `check-css.mjs` | `styles.css` 的不变量，条条是真踩过的坑（跑一遍会打印当前条数） |
 | `check-limits.mjs` | **前后端那两张夹紧表必须逐项相等**——同一道闸的两半 |
 | `check-sidecar.mjs` | 版本比对、端口占用的解析，各家 `lsof`/`netstat`/`ss` 输出都喂一遍 |
-| `check-chips.mjs` | 自定义泡泡的归一化和消毒（[见 3.9](#39--自己定一枚泡泡)），外加**前后端三个长度上限逐字相等** |
+| `check-chips.mjs` | 自定义泡泡的归一化和消毒（[见 3.9](#39--自己定一枚泡泡)），外加**拿同一批语料把前后端那两份消毒逐字对跑一遍** |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **583 passed**，
+后端 `python -m pytest pen/tests -q` → **587 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -886,7 +886,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 583 passed
+python -m pytest pen/tests -q       # 587 passed
 python -m pen.index --check 你的笔记.md
 ```
 

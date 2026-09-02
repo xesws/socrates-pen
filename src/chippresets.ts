@@ -22,7 +22,9 @@ import type { Lang } from "./i18n";
 const F = "```";
 
 export type PresetChip = {
-  /** 下拉里的稳定 key，也是 i18n 表里那条名字的键。 */
+  /** 下拉里的稳定 key。**不是 i18n 的键**——模板的显示名就住在下面那个 label
+   *  里（设置页直接读 p.label[currentLang()]），词表里没有这三个键。
+   *  这个文件顶上那段注释讲的正是「模板文案为什么故意不放 i18n」。 */
   key: "quiz" | "explain" | "pseudocode";
   label: Record<Lang, string>;
   hint: Record<Lang, string>;

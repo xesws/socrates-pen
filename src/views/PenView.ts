@@ -11,7 +11,7 @@ import {
 import type SocratesPenPlugin from "../main";
 import { isGone, makeApi, streamApprove, streamChat } from "../api";
 import { stripFoldTags, visibleReply } from "../foldview";
-import { chipPayload, type CustomChip } from "../customchips";
+import { chipDisplayLabel, chipIsDraft, chipPayload, type CustomChip } from "../customchips";
 import { handbookIdFromPath, vaultRoot, type EditorPick } from "../selection";
 import type {
   ChatMessage,
@@ -556,10 +556,16 @@ export class PenView extends ItemView {
     e.ask.disabled = blocked;
   }
 
-  /** 读者自定义的泡泡里当下要渲染的那些。关掉的连按钮都不建——它和
-   *  FIXED_CHIPS 的 enabled 不同义：那个是「灰着但在」，这个是「先收起来」。 */
+  /** 读者自定义的泡泡里当下要渲染的那些。
+   *
+   *  关掉的连按钮都不建——它和 FIXED_CHIPS 的 enabled 不同义：那个是
+   *  「灰着但在」，这个是「先收起来」。
+   *
+   *  **还没写字的草稿也不建**：设置页留着半成品是对的（读者点了「新建」
+   *  还没来得及打字），但侧栏不行——没 prompt 就没有可注入的东西，
+   *  点了等于发一枚空芯片；没名字就是一枚零宽、点得着但看不见的按钮。 */
   private myChips(): CustomChip[] {
-    return (this.plugin.settings.customChips || []).filter((c) => c.enabled);
+    return (this.plugin.settings.customChips || []).filter((c) => c.enabled && !chipIsDraft(c));
   }
 
   /**
@@ -572,7 +578,7 @@ export class PenView extends ItemView {
    */
   private labelOf(chipId: string): string {
     const mine = this.myChips().find((c) => c.id === chipId);
-    if (mine) return mine.label;
+    if (mine) return chipDisplayLabel(mine);
     return chipLabel(chipId, this.chips.find((c) => c.id === chipId)?.label ?? "");
   }
 
@@ -600,7 +606,7 @@ export class PenView extends ItemView {
       // 自定义泡泡必须进签名：不进的话，读者在设置页改完名字、
       // onCustomChipsChanged 就算把 chipsSig 清了也只是回到「和上次一样」，
       // 这一格早退掉，按钮上还是旧文案。
-      this.myChips().map((c) => [c.id, c.label, c.hint]),
+      this.myChips().map((c) => [c.id, chipDisplayLabel(c), c.hint]),
       this.dyn,
       this.substantive,
     ]);
@@ -624,7 +630,7 @@ export class PenView extends ItemView {
     // 固定的是这个工具的骨架，得先在首屏；动态追问是这一轮现生的，
     // 夹在中间会让「我加的按钮」每轮换位置。
     for (const c of this.myChips()) {
-      const b = e.chips.createEl("button", { text: c.label, cls: "is-custom" });
+      const b = e.chips.createEl("button", { text: chipDisplayLabel(c), cls: "is-custom" });
       b.dataset.off = "0";
       if (c.hint) setTooltip(b, c.hint);
       b.onclick = () => void this.send(c.id, "");

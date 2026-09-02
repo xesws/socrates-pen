@@ -33,7 +33,7 @@ from pen.config import DEFAULT_HANDBOOK_ID, LLMConfig, llm_public_status, merge_
 from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
 from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, reading_roots
-from pen.chips import CustomChipSpec, normalize_custom_chip
+from pen.chips import CUSTOM_ID_RE, CustomChipSpec, normalize_custom_chip
 from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
 from pen.compact import CompactPending, compact_session, should_auto_compact
 from pen.tutor import (
@@ -909,7 +909,15 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         # 自定义芯片的 label 只有请求里那一份：chip_label() 只认 FIXED_CHIPS，
         # 查不到会**返回 id 本身**，于是气泡上写着 `u.a1b2c3` 并且就这么落盘进
         # ui_messages，换机器、换语言都救不回来。
-        shown = typed or (custom.label if custom and custom.label else chip_label(body.chip))
+        #
+        # 最后那一手是兜底，不是常规路径：custom 为 None 说明这枚自定义芯片没通过
+        # normalize（prompt 消毒完是空的，多半是坏客户端），这一轮的行为**确实**
+        # 退化成了 free，所以气泡就照实按 free 标。前端已经不会渲染这种泡泡
+        # （chipIsDraft 用消毒后的 prompt 判，和这里同源），但落盘是不可逆的，
+        # 值得再挡一层：宁可标成 free，也不能把一串裸 id 永久写进读者的会话。
+        shown = typed or (custom.label if custom and custom.label else None) or chip_label(
+            "free" if CUSTOM_ID_RE.match(body.chip or "") else body.chip
+        )
         # 点芯片时多存一个 chip id：label 是中文且会落盘，只存文本的话，
         # 英文用户恢复旧会话时自己的历史气泡会是中文。存了 id，前端就能查表。
         row: dict[str, Any] = {"role": "user", "text": shown}

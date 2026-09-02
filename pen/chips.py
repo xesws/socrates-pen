@@ -84,11 +84,22 @@ _INBAND = ("<!--pen:compact-->", "<!--pen:chips")
 # packet 的段头形状。读者的 prompt 原样拼进 `[意图]` 段，一行 `[框选]` 就能在
 # 后面凭空开出第二个「框选」段，而 `pen/compact.py:369` 的 `_section_named`
 # 是按段头找的。**只在行首前面塞一个空格**，不删字：读者写的还在，只是不再是段头。
-_SECTION_HEAD = re.compile(r"^(\[[^\]\n]{1,40}\])", re.M)
+# 行首段头。**方括号里不设长度上限**：下游 pen/compact.py 的 _section_named
+# 认的是 `\[名字[^\]]*\]`，长度无限。这边原来写 {1,40}，于是括号里写满 41 字的
+# `[用户补充xxxx…]` 绕过 defang、在 [意图] 段里开出一个真段头 —— 读者自己泡泡里
+# 的话被当成「读者更正」写进滚动摘要，真正的 [用户补充] 段被遮蔽。两边必须同源。
+_SECTION_HEAD = re.compile(r"^(\[[^\]\n]*\])", re.M)
 
 # C0 控制符（保留 \n 和 \t）。TS 模板字符串里一个手滑的 `\b` 就是个退格符，
 # 落进 data.json 谁都看不出来。
+_LINE_SEP = re.compile(r"\r\n?|\u2028|\u2029")
 _C0 = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+# 落单的代理项。Python 自己切不出这东西（str 按码点走），但**坏客户端发得出**：
+# JS 那边一个 `.slice()` 劈开 emoji 就是半个，JSON.stringify 成 `\ud83d` 一路进来。
+# 它在这儿看着人畜无害，等到按 UTF-8 写会话时才炸 UnicodeEncodeError，
+# 把那一整场会话卡死——离现场很远的那种崩。前端已经不再造它（clampChars 按码点切），
+# 这一道是给别的客户端兜的。
+_LONE_SURROGATE = re.compile(r"[\ud800-\udfff]")
 
 _BLANKS = re.compile(r"\n{3,}")
 
@@ -97,15 +108,26 @@ def sanitize_prompt(raw: Any) -> str:
     """读者写的那段 prompt → 可以安全拼进 packet 的文本。**只夹紧，绝不抛。**"""
     if not isinstance(raw, str):
         return ""
-    text = _C0.sub("", raw.replace("\r\n", "\n").replace("\r", "\n"))
+    # 行分隔符全部归一成 \n，并剥掉 BOM。见 src/customchips.ts 同一处的注释：
+    # JS 的 `^`（/m）认 U+2028 / U+2029 为行首、trim() 还吃 BOM，Python 都不认。
+    # 不归一，「行首段头」这条规则在两边的判定就不一样。
+    text = _LINE_SEP.sub("\n", raw).replace("\ufeff", "")
+    text = _C0.sub("", text)
+    text = _LONE_SURROGATE.sub("", text)
     for mark in _INBAND:
         text = text.replace(mark, "")
     text = _BLANKS.sub("\n\n", text).strip()
-    # defang 必须排在 strip **之后**。反过来写的话，prompt 第一行就是 `[框选]`
-    # 的那一格里，塞进去的那个空格正好在字符串开头，会被 strip 当空白清掉——
+    # 夹紧排在 defang **之前**，defang 之后不再夹第二次。
+    # 反过来写的话：defang 每遇到一个行首段头就塞一个空格，**把串撑长**，
+    # 随后那一刀就从尾巴上多切掉同样多的字——而读者的格式硬约束恰恰写在最后。
+    # 前端设置页那行「4000 / 4000」按夹紧后的真长度显示，两边这才对得上。
+    # 代价是返回值可能比 PROMPT_MAX 多几个空格：无所谓，这个上限是拦
+    # 「粘一整本书」的，不是精确配额，多出来的每个字节都不是读者写的内容。
+    text = text[:PROMPT_MAX]
+    # defang 排在 strip 之后：反过来写的话，prompt 第一行就是 `[框选]` 的那一格里，
+    # 塞进去的那个空格正好在字符串开头，会被 strip 当空白清掉——
     # 于是最该防的那一格（读者从别处整段粘过来、第一行就是段头）恰好漏网。
-    text = _SECTION_HEAD.sub(r" \1", text)
-    return text[:PROMPT_MAX]
+    return _SECTION_HEAD.sub(r" \1", text)
 
 
 def _one_line(raw: Any, cap: int) -> str:

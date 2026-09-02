@@ -552,6 +552,50 @@ A frontier model costs one to two orders of magnitude more.
 **This total can go down**, and that isn't a bug — sessions expire ([see 4.8](#48--sessions-expire-and-their-bills-go-with-them)),
 and when one is purged its bill goes with it.
 
+### 3.9 · Make your own button
+
+Underneath, every button above does the same one thing: **inject a sentence into the
+`[Intent]` block**. `socratic` injects "don't give it away, ask one question";
+`explain_zero` injects "assume the reader knows nothing." That's all there is to it —
+so there's no reason only the author gets to write that sentence.
+
+Settings → **Your own buttons** → pick a template and add it. The three starters are
+"Turn this into a question", "Fold an explanation in", and "Add LaTeX-style pseudocode".
+Copy one and rework it for your own book: your section names, your numbering, your fold
+format. A new button shows up in the side panel, outlined so you can tell it from the
+built-in ones.
+
+The common use is **inserting content into your notes in your own house style** — say,
+putting questions into your question section, in expandable `<details>` format. Write
+those two sentences into the instruction and it follows them:
+
+```
+Take the passage I selected and write one self-check question into this level's
+question section. The stem goes on its own line as **Qn. one-sentence question?**,
+where n continues from the highest number already used.
+```
+
+Tick **rewrites the note** and it knows this turn touches the file: it `read_file`s the
+passage, proposes an `edit_file`, and **the approval panel opens as always**
+([see 3.5](#35--writing-back-and-that-approval-gate)) — nothing reaches disk until you
+allow it. Undo, snapshots and cursor-reveal all work unchanged.
+
+A few things worth saying up front:
+
+- **That switch is not a lock on the file.** It sets expectations for the model, not tool
+  visibility — a button with it off may still propose an `edit_file`. What actually stops
+  a write is the approval gate, which is always there. Same as the `free` chip
+  ([3.3](#33--just-ask-free) already says this once).
+- **Your names are never translated.** Switch the interface to Chinese and your buttons
+  still read exactly what you typed — you named them.
+- **Your buttons live in this vault's `data.json`**, the sidecar stores none of it, and the
+  instruction ships with each request. They travel with the vault.
+- Leave the name empty and it uses the first line of the instruction, so you never get an
+  invisible button.
+
+Format **validation** — checking that what it produced matches your house style — isn't
+wired up yet; `lint_fold()` in `pen/insert.py` is waiting for it in a coming release.
+
 ---
 
 ## 4 · System design
@@ -783,13 +827,13 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 <details>
 <summary><b>Expand: the developer layer</b></summary>
 
-**Size** (as of v0.15.11, all measured)
+**Size** (as of v0.21.0, all measured)
 
 | Part | Size |
 | --- | --- |
-| Python (sidecar, excluding tests) | 28 modules, 7,814 lines |
-| Python tests | 9,366 lines, **524 passed** |
-| TypeScript (plugin) | 15 files, 3,839 lines |
+| Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
+| Python tests | 10,006 lines, **587 passed** |
+| TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
 
@@ -809,19 +853,25 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 **Test gates**
 
-`npm test` is five independent gates, each guarding one thing:
+`npm test` is nine independent gates, each guarding one thing. They all **run the real
+compiled code** rather than grepping the source — the plugin side has no test framework,
+and it isn't worth pulling one in for this:
 
 | Gate | Guards |
 | --- | --- |
 | `check-i18n.mjs` | Vocabulary self-check — the language-parsing edge cases that only bite in reality |
 | `check-poll.mjs` | The deep-poll **termination conditions**, run against compiled code. Lose one and it keeps hammering the sidecar after you close the panel |
 | `check-api.mjs` | The shape of HTTP errors, run against the compiled `src/api.ts` |
+| `check-key.mjs` | Keys are locked to a host — switching nodes must never carry the old key to the new one |
+| `check-fold.mjs` | Fold blocks must be stripped clean out of the chat reply, so you never see half an HTML structure |
 | `check-css.mjs` | Invariants of `styles.css` — every one a pothole we actually hit (run it and it prints the current count) |
 | `check-limits.mjs` | **The two clamp tables, frontend and backend, must match item for item** — two halves of one gate |
+| `check-sidecar.mjs` | Version comparison and port-occupancy parsing, fed real `lsof` / `netstat` / `ss` output |
+| `check-chips.mjs` | Normalizing and sanitizing your own buttons ([see 3.9](#39--make-your-own-button)) — including a **differential run of the two sanitizers**, frontend against backend, on the same corpus |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **524 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **587 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -961,7 +1011,7 @@ The first launch builds a venv and pip-installs — that's where things break. I
 
 ```bash
 npm install
-npm test        # five gates: i18n / poll / api / css / limits
+npm test        # nine gates: i18n / poll / api / key / fold / css / limits / sidecar / chips
 npm run build   # tsc --noEmit && npm test && esbuild
 ```
 
@@ -978,7 +1028,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 524 passed
+python -m pytest pen/tests -q       # 587 passed
 python -m pen.index --check your-note.md
 ```
 
