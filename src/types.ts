@@ -141,6 +141,21 @@ export type Health = {
   fast?: LlmStatus;
 };
 
+/** 一槽配置的体检结论。`code` 空串 = 真的能用（不是「看起来填齐了」）。
+ *  文案由 sidecar 给：`provider.*` 那张表是「节点这一下为什么失败」的
+ *  唯一定义点，前端再抄一份就会和对话里的红字气泡说不一样的话。 */
+export type PreflightSlot = {
+  ok: boolean;
+  code: string;
+  message: string;
+};
+
+/** POST /v1/llm/preflight。fast 只在请求里带了 fast:true 时才有。 */
+export type PreflightReport = {
+  base: PreflightSlot;
+  fast?: PreflightSlot;
+};
+
 export type NoteBinding = {
   handbook_id: string;
   session_id: string;

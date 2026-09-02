@@ -8,6 +8,7 @@ import type {
   HandbookMeta,
   Health,
   LlmStatus,
+  PreflightReport,
   SessionView,
   SnapshotStatus,
   UsageTotal,
@@ -98,6 +99,21 @@ export function makeApi(baseUrl: string) {
       }),
     deleteFastKey: () =>
       j<LlmStatus>(baseUrl, "/v1/llm/fast-key", { method: "DELETE" }),
+    /**
+     * 配置体检：**让 sidecar 真往节点打一枪**，回答「这套设置现在能不能用」。
+     *
+     * health 回答不了这个——它只知道槽里有没有钥匙。钥匙是废的、model 在
+     * 这个节点上不存在、节点没有视觉，它一概显示正常（v0.22.2 读者报告）。
+     *
+     * 发的是 `llmPayload(settings)`，和 /v1/chat 逐字同源：体检别的一套
+     * 配置，等于没体检。**调用方必须自己节流**——这是一次真实的 API 调用，
+     * 只该在配置变了的时候跑，不能进轮询。
+     */
+    preflight: (settings: PenSettings, fast?: boolean) =>
+      j<PreflightReport>(baseUrl, "/v1/llm/preflight", {
+        method: "POST",
+        body: JSON.stringify({ ...llmPayload(settings), ...(fast ? { fast: true } : {}) }),
+      }),
     importHandbook: (original_path: string, handbook_id: string, vault_root?: string) =>
       j<HandbookMeta>(baseUrl, "/v1/handbooks/import", {
         method: "POST",

@@ -50,6 +50,12 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "只收 png / jpeg / webp / gif。",
         "en": "Only png / jpeg / webp / gif.",
     },
+    "provider.no_model": {
+        "zh": "这个节点上没有 {model} 这个模型（404）。核对设置里的 model 字符串，"
+        "或换一个这个节点真有的型号。",
+        "en": "This endpoint has no model called {model} (404). Check the model name in "
+        "settings, or pick one this endpoint actually serves.",
+    },
     "provider.unreachable": {
         "zh": "连不上节点。检查设置里的 Base URL 有没有填对。",
         "en": "Can't reach the endpoint. Check the Base URL in settings.",
@@ -72,6 +78,12 @@ MESSAGES: dict[str, dict[str, str]] = {
     "llm.missing_config_short": {
         "zh": "找不到模型配置。请到设置 → Socrates 填写 API Key。",
         "en": "No model configured. Add an API key under Settings → Socrates.",
+    },
+    # 体检给出的**判词**。设置页失焦时那条 Notice 是另一句（它填得出两个
+    # 主机名），两句话服务两个时刻；判定本身只有 config.fast_llm_status 一份。
+    "llm.host_mismatch": {
+        "zh": "本机存的那把钥匙是给另一个站点的，不会发到现在这个节点上。请在当前 Base URL 上重新存一次 API Key。",
+        "en": "The key stored on this machine belongs to a different endpoint and will not be sent to this one. Save the API key again for the Base URL you have now.",
     },
     "llm.empty_key": {
         "zh": "钥匙是空的。粘贴一份再保存。",

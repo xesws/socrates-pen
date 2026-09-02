@@ -56,6 +56,12 @@
   background: var(--interactive-accent);
 }
 
+/* 连得上 sidecar，但这套模型配置是坏的（钥匙废了 / 型号不存在 / 节点没视觉）。
+   以前这一档不存在，于是它和「一切正常」共用绿点。 */
+.socrates-pen .sp-dot.is-warn {
+  background: var(--text-warning);
+}
+
 .socrates-pen .sp-dot.is-down {
   background: var(--text-error);
 }

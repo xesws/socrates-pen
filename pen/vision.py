@@ -101,7 +101,12 @@ def content_text(content: Any) -> str:
 
 
 def strip_image_parts(content: Any) -> Any:
-    """落盘前丢掉像素，改成占位。RAM 里的 messages 原样保留。"""
+    """丢掉像素，换成占位文本。**摘图这件事只有这一份实现。**
+
+    两个调用方，理由不同但动作完全一样：落盘时不写像素；「图像理解」关着时
+    不把像素发上线。分家写两份，就会出现「盘上摘干净了、线上还在发」——
+    那正是 v0.22.2 修的那个 bug。
+    """
     if not isinstance(content, list):
         return content
     out: list[Any] = []
@@ -113,7 +118,14 @@ def strip_image_parts(content: Any) -> Any:
     return out
 
 
-def strip_messages_for_disk(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def strip_images(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """整段历史摘图，返回**副本**。没有图就原样返回那个 list，零成本。
+
+    非破坏是有意的：读者把「图像理解」关掉只是说「这一路别发图」，不是说
+    「把我贴过的图烧了」。再打开时那些像素还在 session.messages 里。
+    """
+    if not any(has_image_parts(m.get("content")) for m in messages):
+        return messages
     return [{**m, "content": strip_image_parts(m.get("content"))} for m in messages]
 
 

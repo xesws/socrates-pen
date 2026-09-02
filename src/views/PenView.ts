@@ -17,6 +17,7 @@ import type {
   ChatMessage,
   Chip,
   DynChip,
+  Health,
   PendingEdit,
   SessionView,
   SpendBook,
@@ -25,7 +26,7 @@ import type {
 import { chipHint, chipLabel, phaseText, t } from "../i18n";
 import { dropAsked, keepDeep, mergeDeep, pollDeep } from "../deeppoll";
 import { sidecarUsable } from "../sidecar";
-import { keyHostGap } from "../settings";
+import { configSignature, keyHostGap } from "../settings";
 import { measureMonoAdvance, renderSplash, type SplashLevel } from "./splash";
 import { AVATAR } from "../logo";
 
@@ -145,6 +146,13 @@ export class PenView extends ItemView {
   private handbookId: string | null = null;
   private capturedPath: string | null = null;
   private sidecarReachable = false;
+  // 配置体检的结果。**空串 = 这套配置真的能用**，不是「看起来填齐了」。
+  private cfgCode = "";
+  private cfgMsg = "";
+  // 上次体检的是哪套配置。**这个签名就是体检的全部节流机制**：
+  // probeHealth() 每划一次选区就会被调一次（captureSelection），
+  // 而体检是一次真实的 API 调用——没有这道闸就成了按选区计费。
+  private cfgSig = "";
   private paintGen = 0;
   private painting = false;
   private quote = "";
@@ -393,7 +401,12 @@ export class PenView extends ItemView {
   private paintBrand(): void {
     const e = this.els;
     if (!e) return;
-    e.dot.classList.toggle("is-ok", this.sidecarReachable);
+    // 三档，不是两档。以前只有「进程活着 / 进程没了」，于是钥匙是废的、
+    // model 写错了、节点没视觉——全都显示成绿点（v0.22.2 读者报告：
+    // 「所有这些 error 的情况，目前状态栏都显示完全正常」）。
+    const bad = this.sidecarReachable && Boolean(this.cfgCode);
+    e.dot.classList.toggle("is-ok", this.sidecarReachable && !bad);
+    e.dot.classList.toggle("is-warn", bad);
     e.dot.classList.toggle("is-down", !this.sidecarReachable && Boolean(this.err));
     if (e.brandSub.textContent !== this.health) e.brandSub.textContent = this.health;
     setTooltip(e.brandSub, this.health);
@@ -1031,11 +1044,46 @@ export class PenView extends ItemView {
         this.health = t().healthNoKey;
       }
       this.err = "";
+      // health 只说到「槽里有钥匙」为止。**这套配置真能不能用得另问节点。**
+      void this.probeConfig(h);
     } catch (e) {
       this.sidecarReachable = false;
       this.llmOk = false;
       this.health = t().healthDown;
       this.err = t().errUnreachable(e instanceof Error ? e.message : String(e));
+    }
+    this.paintBar();
+  }
+
+  /**
+   * 配置体检：让 sidecar 真往节点打一枪，问「这套设置现在能不能用」。
+   *
+   * 读者报的病（v0.22.2）：「我根本不知道 OpenAI Key 到底配好没有，或者
+   * 这个节点是否拒收图片。所有这些 error 的情况，目前状态栏都显示完全正常。」
+   * 那是真的——顶栏那颗点当时只看 sidecar 进程活没活。
+   *
+   * **签名闸是这里的全部节流。** probeHealth 每划一次选区就会被调一次，
+   * 而体检是真实的 API 调用；签名（节点 / 型号 / 视觉 / 快模型那三格 /
+   * 钥匙末四位）没变就一枪不打。钥匙末四位进签名，是为了让「设置页刚换了
+   * 一把钥匙」这件事也能重新触发体检。
+   */
+  private async probeConfig(h: Health): Promise<void> {
+    const s = this.plugin.settings;
+    const sig = configSignature(s, h.llm.key_tail || "", h.fast?.key_tail || "");
+    if (sig === this.cfgSig) return;
+    this.cfgSig = sig;
+    try {
+      const r = await this.api().preflight(s, s.fastMode === true);
+      // 基座先说话。基座是坏的时，快模型那格再对也没意义——每一轮都得
+      // 靠基座收尾（绊线、审批后半轮都恒走基座）。
+      const bad = !r.base.ok ? r.base : r.fast && !r.fast.ok ? r.fast : null;
+      this.cfgCode = bad ? bad.code : "";
+      this.cfgMsg = bad ? bad.message : "";
+      if (bad) this.health = bad.message;
+    } catch {
+      // 体检本身打不通不算配置坏——那是 sidecar 的事，probeHealth 已经在说了。
+      // **这里绝不能把 cfgSig 留着**：下次配置没变但网络好了，得能再试一次。
+      this.cfgSig = "";
     }
     this.paintBar();
   }

@@ -51,6 +51,8 @@ from pen.tutor import (
     stream_chat,
 )
 from pen import vision as visionmod
+from pen import preflight
+from pen import tutor as tutormod
 
 SEARCH_REPLY = (
     "论文检索还没开。这是诚实挂起：P2 才有联网，"
@@ -410,6 +412,59 @@ def health() -> dict[str, Any]:
         # 嵌进去会让「基座配好没」和「快模型配好没」共用一个 ok 字段。
         "fast": configmod.fast_public_status(),
     }
+
+
+class PreflightBody(LlmOverrideBody):
+    """体检哪一套配置。字段全部继承自 LlmOverrideBody —— 体检的必须是
+    **读者此刻设置页里填的那套**，和 /v1/chat 逐字同源；另立一套字段
+    就会出现「体检过了，真发一轮还是错」。"""
+
+    # 顺带体检快模型那一槽。和 ChatBody.fast 同名同义。
+    fast: bool = False
+
+
+def _slot_report(cfg: LLMConfig | None, why: str, lang: str) -> dict[str, Any]:
+    """一槽的体检结论。`why` 是本机就能判出的理由（没钥匙 / 钥匙不对主机），
+    非空时**不打网络**——本机都知道配不成，再去问节点是浪费一枪。"""
+    if why:
+        return {"ok": False, "code": why, "message": msg(_LOCAL_WHY.get(why, why), lang)}
+    code, model = preflight.check(cfg)
+    if not code:
+        return {"ok": True, "code": "", "message": ""}
+    return {
+        "ok": False,
+        "code": code,
+        "message": tutormod.provider_message_for(code, lang, kind=code, model=model or "?"),
+    }
+
+
+# 本机就能判出来的两种配不成，映射到已有文案。**不新写一份**。
+_LOCAL_WHY = {
+    configmod.FAST_NO_KEY: "llm.missing_config",
+    configmod.FAST_HOST_GAP: "llm.host_mismatch",
+    preflight.NO_CONFIG: "llm.missing_config",
+}
+
+
+@app.post("/v1/llm/preflight")
+def llm_preflight(body: PreflightBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """**真往节点打一枪**，回答「这套配置现在到底能不能用」。
+
+    这条存在的理由，是 /v1/health 回答不了读者的问题。它只知道槽里有没有
+    钥匙——钥匙是废的、model 在这个节点上不存在、节点没有视觉，它一概显示
+    正常。于是设置页说「已保存」，每一轮却撞红字（v0.22.2 的读者报告）。
+
+    调用时机是**配置变了**（失焦 / 存钥匙 / 翻开关 / 开面板），不进轮询：
+    一枪 max_tokens=1，便宜，但不该按秒烧。
+    """
+    base_cfg = body.merged()
+    out: dict[str, Any] = {
+        "base": _slot_report(base_cfg, "" if base_cfg else preflight.NO_CONFIG, lang)
+    }
+    if body.fast:
+        fast_cfg, fast_why = body.fast_status()
+        out["fast"] = _slot_report(fast_cfg, fast_why, lang)
+    return out
 
 
 @app.post("/v1/shutdown")

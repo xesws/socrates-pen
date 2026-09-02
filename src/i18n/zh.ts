@@ -369,6 +369,8 @@ export const zh = {
   setKeyStatusSaved: (source: string, tail: string): string =>
     `已保存${source ? `（来源 ${source}）` : ""}${tail ? `，尾号 …${tail}` : ""}。`,
   setKeyStatusNone: "尚未保存钥匙。",
+  setCheckRunning: "正在向节点核对……",
+  setCheckOk: "已向节点核对通过。",
   setKeyStatusUnreachable: "sidecar 未运行，钥匙状态未知。",
   setKeyClear: "清除密钥",
   setKeepAliveName: "退出后保持本机服务运行",

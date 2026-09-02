@@ -316,6 +316,8 @@ export const en: Dict = {
   setKeyStatusSaved: (source, tail) =>
     `Saved${source ? ` (source: ${source})` : ""}${tail ? `, tail …${tail}` : ""}.`,
   setKeyStatusNone: "No key saved yet.",
+  setCheckRunning: "Checking with the endpoint…",
+  setCheckOk: "Verified against the endpoint.",
   setKeyStatusUnreachable: "Sidecar not running — key status unknown.",
   setKeyClear: "Clear key",
   setKeepAliveName: "Keep local service running after exit",

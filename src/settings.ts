@@ -226,6 +226,29 @@ export function keyHostGap(
   return [keyHost, urlHost];
 }
 
+/**
+ * 「这套配置是不是上次体检过的那一套」。变了才值得再打一枪。
+ *
+ * **这是体检的全部节流机制，所以它必须是一个能被单独测的纯函数。**
+ * 面板那边的 `probeHealth()` 每划一次选区就会被调一次（captureSelection
+ * 里那一句），而体检是真实的 API 调用——签名要是把不相干的设置也算进去，
+ * 读者就会按选区被计费。
+ *
+ * 钥匙末四位在里面：换了一把钥匙也得重新体检，而钥匙本身前端拿不到。
+ */
+export function configSignature(s: PenSettings, keyTail: string, fastTail: string): string {
+  return [
+    (s.baseUrl || "").trim(),
+    (s.model || "").trim(),
+    String(s.vision === true),
+    String(s.fastMode === true),
+    (s.fastBaseUrl || "").trim(),
+    (s.fastModel || "").trim(),
+    keyTail,
+    fastTail,
+  ].join("\u0000");
+}
+
 function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   const s = t();
   if (snap.phase === "idle") {
@@ -327,30 +350,48 @@ export class PenSettingTab extends PluginSettingTab {
     super.hide();
   }
 
-  /** 钥匙状态的唯一事实在 sidecar（llm_public_status）；vault 里永远没有副本。 */
-  private async paintKeyStatus(el: HTMLElement): Promise<void> {
+  /**
+   * 「槽里有没有钥匙」 + 「这套配置真能不能用」。
+   *
+   * 只说前半句是不够的——那正是读者报的病（v0.22.2）：钥匙是废的、model
+   * 在这个节点上不存在、节点没有视觉，状态行一律写「已保存」。所以存完之后
+   * 再让 sidecar 真打一枪，把判词接在后面。
+   *
+   * 体检是真实的 API 调用，所以**只在这三个时刻跑**：存/清钥匙、Base URL 或
+   * model 失焦、翻「图像理解」。不进任何轮询。
+   */
+  private async paintKeyStatus(el: HTMLElement, verify = false): Promise<void> {
     try {
       const h = await makeApi(this.plugin.settings.sidecarUrl).health();
-      el.setText(
-        h.llm.ok
-          ? t().setKeyStatusSaved(h.llm.key_source, h.llm.key_tail || "")
-          : t().setKeyStatusNone,
-      );
+      const head = h.llm.ok
+        ? t().setKeyStatusSaved(h.llm.key_source, h.llm.key_tail || "")
+        : t().setKeyStatusNone;
+      el.setText(verify && h.llm.ok ? `${head} ${t().setCheckRunning}` : head);
+      if (!verify || !h.llm.ok) return;
+      const r = await makeApi(this.plugin.settings.sidecarUrl).preflight(this.plugin.settings);
+      el.setText(`${head} ${r.base.ok ? t().setCheckOk : r.base.message}`);
     } catch {
       el.setText(t().setKeyStatusUnreachable);
     }
   }
 
   /** 快模型钥匙的状态。事实同样只在 sidecar，vault 里没有副本。 */
-  private async paintFastKeyStatus(el: HTMLElement): Promise<void> {
+  private async paintFastKeyStatus(el: HTMLElement, verify = false): Promise<void> {
     try {
       const h = await makeApi(this.plugin.settings.sidecarUrl).health();
       // 旧 sidecar 压根没有 fast 这一格 —— 当成没配，不当成出错。
-      el.setText(
-        h.fast?.ok
-          ? t().setKeyStatusSaved(h.fast.key_source, h.fast.key_tail || "")
-          : t().setFastKeyStatusNone,
+      const head = h.fast?.ok
+        ? t().setKeyStatusSaved(h.fast.key_source, h.fast.key_tail || "")
+        : t().setFastKeyStatusNone;
+      el.setText(verify && h.fast?.ok ? `${head} ${t().setCheckRunning}` : head);
+      if (!verify || !h.fast?.ok) return;
+      // 带 fast:true 才会体检快模型那一槽。
+      const r = await makeApi(this.plugin.settings.sidecarUrl).preflight(
+        { ...this.plugin.settings, fastMode: true },
+        true,
       );
+      const slot = r.fast;
+      if (slot) el.setText(`${head} ${slot.ok ? t().setCheckOk : slot.message}`);
     } catch {
       el.setText(t().setKeyStatusUnreachable);
     }
@@ -391,7 +432,7 @@ export class PenSettingTab extends PluginSettingTab {
             .health()
             .then((h) => {
               this.warnFastKeyHostMismatch(h.fast);
-              void this.paintFastKeyStatus(statusEl);
+              void this.paintFastKeyStatus(statusEl, true);
             })
             .catch(() => {});
         });
@@ -411,7 +452,7 @@ export class PenSettingTab extends PluginSettingTab {
       );
 
     const statusEl = root.createEl("p", { cls: "setting-item-description" });
-    void this.paintFastKeyStatus(statusEl);
+    void this.paintFastKeyStatus(statusEl, true);
     let submit = (): void => {};
     new Setting(root)
       .setName(s.setFastKeyName)
@@ -438,7 +479,7 @@ export class PenSettingTab extends PluginSettingTab {
               c.setValue("");
               new Notice(t().noticeFastKeySaved);
               this.plugin.refreshFast();
-              void this.paintFastKeyStatus(statusEl);
+              void this.paintFastKeyStatus(statusEl, true);
             })
             .catch((e: unknown) => {
               const status = e instanceof ApiError ? e.status : 0;
@@ -857,7 +898,7 @@ export class PenSettingTab extends PluginSettingTab {
     // v0.18.0：钥匙只写不读。输入即 PUT 给 sidecar（落在它家目录的 llm.json，
     // 0600），本地任何文件——包括这份 data.json——都不存。
     const keyStatusEl = containerEl.createEl("p", { cls: "setting-item-description" });
-    void this.paintKeyStatus(keyStatusEl);
+    void this.paintKeyStatus(keyStatusEl, true);
     let clearBtnEl: HTMLElement | null = null;
     let saveBtnEl: HTMLElement | null = null;
     let submitKey = (): void => {};
@@ -890,7 +931,7 @@ export class PenSettingTab extends PluginSettingTab {
               void this.plugin.saveSettings();
               new Notice(t().noticeKeySaved);
               this.plugin.refreshPenViews();
-              void this.paintKeyStatus(keyStatusEl);
+              void this.paintKeyStatus(keyStatusEl, true);
               this.warnKeyHostMismatch(llm);
             })
             .catch((e: unknown) => {
@@ -983,21 +1024,28 @@ export class PenSettingTab extends PluginSettingTab {
             .health()
             .then((h) => this.warnKeyHostMismatch(h.llm))
             .catch(() => {});
+          // 换了节点就重新体检一次。**这才是「热切换」的另一半**：改完当场
+          // 知道新节点认不认这把钥匙、有没有这个型号，而不是等发一轮撞红字。
+          void this.paintKeyStatus(keyStatusEl, true);
         });
       });
 
     new Setting(containerEl)
       .setName(s.setModelName)
       .setDesc(s.setModelDesc)
-      .addText((c) =>
-        c
-          .setPlaceholder("deepseek-v4-flash")
+      .addText((c) => {
+        c.setPlaceholder("deepseek-v4-flash")
           .setValue(this.plugin.settings.model)
           .onChange((v) => {
             this.plugin.settings.model = v.trim() || DEFAULT_SETTINGS.model;
             this.plugin.saveSettingsSoon();
-          }),
-      );
+          });
+        // 型号写错是读者截图里那条「意料外的错误（NotFoundError）」的真身。
+        // 失焦就问一次节点有没有这个型号，别让它拖到对话里去炸。
+        c.inputEl.addEventListener("blur", () => {
+          void this.paintKeyStatus(keyStatusEl, true);
+        });
+      });
 
     new Setting(containerEl)
       .setName(s.setVisionName)
@@ -1006,6 +1054,11 @@ export class PenSettingTab extends PluginSettingTab {
         c.setValue(this.plugin.settings.vision === true).onChange((v) => {
           this.plugin.settings.vision = v;
           this.plugin.saveSettingsSoon();
+          // 打开时体检会真挂一张 1×1 的图——**「这个节点收不收图」只有把图
+          // 递过去才知道**。读者报的正是这一格：开着它对着一个没有视觉的
+          // 节点，每一轮都被拒，而状态行一直显示正常。
+          this.plugin.refreshPenViews();
+          void this.paintKeyStatus(keyStatusEl, true);
         }),
       );
 

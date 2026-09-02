@@ -21,6 +21,7 @@ from pen.agent.registry import dispatch, schemas
 from pen.agent.tools_impl import limits_of
 from pen.sandbox import resolve_read_target
 from pen.questions import clean_candidates
+from pen.vision import strip_images
 from pen.session import (
     PROMPT_EXAMPLE_LINES,
     FIXED_CHIPS,
@@ -283,22 +284,60 @@ class ProviderError(RuntimeError):
     """供应商调用失败。message 已是给用户看的中文，不含 key。"""
 
 
-def provider_error_message(exc: BaseException, lang: str = "zh") -> str:
-    """OpenAI / 网络异常 → 给用户看的一句话。不带 key，不贴原始报文。"""
+# 「节点这一下为什么失败」——**这张表是唯一定义点**。对话里的红字气泡、
+# 设置页的体检、状态栏那颗点，三处共用它；分家就会出现「同一个 404 在气泡里
+# 叫『意料外的错误』，在体检里叫『没这个模型』」。
+#
+# 码本身进 SSE 和 /v1/llm/preflight 的响应，让前端能按码决定颜色和落点，
+# 而不是去 match 一句会被翻译的话。
+PROVIDER_OK = ""
+PROVIDER_BAD_KEY = "bad-key"
+PROVIDER_NO_MODEL = "no-model"
+PROVIDER_NO_VISION = "no-vision"
+PROVIDER_REJECTED = "rejected"
+PROVIDER_UNREACHABLE = "unreachable"
+PROVIDER_UNEXPECTED = "unexpected"
+
+_CODE_MSG = {
+    PROVIDER_BAD_KEY: "provider.bad_key",
+    PROVIDER_NO_MODEL: "provider.no_model",
+    PROVIDER_NO_VISION: "provider.bad_vision",
+    PROVIDER_REJECTED: "provider.bad_thinking",
+    PROVIDER_UNREACHABLE: "provider.unreachable",
+    PROVIDER_UNEXPECTED: "provider.unexpected",
+}
+
+
+def provider_error_code(exc: BaseException) -> str:
+    """异常 → 稳定的码。**不碰 i18n**，所以测试和前端都能拿它当锚点。"""
     status = getattr(exc, "status_code", None)
     if status in (401, 403):
-        return msg("provider.bad_key", lang)
+        return PROVIDER_BAD_KEY
+    if status == 404:
+        # 读者截图里那条「意料外的错误（NotFoundError）」就是它。404 在
+        # OpenAI 兼容节点上几乎只有一个意思：这个节点没有这个型号。
+        return PROVIDER_NO_MODEL
     if status == 400:
         from pen.vision import looks_like_vision_reject
 
-        if looks_like_vision_reject(exc):
-            return msg("provider.bad_vision", lang)
-        return msg("provider.bad_thinking", lang)
+        return PROVIDER_NO_VISION if looks_like_vision_reject(exc) else PROVIDER_REJECTED
     from openai import APIConnectionError, APITimeoutError
 
     if isinstance(exc, (APIConnectionError, APITimeoutError, OSError, TimeoutError)):
-        return msg("provider.unreachable", lang)
-    return msg("provider.unexpected", lang, kind=type(exc).__name__)
+        return PROVIDER_UNREACHABLE
+    return PROVIDER_UNEXPECTED
+
+
+def provider_message_for(code: str, lang: str = "zh", **fmt: Any) -> str:
+    """码 → 给用户看的一句话。不带 key，不贴原始报文。"""
+    return msg(_CODE_MSG.get(code, "provider.unexpected"), lang, **fmt)
+
+
+def provider_error_message(exc: BaseException, lang: str = "zh", model: str = "") -> str:
+    """OpenAI / 网络异常 → 给用户看的一句话。**实现只有上面那两份。**"""
+    return provider_message_for(
+        provider_error_code(exc), lang, kind=type(exc).__name__, model=model or "?"
+    )
 
 
 def _finish_text(
@@ -658,9 +697,18 @@ def _agent_loop(
           content           → 直接转 token 事件，**这才是真吐字**
           tool_calls        → 按 index 拼回完整 JSON，见 _ToolCallDraft
         """
+        # 「图像理解」关着就**当场摘图**——这是那个开关唯一真正生效的地方。
+        #
+        # stream_chat 入口那道闸只拦「这一轮新贴的图」。可 session.messages 是
+        # 常驻内存的：上一轮贴的 image_url 段会跟着每一枪原样重发，于是读者
+        # 关掉开关之后节点照旧收到图、照旧拒收，看起来就是开关坏了（v0.22.2
+        # 的读者报告）。摘在这儿而不是入口，是因为**这里是唯一的发枪点**，
+        # 而且 cfg 会在 Fast Mode 换模型时重绑——快模型没视觉、基座有视觉时，
+        # 同一段历史该发什么，只有这一枪自己知道。
+        wire = session.messages if shot is None else shot
         kwargs = llm_create_kwargs(
             cfg,
-            messages=session.messages if shot is None else shot,
+            messages=wire if cfg.vision else strip_images(wire),
             tools=tools if with_tools else None,
         )
         parts: list[str] = []
@@ -704,7 +752,7 @@ def _agent_loop(
                     idx = int(getattr(piece, "index", 0) or 0)
                     drafts.setdefault(idx, _ToolCallDraft()).eat(piece)
         except (OpenAIError, OSError, TimeoutError) as exc:
-            raise ProviderError(provider_error_message(exc, lang)) from exc
+            raise ProviderError(provider_error_message(exc, lang, cfg.model)) from exc
         # 冲掉尾巴：没有芯片块时上面那个保守切法会压着最后十几个字不吐。
         buf = "".join(parts)
         cut = buf.find(CHIPS_MARKER)
@@ -1165,7 +1213,7 @@ def propose_fold_md(
             )
         )
     except (OpenAIError, OSError, TimeoutError) as exc:
-        raise ProviderError(provider_error_message(exc, lang)) from exc
+        raise ProviderError(provider_error_message(exc, lang, cfg.model)) from exc
     # 写回这一枪也要记账。它落在会话上（请求线程独占，没有 probe 那条红线）。
     session.spend[metermod.KIND_FOLD] = metermod.merge(
         session.spend.get(metermod.KIND_FOLD),

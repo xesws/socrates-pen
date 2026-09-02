@@ -294,12 +294,12 @@ class PenSession:
             ]
 
     def to_dict(self) -> dict[str, Any]:
-        from pen.vision import strip_messages_for_disk
+        from pen.vision import strip_images
 
         return {
             "session_id": self.session_id,
             "handbook_id": self.handbook_id,
-            "messages": strip_messages_for_disk(self.messages),
+            "messages": strip_images(self.messages),
             "last_anchor": self.last_anchor,
             "has_substantive": self.has_substantive,
             "last_assistant": self.last_assistant,
