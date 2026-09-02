@@ -1,8 +1,15 @@
+import {
+  CUSTOM_CHIP_MAX,
+  PROMPT_MAX,
+  coerceCustomChips,
+  type CustomChip,
+} from "./customchips";
+import { PRESET_CHIPS, blankChip, chipFromPreset } from "./chippresets";
 import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { ApiError } from "./apierror";
 import { makeApi, usageTotal } from "./api";
 import type { LlmStatus } from "./types";
-import { coerceLangPref, t, type LangPref } from "./i18n";
+import { coerceLangPref, currentLang, t, type LangPref } from "./i18n";
 import type { EnsureKind, SidecarSnap, StopResult } from "./sidecar";
 
 export type ThinkingLevel = "off" | "low" | "medium" | "high";
@@ -26,6 +33,8 @@ export interface PenSettings {
   deepQuestions: boolean;
   /** 花销与频率的旋钮。键名用 snake_case，见 LIMIT_SPEC 的注释。 */
   limits: PenLimits;
+  /** 读者自己定的泡泡。类型与归一化在 src/customchips.ts。 */
+  customChips: CustomChip[];
 }
 
 /**
@@ -136,6 +145,7 @@ export const DEFAULT_SETTINGS: PenSettings = {
   vision: false,
   deepQuestions: true,
   limits: coerceLimits({}),
+  customChips: [],
 };
 
 const THINKING: ThinkingLevel[] = ["off", "low", "medium", "high"];
@@ -239,6 +249,8 @@ type PenHost = {
   ensureSidecar: () => Promise<EnsureKind>;
   stopSidecar: () => Promise<StopResult>;
   refreshPenViews: () => void;
+  /** 设置页改完自定义泡泡后叫醒侧栏那排按钮。 */
+  refreshChips: () => void;
 };
 
 export class PenSettingTab extends PluginSettingTab {
@@ -286,6 +298,192 @@ export class PenSettingTab extends PluginSettingTab {
     if (keyHost && urlHost && keyHost !== urlHost) {
       new Notice(t().noticeKeyHostMismatch(keyHost, urlHost));
     }
+  }
+
+  /**
+   * 「自定义泡泡」一节。
+   *
+   * **全程不调 this.display()**：那是这个文件的家法（见高级区那段注释）——
+   * 重画会把正在编辑的 textarea 的焦点和光标位置一起吃掉，而这一节里
+   * 读者恰恰是在长文本框里逐字打字。所以新建就 append 一个 <details>，
+   * 删除就 detach 那一个节点，剩下的 DOM 一个字都不动。
+   */
+  private chipsSection(root: HTMLElement): void {
+    const s = t();
+    new Setting(root).setName(s.setSecChips).setHeading();
+    root.createEl("p", { cls: "setting-item-description", text: s.setChipsDesc });
+
+    const list = root.createDiv({ cls: "sp-set-chips" });
+    const empty = root.createEl("p", {
+      cls: "setting-item-description sp-set-chips-note",
+      text: s.setChipsEmpty,
+    });
+    // 满了才提示。恒显一句「最多 20 枚」是噪声——绝大多数人建两三枚就够。
+    const full = root.createEl("p", { cls: "setting-item-description", text: "" });
+
+    const syncNotes = (): void => {
+      const n2 = this.plugin.settings.customChips.length;
+      empty.toggleClass("is-off", n2 > 0);
+      full.setText(n2 >= CUSTOM_CHIP_MAX ? s.setChipsFull(CUSTOM_CHIP_MAX) : "");
+    };
+
+    for (const c of this.plugin.settings.customChips) this.chipEditor(list, c, syncNotes);
+    syncNotes();
+
+    // 底下那一行：挑个模板 → 新建。下拉的值是模板 key，"" 是空白。
+    let pick = "";
+    new Setting(root)
+      .setName(s.setChipNewFrom)
+      .setDesc(s.setChipNewFromDesc)
+      .addDropdown((c) => {
+        c.addOption("", s.setChipPresetBlank);
+        for (const p of PRESET_CHIPS) c.addOption(p.key, p.label[currentLang()]);
+        c.setValue("").onChange((v) => {
+          pick = v;
+        });
+      })
+      .addButton((c) =>
+        c.setButtonText(s.setChipNewBtn).onClick(() => {
+          if (this.plugin.settings.customChips.length >= CUSTOM_CHIP_MAX) {
+            syncNotes();
+            return;
+          }
+          const preset = PRESET_CHIPS.find((p) => p.key === pick);
+          const fresh = preset ? chipFromPreset(preset, currentLang()) : blankChip();
+          this.plugin.settings.customChips.push(fresh);
+          // 新建的那个默认展开：读者刚点完就要打字，还要再点一下才张开是白费一步。
+          this.chipEditor(list, fresh, syncNotes, true);
+          syncNotes();
+          this.saveChips();
+        }),
+      );
+  }
+
+  /**
+   * 一枚泡泡的内联编辑区。
+   *
+   * 存盘一律走 saveChips()（防抖 + 叫醒侧栏），**不在这里直接 saveSettings**：
+   * prompt 那个 textarea 是逐字触发 onChange 的，每个字一次 await 落盘会把
+   * data.json 写穿。
+   */
+  private chipEditor(
+    root: HTMLElement,
+    chip: CustomChip,
+    onCount: () => void,
+    open = false,
+  ): void {
+    const s = t();
+    const box = root.createEl("details", { cls: "sp-set-chip" });
+    if (open) box.setAttr("open", "");
+    const head = box.createEl("summary");
+    // summary 上显示的是**当前**名字。label 空着时回落到 prompt 首行，
+    // 和侧栏那枚按钮、以及落盘进 ui_messages 的文案同一条规矩
+    // （coerceCustomChips），不在这儿另写一份。
+    const retitle = (): void => {
+      head.setText(chip.label.trim() || chip.prompt.split("\n")[0].trim() || s.setChipUnnamed);
+    };
+    retitle();
+
+    new Setting(box)
+      .setName(s.setChipLabelName)
+      .setDesc(s.setChipLabelDesc)
+      .addText((c) =>
+        c.setValue(chip.label).onChange((v) => {
+          chip.label = v;
+          this.saveChips();
+        }),
+      )
+      // summary 跟着改名，但**只在失焦时改**：逐字改标题会让读者一边打字
+      // 一边看见上面那行字在抖。
+      .settingEl.addEventListener("focusout", retitle);
+
+    new Setting(box)
+      .setName(s.setChipHintName)
+      .setDesc(s.setChipHintDesc)
+      .addText((c) =>
+        c.setValue(chip.hint).onChange((v) => {
+          chip.hint = v;
+          this.saveChips();
+        }),
+      );
+
+    const promptRow = new Setting(box).setName(s.setChipPromptName).setDesc(s.setChipPromptDesc);
+    const count = promptRow.descEl.createDiv({ cls: "setting-item-description" });
+    const syncCount = (): void => {
+      count.setText(s.setChipChars(chip.prompt.length, PROMPT_MAX));
+    };
+    promptRow.addTextArea((c) => {
+      c.inputEl.rows = 8;
+      c.inputEl.addClass("sp-set-chip-prompt");
+      c.setPlaceholder(s.setChipPromptPlaceholder)
+        .setValue(chip.prompt)
+        .onChange((v) => {
+          chip.prompt = v;
+          syncCount();
+          this.saveChips();
+        });
+    });
+    syncCount();
+    promptRow.settingEl.addEventListener("focusout", retitle);
+
+    new Setting(box)
+      .setName(s.setChipWritebackName)
+      .setDesc(s.setChipWritebackDesc)
+      .addToggle((c) =>
+        c.setValue(chip.writeback).onChange((v) => {
+          chip.writeback = v;
+          this.saveChips();
+        }),
+      );
+
+    new Setting(box)
+      .setName(s.setChipEnabledName)
+      .setDesc(s.setChipEnabledDesc)
+      .addToggle((c) =>
+        c.setValue(chip.enabled).onChange((v) => {
+          chip.enabled = v;
+          this.saveChips();
+        }),
+      );
+
+    // 删除要点两下。**不用 confirm() 弹窗**：那是浏览器模态，Obsidian 设置页
+    // 里弹出来很突兀，而且本仓一次都没用过。第二下之前按钮自己就是提示。
+    let armed = false;
+    new Setting(box)
+      .setName(s.setChipDelete)
+      .addButton((c) => {
+        c.setButtonText(s.setChipDeleteBtn)
+          .setWarning()
+          .onClick(() => {
+            if (!armed) {
+              armed = true;
+              c.setButtonText(s.setChipDeleteConfirm);
+              // 手滑点了一下就走开的，下次回来是干净的「删除」，不是半按下的雷。
+              window.setTimeout(() => {
+                if (!armed) return;
+                armed = false;
+                c.setButtonText(s.setChipDeleteBtn);
+              }, 4000);
+              return;
+            }
+            const i = this.plugin.settings.customChips.indexOf(chip);
+            if (i >= 0) this.plugin.settings.customChips.splice(i, 1);
+            box.detach();
+            onCount();
+            this.saveChips();
+          });
+      });
+  }
+
+  /** 改完一枚泡泡：夹紧 → 防抖落盘 → 叫醒侧栏那排按钮。
+   *
+   *  这里**不重新渲染设置页**，所以夹紧的结果（比如截断超长 prompt）
+   *  要等下次打开设置页才看得见——这是故意的：边打字边被截会跟人打架，
+   *  和 num() 那条「不回写输入框」是同一条家法。 */
+  private saveChips(): void {
+    this.plugin.settings.customChips = coerceCustomChips(this.plugin.settings.customChips);
+    this.plugin.saveSettingsSoon();
+    this.plugin.refreshChips();
   }
 
   /**
@@ -612,6 +810,8 @@ export class PenSettingTab extends PluginSettingTab {
             this.plugin.saveSettingsSoon();
           }),
       );
+
+    this.chipsSection(containerEl);
 
     // 高级区。用 <details> 而不是 toggle + this.display()：重画会违背
     // 「只有语言那一项才重画」的规矩，而且会把正在编辑的数字输入框的

@@ -319,6 +319,42 @@ export const en: Dict = {
   setDeepName: "Dig deeper in the background",
   setDeepDesc: "After each answer, spend one more call looking for a question that reaches across chapters. It only appears if one turns up. Turn this off to keep just the two instant ones.",
   tipDeepPrefix: "\u25c6 ",
+  // ── 自定义泡泡（v0.21.0）──
+  setSecChips: "Your own buttons",
+  setChipsDesc:
+    "Every button in that row on the side panel is a piece of instruction sent to the AI. " +
+    "You can add your own: say what you want done and in what format, then click it. " +
+    "Anything marked as rewriting the note always opens the approval panel first — " +
+    "the note only changes once you allow it.",
+  setChipsEmpty: "No buttons of your own yet. Start from one of the templates below and rework it to match your book.",
+  setChipsFull: (max: number): string => `${max} is the limit. More than that just adds scrollbar to the side panel.`,
+  setChipNewFrom: "New from template",
+  setChipNewFromDesc: "Copy a starting template, then rework it to match how your own book is laid out.",
+  setChipPresetBlank: "Blank",
+  setChipNewBtn: "Add",
+  setChipLabelName: "Button text",
+  setChipLabelDesc: "Leave empty to use the first line of the instruction below. This name is never translated — both interface languages show exactly what you typed.",
+  setChipHintName: "Tooltip",
+  setChipHintDesc: "Optional. Shown when you hover the button, to remind you what it does.",
+  setChipPromptName: "Instruction",
+  setChipPromptDesc:
+    "What gets sent to the AI when you click this button. Spell out which section to write into " +
+    "and what format to follow — the more specific, the more closely it follows. " +
+    "This one is required: an empty button is no different from just asking freely.",
+  setChipPromptPlaceholder: "Take the passage I selected and ...",
+  setChipWritebackName: "Rewrites the note",
+  setChipWritebackDesc:
+    "On: tells the AI this turn edits the note, so it reads the passage first, proposes a change, " +
+    "and only writes once you approve. Off: it answers in the conversation only. " +
+    "Note this switch sets expectations for the AI, it is not a lock on the file — " +
+    "what actually stops a write is the approval panel, which is always there.",
+  setChipEnabledName: "Show in the side panel",
+  setChipEnabledDesc: "Turn off to tuck it away without deleting it. Half-finished ones can wait here.",
+  setChipDelete: "Delete this button",
+  setChipDeleteBtn: "Delete",
+  setChipDeleteConfirm: "Click again to confirm",
+  setChipUnnamed: "(unnamed)",
+  setChipChars: (n2: number, max: number): string => `${n2} / ${max} characters`,
   setSecUsage: "Spend",
   setUsageLoading: "Reading the ledger…",
   setUsageDown: "Can't reach the sidecar, no ledger to read.",

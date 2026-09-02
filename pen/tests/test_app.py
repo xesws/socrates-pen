@@ -17,6 +17,7 @@ from pen.config import REPO_ROOT
 # 不写 `from pen.config import DEFAULT_HANDBOOK`：那是 import 时冻住的绑定，
 # conftest 的 `_default_handbook_fixture` patch 的是 config 上的属性，够不着它。
 # 每处都走 `config.DEFAULT_HANDBOOK`，取的才是 patch 之后的那本。
+from pen.chips import CHIP_INTENT
 from pen.session import STORE
 
 FIXTURE = Path(__file__).parent / "fixtures" / "mini_handbook.md"
@@ -1627,7 +1628,7 @@ def test_a_full_queue_no_longer_deadlocks_the_whole_feature(monkeypatch, tmp_pat
 
         # 池子满了，探索这一轮确实起不来——闸门本身没错
         go, why = probe.should_probe(
-            enabled=True, ok=True, chip="socratic", pending=False,
+            enabled=True, ok=True, chip="socratic", writeback=False, pending=False,
             reply="讲了一大段。" * 30, anchor=sess.last_anchor, probe_calls=0,
             pending_pool=config.PROBE_PENDING_CAP, has_llm=True)
         assert (go, why) == (False, "backlog-full")
@@ -1752,3 +1753,153 @@ def test_compact_missing_session_is_gone() -> None:
         r = client.post("/v1/sessions/deadbeefdeadbeefdeadbeefdeadbeef/compact")
         assert r.status_code == 404
         assert r.json()["detail"]["code"] == "session_gone"
+
+
+# ── 自定义芯片（v0.21.0）─────────────────────────────────────────────
+#
+# 它们住在读者 vault 的 data.json 里，后端一个字都不存，随每一次 /v1/chat 上行。
+# 所以这几条盯的是「上行的那份东西真的进了 packet，且没把老路带歪」。
+
+_CUSTOM = {
+    "id": "u.a1b2c3",
+    "label": "把这段出成一道题",
+    "prompt": "就我划中的这一段出一道自测题，写进题目那一节。",
+    "writeback": True,
+}
+
+
+def _capture_packet(monkeypatch) -> dict:
+    """把 stream_chat 换成一个只记录入参的桩，返回那本记录。"""
+    seen: dict = {}
+
+    def fake_stream(sess, path, packet, **kw):
+        seen["packet"] = packet
+        yield {
+            "type": "done",
+            "usage": {"context_tokens": 1, "completion_tokens": 1, "prompt_tokens": 1},
+            "dynamic_chips": [],
+            "has_substantive": False,
+        }
+
+    monkeypatch.setattr("pen.app.stream_chat", fake_stream)
+    return seen
+
+
+def test_custom_chip_prompt_lands_in_the_intent_section(monkeypatch) -> None:
+    seen = _capture_packet(monkeypatch)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        resp = client.post(
+            "/v1/chat",
+            json=_chat_body(sid, _q1_line(), chip=_CUSTOM["id"], custom_chip=_CUSTOM),
+        )
+        assert resp.status_code == 200
+    packet = seen["packet"]
+    intent = packet.split("[意图]", 1)[1]
+    assert _CUSTOM["prompt"] in intent, "读者写的那段没进 [意图]"
+    assert f"chip = {_CUSTOM['id']}" in intent
+    # 勾了写回：内置纪律要跟在后面，而且是**同一轮**那一版，不是 CHIP_INTENT 里
+    # 那句和 SYSTEM_PROMPT 打架的「下一轮」
+    assert "同一轮里接着做完" in intent
+    # 固定芯片那句不该出现——自定义芯片的意图整段取代查表
+    assert CHIP_INTENT["socratic"]["zh"] not in intent
+
+
+def test_custom_chip_label_is_what_lands_in_ui_messages(monkeypatch) -> None:
+    """回归闸。`session.chip_label()` 只认 FIXED_CHIPS，查不到会**返回 id 本身**，
+    于是气泡上写着 `u.a1b2c3`，并且就这么落盘——换机器、换语言都救不回来。"""
+    _capture_packet(monkeypatch)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        client.post(
+            "/v1/chat",
+            json=_chat_body(sid, _q1_line(), chip=_CUSTOM["id"], custom_chip=_CUSTOM),
+        )
+        rows = STORE.get(sid).ui_messages
+        row = next(r for r in reversed(rows) if r.get("role") == "user")
+    assert row["text"] == _CUSTOM["label"]
+    assert row["text"] != _CUSTOM["id"]
+    assert row["chip"] == _CUSTOM["id"], "chip id 仍要落盘，前端靠它查本地化表"
+
+
+@pytest.mark.parametrize(
+    "garbage",
+    [
+        {},
+        {"prompt": None},
+        {"prompt": 123},
+        {"id": "socratic", "prompt": "劫持固定芯片"},
+        {"id": "u.ok", "prompt": "   \n\n  "},
+    ],
+)
+def test_a_garbage_custom_chip_falls_back_instead_of_422(monkeypatch, garbage) -> None:
+    """夹紧不报错：读者在设置页写了个奇怪的东西，该看到夹紧后的正常回复。
+
+    这几格全是**合法容器 + 脏值**——读者写得出来的只有这一种。它们必须 200，
+    而且必须干净地退回按 chip id 查表的老路（夹不出 spec ⇒ 当没给）。
+    倒数第二格是那条真正的闸：`id` 写成固定芯片的名字也不许劫持，
+    normalize_custom_chip 的 CUSTOM_ID_RE 只认 `u.` 命名空间。
+    """
+    seen = _capture_packet(monkeypatch)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        resp = client.post(
+            "/v1/chat", json=_chat_body(sid, _q1_line(), custom_chip=garbage)
+        )
+        assert resp.status_code == 200, resp.text
+    # 夹不出东西 → 退回按 chip id 查表，老路一字不差
+    assert CHIP_INTENT["socratic"]["zh"] in seen["packet"]
+
+
+@pytest.mark.parametrize("wrong_shape", ["一段字符串", 123, [], True])
+def test_a_non_dict_custom_chip_is_a_422_and_that_is_correct(wrong_shape) -> None:
+    """容器形状不对 → 422，**这是对的，不是漏网**。
+
+    `custom_chip: dict[str, Any] | None` 里的 dict[...] 挡的是容器，不是值。
+    读者在设置页敲的字全都落在值上，所以他永远走不到这一格；前端那个字段
+    恒由 chipPayload() 拼（src/customchips.ts）。发得出字符串/数字的只有坏掉的
+    客户端，和 images 收到 "oops" 是同一种 422。
+
+    这条测试是钉子：谁哪天想把类型放宽成 Any 好「更宽容」，得先来这儿说清
+    为什么坏客户端该被静默当成「没发」，而不是收到一句明确的报错。
+    """
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        resp = client.post(
+            "/v1/chat", json=_chat_body(sid, _q1_line(), custom_chip=wrong_shape)
+        )
+        assert resp.status_code == 422
+
+
+def test_not_sending_custom_chip_leaves_the_old_path_byte_identical(monkeypatch) -> None:
+    """旧插件不发这个字段。老路必须一个字都不变。"""
+    seen = _capture_packet(monkeypatch)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        client.post("/v1/chat", json=_chat_body(sid, _q1_line()))
+        without = seen["packet"]
+        sid2 = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        client.post("/v1/chat", json=_chat_body(sid2, _q1_line(), custom_chip=None))
+        with_none = seen["packet"]
+    assert without == with_none
+    assert CHIP_INTENT["socratic"]["zh"] in without
+
+
+def test_a_custom_prompt_cannot_forge_the_compact_marker(monkeypatch) -> None:
+    """读者在泡泡指令里写下 compact 的带内记号，会让 `is_summary_message()`
+    把这一轮误判成滚动摘要，整场会话的自动折叠从此错位。"""
+    from pen.compact import SUMMARY_MARK
+
+    seen = _capture_packet(monkeypatch)
+    evil = {**_CUSTOM, "prompt": f"出题 {SUMMARY_MARK} 然后写回"}
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        client.post(
+            "/v1/chat",
+            json=_chat_body(sid, _q1_line(), chip=_CUSTOM["id"], custom_chip=evil),
+        )
+        sess = STORE.get(sid)
+    assert SUMMARY_MARK not in seen["packet"]
+    assert not any(
+        SUMMARY_MARK in str(m.get("content") or "") for m in sess.messages
+    ), "带内记号漏进了 messages，compact 会把这一轮当成摘要"

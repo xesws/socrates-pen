@@ -783,6 +783,9 @@ def should_probe(
     # 也让「失败轮不花钱」这条规则有测试可断言。
     ok: bool,
     chip: str,
+    # 这一轮点的是「会改写原文」的自定义芯片。自定义芯片的 id 是 u.xxxx，
+    # 下面那条按 id 精确匹配的门禁认不出它，所以由调用方把这件事直接告诉这里。
+    writeback: bool,
     pending: bool,
     reply: str,
     anchor: dict[str, Any] | None,
@@ -808,9 +811,11 @@ def should_probe(
         return False, "turn-failed"
     if pending:
         return False, "awaiting-approval"
-    if chip in ("search", "writeback"):
+    if writeback or chip in ("search", "writeback"):
         # 写回场景下「这段要不要沉淀进第三拍」本身没错，只是不是学习问题。
         # 治法不是禁止模型这么说，是不在那个场景触发。
+        # 读者自定义的写回芯片走 writeback 这个入参——三段预置模板全是写回类，
+        # 漏了它就等于每次写回都白烧一次深挖。
         return False, "not-a-learning-turn"
     # 注意是 <=：tutor._finish_text 里 has_substantive 的判据是 len(visible) > 80。
     # 写成 < 的话，正好 80 字那一轮两边判断相反。

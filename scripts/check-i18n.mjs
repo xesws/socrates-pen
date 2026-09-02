@@ -238,7 +238,11 @@ const seenNotice = noticeArgs.flatMap((m) => keysIn(m[1]));
 //
 // 维护契约：**只涨不跌**。合法新增文案会把真数推高，`>=` 不会误伤；
 // 合法删键时手动把这里的数往下调一格，和 `mutate.py` 的锚点是同一套约定。
-const FLOOR = { files: 11, err: 7, notice: 10 };
+// v0.21.0 校准：真数已经涨到 15 / 10 / 35，而这里还停在 11 / 7 / 10。
+// 富余多少就是能静默丢掉多少——notice 那格富余 25 个，这条闸早就形同虚设了，
+// 正是上面那段注释警告过的「防瞎闸一个字不说」。按它自己写的维护契约
+// （「下限必须是今天的真数」）一次归位。
+const FLOOR = { files: 15, err: 10, notice: 35 };
 check(
   `槽位扫描真的看到了键（${tsFiles.length} 个文件 · err ${seenErr.length} 个 / notice ${seenNotice.length} 个）`,
   tsFiles.length >= FLOOR.files &&

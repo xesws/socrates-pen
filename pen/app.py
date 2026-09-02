@@ -33,6 +33,7 @@ from pen.config import DEFAULT_HANDBOOK_ID, LLMConfig, llm_public_status, merge_
 from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
 from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, reading_roots
+from pen.chips import CustomChipSpec, normalize_custom_chip
 from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
 from pen.compact import CompactPending, compact_session, should_auto_compact
 from pen.tutor import (
@@ -142,6 +143,19 @@ class ChatBody(LlmOverrideBody):
     deep: bool = True
     # 对话框贴的图。data 是无前缀的 base64。闸在 normalize_images。
     images: list[Any] | None = None
+    # 读者自定义的芯片，随请求上行——它们住在 vault 的 data.json 里，后端不存。
+    # 嵌套一个对象而不是平铺 id/label/prompt/writeback 四个键，对齐上面 limits
+    # 那条先例；下一版接格式校验时线上形状不用再变。
+    #
+    # 类型写 dict[str, Any] 而不是子模型，理由同 limits 和 images：**值**一律不校验。
+    # 读者在设置页写的那些字全都落在值上（label / prompt / writeback），
+    # 所以「读者写了个奇怪的东西」→ 夹紧后的正常回复，夹在 normalize_custom_chip。
+    #
+    # 但要把话说准：dict[...] 挡的是**容器**。真发上来一个字符串或数字，
+    # pydantic 会在进函数之前就 422。那一格不是读者写得出来的——前端这个字段
+    # 恒由 chipPayload() 拼（src/customchips.ts），只有客户端坏了才发得出，
+    # 和 images 收到 "oops" 是同一种 422，让它响是对的。
+    custom_chip: dict[str, Any] | None = None
 
 
 class ProposeBody(LlmOverrideBody):
@@ -617,6 +631,7 @@ def _maybe_probe(
     path: Path,
     lang: str,
     book_title: str = "",
+    custom: "CustomChipSpec | None" = None,
 ) -> bool:
     """在 done 那一刻决定要不要起一次后台深挖。返回是否真的起了。
 
@@ -637,6 +652,7 @@ def _maybe_probe(
             enabled=configmod.probe_enabled() and bool(body.deep),
             ok=True,
             chip=body.chip,
+            writeback=bool(custom and custom.writeback),
             pending=bool(sess.pending),
             reply=sess.last_assistant or "",
             anchor=anchor,
@@ -867,6 +883,9 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             )
             auto_compacted = folded.did
             auto_dropped = folded.dropped_reads
+        # 自定义芯片。夹不出东西就是 None，下面整条退回按 chip id 查 CHIP_INTENT——
+        # 旧插件不发这个字段走的也是这条路。
+        custom = normalize_custom_chip(body.custom_chip)
         try:
             packet, anchor = build_user_packet(
                 idx,
@@ -881,12 +900,16 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 shelf=shelf,
                 lang=lang,
                 compact_fed=bool(sess.compacted),
+                custom=custom,
             )
         except ValueError as exc:
             raise HTTPException(400, localized(exc, lang)) from exc
         sess.last_anchor = anchor
         typed = (body.user_text or "").strip()
-        shown = typed or chip_label(body.chip)
+        # 自定义芯片的 label 只有请求里那一份：chip_label() 只认 FIXED_CHIPS，
+        # 查不到会**返回 id 本身**，于是气泡上写着 `u.a1b2c3` 并且就这么落盘进
+        # ui_messages，换机器、换语言都救不回来。
+        shown = typed or (custom.label if custom and custom.label else chip_label(body.chip))
         # 点芯片时多存一个 chip id：label 是中文且会落盘，只存文本的话，
         # 英文用户恢复旧会话时自己的历史气泡会是中文。存了 id，前端就能查表。
         row: dict[str, Any] = {"role": "user", "text": shown}
@@ -934,7 +957,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                     ev = {
                         **ev,
                         "deep_running": _maybe_probe(
-                            sess, body, anchor, path, lang, str(meta.title or "")
+                            sess, body, anchor, path, lang, str(meta.title or ""), custom
                         ),
                         "spend": _merged_spend(sess),
                         # 每轮都把池子里成熟的题捎出来。**这是 v0.8.1 就设计过

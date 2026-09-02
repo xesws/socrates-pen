@@ -11,6 +11,7 @@ import {
 import type SocratesPenPlugin from "../main";
 import { isGone, makeApi, streamApprove, streamChat } from "../api";
 import { stripFoldTags, visibleReply } from "../foldview";
+import { chipPayload, type CustomChip } from "../customchips";
 import { handbookIdFromPath, vaultRoot, type EditorPick } from "../selection";
 import type {
   ChatMessage,
@@ -555,6 +556,36 @@ export class PenView extends ItemView {
     e.ask.disabled = blocked;
   }
 
+  /** 读者自定义的泡泡里当下要渲染的那些。关掉的连按钮都不建——它和
+   *  FIXED_CHIPS 的 enabled 不同义：那个是「灰着但在」，这个是「先收起来」。 */
+  private myChips(): CustomChip[] {
+    return (this.plugin.settings.customChips || []).filter((c) => c.enabled);
+  }
+
+  /**
+   * chip id → 显示文案。**两张表都要查**：后端下发的固定芯片在 this.chips，
+   * 读者自己的在 settings.customChips。这里原来只查前者，于是自定义泡泡的
+   * 用户气泡会显示成裸 `u.a1b2c3`。
+   *
+   * 自定义 label 不进 i18n 词表，两种界面语言下都显示读者写的原文——
+   * 那是他自己起的名字，翻译它才是错的。
+   */
+  private labelOf(chipId: string): string {
+    const mine = this.myChips().find((c) => c.id === chipId);
+    if (mine) return mine.label;
+    return chipLabel(chipId, this.chips.find((c) => c.id === chipId)?.label ?? "");
+  }
+
+  /** 设置页改完自定义泡泡后叫醒这一枚面板。
+   *
+   *  只重画芯片那一条，**不碰 renderShell / paintBar**：读者很可能是在流式
+   *  或审批面板开着的时候去设置页改的，整条底座重建会把审批面板的滚动位置
+   *  归零，还会打断正在写的那个气泡。 */
+  onCustomChipsChanged(): void {
+    this.chipsSig = ""; // 作废签名缓存，强制重建
+    this.paintChips();
+  }
+
   /** 内容没变就只翻 disabled，不重建按钮——否则流式期间每 48 字符重建一次芯片。 */
   private paintChips(): void {
     const e = this.els;
@@ -566,6 +597,10 @@ export class PenView extends ItemView {
     e.chips.classList.toggle("is-off", !this.quote);
     const sig = JSON.stringify([
       this.chips.map((c) => [c.id, c.label, c.enabled, c.hint ?? ""]),
+      // 自定义泡泡必须进签名：不进的话，读者在设置页改完名字、
+      // onCustomChipsChanged 就算把 chipsSig 清了也只是回到「和上次一样」，
+      // 这一格早退掉，按钮上还是旧文案。
+      this.myChips().map((c) => [c.id, c.label, c.hint]),
       this.dyn,
       this.substantive,
     ]);
@@ -583,6 +618,15 @@ export class PenView extends ItemView {
       b.dataset.off = on ? "0" : "1";
       const hint = chipHint(c.id, c.hint ?? "");
       if (hint) setTooltip(b, hint);
+      b.onclick = () => void this.send(c.id, "");
+    }
+    // 读者自己的泡泡：排在固定芯片之后、动态追问之前。
+    // 固定的是这个工具的骨架，得先在首屏；动态追问是这一轮现生的，
+    // 夹在中间会让「我加的按钮」每轮换位置。
+    for (const c of this.myChips()) {
+      const b = e.chips.createEl("button", { text: c.label, cls: "is-custom" });
+      b.dataset.off = "0";
+      if (c.hint) setTooltip(b, c.hint);
       b.onclick = () => void this.send(c.id, "");
     }
     // 深挖的排在前面：它们是「跳出来」的问题，读者最容易忽略，别沉到底下。
@@ -1457,10 +1501,9 @@ export class PenView extends ItemView {
     // 本轮从零数起。**this.spend 不清**——那是会话累计，清了第三格就每轮归零。
     this.turnTokens = 0;
     this.status = phaseText("thinking", "");
-    const shown =
-      userText.trim() ||
-      chipLabel(chip, this.chips.find((c) => c.id === chip)?.label ?? "") ||
-      chip;
+    // 这一轮点的是不是读者自己的泡泡。查一次，下面显示文案和请求体都用它。
+    const myChip = this.myChips().find((c) => c.id === chip);
+    const shown = userText.trim() || this.labelOf(chip) || chip;
     this.msgs = [
       ...this.msgs,
       {
@@ -1490,6 +1533,8 @@ export class PenView extends ItemView {
           ...(pics.length
             ? { images: pics.map((p) => ({ mime: p.mime, data: p.data })) }
             : {}),
+          // 点的是自己的泡泡才发。别的轮次连这个键都不出现——老路逐字节一致。
+          ...(myChip ? { custom_chip: chipPayload(myChip) } : {}),
         },
         (ev) => {
           if (ev.type === "status") {

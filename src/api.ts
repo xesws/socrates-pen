@@ -1,5 +1,6 @@
 import { ApiError } from "./apierror";
 import { currentLang } from "./i18n";
+import type { chipPayload } from "./customchips";
 import type { PenSettings } from "./settings";
 import { limitsPayload, llmPayload } from "./settings";
 import type {
@@ -134,6 +135,11 @@ export async function streamChat(
     user_text: string;
     deep?: boolean;
     images?: { mime: string; data: string }[];
+    // 自定义泡泡随请求上行：它们住在这个 vault 的 data.json，后端一个字都不存。
+    // **必须是可选的**——scripts/check-api.mjs:115 用一个不含 deep/images 的
+    // 裸对象调这个函数，设成必填会让 `tsc --noEmit` 当场红。
+    // 形状与 chipPayload()（src/customchips.ts）同源，别在这儿另写一份。
+    custom_chip?: ReturnType<typeof chipPayload>;
   },
   onEvent: (ev: Record<string, unknown>) => void,
   settings?: PenSettings,

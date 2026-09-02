@@ -910,3 +910,63 @@
 .sp-set-usage > p {
   margin: var(--size-2-1) 0;
 }
+
+/* 读者自己定的泡泡。这排按钮现在有四档，从轻到重：
+   is-dyn（中性描边）< is-custom（这一档）< is-deep（强调色+底色）< 固定芯片（实心底）。
+   给它一档带强调色的描边：一眼认得出「这几个是我加的」，又不越过深挖——
+   深挖是「跳出来的问题」，读者最容易漏，得留着最抢眼的那一档。
+
+   **描边用 inset box-shadow，不用 border**：邻居 is-dyn/is-deep 都是这么写的，
+   同源。box-shadow 不参与布局，换档时按钮尺寸一个像素都不动；border 要靠
+   box-sizing 才不撑大，那是个这份文件里没有设过的前提。
+
+   **没有 @keyframes**：check-css.mjs 要求每个动画都能在
+   prefers-reduced-motion: reduce 下关掉，而这里本来也不需要动效——
+   自定义泡泡是常驻按钮，不是这一轮才蹦出来的。 */
+.socrates-pen .sp-chips button.is-custom {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-accent) 45%, transparent);
+  color: var(--text-muted);
+}
+
+.socrates-pen .sp-chips button.is-custom:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--text-accent);
+  color: var(--text-normal);
+  background: color-mix(in srgb, var(--text-accent) 6%, transparent);
+}
+
+/* 设置页的「自定义泡泡」一节。
+   注意这些选择器**不带 .socrates-pen 前缀**：设置页的 containerEl 不在视图
+   容器里（和上面的 .sp-set-advanced 同源）。所以文件末尾那条通用
+   `.socrates-pen .is-off` 在这儿够不着，隐藏要自己写一条。 */
+.sp-set-chip {
+  border-radius: var(--radius-s);
+  margin: var(--size-4-1) 0;
+  padding: 0 var(--size-4-2);
+  box-shadow: inset 0 0 0 1px var(--background-modifier-border);
+}
+.sp-set-chip > summary {
+  cursor: pointer;
+  padding: var(--size-4-2) 0;
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  /* 读者的 prompt 首行可能很长，折起来时压成一行，别把这一节撑成一堵墙。 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sp-set-chip > summary:hover,
+.sp-set-chip[open] > summary {
+  color: var(--text-normal);
+}
+/* 指令框要能真的写下一段话：Obsidian 默认的 textarea 在设置页里很窄。 */
+.sp-set-chip textarea.sp-set-chip-prompt {
+  width: 100%;
+  min-width: 12em;
+  resize: vertical;
+  font-family: var(--font-text);
+  line-height: 1.5;
+}
+.sp-set-chips-note.is-off {
+  display: none;
+}

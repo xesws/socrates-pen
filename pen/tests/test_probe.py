@@ -183,7 +183,7 @@ def test_quoted_tokens_must_appear_in_the_source(idx) -> None:
 
 
 _BASE = dict(
-    enabled=True, ok=True, chip="socratic", pending=False, reply="x" * 200,
+    enabled=True, ok=True, chip="socratic", writeback=False, pending=False, reply="x" * 200,
     anchor={"level": "Level 0"}, probe_calls=0, pending_pool=0, has_llm=True,
 )
 
@@ -197,6 +197,8 @@ _BASE = dict(
         ({"pending": True}, "awaiting-approval"),
         ({"chip": "search"}, "not-a-learning-turn"),
         ({"chip": "writeback"}, "not-a-learning-turn"),
+        # 自定义写回芯片的 id 是 u.xxxx，按 id 匹配那条认不出它，靠 writeback 入参
+        ({"chip": "u.a1b2c3", "writeback": True}, "not-a-learning-turn"),
         ({"reply": "太短"}, "reply-too-short"),
         ({"anchor": {"level": "封面"}}, "cover-or-appendix"),
         ({"anchor": {"level": "附录"}}, "cover-or-appendix"),
@@ -403,7 +405,7 @@ def test_probe_prompt_examples_pass_our_own_filter() -> None:
 
 def test_reply_threshold_matches_has_substantive() -> None:
     """两边差一个等号的话，正好 80 字那一轮判断相反。"""
-    base = dict(enabled=True, ok=True, chip="socratic", pending=False,
+    base = dict(enabled=True, ok=True, chip="socratic", writeback=False, pending=False,
                 anchor={"level": "Level 0"}, probe_calls=0, pending_pool=0, has_llm=True)
     for n in (79, 80, 81):
         got = should_probe(**base, reply="x" * n)[0]

@@ -1,5 +1,6 @@
 import { MarkdownView, Notice, Plugin, setTooltip, type Command, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
+import { coerceCustomChips } from "./customchips";
 import { ApiError } from "./apierror";
 import {
   coerceLimits,
@@ -219,6 +220,9 @@ export default class SocratesPenPlugin extends Plugin {
       // coerceLimits 自己也会补全，这里再显式深一层是双保险——少写这一层，
       // 「只改过一个数」的库会静默丢掉其余十几个自定义值。
       limits: { ...DEFAULT_SETTINGS.limits, ...((raw.settings || {}).limits || {}) },
+      // 同理：数组不是对象，浅展开碰不到它，旧库里根本没这个键 —— 不显式给一层，
+      // this.settings.customChips 是 undefined，paintChips 里一个 .filter 就炸。
+      customChips: (raw.settings || {}).customChips || [],
     };
     // 嵌套展开在运行时仍会把 apiKey 带进来（类型看不见，磁盘看得见），显式拔掉。
     delete (this.settings as PenSettings & { apiKey?: string }).apiKey;
@@ -235,6 +239,8 @@ export default class SocratesPenPlugin extends Plugin {
         : DEFAULT_SETTINGS.baseUrl;
     // 手改过、或者被 Sync 弄坏的 data.json 会带来字符串、null、NaN。
     this.settings.limits = coerceLimits(this.settings.limits);
+    // 同上：读者手改的、或被 Sync 合坏的自定义泡泡表。绝不抛，脏的就地夹紧。
+    this.settings.customChips = coerceCustomChips(this.settings.customChips);
     this.notes = raw.notes || {};
   }
 
@@ -357,6 +363,18 @@ export default class SocratesPenPlugin extends Plugin {
     });
     this.putChain = run.catch(() => {});
     return run;
+  }
+
+  /** 设置页改完自定义泡泡之后叫醒所有打开的面板重画那排按钮。
+   *
+   * 和上面的 refreshPenViews 分开而不是合并：那个走 probeHealth()，是一次
+   * 网络往返；改个泡泡名字不该顺带打一次 /v1/health。视图那边也只重画芯片
+   * 一条，不碰底座——读者完全可能是在流式期间去设置页改的。 */
+  refreshChips(): void {
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN)) {
+      const view = leaf.view;
+      if (view instanceof PenView) view.onCustomChipsChanged();
+    }
   }
 
   /** 设置页存/清钥匙之后叫醒所有打开的面板重探 llmOk——不然灰着的 chip

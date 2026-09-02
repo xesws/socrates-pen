@@ -370,6 +370,39 @@ export const zh = {
   setDeepName: "后台深挖",
   setDeepDesc: "苏格拉底答完之后，后台再花一次调用去想一个跨关的问题，想到了才冒出来。关掉就只留即时的那两条。",
   tipDeepPrefix: "◆ ",
+  // ── 自定义泡泡（v0.21.0）──
+  setSecChips: "自定义泡泡",
+  setChipsDesc:
+    "侧栏那排按钮，每一枚底下都是一段发给 AI 的指令。这里可以加你自己的：" +
+    "写清楚你要它做什么、按什么体例写，点一下就照着做。" +
+    "勾了「会改写原文」的那些，动笔前一律先弹审批面板，你点了允许笔记才会变。",
+  setChipsEmpty: "还没有自定义泡泡。从下面的模板挑一个开始，改成你自己的体例。",
+  setChipsFull: (max: number): string => `最多 ${max} 枚。再加就只是在给侧栏堆滚动条了。`,
+  setChipNewFrom: "从模板新建",
+  setChipNewFromDesc: "挑一个起手模板复制过来，再照你自己那本书的体例改。",
+  setChipPresetBlank: "空白",
+  setChipNewBtn: "新建",
+  setChipLabelName: "按钮上的字",
+  setChipLabelDesc: "留空就用下面指令的第一行。这个名字不翻译，两种界面语言下都显示你写的原文。",
+  setChipHintName: "悬停提示",
+  setChipHintDesc: "可留空。鼠标停在按钮上时显示，用来提醒你这枚是干什么的。",
+  setChipPromptName: "指令",
+  setChipPromptDesc:
+    "点这枚泡泡时发给 AI 的话。把「要写进哪一节」「按什么格式」都写明白，" +
+    "越具体它越照做。这段是必填的——空的泡泡和自由提问没有区别。",
+  setChipPromptPlaceholder: "就我划中的这一段，……",
+  setChipWritebackName: "会改写原文",
+  setChipWritebackDesc:
+    "开着：告诉 AI 这一轮要动笔记，它会先读原文再提改动，你审批后才落盘。" +
+    "关着：只在对话里回答。注意这个开关管的是给 AI 的交代，不是磁盘的锁——" +
+    "真正拦住写盘的是审批面板，它一直都在。",
+  setChipEnabledName: "在侧栏显示",
+  setChipEnabledDesc: "关掉就先收起来，不删。半成品可以停在这儿。",
+  setChipDelete: "删除这枚泡泡",
+  setChipDeleteBtn: "删除",
+  setChipDeleteConfirm: "再点一次确认删除",
+  setChipUnnamed: "（还没起名）",
+  setChipChars: (n2: number, max: number): string => `${n2} / ${max} 字`,
   // ── 设置页分区与旋钮（v0.10.7）──
   setSecUsage: "花销",
   setUsageLoading: "正在读账…",

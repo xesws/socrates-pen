@@ -352,10 +352,16 @@ def _extend_unique(dest: list[str], block: str) -> None:
 
 
 def _section(content: str, name: str) -> str:
+    # `^` + re.M：段头只认**行首**。真实 packet 里段头永远在第 0 列（都是
+    # build_user_packet 拼的），所以这是纯硬化，合法输入一个字都不受影响。
+    # 不锚的话，正文里随手一句「见 [框选] 那段」就能凭空开出第二个段。
+    # v0.21.0 起 [意图] 段里会原样带上**读者自己写的**那段 prompt，这条从
+    # 「理论上」变成了「一定会遇到」——chips.sanitize_prompt 把行首段头前面
+    # 塞一个空格来 defang，而那个 defang 只有在这里锚了行首之后才真的生效。
     m = re.search(
-        rf"\[{re.escape(name)}\]\n(.*?)(?=\n\[compact\.|\Z)",
+        rf"^\[{re.escape(name)}\]\n(.*?)(?=\n\[compact\.|\Z)",
         content,
-        re.S,
+        re.S | re.M,
     )
     return (m.group(1) if m else "").strip()
 
@@ -393,10 +399,13 @@ def _eat_user_packet(slots: _Slots, content: str, roots: Sequence[Path]) -> None
 
 def _section_named(content: str, names: tuple[str, ...]) -> str:
     for name in names:
+        # 同 _section：段头只认行首。注意结束的那个 lookahead `\n\[` 本来就
+        # 是锚在行首的，起头这边不锚就是两头不同源——一句话既开不了真的段，
+        # 又能把真的段提前掐断。
         m = re.search(
-            rf"\[{re.escape(name)}[^\]]*\]\n(.*?)(?=\n\[|\Z)",
+            rf"^\[{re.escape(name)}[^\]]*\]\n(.*?)(?=\n\[|\Z)",
             content,
-            re.S,
+            re.S | re.M,
         )
         if m:
             return m.group(1).strip()

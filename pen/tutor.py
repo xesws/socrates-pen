@@ -12,6 +12,7 @@ from typing import Any
 from pen.i18n import msg
 from pen import meter as metermod
 from pen.config import LLMConfig, REPO_ROOT, RuntimeLimits, default_limits, resolve_llm
+from pen.chips import CustomChipSpec, chip_intent, custom_intent
 from pen.index import HandbookIndex, neighborhood
 from pen.agent.permissions import decide, read_first_block
 from pen.agent.registry import dispatch, schemas
@@ -63,38 +64,6 @@ FORCE_ANSWER = {
     ),
 }
 
-CHIP_INTENT = {
-    "socratic": {
-        "zh": "先别揭晓。只问一个问题，帮读者自己想。",
-        "en": "Don't give it away. Ask one question and let the reader think.",
-    },
-    "explain_zero": {
-        "zh": "假设读者零基础。按 TL;DR → (a)(b)(c) 讲完，再给两个可运行例子。",
-        "en": "Assume the reader knows nothing. Teach TL;DR → (a)(b)(c), then two runnable examples.",
-    },
-    "examples": {
-        "zh": "只举两个例子，紧贴本 Level 第七拍的名字。",
-        "en": "Only two examples, using names that actually appear in this Level's seventh beat.",
-    },
-    "search": {
-        "zh": "（未开放）不要假装检索。告诉读者 P2 才有联网。",
-        "en": "(Not available.) Do not pretend you searched. Tell the reader web search is not on yet.",
-    },
-    "writeback": {
-        "zh": "必须先 read_file 看准带行号的原文，下一轮再单独 edit_file。old_string 去掉 N\\t。不要声称已经写盘。",
-        "en": "read_file the numbered original first, then edit_file on its own next. Strip N\\t from old_string. Do not claim it is on disk.",
-    },
-    "free": {
-        "zh": "按用户原话回答，仍守苏格拉底的人设。",
-        "en": "Answer in the user's words, still in Socrates' voice.",
-    },
-}
-
-
-def _chip_intent(chip: str, lang: str) -> str:
-    row = CHIP_INTENT.get(chip) or CHIP_INTENT["free"]
-    return row["en"] if lang == "en" else row["zh"]
-
 
 def _force_answer(capped: bool, lang: str) -> str:
     table = FORCE_ANSWER_BUDGET if capped else FORCE_ANSWER
@@ -138,6 +107,9 @@ def build_user_packet(
     user_text: str,
     asked: Sequence[str] = (),
     intent_extra: str = "",
+    # 读者自定义的芯片。给了它就**整段取代** CHIP_INTENT 查表——
+    # 自定义芯片的意图就是读者写的那段话，没有别的来源。
+    custom: CustomChipSpec | None = None,
     shelf: str = "",
     lang: str = "zh",
     compact_fed: bool = False,
@@ -201,7 +173,7 @@ def build_user_packet(
                 f"[框选]\n{capped_sel}\n\n"
                 f"[邻域]\n{nb}\n\n"
             )
-    intent = _chip_intent(chip, lang)
+    intent = custom_intent(custom, lang) if custom else chip_intent(chip, lang)
     none_user = (
         "(none — follow the chip)"
         if en
