@@ -92,14 +92,16 @@ def test_chore_table_is_reused_not_duplicated() -> None:
 
 # ── 理由表 ──────────────────────────────────────────────────────────
 
-_BASE = dict(fast_on=True, has_fast_cfg=True, chip="socratic", writeback=False, user_text="")
+_BASE = dict(fast_on=True, fast_why="", chip="socratic", writeback=False, user_text="")
 
 
 @pytest.mark.parametrize(
     "over,reason",
     [
         ({"fast_on": False}, "fast-off"),
-        ({"has_fast_cfg": False}, "no-fast-key"),
+        # 这两条的名字由 config.fast_llm_status() 起，route_for 只负责原样带出去。
+        ({"fast_why": "no-fast-key"}, "no-fast-key"),
+        ({"fast_why": "fast-host-mismatch"}, "fast-host-mismatch"),
         ({"chip": "writeback"}, "writeback-chip"),
         # 自定义写回泡泡的 id 是 u.xxxx，按 id 匹配那条认不出它，靠 writeback 入参
         ({"chip": "u.a1b2c3", "writeback": True}, "writeback-chip"),
@@ -140,9 +142,15 @@ def test_reasons_are_ordered_most_specific_first() -> None:
     排序纪律同 probe.should_probe：读者该先听到更具体的那条理由。
     """
     # 开关没开 + 也没钥匙 + 还是写回芯片 → 报最外层的 fast-off
-    assert route_for(**{**_BASE, "fast_on": False, "has_fast_cfg": False, "chip": "writeback"}) == (
+    assert route_for(
+        **{**_BASE, "fast_on": False, "fast_why": "no-fast-key", "chip": "writeback"}
+    ) == (BASE, "fast-off")
+    # 配坏了 + 写回芯片 → 报配坏那条。**配置问题排在芯片前面是有意的**：
+    # 芯片那条是「这一轮本来就该走基座」，配坏是「所有轮次都走不了快模型」，
+    # 后者才是读者需要动手修的。
+    assert route_for(**{**_BASE, "fast_why": "fast-host-mismatch", "chip": "writeback"}) == (
         BASE,
-        "fast-off",
+        "fast-host-mismatch",
     )
     # 有钥匙 + 写回芯片 + 写入词 → 报芯片那条（比猜词更确定）
     assert route_for(**{**_BASE, "chip": "writeback", "user_text": "把这段写回手册"}) == (
@@ -159,3 +167,24 @@ def test_search_chip_is_not_in_the_write_table() -> None:
     from pen.routing import WRITE_CHIPS
 
     assert "search" not in WRITE_CHIPS
+
+
+def test_the_two_config_reasons_come_from_config_not_from_here() -> None:
+    """`no-fast-key` / `fast-host-mismatch` 的名字由 config 起，这里只带出去。
+
+    两处各写一份字面量的话，改了一边另一边就成了永远匹配不上的死分支——
+    而读者看到的会是一句没人认识的理由。
+    """
+    from pen.config import FAST_HOST_GAP, FAST_NO_KEY
+
+    for why in (FAST_NO_KEY, FAST_HOST_GAP):
+        assert route_for(**{**_BASE, "fast_why": why}) == (BASE, why)
+
+
+def test_a_broken_fast_config_is_reported_even_on_a_writeback_turn() -> None:
+    """写回轮本来就走基座，但**配坏了这件事仍然要说**。
+
+    否则读者只在写回轮里试，会以为一切正常。
+    """
+    route, why = route_for(**{**_BASE, "fast_why": "no-fast-key", "chip": "writeback"})
+    assert (route, why) == (BASE, "no-fast-key")

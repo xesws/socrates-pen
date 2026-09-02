@@ -90,7 +90,11 @@ export const en: Dict = {
   kickerRoute: "Model switch",
   noteRouteEdit: "This turn wants to rewrite your note, so it was handed back to the base model. Ignore the half-sentence above — that was the fast model.",
   noteRouteTooBig: "This turn's context would not fit the fast model's window, so it was handed back to the base model.",
+  noteRouteNoKey: "Fast Mode is on, but the fast model has no API key yet, so this turn ran on the base model. Add one in settings and it starts working.",
+  noteRouteHostGap: "Fast Mode is on, but the fast key stored on this machine belongs to a different endpoint, so this turn ran on the base model. Open settings and save the API key again for the Fast Base URL you have now.",
   noticeFastNoKey: "Fast Mode is on, but there is no API key for the fast model yet, so turns still run on the base model. Add one in settings.",
+  noticeFastKeyHostMismatch: (keyHost, urlHost) =>
+    `The fast endpoint changed. The key stored on this machine is still for ${keyHost} and will not be sent to ${urlHost}, so every turn falls back to the base model. Save an API key for ${urlHost}.`,
   noticeCompactEmpty: "Nothing to fold yet",
   noticeCompactPending: "Allow or reject the pending edit first, then compact.",
   noticeCompactBusy: "This conversation is still running — let it finish first.",

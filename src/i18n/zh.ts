@@ -112,7 +112,11 @@ export const zh = {
   kickerRoute: "换模型",
   noteRouteEdit: "这一轮要动原文，已经换回基座模型重答。上面那半句是快模型说的，不算数。",
   noteRouteTooBig: "这一轮的上下文压不进快模型的窗口，已经换回基座模型重答。",
+  noteRouteNoKey: "Fast Mode 开着，但快模型还没有 API Key，这一轮走的是基座模型。到设置里补上就生效。",
+  noteRouteHostGap: "Fast Mode 开着，但本机存的那把快模型钥匙是给另一个站点的，这一轮走的是基座模型。到设置里，在现在这个 Fast Base URL 上重新存一次钥匙就好。",
   noticeFastNoKey: "Fast Mode 已打开，但还没填快模型的 API Key，所以暂时还是走基座模型。到设置里补上就生效。",
+  noticeFastKeyHostMismatch: (keyHost: string, urlHost: string): string =>
+    `快模型的站点换了。本机存的那把钥匙还是给 ${keyHost} 的，不会拿到 ${urlHost} 上用，所以每轮都会退回基座模型。请在 ${urlHost} 上重新存一次 API Key。`,
   noticeCompactEmpty: "还没有可折的对话",
   noticeCompactPending: "有一次编辑在等你审批，先点允许或拒绝，再折摘要。",
   noticeCompactBusy: "这场对话还在跑，先等它结束。",

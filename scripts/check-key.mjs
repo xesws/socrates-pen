@@ -100,6 +100,31 @@ check(
   "persistableSettings：迁移完成 → 落盘形状无 apiKey",
   !("apiKey" in done) && !JSON.stringify(done).includes("sk-mig-canary-9999"),
 );
+// v0.22.1：钥匙是**和它所属的主机一起**落盘的，所以「槽里有钥匙」不等于
+// 「这一轮用得上」。读者报的路径就踩在这条缝上：在站点 B 存了钥匙，把输入框
+// 改回 A 却没重存 —— 每轮悄悄退回基座，而状态行还写着「已保存」。
+// keyHostGap 是前端**唯一**的那份主机比对（真判定在 sidecar 的
+// fast_llm_status），基座那格和快模型那格都调它。
+const sidecarKey = (host) => ({
+  ok: true,
+  base_url: `https://${host}/v1`,
+  model: "m",
+  key_source: "sidecar",
+});
+check("同主机 → 不吭声", mod.keyHostGap(sidecarKey("a.example"), "https://a.example/v1") === null);
+const gap = mod.keyHostGap(sidecarKey("b.example"), "https://a.example/v1");
+check(
+  "钥匙在另一台主机 → 报出「哪把、去哪」两个主机名",
+  Array.isArray(gap) && gap[0] === "b.example" && gap[1] === "a.example",
+);
+check("槽里压根没钥匙 → 交给「没钥匙」那条话去说", mod.keyHostGap({ ...sidecarKey("b.example"), ok: false }, "https://a.example/v1") === null);
+check(
+  "环境变量来的钥匙不按主机落锁 → 不误报",
+  mod.keyHostGap({ ...sidecarKey("b.example"), key_source: "env" }, "https://a.example/v1") === null,
+);
+check("没有 fast 槽（旧 sidecar）→ 不抛", mod.keyHostGap(undefined, "https://a.example/v1") === null);
+check("URL 解不动时不抛，返回 null", mod.keyHostGap(sidecarKey("b.example"), "不是个网址") === null);
+
 check(
   "limitsPayload 不受影响",
   typeof mod.limitsPayload(mod.DEFAULT_SETTINGS) === "object" || mod.limitsPayload(mod.DEFAULT_SETTINGS) === undefined,

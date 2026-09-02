@@ -688,6 +688,47 @@ def resolve_fast_llm() -> LLMConfig | None:
     )
 
 
+# 快模型没配成的两种理由。**必须分开**，因为读者的补救动作完全不同：
+#   FAST_NO_KEY   压根没填钥匙        → 去设置页填一把
+#   FAST_HOST_GAP 钥匙属于另一个站点  → 在**现在这个**站点上重新存一次钥匙
+# 第二种是 v0.22.0 上线后第一条真实反馈：改过站点、在新站点上存过钥匙、
+# 又把站点改回来——槽里记着新站点，请求带旧站点，主机对不上就静默降级，
+# 而 health 的 fast.ok 还是 True，设置页照样显示「已保存」。
+# 说「没配置」会让人去填一把已经填过的钥匙，那条路走不通。
+FAST_NO_KEY = "no-fast-key"
+FAST_HOST_GAP = "fast-host-mismatch"
+
+
+def fast_llm_status(
+    *,
+    base_url: str | None = None,
+    model: str | None = None,
+    thinking: str | None = None,
+    vision: bool | None = None,
+) -> tuple[LLMConfig | None, str]:
+    """快模型这一路的 cfg **和它没配成的理由**。配成了理由是空串。
+
+    **「有没有生效」和「为什么没生效」必须同源算出来。** 分成两处算，迟早
+    出现「路由说没钥匙、设置页说存着呢」这种自相矛盾的话——而那正是这条
+    反馈的病根：`fast_public_status()` 只回答「槽里有没有钥匙」，
+    却被当成了「Fast Mode 能不能用」。
+    """
+    resolved = resolve_fast_llm()
+    cfg = _merge_over(
+        resolved,
+        api_key=None,
+        base_url=base_url,
+        model=model,
+        thinking=thinking,
+        vision=vision,
+        default_base=FAST_BASE,
+        default_model=FAST_MODEL,
+    )
+    if cfg is not None:
+        return cfg, ""
+    return None, FAST_NO_KEY if resolved is None else FAST_HOST_GAP
+
+
 def merge_fast_llm(
     *,
     base_url: str | None = None,
@@ -699,17 +740,12 @@ def merge_fast_llm(
 
     对齐 v0.18.0 那条：密钥永远不随请求体上行（scripts/check-key.mjs 机械守着）。
     基座那边的 merge_llm 还留着 api_key 入参是历史兼容，新的这条不再开这个口。
+
+    只要 cfg 不要理由的调用方用这个；**实现只有 fast_llm_status 一份**。
     """
-    return _merge_over(
-        resolve_fast_llm(),
-        api_key=None,
-        base_url=base_url,
-        model=model,
-        thinking=thinking,
-        vision=vision,
-        default_base=FAST_BASE,
-        default_model=FAST_MODEL,
-    )
+    return fast_llm_status(
+        base_url=base_url, model=model, thinking=thinking, vision=vision
+    )[0]
 
 
 def openai_config() -> tuple[str | None, str | None, str | None]:

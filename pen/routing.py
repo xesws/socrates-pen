@@ -90,7 +90,7 @@ def wants_write(text: str) -> bool:
 def route_for(
     *,
     fast_on: bool,
-    has_fast_cfg: bool,
+    fast_why: str = "",
     chip: str = "",
     writeback: bool = False,
     user_text: str = "",
@@ -101,14 +101,21 @@ def route_for(
     纯函数、零成本、绝不抛。**任何一条命中就是 base**——保守的方向是基座：
     走错到基座只是慢一点，走错到快模型才可能让一次改写由小模型执笔。
 
+    `fast_why` 收的是 `config.fast_llm_status()` 算出来的那个理由（配成了就是
+    空串）。**这里不自己判「有没有配成」**：判定和理由必须同源，否则会出现
+    「路由说没钥匙、设置页说存着呢」——v0.22.0 上线后第一条真实反馈就是
+    这么来的。今天它可能是 `no-fast-key` 或 `fast-host-mismatch`。
+
     `writeback` 由调用方算好（自定义芯片的 id 是 u.xxxx，下面按 id 匹配那条
     认不出它）——和 `probe.should_probe` 收这个入参是同一个理由。
     """
     if not fast_on:
         return BASE, "fast-off"
-    if not has_fast_cfg:
-        # 开关开着但没配快模型的钥匙。不报错、不拦对话，只是不生效。
-        return BASE, "no-fast-key"
+    if fast_why:
+        # 开关开着但快模型这一路没配成。不报错、不拦对话——但**理由必须原样
+        # 带出去**：读者点亮了开关却每轮都走基座，不告诉他为什么，他只会
+        # 觉得这个功能坏了。
+        return BASE, fast_why
     if writeback or chip in WRITE_CHIPS:
         return BASE, "writeback-chip"
     if wants_write(user_text) or wants_write(custom_prompt):

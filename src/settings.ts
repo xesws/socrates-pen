@@ -201,6 +201,31 @@ export function llmPayload(s: PenSettings): {
   };
 }
 
+/**
+ * 「这把钥匙是给另一台主机的吗」。是就返回 `[钥匙那台, 设置页这台]`。
+ *
+ * **只是个提示，不是闸。** 真正的判定在 sidecar 的 `config.fast_llm_status()`，
+ * 那边才是唯一定义点；这里算一遍是为了在读者刚改完设置的那一刻就说破，
+ * 而不是等他发了一轮对话才发现。所以两处都用这一个函数——前端自己再长出
+ * 第二份比对，就成了「两个闸不同源」。
+ */
+export function keyHostGap(
+  status: LlmStatus | undefined,
+  settingsUrl: string,
+): [string, string] | null {
+  if (!status || !status.ok || status.key_source !== "sidecar") return null;
+  let keyHost = "";
+  let urlHost = "";
+  try {
+    keyHost = new URL(status.base_url).host;
+    urlHost = new URL(settingsUrl).host;
+  } catch {
+    return null;
+  }
+  if (!keyHost || !urlHost || keyHost === urlHost) return null;
+  return [keyHost, urlHost];
+}
+
 function sidecarStatusText(snap: SidecarSnap, errTail: string): string {
   const s = t();
   if (snap.phase === "idle") {
@@ -346,15 +371,31 @@ export class PenSettingTab extends PluginSettingTab {
     new Setting(root)
       .setName("Fast Base URL")
       .setDesc(s.setFastBaseUrlDesc)
-      .addText((c) =>
-        c
-          .setPlaceholder(DEFAULT_SETTINGS.fastBaseUrl)
+      .addText((c) => {
+        c.setPlaceholder(DEFAULT_SETTINGS.fastBaseUrl)
           .setValue(this.plugin.settings.fastBaseUrl)
           .onChange((v) => {
             this.plugin.settings.fastBaseUrl = v.trim().replace(/\/+$/, "");
             if (this.plugin.settings.fastBaseUrl) this.plugin.saveSettingsSoon();
-          }),
-      );
+          });
+        // 换了站点就得在新站点上重新存一次钥匙——**这一格没有这道提示时，
+        // 读者会看着「已保存」的状态行，每轮却都悄悄走基座**。on blur 而不是
+        // onChange：每个键击探一次会被 Notice 轰炸（同基座那格）。
+        c.inputEl.addEventListener("blur", () => {
+          if (!this.plugin.settings.fastBaseUrl) {
+            this.plugin.settings.fastBaseUrl = DEFAULT_SETTINGS.fastBaseUrl;
+            c.setValue(this.plugin.settings.fastBaseUrl);
+            this.plugin.saveSettingsSoon();
+          }
+          void makeApi(this.plugin.settings.sidecarUrl)
+            .health()
+            .then((h) => {
+              this.warnFastKeyHostMismatch(h.fast);
+              void this.paintFastKeyStatus(statusEl);
+            })
+            .catch(() => {});
+        });
+      });
 
     new Setting(root)
       .setName(s.setFastModelName)
@@ -434,18 +475,14 @@ export class PenSettingTab extends PluginSettingTab {
    *  填的 Base URL 不同主机，对话会一直撞「找不到模型配置」——当场说破，
    *  别让读者对着一格明明填了钥匙的设置页猜。 */
   private warnKeyHostMismatch(llm: LlmStatus): void {
-    if (!llm.ok || llm.key_source !== "sidecar") return;
-    let keyHost = "";
-    let urlHost = "";
-    try {
-      keyHost = new URL(llm.base_url).host;
-      urlHost = new URL(this.plugin.settings.baseUrl).host;
-    } catch {
-      return;
-    }
-    if (keyHost && urlHost && keyHost !== urlHost) {
-      new Notice(t().noticeKeyHostMismatch(keyHost, urlHost));
-    }
+    const gap = keyHostGap(llm, this.plugin.settings.baseUrl);
+    if (gap) new Notice(t().noticeKeyHostMismatch(gap[0], gap[1]));
+  }
+
+  /** 快模型那把同理。**两把钥匙各自按自己的主机落锁**，比对逻辑共用一份。 */
+  private warnFastKeyHostMismatch(fast: LlmStatus | undefined): void {
+    const gap = keyHostGap(fast, this.plugin.settings.fastBaseUrl);
+    if (gap) new Notice(t().noticeFastKeyHostMismatch(gap[0], gap[1]));
   }
 
   /**

@@ -25,6 +25,7 @@ import type {
 import { chipHint, chipLabel, phaseText, t } from "../i18n";
 import { dropAsked, keepDeep, mergeDeep, pollDeep } from "../deeppoll";
 import { sidecarUsable } from "../sidecar";
+import { keyHostGap } from "../settings";
 import { measureMonoAdvance, renderSplash, type SplashLevel } from "./splash";
 import { AVATAR } from "../logo";
 
@@ -629,26 +630,40 @@ export class PenView extends ItemView {
     // 别的面板也得跟着翻——这是一个全局设置，不是每个面板各一份。
     this.plugin.refreshFast();
     if (!next) return;
-    // 开着但没配钥匙时后端会静默走基座（route_for 的 no-fast-key）。
-    // **不做成硬错误**，但要当场说破，别让读者对着一枚亮着的开关猜为什么不快。
+    // 开着但配置不成立时后端会静默走基座。**不做成硬错误**，但要当场说破，
+    // 别让读者对着一枚亮着的开关猜为什么不快。
+    //
+    // 两种不成立，说法不能混：没钥匙 → 去填；钥匙在但属于另一台主机 →
+    // 得在**当前这个站点上重新存一次**。第二种就是读者报的那个「关掉再开、
+    // 改了站点又改回来，从此再也快不起来」。
     try {
       const h = await makeApi(this.plugin.settings.sidecarUrl).health();
+      const gap = keyHostGap(h.fast, this.plugin.settings.fastBaseUrl);
       if (!h.fast?.ok) new Notice(t().noticeFastNoKey);
+      else if (gap) new Notice(t().noticeFastKeyHostMismatch(gap[0], gap[1]));
     } catch {
       /* sidecar 没起：顶栏那颗点已经在说这件事了，不再叠一条 */
     }
   }
 
-  /** 快轮半路换回基座时插一条说明。
+  /** 快轮换回基座时插一条说明。
    *
    * **不能不说。** 读者点亮了 Fast Mode，然后气泡在半路被清空重来——
-   * 不解释的话那看起来就是个 bug。 */
+   * 不解释的话那看起来就是个 bug。而配置不对那两种更狠：气泡根本不会重来，
+   * 开关还亮着，读者只会觉得「快模型没变快」，**降级完全无声**。
+   * 理由字符串来自后端（`routing.route_for` / `_agent_loop`），这里逐条认；
+   * 认不出的落到「要动原文」那条——它是唯一由模型行为触发、必然伴随重流的。 */
   private insertRouteNote(why: string): void {
-    const note: ChatMessage = {
-      role: "note",
-      kind: "route",
-      text: why === "context-too-big" ? t().noteRouteTooBig : t().noteRouteEdit,
-    };
+    const s = t();
+    const text =
+      why === "context-too-big"
+        ? s.noteRouteTooBig
+        : why === "no-fast-key"
+          ? s.noteRouteNoKey
+          : why === "fast-host-mismatch"
+            ? s.noteRouteHostGap
+            : s.noteRouteEdit;
+    const note: ChatMessage = { role: "note", kind: "route", text };
     this.msgs = [...this.msgs.slice(0, -1), note, ...this.msgs.slice(-1)];
     void this.paintLog("force");
   }

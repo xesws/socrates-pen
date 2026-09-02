@@ -107,14 +107,18 @@ class LlmOverrideBody(BaseModel):
     def merged_limits(self) -> configmod.RuntimeLimits:
         return configmod.merge_limits(self.limits)
 
-    def merged_fast(self) -> LLMConfig | None:
-        """快模型这一路的 cfg。没配钥匙就是 None，调用方据此退回基座。"""
-        return configmod.merge_fast_llm(
+    def fast_status(self) -> tuple[LLMConfig | None, str]:
+        """快模型这一路的 cfg **和它没配成的理由**。配成了理由是空串。"""
+        return configmod.fast_llm_status(
             base_url=self.fast_base_url,
             model=self.fast_model,
             thinking=self.thinking,
             vision=self.vision,
         )
+
+    def merged_fast(self) -> LLMConfig | None:
+        """只要 cfg 不要理由。实现在 fast_status，这里不另算一遍。"""
+        return self.fast_status()[0]
 
     def merged(self) -> LLMConfig | None:
         return merge_llm(
@@ -929,10 +933,10 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         # 路由。**放在这儿是因为信号到这一行才全部就位**：custom 刚算完
         # （自定义泡泡的 writeback 只有它知道），而 stream_chat 还没开始。
         # 判定本身是纯函数，零成本。
-        fast_cfg = body.merged_fast() if body.fast else None
-        route, _route_why = route_for(
+        fast_cfg, fast_why = body.fast_status() if body.fast else (None, "")
+        route, route_why = route_for(
             fast_on=bool(body.fast),
-            has_fast_cfg=fast_cfg is not None,
+            fast_why=fast_why,
             chip=body.chip,
             writeback=bool(custom and custom.writeback),
             user_text=body.user_text,
@@ -990,6 +994,13 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         try:
             if auto_compacted:
                 yield _sse({"type": "compacted", "dropped_reads": auto_dropped})
+            # 开关点亮了，这一轮却没能走快模型——**只在「配坏了」这一类上报**。
+            #
+            # writeback / write-intent 那几条不报：那是 Fast Mode 正常工作，
+            # 每轮都提醒等于把正确行为说成故障。而 fast_why 非空是真的配坏了，
+            # 读者不会自己发现（health 的 fast.ok 照样是 True）。
+            if fast_why:
+                yield _sse({"type": "route", "to": "base", "why": route_why})
             if anchor.get("selection_capped"):
                 yield _sse(
                     {

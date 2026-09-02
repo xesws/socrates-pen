@@ -484,3 +484,67 @@ def test_fast_public_status_hides_the_key() -> None:
     assert "ck-fast-0987654321" not in str(st)
     config.clear_fast_key()
     assert config.fast_public_status()["ok"] is False
+
+
+# ── 「换过站点又换回来」那条真实反馈（v0.22.1）──────────────────────
+
+
+def test_a_key_saved_for_another_host_reports_a_mismatch_not_a_missing_key() -> None:
+    """v0.22.0 上线后第一条真实反馈，逐步复现。
+
+    读者：开了 Fast Mode → 关掉 → 改了 API 站点 → 又改回来 → 从此再也走不了
+    快模型，而界面上一切正常。
+
+    机制是「钥匙不跨主机挪用」：钥匙存进槽时**连它属于哪个站点一起存**。
+    在 B 站点上存过一次，槽里就记着 B；把设置页改回 A 却没重新存钥匙，
+    请求带 A、槽里是 B，主机对不上就返回 None。
+
+    这条保护本身不能松（一个被改坏的 data.json 就能把钥匙送去任意主机），
+    **该修的是它不说话**。而且理由必须分得清：说「没配置」会让读者去填一把
+    已经填过的钥匙，那条路走不通。
+    """
+    a = "https://inference.celeris.ai/celeris-1-magnus/v1"
+    b = "https://api.other-vendor.com/v1"
+
+    # ① 在 A 上配好
+    config.write_fast_key("ck-aaaa11112222", a)
+    cfg, why = config.fast_llm_status(base_url=a)
+    assert cfg is not None and why == ""
+
+    # ② 改到 B，并在 B 上重新存了一次钥匙
+    config.write_fast_key("ck-bbbb33334444", b)
+    cfg, why = config.fast_llm_status(base_url=b)
+    assert cfg is not None and why == ""
+
+    # ③ 把站点改回 A，但没重新存钥匙 —— 就是这里塌的
+    cfg, why = config.fast_llm_status(base_url=a)
+    assert cfg is None
+    assert why == config.FAST_HOST_GAP, "说成没配置的话，读者会去填一把已经填过的钥匙"
+
+
+def test_no_key_at_all_is_a_different_reason() -> None:
+    """两种理由的补救动作不同，所以不能合并成一个。"""
+    cfg, why = config.fast_llm_status(base_url="https://fast.example/v1")
+    assert cfg is None
+    assert why == config.FAST_NO_KEY
+    assert config.FAST_NO_KEY != config.FAST_HOST_GAP
+
+
+def test_health_alone_cannot_tell_you_fast_mode_works() -> None:
+    """`fast_public_status()` 只回答「槽里有没有钥匙」。
+
+    这条断言把那个边界钉住：**它为真不等于 Fast Mode 能用**。设置页和顶栏
+    开关都不许只看它——那正是这次读者什么都没看出来的原因。
+    """
+    config.write_fast_key("ck-bbbb33334444", "https://api.other-vendor.com/v1")
+    assert config.fast_public_status()["ok"] is True
+    cfg, why = config.fast_llm_status(base_url="https://inference.celeris.ai/x/v1")
+    assert cfg is None and why == config.FAST_HOST_GAP
+
+
+def test_merge_fast_llm_still_answers_the_old_way() -> None:
+    """老调用方只要 cfg。两条路必须给出一致的答案（实现只有一份）。"""
+    config.write_fast_key("ck-aaaa11112222", "https://fast.example/v1")
+    for url in ("https://fast.example/v1", "https://other.example/v1", None):
+        cfg, _why = config.fast_llm_status(base_url=url)
+        assert config.merge_fast_llm(base_url=url) == cfg

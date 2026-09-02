@@ -2105,6 +2105,88 @@ def test_the_body_can_point_the_fast_slot_at_another_endpoint(monkeypatch) -> No
     assert seen["llm"].api_key == "sk-base-0987654321"
 
 
+def _sse_events(resp) -> list[dict]:
+    out = []
+    for line in resp.text.splitlines():
+        if line.startswith("data: "):
+            out.append(json.loads(line[6:]))
+    return out
+
+
+def test_a_broken_fast_config_is_reported_not_swallowed(monkeypatch) -> None:
+    """**读者必须看得见降级。** v0.22.0 上线后第一条真实反馈就是它不说话。
+
+    开关点亮了、health 说钥匙存着、每一轮却都走基座——不发这条事件的话，
+    读者手上没有任何线索，只会觉得这个功能坏了。
+    """
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)  # 快钥匙存的是 https://fast.example/v1
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        body = _chat_body(sid, _q1_line(), fast=True, chip="examples")
+        # 读者把设置页的站点改到了另一家，却没在那家上重新存钥匙
+        body["fast_base_url"] = "https://api.other-vendor.com/v1"
+        r = client.post("/v1/chat", json=body)
+        evs = _sse_events(r)
+    assert seen["route"] == "base" and seen["fast_llm"] is None
+    routes = [e for e in evs if e.get("type") == "route"]
+    assert routes, "降级了却一个字都没说——这正是那条反馈"
+    assert routes[0] == {"type": "route", "to": "base", "why": config.FAST_HOST_GAP}
+
+
+def test_no_fast_key_says_no_fast_key(monkeypatch) -> None:
+    """两种理由要分得清：说错了，读者的补救动作就是错的。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        client.put("/v1/llm/key", json={"api_key": "sk-base-0987654321",
+                                        "base_url": "https://api.deepseek.com"})
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        r = client.post("/v1/chat", json=_chat_body(sid, _q1_line(), fast=True, chip="examples"))
+        evs = _sse_events(r)
+    routes = [e for e in evs if e.get("type") == "route"]
+    assert routes and routes[0]["why"] == config.FAST_NO_KEY
+
+
+def test_a_working_fast_turn_stays_quiet(monkeypatch) -> None:
+    """配好了就别出声。每轮都提醒等于把正常工作说成故障。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        r = client.post("/v1/chat", json=_chat_body(sid, _q1_line(), fast=True, chip="examples"))
+        evs = _sse_events(r)
+    assert seen["route"] == "fast"
+    assert [e for e in evs if e.get("type") == "route"] == []
+
+
+def test_a_writeback_turn_does_not_cry_wolf(monkeypatch) -> None:
+    """写回轮走基座是**设计如此**，不是降级，不许报。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        r = client.post("/v1/chat", json=_chat_body(sid, _q1_line(), fast=True, chip="writeback"))
+        evs = _sse_events(r)
+    assert seen["route"] == "base"
+    assert [e for e in evs if e.get("type") == "route"] == []
+
+
 def test_the_body_can_never_carry_a_fast_key() -> None:
     """`fast_api_key` 在请求体上**不存在**，不是「存在但被忽略」。
 
