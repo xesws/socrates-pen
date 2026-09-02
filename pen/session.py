@@ -294,12 +294,15 @@ class PenSession:
             ]
 
     def to_dict(self) -> dict[str, Any]:
+        from pen.reasoning import forget as forget_reasoning
         from pen.vision import strip_images
 
         return {
             "session_id": self.session_id,
             "handbook_id": self.handbook_id,
-            "messages": strip_images(self.messages),
+            # 像素和思考正文都只在「上线」这一件事上有用。会话文件里塞几万字
+            # 推理，除了让每次读盘变慢没有别的效果。
+            "messages": forget_reasoning(strip_images(self.messages)),
             "last_anchor": self.last_anchor,
             "has_substantive": self.has_substantive,
             "last_assistant": self.last_assistant,

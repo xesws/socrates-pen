@@ -22,6 +22,7 @@ from pen.agent.registry import dispatch, schemas
 from pen.agent.tools_impl import limits_of
 from pen.sandbox import resolve_read_target
 from pen.questions import clean_candidates
+from pen import reasoning as reasoningmod
 from pen.vision import has_image_parts, strip_images
 from pen.session import (
     PROMPT_EXAMPLE_LINES,
@@ -492,6 +493,21 @@ def thinking_wire(model: str, level: str) -> dict[str, Any]:
     return out
 
 
+def thinking_on(model: str, level: str) -> bool:
+    """这一枪是不是真的在思考模式里。**从 thinking_wire 推导，不另写一张表。**
+
+    「UI 的 off 对某些型号仍是开着的」这件事只有 thinking_wire 知道
+    （`_glm_forced_thinking` 那一支）。这里再判一次型号名，两处迟早会漂。
+    """
+    wire = thinking_wire(model, level)
+    if not wire:
+        return False
+    if wire.get("reasoning_effort") == "none":
+        return False
+    tk = (wire.get("extra_body") or {}).get("thinking") or {}
+    return tk.get("type") != "disabled"
+
+
 def llm_create_kwargs(
     cfg: LLMConfig,
     *,
@@ -522,11 +538,14 @@ class _StreamedMessage:
     `_run_tool_batch` 当对象用（`.id` / `.function.name` / `.function.arguments`）。
     """
 
-    __slots__ = ("content", "tool_calls")
+    __slots__ = ("content", "tool_calls", "reasoning")
 
-    def __init__(self, content: str, calls: list[dict[str, Any]]) -> None:
+    def __init__(
+        self, content: str, calls: list[dict[str, Any]], reasoning: str = ""
+    ) -> None:
         self.content = content or None
         self.tool_calls = [_StreamedCall(c) for c in calls] or None
+        self.reasoning = reasoning or ""
 
     def model_dump(self, exclude_none: bool = True) -> dict[str, Any]:
         out: dict[str, Any] = {"role": "assistant"}
@@ -534,6 +553,12 @@ class _StreamedMessage:
             out["content"] = self.content
         if self.tool_calls:
             out["tool_calls"] = [c.raw for c in self.tool_calls]
+        # **产出它的那一枪要把它带回去。** 有些节点在 thinking 模式下硬性要求
+        # 回传这个字段，缺了就 400（见 pen/reasoning.py 开头）。以前这里只数
+        # 字数、不留正文，于是任何「调了一次工具、下一枪接着说」的对话都会
+        # 在第二枪吃 400——不是 Fast Mode 的病，Fast Mode 只是让它必然发生。
+        if self.reasoning:
+            out[reasoningmod.FIELD] = self.reasoning
         return out
 
 
@@ -662,6 +687,10 @@ def stream_chat(
             enabled=cfg.vision,
             lang=lang,
         )
+    # 上一轮的思考正文没人要了。**「必须回传」那条契约只约束当前这条工具链**，
+    # 而整段历史每一枪都重发——不忘掉就是按轮次翻倍地烧钱。就地写回是对的：
+    # 这些字节除了上线没有别的用途（落盘也不写）。
+    session.messages = reasoningmod.forget(session.messages)
     session.messages.append(
         {"role": "user", "content": user_message_content(user_packet, pics)}
     )
@@ -767,6 +796,7 @@ def _agent_loop(
         drafts: dict[int, _ToolCallDraft] = {}
         got_usage: Any = None
         think_chars = 0
+        think_text: list[str] = []
         try:
             stream = client.chat.completions.create(**kwargs)
             for chunk in stream:
@@ -786,6 +816,10 @@ def _agent_loop(
                 )
                 if think:
                     think_chars += len(str(think))
+                    # 封顶累加：思考正文实测上千个分片，而整段历史每一枪都
+                    # 重发。不封顶就是按轮次翻倍地烧钱。
+                    if len(think_text) < reasoningmod.MAX_CHARS:
+                        think_text.append(str(think))
                     yield {"type": "think", "chars": think_chars}
                 said = getattr(delta, "content", None)
                 if said:
@@ -824,7 +858,15 @@ def _agent_loop(
         session.spend[metermod.KIND_CHAT] = metermod.merge(
             session.spend.get(metermod.KIND_CHAT), row
         )
-        return _StreamedMessage("".join(parts), assemble_tool_calls(drafts))
+        return _StreamedMessage(
+            "".join(parts),
+            assemble_tool_calls(drafts),
+            # **只有这一枪自己在思考模式里才带回正文。** 关着思考的节点收到
+            # 这个字段没有好处，而个别节点对没要过的字段会挑剔。
+            reasoningmod.clip("".join(think_text))
+            if thinking_on(cfg.model, cfg.thinking)
+            else "",
+        )
 
     def _spend_ev() -> dict[str, Any]:
         # chat 下发**整行**而不是一个总数：前端的悬停明细要分「输入 / 输出 /

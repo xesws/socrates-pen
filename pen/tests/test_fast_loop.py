@@ -87,7 +87,16 @@ class _Recorder:
 
         class _Completions:
             def create(self, **kwargs):
-                rec.shots.append({"base_url": kw.get("base_url"), **kwargs})
+                # **messages 必须当场快照。** 它常常就是 session.messages 本身
+                # （没图时 strip_images 原样返回那个 list），存引用的话跑完再看
+                # 到的是终态，不是这一枪发出去的东西——那样断言的是个幻觉。
+                snap = {**kwargs}
+                wire = kwargs.get("messages") or []
+                snap["messages"] = [dict(m) for m in wire]
+                # 快照之后身份就没了，可「不做副本」这个保证还得守——
+                # 单记一个 id，和 `sess.messages` 比对。
+                snap["wire_id"] = id(wire)
+                rec.shots.append({"base_url": kw.get("base_url"), **snap})
                 if rec.script:
                     content, calls = rec.script.pop(0)
                 else:
@@ -350,7 +359,7 @@ def test_a_roomy_budget_costs_nothing(monkeypatch, tmp_path) -> None:
     )
     assert [e for e in events if e.get("type") == "trimmed"] == []
     assert _routes(events) == []
-    assert rec.shots[-1]["messages"] is sess.messages, "没超预算就该直接发那张表本身"
+    assert rec.shots[-1]["wire_id"] == id(sess.messages), "没超预算就该直接发那张表本身"
 
 
 def test_an_impossible_budget_falls_back_to_base_instead_of_shredding(monkeypatch, tmp_path) -> None:
@@ -388,7 +397,7 @@ def test_a_base_turn_is_sent_byte_for_byte_unchanged(monkeypatch, tmp_path) -> N
     )
     assert _routes(events) == []
     assert [e for e in events if e.get("type") == "trimmed"] == []
-    assert rec.shots[-1]["messages"] is sess.messages, "基座该直接发那张表本身，不是副本"
+    assert rec.shots[-1]["wire_id"] == id(sess.messages), "基座该直接发那张表本身，不是副本"
 
 
 # ── delta.reasoning ─────────────────────────────────────────────────

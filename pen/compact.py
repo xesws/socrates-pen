@@ -102,6 +102,9 @@ def message_chars(messages: Sequence[dict[str, Any]]) -> int:
     n = 0
     for m in messages:
         n += len(content_text(m.get("content")))
+        # 思考正文是**真上线的字节**（thinking 模式下节点要求回传），所以它
+        # 必须进估算——快模型那道硬窗口闸量的正是「这一枪有多大」。
+        n += len(str(m.get("reasoning_content") or ""))
         for tc in m.get("tool_calls") or []:
             fn = tc.get("function") or {}
             n += len(str(fn.get("arguments") or "")) + len(str(fn.get("name") or ""))
