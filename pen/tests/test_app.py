@@ -1798,8 +1798,9 @@ def test_custom_chip_prompt_lands_in_the_intent_section(monkeypatch) -> None:
     intent = packet.split("[意图]", 1)[1]
     assert _CUSTOM["prompt"] in intent, "读者写的那段没进 [意图]"
     assert f"chip = {_CUSTOM['id']}" in intent
-    # 勾了写回：内置纪律要跟在后面，而且是**同一轮**那一版，不是 CHIP_INTENT 里
-    # 那句和 SYSTEM_PROMPT 打架的「下一轮」
+    # 勾了写回：内置纪律要跟在后面。措辞是「同一轮」——v0.21.1 起
+    # CHIP_INTENT["writeback"] 和这段取的是同一份 WRITEBACK_DISCIPLINE，
+    # 那句和 SYSTEM_PROMPT 打架的「下一轮」已经清掉了。
     assert "同一轮里接着做完" in intent
     # 固定芯片那句不该出现——自定义芯片的意图整段取代查表
     assert CHIP_INTENT["socratic"]["zh"] not in intent

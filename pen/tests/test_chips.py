@@ -5,6 +5,7 @@ import pytest
 from pen import compact as compactmod
 from pen import tutor as tutormod
 from pen.chips import (
+    CustomChipSpec,
     CHIP_INTENT,
     LABEL_MAX,
     PROMPT_MAX,
@@ -131,25 +132,44 @@ def test_writeback_chip_appends_the_discipline_in_that_language(lang: str) -> No
     assert WRITEBACK_DISCIPLINE[other] not in got
 
 
-def test_the_discipline_says_same_turn_not_next_turn() -> None:
-    """这条是回归闸，不是文案洁癖。
+def test_the_writeback_discipline_has_exactly_one_definition_point() -> None:
+    """旧账已清（v0.21.1）：这条从「盯着债还在」翻过来，改成盯着它别回来。
 
-    `CHIP_INTENT["writeback"]` 写的是「下一轮再单独 edit_file」，而
-    `session.SYSTEM_PROMPT_TEMPLATE` 写的是「这两步在同一轮里接着做完」——
-    两句话互相打架，是 v0.21.0 之前就在的旧账。三段预置模板全是写回类，
-    所以这是本功能的**默认路径**：复用那一条就等于把那句错话搬进默认路径。
-    这里逐字对齐 SYSTEM_PROMPT，那笔旧账留着单独清。
+    原来有两份互相打架的写回纪律：`CHIP_INTENT["writeback"]` 说「下一轮再单独
+    edit_file」，`SYSTEM_PROMPT_TEMPLATE` 说「同一轮里做完」。「下一轮」是我们
+    自己写错的一句话——约束从来只是「拿到 read 的返回之后再改」，模型逐字照做
+    就会回一句「下一轮我就动手」然后停住，读者白花一轮钱。那次清理改了
+    SYSTEM_PROMPT 和 edit_file 的工具描述（test_agent.py 有闸盯着），**漏了这第三处**。
+    现在两份合成一份，这里钉住「还是一份」。
     """
-    from pen.session import SYSTEM_PROMPT_TEMPLATE
+    from pen.session import SYSTEM_PROMPT_TEMPLATE, SYSTEM_PROMPT_TEMPLATE_EN
 
+    # 固定芯片那条整段取自同一份纪律，不是抄的第二份
+    assert WRITEBACK_DISCIPLINE["zh"] in CHIP_INTENT["writeback"]["zh"]
+    assert WRITEBACK_DISCIPLINE["en"] in CHIP_INTENT["writeback"]["en"]
+    # 自定义泡泡那条也取自同一份
+    spec = CustomChipSpec(id="u.a1b2c3", label="出题", prompt="出一道题。", writeback=True)
+    assert WRITEBACK_DISCIPLINE["zh"] in custom_intent(spec, "zh")
+    assert WRITEBACK_DISCIPLINE["en"] in custom_intent(spec, "en")
+    # 三处措辞一致：都说同一轮，谁都不许再说下一轮
     assert "同一轮里接着做完" in WRITEBACK_DISCIPLINE["zh"]
-    assert "下一轮" not in WRITEBACK_DISCIPLINE["zh"]
-    assert "同一轮里接着做完" in SYSTEM_PROMPT_TEMPLATE
-    # 旧账还在，说明这条闸有存在的必要；哪天它被清了，这行会红，提醒来合并
-    assert "下一轮再单独 edit_file" in CHIP_INTENT["writeback"]["zh"], (
-        "CHIP_INTENT['writeback'] 的旧措辞被改了——去看看能不能和 "
-        "WRITEBACK_DISCIPLINE 合并成一份"
-    )
+    assert "同一轮里做完" in SYSTEM_PROMPT_TEMPLATE
+    assert "same turn" in SYSTEM_PROMPT_TEMPLATE_EN
+    for lang, row in CHIP_INTENT.items():
+        assert "下一轮" not in row["zh"], f"{lang} 又把那句错话写回来了"
+        assert "on its own next" not in row["en"], f"{lang} 又把那句错话写回来了"
+
+
+def test_the_discipline_never_licenses_the_same_batch() -> None:
+    """放宽的是「不用等下一轮」，**不是「可以同批」**。
+
+    同批发出时模型还没看到原文，old_string 只能靠猜——那条仍由
+    pen/agent/permissions.py 的 read_first_block 硬闸拦着
+    （pen/tests/test_agent.py 的 test_same_batch_read_and_edit_is_still_blocked）。
+    措辞必须明写「看到返回之后再 edit_file」，不能松成「读完就能改」。
+    """
+    assert "看到它返回的带行号原文之后再 edit_file" in WRITEBACK_DISCIPLINE["zh"]
+    assert "wait for the numbered original, then edit_file" in WRITEBACK_DISCIPLINE["en"]
 
 
 def test_fixed_chip_lookup_is_untouched() -> None:

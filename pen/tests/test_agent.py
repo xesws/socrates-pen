@@ -1225,6 +1225,7 @@ def test_the_prompts_no_longer_say_next_round() -> None:
     """「下一轮再单独 edit_file」是我们自己写进去的一句错话——约束只是
     「拿到 read 的返回之后再改」。模型逐字照做，回「下一轮我就动手」就停了。"""
     from pen.agent.registry import schemas
+    from pen.chips import CHIP_INTENT
     from pen.session import SYSTEM_PROMPT
 
     assert "下一轮" not in SYSTEM_PROMPT
@@ -1232,6 +1233,12 @@ def test_the_prompts_no_longer_say_next_round() -> None:
     assert "下一轮" not in edit["function"]["description"]
     # 但「不能同批」这条得留着：同批发出时模型还没看到原文，old_string 只能靠猜
     assert "同一批" in edit["function"]["description"]
+    # 第三处：注进 [意图] 段的芯片意图表。上一次清理**漏了它**，那句错话在
+    # CHIP_INTENT["writeback"] 里又活了几个版本（v0.21.1 才清掉）。
+    # 这条闸原来只看两处，所以什么都没说——扫全表，别再漏第三个地方。
+    for chip, row in CHIP_INTENT.items():
+        assert "下一轮" not in row["zh"], f"CHIP_INTENT[{chip!r}] 又说「下一轮」了"
+        assert "on its own next" not in row["en"], f"CHIP_INTENT[{chip!r}] 又说 next turn 了"
 
 
 def test_same_batch_read_and_edit_is_still_blocked(monkeypatch, tmp_path: Path) -> None:

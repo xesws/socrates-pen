@@ -21,6 +21,46 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+
+# 写回纪律：**「先读后改」这条规矩的唯一定义点**。
+#
+# 固定的 writeback 芯片和读者自己勾了「会改写原文」的泡泡都用这一段，
+# 下面 CHIP_INTENT["writeback"] 就是由它拼出来的。
+#
+# v0.21.0 之前这里是两份，而且互相打架：CHIP_INTENT["writeback"] 写着
+# 「下一轮再单独 edit_file」，SYSTEM_PROMPT_TEMPLATE 写着「同一轮里做完」。
+# 「下一轮」是我们自己写错的一句话——约束从来只是「拿到 read 的返回之后再改」，
+# 模型逐字照做就会回一句「下一轮我就动手」然后停在那儿，读者白花一轮钱。
+# 那次清理改了 SYSTEM_PROMPT 和 edit_file 的工具描述
+# （pen/tests/test_agent.py 的 test_the_prompts_no_longer_say_next_round 盯着），
+# **漏了这第三处**。v0.21.1 一并清掉，并把两份合成这一份。
+#
+# 「同一轮」不等于「同一批」：同批发出时模型还没看到原文，old_string 只能靠猜，
+# 那条仍然被 pen/agent/permissions.py 的 read_first_block 硬闸拦着。措辞里
+# 「看到它返回的带行号原文之后再 edit_file」说的正是这件事，别改松。
+#
+# 只放**机制**，不放「这是一次改写」的开场白——那句话两个调用方各说各的：
+# 固定芯片说「把刚才的解答写进手册」，自定义泡泡说「上面这件事会改写手册原文」。
+# 混进来的话，固定芯片那条会读成「把刚才的解答写进手册。这枚芯片会改写手册原文。」
+WRITEBACK_DISCIPLINE = {
+    "zh": (
+        "先 read_file 同一路径，看到它返回的带行号原文之后再 edit_file，"
+        "这两步在同一轮里接着做完，不要停下来等读者再说一遍。"
+        "old_string 是去掉行号前缀后的纯原文，不要抄「12\\t」，且必须在文件里恰好出现一次。"
+        "要写进手册的内容只放进 edit_file 的 new_string，聊天正文里不要再贴一遍。"
+        "工具结果说「已编辑」之前，不要声称已经写盘。"
+    ),
+    "en": (
+        "read_file the same path first, wait for the numbered "
+        "original, then edit_file — finish both in the same turn, do not stop and wait for the "
+        "reader to speak again. old_string is the raw original with the line-number prefix "
+        'stripped (do not copy "12\\t"), and it must occur exactly once in the file. '
+        "Put what goes into the handbook in edit_file's new_string only; do not paste it again "
+        "in the chat reply. Do not claim it is on disk until the tool result says it was edited."
+    ),
+}
+
+
 CHIP_INTENT = {
     "socratic": {
         "zh": "先别揭晓。只问一个问题，帮读者自己想。",
@@ -38,9 +78,10 @@ CHIP_INTENT = {
         "zh": "（未开放）不要假装检索。告诉读者 P2 才有联网。",
         "en": "(Not available.) Do not pretend you searched. Tell the reader web search is not on yet.",
     },
+    # 「写什么」在前，「怎么写」直接取上面那一份，不再抄第二遍。
     "writeback": {
-        "zh": "必须先 read_file 看准带行号的原文，下一轮再单独 edit_file。old_string 去掉 N\\t。不要声称已经写盘。",
-        "en": "read_file the numbered original first, then edit_file on its own next. Strip N\\t from old_string. Do not claim it is on disk.",
+        "zh": "把刚才的解答写进手册。" + WRITEBACK_DISCIPLINE["zh"],
+        "en": "Write the last answer into the handbook. " + WRITEBACK_DISCIPLINE["en"],
     },
     "free": {
         "zh": "按用户原话回答，仍守苏格拉底的人设。",
@@ -173,33 +214,6 @@ def normalize_custom_chip(raw: Any) -> CustomChipSpec | None:
     )
 
 
-# 勾了「会改写原文」时追加的那段纪律。
-#
-# **不复用 `CHIP_INTENT["writeback"]`**，虽然看起来该复用。那一条写的是
-# 「下一轮再单独 edit_file」，而 `session.SYSTEM_PROMPT_TEMPLATE` 写的是
-# 「这两步在同一轮里接着做完，不要停下来等读者再说一遍」——两句话互相打架，
-# 是 v0.21.0 之前就在的旧账（见 docs/v0.21.0-自定义泡泡.md）。三段预置模板
-# 全是写回类，所以这是本功能的**默认路径**，不能把那句错话搬进来。
-# 这里逐字对齐 SYSTEM_PROMPT，那一条留着单独清。
-WRITEBACK_DISCIPLINE = {
-    "zh": (
-        "这枚芯片会改写手册原文。先 read_file 同一路径，看到它返回的带行号原文之后再 edit_file，"
-        "这两步在同一轮里接着做完，不要停下来等读者再说一遍。"
-        "old_string 是去掉行号前缀后的纯原文，不要抄「12\\t」，且必须在文件里恰好出现一次。"
-        "要写进手册的内容只放进 edit_file 的 new_string，聊天正文里不要再贴一遍。"
-        "工具结果说「已编辑」之前，不要声称已经写盘。"
-    ),
-    "en": (
-        "This chip rewrites the handbook. read_file the same path first, wait for the numbered "
-        "original, then edit_file — finish both in the same turn, do not stop and wait for the "
-        "reader to speak again. old_string is the raw original with the line-number prefix "
-        'stripped (do not copy "12\\t"), and it must occur exactly once in the file. '
-        "Put what goes into the handbook in edit_file's new_string only; do not paste it again "
-        "in the chat reply. Do not claim it is on disk until the tool result says it was edited."
-    ),
-}
-
-
 def custom_intent(spec: CustomChipSpec, lang: str) -> str:
     """`[意图]` 段的正文 = 读者写的那段 +（勾了写回时）内置写回纪律。
 
@@ -208,5 +222,8 @@ def custom_intent(spec: CustomChipSpec, lang: str) -> str:
     """
     if not spec.writeback:
         return spec.prompt
-    row = WRITEBACK_DISCIPLINE
-    return f"{spec.prompt}\n{row['en'] if lang == 'en' else row['zh']}"
+    en = lang == "en"
+    # 开场白是这一侧自己的：读者写的那段说的是「做什么」，得有一句把它和
+    # 下面那套改写机制接上，否则纪律像是凭空冒出来的另一件事。
+    lead = "上面这件事会改写手册原文。" if not en else "The task above rewrites the handbook. "
+    return f"{spec.prompt}\n{lead}{WRITEBACK_DISCIPLINE['en' if en else 'zh']}"
