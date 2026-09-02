@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from types import SimpleNamespace
 from collections.abc import Iterator, Sequence
@@ -21,7 +22,7 @@ from pen.agent.registry import dispatch, schemas
 from pen.agent.tools_impl import limits_of
 from pen.sandbox import resolve_read_target
 from pen.questions import clean_candidates
-from pen.vision import strip_images
+from pen.vision import has_image_parts, strip_images
 from pen.session import (
     PROMPT_EXAMPLE_LINES,
     FIXED_CHIPS,
@@ -302,14 +303,24 @@ _CODE_MSG = {
     PROVIDER_BAD_KEY: "provider.bad_key",
     PROVIDER_NO_MODEL: "provider.no_model",
     PROVIDER_NO_VISION: "provider.bad_vision",
-    PROVIDER_REJECTED: "provider.bad_thinking",
+    PROVIDER_REJECTED: "provider.rejected",
     PROVIDER_UNREACHABLE: "provider.unreachable",
     PROVIDER_UNEXPECTED: "provider.unexpected",
 }
 
 
-def provider_error_code(exc: BaseException) -> str:
-    """异常 → 稳定的码。**不碰 i18n**，所以测试和前端都能拿它当锚点。"""
+def provider_error_code(exc: BaseException, *, sent_image: bool) -> str:
+    """异常 → 稳定的码。**不碰 i18n**，所以测试和前端都能拿它当锚点。
+
+    `sent_image` 是必填的，没有默认值。**这一枪里到底有没有图，只有调用方
+    知道，而它决定了一整类结论能不能成立**：`looks_like_vision_reject` 是个
+    文本猜测（在报文里找 "image_url" / "vision" 这些词），没发图的时候它猜中
+    也是错的——节点不可能在拒绝一张不存在的图。
+
+    v0.22.2 就是这么翻的车：读者把「图像理解」关了，体检没发图，节点因为
+    别的原因回了 400，报文里恰好有个匹配词，于是状态栏一口咬定「节点拒收了
+    图片，把图像理解关掉」——而他已经关了。
+    """
     status = getattr(exc, "status_code", None)
     if status in (401, 403):
         return PROVIDER_BAD_KEY
@@ -320,7 +331,9 @@ def provider_error_code(exc: BaseException) -> str:
     if status == 400:
         from pen.vision import looks_like_vision_reject
 
-        return PROVIDER_NO_VISION if looks_like_vision_reject(exc) else PROVIDER_REJECTED
+        if sent_image and looks_like_vision_reject(exc):
+            return PROVIDER_NO_VISION
+        return PROVIDER_REJECTED
     from openai import APIConnectionError, APITimeoutError
 
     if isinstance(exc, (APIConnectionError, APITimeoutError, OSError, TimeoutError)):
@@ -328,15 +341,46 @@ def provider_error_code(exc: BaseException) -> str:
     return PROVIDER_UNEXPECTED
 
 
+# 钥匙长什么样。转述节点原话之前先把它抹掉——报文里几乎不会带 key，
+# 但「几乎」不是理由：这句话会被显示在状态栏上，也会进读者的截图。
+_KEYISH = re.compile(r"\b(?:sk|ck|gsk|xai|pk)[-_][A-Za-z0-9_\-]{8,}", re.I)
+
+
+def provider_detail(exc: BaseException, cap: int = 200) -> str:
+    """节点自己那句话。**分不出类的时候，转述它远胜过我们再猜一次。**
+
+    v0.22.2 之前分不出类就回一句「请核对 Base URL、model 和 API Key」——
+    三样都核对过的读者看到这句话，等于什么也没得到。
+    """
+    raw = ""
+    body = getattr(exc, "body", None)
+    if isinstance(body, dict):
+        err = body.get("error")
+        if isinstance(err, dict):
+            raw = str(err.get("message") or "")
+        elif isinstance(err, str):
+            raw = err
+        raw = raw or str(body.get("message") or "")
+    raw = (raw or str(getattr(exc, "message", "")) or str(exc)).strip()
+    raw = _KEYISH.sub("[key]", " ".join(raw.split()))
+    return raw[: cap - 1] + "…" if len(raw) > cap else raw
+
+
 def provider_message_for(code: str, lang: str = "zh", **fmt: Any) -> str:
     """码 → 给用户看的一句话。不带 key，不贴原始报文。"""
     return msg(_CODE_MSG.get(code, "provider.unexpected"), lang, **fmt)
 
 
-def provider_error_message(exc: BaseException, lang: str = "zh", model: str = "") -> str:
-    """OpenAI / 网络异常 → 给用户看的一句话。**实现只有上面那两份。**"""
+def provider_error_message(
+    exc: BaseException, lang: str = "zh", model: str = "", *, sent_image: bool = False
+) -> str:
+    """OpenAI / 网络异常 → 给用户看的一句话。**实现只有上面那几份。**"""
     return provider_message_for(
-        provider_error_code(exc), lang, kind=type(exc).__name__, model=model or "?"
+        provider_error_code(exc, sent_image=sent_image),
+        lang,
+        kind=type(exc).__name__,
+        model=model or "?",
+        detail=provider_detail(exc),
     )
 
 
@@ -706,9 +750,13 @@ def _agent_loop(
         # 而且 cfg 会在 Fast Mode 换模型时重绑——快模型没视觉、基座有视觉时，
         # 同一段历史该发什么，只有这一枪自己知道。
         wire = session.messages if shot is None else shot
+        sent = wire if cfg.vision else strip_images(wire)
+        # **问真发出去的那份，不问 cfg.vision。** 开着视觉但这场压根没贴过图
+        # 时，节点回的 400 一样不可能是拒图。
+        with_pics = any(has_image_parts(m.get("content")) for m in sent)
         kwargs = llm_create_kwargs(
             cfg,
-            messages=wire if cfg.vision else strip_images(wire),
+            messages=sent,
             tools=tools if with_tools else None,
         )
         parts: list[str] = []
@@ -752,7 +800,9 @@ def _agent_loop(
                     idx = int(getattr(piece, "index", 0) or 0)
                     drafts.setdefault(idx, _ToolCallDraft()).eat(piece)
         except (OpenAIError, OSError, TimeoutError) as exc:
-            raise ProviderError(provider_error_message(exc, lang, cfg.model)) from exc
+            raise ProviderError(
+                provider_error_message(exc, lang, cfg.model, sent_image=with_pics)
+            ) from exc
         # 冲掉尾巴：没有芯片块时上面那个保守切法会压着最后十几个字不吐。
         buf = "".join(parts)
         cut = buf.find(CHIPS_MARKER)
@@ -1213,7 +1263,10 @@ def propose_fold_md(
             )
         )
     except (OpenAIError, OSError, TimeoutError) as exc:
-        raise ProviderError(provider_error_message(exc, lang, cfg.model)) from exc
+        # 折叠块那一枪是纯文本，永远不带图。
+        raise ProviderError(
+            provider_error_message(exc, lang, cfg.model, sent_image=False)
+        ) from exc
     # 写回这一枪也要记账。它落在会话上（请求线程独占，没有 probe 那条红线）。
     session.spend[metermod.KIND_FOLD] = metermod.merge(
         session.spend.get(metermod.KIND_FOLD),

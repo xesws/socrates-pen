@@ -408,8 +408,12 @@ export class PenView extends ItemView {
     e.dot.classList.toggle("is-ok", this.sidecarReachable && !bad);
     e.dot.classList.toggle("is-warn", bad);
     e.dot.classList.toggle("is-down", !this.sidecarReachable && Boolean(this.err));
-    if (e.brandSub.textContent !== this.health) e.brandSub.textContent = this.health;
-    setTooltip(e.brandSub, this.health);
+    // 判词是**覆盖层**，不改写 this.health。probeConfig 在签名没变时会提前
+    // 返回（那是它的节流），而 probeHealth 每次都会重置 health——两者要是
+    // 共用一个字段，就会出现「点是黄的、字却写着已保存」。
+    const line = bad ? this.cfgMsg : this.health;
+    if (e.brandSub.textContent !== line) e.brandSub.textContent = line;
+    setTooltip(e.brandSub, line);
   }
 
   private paintAlert(): void {
@@ -1079,7 +1083,6 @@ export class PenView extends ItemView {
       const bad = !r.base.ok ? r.base : r.fast && !r.fast.ok ? r.fast : null;
       this.cfgCode = bad ? bad.code : "";
       this.cfgMsg = bad ? bad.message : "";
-      if (bad) this.health = bad.message;
     } catch {
       // 体检本身打不通不算配置坏——那是 sidecar 的事，probeHealth 已经在说了。
       // **这里绝不能把 cfgSig 留着**：下次配置没变但网络好了，得能再试一次。

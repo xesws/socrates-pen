@@ -115,7 +115,10 @@ def test_looks_like_vision_reject() -> None:
         body={"error": {"message": "images are not supported"}},
     )
     assert looks_like_vision_reject(exc)
-    assert "图像理解" in provider_error_message(exc) or "视觉" in provider_error_message(exc)
+    # 只有**真发了图**才能下这个结论。没发图时同一个异常必须换一种说法——
+    # 见 test_tutor.py::test_a_reader_who_pasted_no_picture_is_never_told_to_turn_vision_off
+    got = provider_error_message(exc, sent_image=True)
+    assert "图像理解" in got or "视觉" in got
 
 
 def test_summary_mark_still_string() -> None:

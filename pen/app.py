@@ -428,13 +428,15 @@ def _slot_report(cfg: LLMConfig | None, why: str, lang: str) -> dict[str, Any]:
     非空时**不打网络**——本机都知道配不成，再去问节点是浪费一枪。"""
     if why:
         return {"ok": False, "code": why, "message": msg(_LOCAL_WHY.get(why, why), lang)}
-    code, model = preflight.check(cfg)
-    if not code:
+    v = preflight.check(cfg)
+    if not v.code:
         return {"ok": True, "code": "", "message": ""}
     return {
         "ok": False,
-        "code": code,
-        "message": tutormod.provider_message_for(code, lang, kind=code, model=model or "?"),
+        "code": v.code,
+        "message": tutormod.provider_message_for(
+            v.code, lang, kind=v.code, model=v.model or "?", detail=v.detail
+        ),
     }
 
 

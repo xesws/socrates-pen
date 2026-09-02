@@ -171,9 +171,11 @@ def test_provider_error_message_maps_common_failures() -> None:
     assert "设置" in auth and "API Key" in auth
     denied = provider_error_message(_status_exc(openai.PermissionDeniedError, 403))
     assert "设置" in denied and "API Key" in denied
+    # 400 分不出类时**转述节点自己那句话**。以前回的是「请核对 Base URL、
+    # model 和 API Key」——三样都核对过的读者看到它等于什么也没得到。
     bad = provider_error_message(_status_exc(openai.BadRequestError, 400))
-    assert "Base URL" in bad and "API Key" in bad
-    assert "off" not in bad.lower()
+    assert "boom" in bad  # 节点的原话，不是我们的猜测
+    assert "off" not in bad.lower()  # v0.19.2：不许再让人把 Thinking 调回 off
     req = httpx.Request("POST", "https://api.deepseek.com/chat/completions")
     conn = provider_error_message(openai.APIConnectionError(request=req))
     assert "Base URL" in conn
@@ -184,6 +186,55 @@ def test_provider_error_message_maps_common_failures() -> None:
     other = provider_error_message(_status_exc(openai.RateLimitError, 429))
     assert "RateLimitError" in other
     assert "sk-secret-do-not-leak" not in other
+
+
+def test_a_reader_who_pasted_no_picture_is_never_told_to_turn_vision_off() -> None:
+    """**这是 v0.22.3 修的那个 bug 的闸。**
+
+    `looks_like_vision_reject` 是个文本猜测：在报文里找 "image_url" / "vision"
+    这些词。没发图的时候它猜中也是错的——节点不可能在拒绝一张不存在的图。
+    v0.22.2 少了这个参数，于是关着「图像理解」的读者被状态栏告知「把图像
+    理解关掉」，而他早就关了。
+    """
+    req = httpx.Request("POST", "https://api.example.com/v1/chat/completions")
+    exc = openai.BadRequestError(
+        "unsupported parameter",
+        response=httpx.Response(400, request=req),
+        body={"error": {"message": "this model does not support image_url input"}},
+    )
+    没发图 = provider_error_message(exc, sent_image=False)
+    assert "图像理解" not in 没发图 and "视觉" not in 没发图
+    assert "image_url" in 没发图  # 转述原话，让读者看得见真正的理由
+    发了图 = provider_error_message(exc, sent_image=True)
+    assert "图像理解" in 发了图  # 反向闸：真发了图时那句话仍然要说
+
+
+def test_the_endpoints_own_words_never_carry_a_key() -> None:
+    """转述原话之后，「不泄钥匙」从顺带变成必须——这句话会进读者的截图。"""
+    from pen.tutor import provider_detail
+
+    req = httpx.Request("POST", "https://api.example.com/v1/chat/completions")
+    exc = openai.BadRequestError(
+        "bad",
+        response=httpx.Response(400, request=req),
+        body={"error": {"message": "key sk-secret-do-not-leak-abcdefgh is invalid"}},
+    )
+    got = provider_detail(exc)
+    assert "sk-secret-do-not-leak" not in got
+    assert "[key]" in got
+
+
+def test_the_endpoints_own_words_are_capped() -> None:
+    """节点可能回一整页 JSON。状态栏那一行放不下，也不该放。"""
+    from pen.tutor import provider_detail
+
+    req = httpx.Request("POST", "https://api.example.com/v1/chat/completions")
+    exc = openai.BadRequestError(
+        "x",
+        response=httpx.Response(400, request=req),
+        body={"error": {"message": "很长" * 500}},
+    )
+    assert len(provider_detail(exc)) <= 200
 
 
 def test_stream_chat_auth_error_yields_error_event(monkeypatch, tmp_path: Path) -> None:
@@ -206,7 +257,7 @@ def test_stream_chat_thinking_rejected_points_to_settings(monkeypatch, tmp_path:
     events = list(stream_chat(sess, book, "packet", llm=_cfg()))
     errors = [e for e in events if e["type"] == "error"]
     assert len(errors) == 1
-    assert "Base URL" in errors[0]["message"]
+    assert "boom" in errors[0]["message"]  # 转述节点原话
     assert "off" not in errors[0]["message"].lower()
 
 

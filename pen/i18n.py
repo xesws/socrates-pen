@@ -26,9 +26,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "节点不收这把钥匙。请到设置 → Socrates 检查 API Key。",
         "en": "The endpoint rejected this key. Check your API key under Settings → Socrates.",
     },
-    "provider.bad_thinking": {
-        "zh": "节点拒绝了这次请求。请核对设置里的 Base URL、model 字符串和 API Key。",
-        "en": "The endpoint rejected this request. Check the Base URL, model name, and API key in settings.",
+    # 分不出类的 400。**转述节点自己那句话**，别再猜一遍——三样都核对过的
+    # 读者，看到「请核对 Base URL、model 和 API Key」等于什么也没得到。
+    "provider.rejected": {
+        "zh": "节点拒绝了这次请求：{detail}",
+        "en": "The endpoint rejected this request: {detail}",
     },
     "provider.bad_vision": {
         "zh": "节点拒收了图片。这个模型多半没有视觉，把设置里的「图像理解」关掉，或换一个多模态模型。",
