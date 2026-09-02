@@ -144,23 +144,17 @@ def _is_force_answer(content: str) -> bool:
     return False
 
 
-def fold_messages(
+def split_last_turn(
     messages: Sequence[dict[str, Any]],
-    *,
-    allowed: Sequence[Path],
-    lang: str = "zh",
-    book_title: str = "",
-    last_chips: Sequence[dict[str, Any]] = (),
-    last_anchor: dict[str, Any] | None = None,
-) -> Fold | None:
-    """把 messages 折成 `[system, 摘要, 最后一轮]`。**只读入参，一个字都不写回。**
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]] | None:
+    """切成 `(system, 更早的回合, 最后一轮)`。**「最后一轮从哪儿开始」的唯一定义点。**
 
-    没什么可折时返回 `None`——空表，或只剩一份旧摘要 / 收口话术。
-    调用方拿到 None 就当没折（`compact_session` 回 `did=False`）。
+    返回 None = 没什么可切：空表，或者往回找不到一个真的 user 包
+    （只剩旧摘要和收口枪的假 user）。
 
-    `allowed` 是**已经解析过的**白名单（`_allowed_files` 的产物）。这里不自己
-    去算，是因为它要读 `session.last_anchor`，而这个函数的立身之本就是不碰
-    session——白名单由调用方备好，两条路（破坏性 / 副本）各自决定怎么备。
+    边界是「最后一个**真** user 消息」：滚动摘要自己是 user 角色，收口枪也往
+    messages 里塞过一条假 user，两者都不能当边界——test_compact 的
+    test_force_answer_user_is_not_last_turn 钉着这条。
     """
     msgs = list(messages or [])
     if not msgs:
@@ -182,11 +176,32 @@ def fold_messages(
             continue
         last_user = i
     if last_user < 0:
-        # 只有 system，或只有一份旧摘要 / 收口话术：没什么可折。
         return None
+    return system, rest[:last_user], rest[last_user:]
 
-    middle = rest[:last_user]
-    last_turn = rest[last_user:]
+
+def fold_messages(
+    messages: Sequence[dict[str, Any]],
+    *,
+    allowed: Sequence[Path],
+    lang: str = "zh",
+    book_title: str = "",
+    last_chips: Sequence[dict[str, Any]] = (),
+    last_anchor: dict[str, Any] | None = None,
+) -> Fold | None:
+    """把 messages 折成 `[system, 摘要, 最后一轮]`。**只读入参，一个字都不写回。**
+
+    没什么可折时返回 `None`——空表，或只剩一份旧摘要 / 收口话术。
+    调用方拿到 None 就当没折（`compact_session` 回 `did=False`）。
+
+    `allowed` 是**已经解析过的**白名单（`_allowed_files` 的产物）。这里不自己
+    去算，是因为它要读 `session.last_anchor`，而这个函数的立身之本就是不碰
+    session——白名单由调用方备好，两条路（破坏性 / 副本）各自决定怎么备。
+    """
+    cut = split_last_turn(messages)
+    if cut is None:
+        return None
+    system, middle, last_turn = cut
 
     slots = _Slots()
     _eat_system_book(slots, system)

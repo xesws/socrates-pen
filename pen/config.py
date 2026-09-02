@@ -176,6 +176,24 @@ MAX_TOKENS_CROSS_BOOK = 0
 # 窗口，长会话会真的折，而不是默默关掉。
 COMPACT_CHAT_TOKENS = 32000
 
+# ── Fast Mode（v0.22.0）──────────────────────────────────────
+# 只读轮走的快模型。默认落点是 celeris-1-magnus，实测 249 tok/s。
+# 和基座一样**全部可在设置页改**，这里只是不填时的回落。
+FAST_BASE = "https://inference.celeris.ai/celeris-1-magnus/v1"
+FAST_MODEL = "celeris-1-magnus"
+# ⚠️ 快模型的窗口是 **input + max_tokens 合计**，而且供应商在**请求时**就硬拒，
+# 不是生成到一半才截断。实测报文把两个数字直接念出来：
+#   "you requested 16384 output tokens and your prompt contains at least
+#    114689 input tokens, for a total of at least 131073 tokens"
+# 所以输入的真上限是 FAST_WINDOW − FAST_MAX_OUTPUT = 114688，不是 131072。
+# Budget.input_cap() 就是这条算式的唯一定义点，别在别处再算一遍。
+FAST_WINDOW = 131072
+FAST_MAX_OUTPUT = 16384
+# 送进快模型的上下文目标。默认 90000 给硬顶留了 24688 的余量，那不是保守是必需：
+# 路由和压缩都发生在 build_user_packet **之前**，本轮的 packet（最坏 ~16k 字符）
+# 还没进去，而 _agent_loop 里每次 read_file 还能再加 5000 字符。
+FAST_CONTEXT_TOKENS = 90000
+
 
 def probe_enabled(env_file: Path | None = None) -> bool:
     raw = (os.environ.get(ENV_PROBE) or parse_dotenv(env_file).get(ENV_PROBE) or "").strip().lower()
@@ -241,6 +259,9 @@ class RuntimeLimits:
     max_tokens_cross_book: int
     # 自动把旧回合折进滚动摘要的窗口阈值。0 = 不自动折。
     compact_chat_tokens: int
+    # 送进快模型的上下文目标（token）。0 = 不压，等于把 Fast Mode 的窗口守卫关掉。
+    # 活消费方是 pen/compaction.py 的 FastWindow。
+    fast_context_tokens: int
 
 
 def default_limits() -> RuntimeLimits:
@@ -271,6 +292,7 @@ def default_limits() -> RuntimeLimits:
         max_tokens_probe=MAX_TOKENS_PROBE,
         max_tokens_cross_book=MAX_TOKENS_CROSS_BOOK,
         compact_chat_tokens=COMPACT_CHAT_TOKENS,
+        fast_context_tokens=FAST_CONTEXT_TOKENS,
     )
 
 
@@ -298,6 +320,9 @@ LIMIT_RANGE: dict[str, tuple[float, float]] = {
     "max_tokens_probe": (0, 1_000_000),
     "max_tokens_cross_book": (0, 4_000_000),
     "compact_chat_tokens": (0, 500_000),
+    # 上限就是 FAST_WINDOW - FAST_MAX_OUTPUT：填得再大也过不了供应商那关，
+    # 与其让读者在对话里吃 400，不如在这里夹住。0 = 不压。
+    "fast_context_tokens": (0, 114_688),
 }
 
 
