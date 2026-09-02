@@ -439,6 +439,28 @@ def _is_celeris(model: str) -> bool:
     return "celeris" in _model_id(model)
 
 
+def _is_gemini(model: str) -> bool:
+    """Gemini 的 OpenAI 兼容层**自己就认 `reasoning_effort`**，不用嵌套。
+
+    读者报的 400 原话：`Invalid JSON payload received. Unknown name "thinking":
+    Cannot find field.` —— 我们把 DeepSeek 那套 `extra_body.thinking` 塞到了
+    请求体顶层，Google 不认。官方文档给的那层
+    `extra_body.extra_body.google.thinking_config` 是另一条路，**这条更窄的路
+    （裸 reasoning_effort）文档也写了支持，就不引进第二种嵌套形状。**
+    """
+    return "gemini" in _model_id(model)
+
+
+def _gemini_forced_thinking(model: str) -> bool:
+    """Gemini 3 起思考关不掉；2.5 可以用 `reasoning_effort="none"` 关。
+
+    **认不出版本时按「关不掉」处理。** 发 low 最坏是慢一点、贵一点；
+    发 none 给一个关不掉的型号是 400——两种错的代价不对等。
+    """
+    m = re.search(r"gemini-(\d+)", _model_id(model))
+    return int(m.group(1)) >= 3 if m else True
+
+
 def _glm_forced_thinking(model: str) -> bool:
     """官方写明 thinking.type=disabled 会 400 的型号：仅 5.3 / 5.3-FLASH。
 
@@ -472,6 +494,13 @@ def thinking_wire(model: str, level: str) -> dict[str, Any]:
                 "off": "none", "low": "low", "medium": "medium", "high": "xhigh"
             }[lv]
         }
+    if _is_gemini(model):
+        # 兼容层的映射是 minimal/low→low、medium→medium、high→high，
+        # 四档里只有 off 需要我们自己决定：能关就关，关不掉就落到最低档
+        # （同 _glm_forced_thinking 那一支的处理）。
+        if lv == "off":
+            return {"reasoning_effort": "low" if _gemini_forced_thinking(model) else "none"}
+        return {"reasoning_effort": lv}
     glm = _is_glm(model)
     if lv == "off":
         if _glm_forced_thinking(model):

@@ -26,7 +26,7 @@ import pytest
 from pen import reasoning as reasoningmod
 from pen.config import LLMConfig
 from pen.session import PenSession
-from pen.tutor import stream_chat, thinking_on
+from pen.tutor import stream_chat, thinking_on, thinking_wire
 
 FAST = LLMConfig("https://fast.example/v1", "ck_x", "celeris-1-magnus", "t", "high")
 
@@ -163,3 +163,77 @@ def test_the_window_estimate_counts_it() -> None:
 )
 def test_thinking_on_follows_the_wire(model: str, level: str, want: bool) -> None:
     assert thinking_on(model, level) is want
+
+
+# ── Gemini：OpenAI 兼容层不认 extra_body.thinking ────────────────────
+#
+# 读者报的 400 原话：
+#   Invalid JSON payload received. Unknown name "thinking": Cannot find field.
+#
+# `extra_body` 里的键会被 SDK 摊到请求体**顶层**，于是 DeepSeek 那套
+# `{"thinking": {"type": "enabled"}}` 就成了 Google 眼里的未知字段。
+# Gemini 的兼容层自己认 reasoning_effort，所以裸发就够，不引进第二种嵌套。
+
+
+@pytest.mark.parametrize("lv", ["low", "medium", "high"])
+def test_gemini_never_gets_a_thinking_block(lv: str) -> None:
+    """**这条红了就是读者报的那个 400。**"""
+    wire = thinking_wire("gemini-3.8-flash", lv)
+    assert "extra_body" not in wire
+    assert wire == {"reasoning_effort": lv}
+
+
+def test_gemini_3_cannot_turn_thinking_off() -> None:
+    """文档：Gemini 3 「reasoning cannot be turned off」，none 只对 2.5 有效。
+
+    所以 UI 的 off 落到最低档——同 GLM-5.3 那一支的处理。
+    """
+    assert thinking_wire("gemini-3.8-flash", "off") == {"reasoning_effort": "low"}
+    assert thinking_on("gemini-3.8-flash", "off") is True
+
+
+def test_gemini_25_can() -> None:
+    assert thinking_wire("gemini-2.5-flash", "off") == {"reasoning_effort": "none"}
+    assert thinking_on("gemini-2.5-flash", "off") is False
+
+
+def test_an_unparseable_gemini_version_errs_toward_the_safe_side() -> None:
+    """两种错的代价不对等：发 low 最坏是慢一点，发 none 给关不掉的型号是 400。"""
+    assert thinking_wire("gemini-pro", "off") == {"reasoning_effort": "low"}
+
+
+@pytest.mark.parametrize("lv", ["off", "low", "medium", "high"])
+def test_the_gemini_branch_does_not_leak_into_the_others(lv: str) -> None:
+    """加一格不许动别人。DeepSeek / GLM / celeris 三家逐字不变。"""
+    assert thinking_wire("deepseek-v4", "high") == {
+        "reasoning_effort": "high",
+        "extra_body": {"thinking": {"type": "enabled"}},
+    }
+    assert thinking_wire("glm-5.3", "off") == {
+        "reasoning_effort": "low",
+        "extra_body": {"thinking": {"type": "enabled"}},
+    }
+    assert thinking_wire("celeris-1-magnus", "high") == {"reasoning_effort": "xhigh"}
+
+
+def test_no_model_sends_a_field_google_would_reject(monkeypatch, tmp_path) -> None:
+    """线上形状那一层再验一遍：真发出去的那一枪里没有顶层 `thinking`。
+
+    只验返回值不够——`extra_body` 是被 SDK 摊平的，而闸要看的是
+    「节点收到了什么」。
+    """
+    import openai
+    from pen.tests.test_fast_loop import _Recorder, _book
+
+    book = _book(tmp_path)
+    rec = _Recorder([("答完了。" * 20, [])])
+    monkeypatch.setattr(openai, "OpenAI", rec.client)
+    sess = PenSession(session_id="g" * 32, handbook_id="demo")
+    cfg = LLMConfig("http://x/v1", "sk", "gemini-3.8-flash", "t", "high")
+    list(
+        stream_chat(sess, book, "包", llm=cfg, extra_roots=[tmp_path], allow_env_fallback=False)
+    )
+    assert rec.shots, "至少得打出一枪"
+    for shot in rec.shots:
+        assert "thinking" not in shot
+        assert "thinking" not in (shot.get("extra_body") or {})
