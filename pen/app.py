@@ -385,7 +385,14 @@ def request_exit() -> None:
 
 @app.get("/v1/health")
 def health() -> dict[str, Any]:
-    return {"status": "ok", "version": __version__, "llm": llm_public_status()}
+    return {
+        "status": "ok",
+        "version": __version__,
+        "llm": llm_public_status(),
+        # 和 llm 平级而不是嵌在里面：前端的 LlmStatus 是个扁平类型，
+        # 嵌进去会让「基座配好没」和「快模型配好没」共用一个 ok 字段。
+        "fast": configmod.fast_public_status(),
+    }
 
 
 @app.post("/v1/shutdown")
@@ -409,6 +416,26 @@ def put_llm_key(body: ManagedKeyBody, lang: str = Depends(req_lang)) -> dict[str
 def delete_llm_key() -> dict[str, Any]:
     configmod.clear_managed_key()
     return llm_public_status()
+
+
+@app.put("/v1/llm/fast-key")
+def put_fast_key(body: ManagedKeyBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """快模型的钥匙。和基座那条同源同形，只是落在托管文件的另一个槽。
+
+    必须是独立通道：快模型在**另一台主机**上，而 merge 那条跨主机保护
+    （config._merge_over）见到「换了主机又没自带 key」会直接返回 None。
+    """
+    key = body.api_key.strip()
+    if not key:
+        raise HTTPException(400, msg("llm.empty_key", lang))
+    configmod.write_fast_key(key, (body.base_url or "").strip())
+    return configmod.fast_public_status()
+
+
+@app.delete("/v1/llm/fast-key")
+def delete_fast_key() -> dict[str, Any]:
+    configmod.clear_fast_key()
+    return configmod.fast_public_status()
 
 
 @app.post("/v1/maintenance/purge")

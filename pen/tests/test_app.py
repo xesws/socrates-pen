@@ -1904,3 +1904,62 @@ def test_a_custom_prompt_cannot_forge_the_compact_marker(monkeypatch) -> None:
     assert not any(
         SUMMARY_MARK in str(m.get("content") or "") for m in sess.messages
     ), "带内记号漏进了 messages，compact 会把这一轮当成摘要"
+
+
+# ── 快模型的钥匙端点（v0.22.0）──
+
+
+def test_fast_key_endpoints_roundtrip(monkeypatch) -> None:
+    """和基座那条同源同形，但落在另一个槽，且**互不误伤**。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    with TestClient(app) as client:
+        # 空钥匙 → 400，不落盘
+        assert client.put("/v1/llm/fast-key", json={"api_key": "  "}).status_code == 400
+        assert not (config.PEN_DIR / "llm.json").exists()
+
+        # 先配基座
+        client.put(
+            "/v1/llm/key",
+            json={"api_key": "sk-base-0987654321", "base_url": "https://api.deepseek.com"},
+        )
+        # 再配快模型：回的是快模型自己的摘要，且不含全文
+        r = client.put(
+            "/v1/llm/fast-key",
+            json={"api_key": "ck-fast-1234567890", "base_url": "https://fast.example/v1"},
+        )
+        assert r.status_code == 200
+        body = r.json()
+        assert body["ok"] is True
+        assert body["key_tail"] == "7890"
+        assert "ck-fast-1234567890" not in json.dumps(body)
+
+        # health 两格并列，都不露全文
+        h = client.get("/v1/health").json()
+        assert h["llm"]["ok"] is True and h["fast"]["ok"] is True
+        assert h["fast"]["base_url"] == "https://fast.example/v1"
+        raw = json.dumps(h)
+        assert "ck-fast-1234567890" not in raw and "sk-base-0987654321" not in raw
+
+        # 删快模型不带走基座
+        assert client.delete("/v1/llm/fast-key").json()["ok"] is False
+        h = client.get("/v1/health").json()
+        assert h["llm"]["ok"] is True, "删快模型把基座一起删了"
+        assert h["fast"]["ok"] is False
+
+
+def test_health_reports_fast_absent_without_a_key(monkeypatch) -> None:
+    """没配快模型时 health 如实说没有——开关照常能开，只是不生效。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    with TestClient(app) as client:
+        h = client.get("/v1/health").json()
+        assert h["fast"] == {
+            "ok": False,
+            "base_url": "",
+            "model": "",
+            "key_source": "",
+            "key_tail": "",
+        }

@@ -385,3 +385,102 @@ def test_isolated_pen_dir_is_not_pre_created() -> None:
 
     assert not config.PEN_DIR.exists()
     assert not config.LIBRARIES_DIR.exists()
+
+
+# ── Fast Mode 的第二个凭据槽（v0.22.0）──────────────────────────────
+
+
+def test_two_key_slots_do_not_clobber_each_other() -> None:
+    """基座和快模型住同一个文件里的两个槽，写一个不许抹另一个。
+
+    整份覆盖式的写法在这里是个静默数据丢失：读者在设置页填了快模型的钥匙，
+    基座的就没了，而他完全不知道自己按了什么。
+    """
+    config.write_managed_key("sk-base-1234567890", "https://api.deepseek.com")
+    config.write_fast_key("ck-fast-0987654321", "https://fast.example/v1")
+
+    assert config.read_managed_key() == {
+        "api_key": "sk-base-1234567890",
+        "base_url": "https://api.deepseek.com",
+    }
+    assert config.read_fast_key() == {
+        "api_key": "ck-fast-0987654321",
+        "base_url": "https://fast.example/v1",
+    }
+    # 反向再写一次基座，快模型那格仍在
+    config.write_managed_key("sk-base-changed-11", "https://api.deepseek.com")
+    assert config.read_fast_key()["api_key"] == "ck-fast-0987654321"
+
+
+def test_clearing_one_slot_keeps_the_other() -> None:
+    config.write_managed_key("sk-base-1234567890", "https://api.deepseek.com")
+    config.write_fast_key("ck-fast-0987654321", "https://fast.example/v1")
+
+    config.clear_fast_key()
+    assert config.read_fast_key() is None
+    assert config.read_managed_key() is not None, "清快模型把基座一起带走了"
+    assert config.managed_key_path().is_file(), "还有活槽就不该删文件"
+
+    config.clear_managed_key()
+    assert config.read_managed_key() is None
+    assert not config.managed_key_path().exists(), "两个槽都空了该把空壳删掉"
+
+
+def test_fast_slot_keeps_0600_and_leaves_no_plaintext_tmp() -> None:
+    """第二个槽走的是同一份落盘逻辑，权限和临时文件纪律必须一样。"""
+    config.write_fast_key("ck-fast-0987654321", "https://fast.example/v1")
+    path = config.managed_key_path()
+    assert (path.stat().st_mode & 0o777) == 0o600
+    assert list(config.PEN_DIR.glob("llm.json.*")) == []
+
+
+def test_fast_key_bad_file_is_none() -> None:
+    config.PEN_DIR.mkdir(parents=True, exist_ok=True)
+    config.managed_key_path().write_text("{not json", encoding="utf-8")
+    assert config.read_fast_key() is None
+    config.managed_key_path().write_text('{"fast_api_key": "  "}', encoding="utf-8")
+    assert config.read_fast_key() is None
+
+
+def test_unknown_slot_is_a_no_op_not_a_crash() -> None:
+    """槽名写错不许炸，也不许把文件写坏。"""
+    config.write_managed_key("sk-base-1234567890", "")
+    config.write_key_slot("没这个槽", "x", "y")
+    config.clear_key_slot("没这个槽")
+    assert config.read_key_slot("没这个槽") is None
+    assert config.read_managed_key()["api_key"] == "sk-base-1234567890"
+
+
+def test_resolve_fast_ignores_env(monkeypatch) -> None:
+    """快模型只认托管槽。它是个界面开关，没界面的场景压根不会打开它。"""
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-from-env-123456")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://env.example/v1")
+    assert config.resolve_fast_llm() is None
+    config.write_fast_key("ck-fast-0987654321", "")
+    got = config.resolve_fast_llm()
+    assert got is not None
+    assert got.api_key == "ck-fast-0987654321"
+    assert got.base_url == config.FAST_BASE, "没填 base_url 时该回落 FAST_BASE"
+    assert got.model == config.FAST_MODEL
+
+
+def test_fast_key_is_not_lent_across_hosts() -> None:
+    """跨主机保护对快模型这条路一样生效——两条路共用 _merge_over。"""
+    config.write_fast_key("ck-fast-0987654321", "https://fast.example/v1")
+    assert config.merge_fast_llm(base_url="https://fast.example/v1") is not None
+    assert config.merge_fast_llm(base_url="https://someone-else.example/v1") is None
+
+
+def test_merge_fast_returns_none_without_a_key() -> None:
+    """没配快模型的钥匙 → None。调用方据此退回基座，而不是报错。"""
+    assert config.merge_fast_llm() is None
+
+
+def test_fast_public_status_hides_the_key() -> None:
+    config.write_fast_key("ck-fast-0987654321", "https://fast.example/v1")
+    st = config.fast_public_status()
+    assert st["ok"] is True
+    assert st["key_tail"] == "4321"
+    assert "ck-fast-0987654321" not in str(st)
+    config.clear_fast_key()
+    assert config.fast_public_status()["ok"] is False

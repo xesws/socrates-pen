@@ -441,22 +441,29 @@ def managed_key_path() -> Path:
     return PEN_DIR / MANAGED_KEY_FILE
 
 
-def read_managed_key() -> dict[str, str] | None:
-    """读托管密钥文件。打不开 / 坏 JSON / 空 key 一律当没有——不炸设置页。"""
+# 托管文件里的两个**槽**。基座和快模型各占一对键，住同一个 0600 文件里。
+# 一个槽 = (api_key 的键名, base_url 的键名)。这张表是「文件里有哪些键」的
+# 唯一定义点——加第三个 provider 就在这儿加一行，别再开第三个文件。
+_KEY_SLOTS: dict[str, tuple[str, str]] = {
+    "base": ("api_key", "base_url"),
+    "fast": ("fast_api_key", "fast_base_url"),
+}
+
+
+def _read_key_file() -> dict[str, Any]:
+    """整个托管文件。打不开 / 坏 JSON / 不是对象一律当空——不炸设置页。"""
     try:
         data = json.loads(managed_key_path().read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return None
-    if not isinstance(data, dict):
-        return None
-    key = str(data.get("api_key") or "").strip()
-    if not key:
-        return None
-    return {"api_key": key, "base_url": str(data.get("base_url") or "").strip()}
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
-def write_managed_key(api_key: str, base_url: str = "") -> None:
-    """0600 落盘。先写临时文件再 rename：半截写不在正主位置留明文。"""
+def _write_key_file(data: dict[str, Any]) -> None:
+    """0600 落盘。先写临时文件再 rename：半截写不在正主位置留明文。
+
+    **全仓唯一的密钥落盘点。** 两个槽都从这儿走。
+    """
     path = managed_key_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -469,7 +476,7 @@ def write_managed_key(api_key: str, base_url: str = "") -> None:
     tmp = Path(tmpname)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump({"api_key": api_key, "base_url": base_url}, fh)
+            json.dump(data, fh)
         # O_CREAT 的 mode 会被 umask 削，显式补一刀；文件已存在时 mode 根本不吃 O_CREAT。
         os.chmod(tmp, 0o600)
         os.replace(tmp, path)
@@ -479,8 +486,79 @@ def write_managed_key(api_key: str, base_url: str = "") -> None:
         raise
 
 
+def read_key_slot(slot: str) -> dict[str, str] | None:
+    """读一个槽。空 key 当没有。"""
+    names = _KEY_SLOTS.get(slot)
+    if names is None:
+        return None
+    k_key, k_url = names
+    data = _read_key_file()
+    key = str(data.get(k_key) or "").strip()
+    if not key:
+        return None
+    return {"api_key": key, "base_url": str(data.get(k_url) or "").strip()}
+
+
+def write_key_slot(slot: str, api_key: str, base_url: str = "") -> None:
+    """写一个槽，**保住另一个槽**。
+
+    读-改-写而不是整份覆盖：两个槽住同一个文件，直接覆盖等于填了快模型的
+    钥匙就把基座的抹了。
+    """
+    names = _KEY_SLOTS.get(slot)
+    if names is None:
+        return
+    k_key, k_url = names
+    data = _read_key_file()
+    data[k_key] = api_key
+    data[k_url] = base_url
+    _write_key_file(data)
+
+
+def clear_key_slot(slot: str) -> None:
+    """清一个槽。**只清自己那两键**；两个槽都空了才把文件删掉。
+
+    直接 unlink 会把另一个槽一起带走——读者在设置页删掉快模型的钥匙，
+    基座的也没了，而他完全不知道自己按了什么。
+    """
+    names = _KEY_SLOTS.get(slot)
+    if names is None:
+        return
+    data = _read_key_file()
+    for name in names:
+        data.pop(name, None)
+    # 剩下的键里还有哪个槽是活的？都空了就整份删掉，别在盘上留个空壳。
+    alive = any(str(data.get(k) or "").strip() for k, _u in _KEY_SLOTS.values())
+    if alive:
+        _write_key_file(data)
+    else:
+        managed_key_path().unlink(missing_ok=True)
+
+
+def read_managed_key() -> dict[str, str] | None:
+    """基座那个槽。"""
+    return read_key_slot("base")
+
+
+def write_managed_key(api_key: str, base_url: str = "") -> None:
+    return write_key_slot("base", api_key, base_url)
+
+
 def clear_managed_key() -> None:
-    managed_key_path().unlink(missing_ok=True)
+    clear_key_slot("base")
+
+
+def read_fast_key() -> dict[str, str] | None:
+    """快模型那个槽。"""
+    return read_key_slot("fast")
+
+
+def write_fast_key(api_key: str, base_url: str = "") -> None:
+    return write_key_slot("fast", api_key, base_url)
+
+
+def clear_fast_key() -> None:
+    clear_key_slot("fast")
 
 
 def resolve_llm(env_file: Path | None = None) -> LLMConfig | None:
@@ -526,6 +604,47 @@ def _host_of(url: str) -> str:
     return urlparse(url).netloc.lower().rsplit("@", 1)[-1]
 
 
+def _merge_over(
+    resolved: LLMConfig | None,
+    *,
+    api_key: str | None,
+    base_url: str | None,
+    model: str | None,
+    thinking: str | None,
+    vision: bool | None,
+    default_base: str,
+    default_model: str,
+) -> LLMConfig | None:
+    """请求体覆盖 + 跨主机钥匙保护。**这条规则的唯一实现。**
+
+    基座和快模型各有自己的托管槽和默认值，但「钥匙不跨主机挪用」这一条对两者
+    是同一条。写两份的话，下次有人加固基座那份，快模型这份就是个洞。
+    """
+    req_key = (api_key or "").strip()
+    req_url = (base_url or "").strip()
+    if req_key:
+        key = req_key
+        source = "settings"
+    elif resolved and req_url and _host_of(req_url) != _host_of(resolved.base_url):
+        # 换主机却没自带 key → 不挪用已解析的钥匙，让设置页自己填那台的。
+        return None
+    elif resolved:
+        key = resolved.api_key
+        source = resolved.key_source
+    else:
+        return None
+    url = req_url or (resolved.base_url if resolved else default_base)
+    name = (model or "").strip() or (resolved.model if resolved else default_model)
+    return LLMConfig(
+        base_url=url,
+        api_key=key,
+        model=name,
+        key_source=source,
+        thinking=normalize_thinking(thinking),
+        vision=bool(vision),
+    )
+
+
 def merge_llm(
     *,
     api_key: str | None = None,
@@ -538,28 +657,58 @@ def merge_llm(
     """请求体非空字段优先，缺的回退 resolve_llm()（托管文件或 env）。两边都没有
     key → None。请求把 base_url 换到别的主机却没自带 key → 不挪用已解析的钥匙，
     返回 None，让设置页自己填那台主机的 key。"""
-    resolved = resolve_llm(env_file)
-    req_key = (api_key or "").strip()
-    req_url = (base_url or "").strip()
-    if req_key:
-        key = req_key
-        source = "settings"
-    elif resolved and req_url and _host_of(req_url) != _host_of(resolved.base_url):
+    return _merge_over(
+        resolve_llm(env_file),
+        api_key=api_key,
+        base_url=base_url,
+        model=model,
+        thinking=thinking,
+        vision=vision,
+        default_base=DEEPSEEK_BASE,
+        default_model=DEEPSEEK_MODEL,
+    )
+
+
+def resolve_fast_llm() -> LLMConfig | None:
+    """快模型的托管配置。**只认托管槽，不吃 env。**
+
+    基座那边留 env 后备是为了无 UI 场景（CI、脚本）。快模式是个界面开关，
+    没有界面的场景压根不会打开它——再开一组 FAST_* 环境变量只是多两个
+    没人读的名字。要它就在设置页填。
+    """
+    slot = read_fast_key()
+    if slot is None:
         return None
-    elif resolved:
-        key = resolved.api_key
-        source = resolved.key_source
-    else:
-        return None
-    url = req_url or (resolved.base_url if resolved else DEEPSEEK_BASE)
-    name = (model or "").strip() or (resolved.model if resolved else DEEPSEEK_MODEL)
     return LLMConfig(
-        base_url=url,
-        api_key=key,
-        model=name,
-        key_source=source,
-        thinking=normalize_thinking(thinking),
-        vision=bool(vision),
+        base_url=slot["base_url"] or FAST_BASE,
+        api_key=slot["api_key"],
+        model=FAST_MODEL,
+        key_source=MANAGED_KEY_SOURCE,
+        thinking="off",
+    )
+
+
+def merge_fast_llm(
+    *,
+    base_url: str | None = None,
+    model: str | None = None,
+    thinking: str | None = None,
+    vision: bool | None = None,
+) -> LLMConfig | None:
+    """快模型的请求体覆盖。**没有 api_key 参数**——钥匙只走托管槽。
+
+    对齐 v0.18.0 那条：密钥永远不随请求体上行（scripts/check-key.mjs 机械守着）。
+    基座那边的 merge_llm 还留着 api_key 入参是历史兼容，新的这条不再开这个口。
+    """
+    return _merge_over(
+        resolve_fast_llm(),
+        api_key=None,
+        base_url=base_url,
+        model=model,
+        thinking=thinking,
+        vision=vision,
+        default_base=FAST_BASE,
+        default_model=FAST_MODEL,
     )
 
 
@@ -568,6 +717,20 @@ def openai_config() -> tuple[str | None, str | None, str | None]:
     if cfg is None:
         return None, None, None
     return cfg.base_url, cfg.api_key, cfg.model
+
+
+def fast_public_status() -> dict[str, str | bool]:
+    """快模型的配置摘要，不含密钥。形状和 llm_public_status 一致，前端好复用。"""
+    cfg = resolve_fast_llm()
+    if cfg is None:
+        return {"ok": False, "base_url": "", "model": "", "key_source": "", "key_tail": ""}
+    return {
+        "ok": True,
+        "base_url": cfg.base_url,
+        "model": cfg.model,
+        "key_source": cfg.key_source,
+        "key_tail": cfg.api_key[-4:] if len(cfg.api_key) >= 12 else "",
+    }
 
 
 def llm_public_status() -> dict[str, str | bool]:
