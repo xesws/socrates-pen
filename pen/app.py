@@ -34,6 +34,7 @@ from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
 from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, reading_roots
 from pen.chips import CUSTOM_ID_RE, CustomChipSpec, normalize_custom_chip
+from pen.routing import route_for
 from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
 from pen.compact import CompactPending, compact_session, should_auto_compact
 from pen.tutor import (
@@ -93,9 +94,22 @@ class LlmOverrideBody(BaseModel):
     # 个字符串，读者该看到夹紧后的正常回复，不是一个红色 422。
     # merge_limits 只夹紧不报错，看不懂的当没给。
     limits: dict[str, Any] | None = None
+    # 快模型的端点与型号。**没有 fast_api_key**——密钥只走 PUT /v1/llm/fast-key，
+    # 永不随请求体上行（scripts/check-key.mjs 机械守着这条）。
+    fast_base_url: str | None = None
+    fast_model: str | None = None
 
     def merged_limits(self) -> configmod.RuntimeLimits:
         return configmod.merge_limits(self.limits)
+
+    def merged_fast(self) -> LLMConfig | None:
+        """快模型这一路的 cfg。没配钥匙就是 None，调用方据此退回基座。"""
+        return configmod.merge_fast_llm(
+            base_url=self.fast_base_url,
+            model=self.fast_model,
+            thinking=self.thinking,
+            vision=self.vision,
+        )
 
     def merged(self) -> LLMConfig | None:
         return merge_llm(
@@ -156,6 +170,10 @@ class ChatBody(LlmOverrideBody):
     # 恒由 chipPayload() 拼（src/customchips.ts），只有客户端坏了才发得出，
     # 和 images 收到 "oops" 是同一种 422，让它响是对的。
     custom_chip: dict[str, Any] | None = None
+    # 侧栏顶栏那个 Fast Mode 开关。默认 False：不开时请求体里连这个键都不出现，
+    # 老路逐字节一致。真正走不走快模型由 routing.route_for 定，这只是「读者
+    # 允许了」——没配快模型的钥匙时它会被 no-fast-key 挡回基座，不报错。
+    fast: bool = False
 
 
 class ProposeBody(LlmOverrideBody):
@@ -913,6 +931,18 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         # 自定义芯片。夹不出东西就是 None，下面整条退回按 chip id 查 CHIP_INTENT——
         # 旧插件不发这个字段走的也是这条路。
         custom = normalize_custom_chip(body.custom_chip)
+        # 路由。**放在这儿是因为信号到这一行才全部就位**：custom 刚算完
+        # （自定义泡泡的 writeback 只有它知道），而 stream_chat 还没开始。
+        # 判定本身是纯函数，零成本。
+        fast_cfg = body.merged_fast() if body.fast else None
+        route, _route_why = route_for(
+            fast_on=bool(body.fast),
+            has_fast_cfg=fast_cfg is not None,
+            chip=body.chip,
+            writeback=bool(custom and custom.writeback),
+            user_text=body.user_text,
+            custom_prompt=custom.prompt if custom else "",
+        )
         try:
             packet, anchor = build_user_packet(
                 idx,
@@ -984,6 +1014,8 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 user_text=body.user_text,
                 limits=body.merged_limits(),
                 images=chat_images,
+                route=route,
+                fast_llm=fast_cfg,
             ):
                 if ev.get("type") == "done":
                     has_sub = bool(ev.get("has_substantive"))

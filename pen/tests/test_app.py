@@ -1963,3 +1963,130 @@ def test_health_reports_fast_absent_without_a_key(monkeypatch) -> None:
             "key_source": "",
             "key_tail": "",
         }
+
+
+# ── Fast Mode 路由（v0.22.0）──
+
+
+def _fake_stream_capturing(seen: dict):
+    def fake_stream(sess, path, packet, llm=None, extra_roots=None, allow_env_fallback=True,
+                    lang="zh", **kw):
+        seen["llm"] = llm
+        seen["route"] = kw.get("route")
+        seen["fast_llm"] = kw.get("fast_llm")
+        yield {
+            "type": "done",
+            "usage": {"context_tokens": 1, "completion_tokens": 1, "prompt_tokens": 1},
+            "dynamic_chips": [],
+            "has_substantive": False,
+        }
+
+    return fake_stream
+
+
+def _with_both_keys(client) -> None:
+    client.put("/v1/llm/key", json={"api_key": "sk-base-0987654321",
+                                    "base_url": "https://api.deepseek.com"})
+    client.put("/v1/llm/fast-key", json={"api_key": "ck-fast-1234567890",
+                                         "base_url": "https://fast.example/v1"})
+
+
+@pytest.mark.parametrize(
+    "over,want_route",
+    [
+        # 只读芯片
+        ({"chip": "socratic"}, "fast"),
+        ({"chip": "explain_zero"}, "fast"),
+        ({"chip": "examples"}, "fast"),
+        # 动态追问 / 深挖题都发 chip="free" + 问题原文
+        ({"chip": "free", "user_text": "这段和前面第几拍讲的是同一件事吗？"}, "fast"),
+        # 天然写回芯片
+        ({"chip": "writeback"}, "base"),
+        # 读者手打的写入请求
+        ({"chip": "free", "user_text": "把刚才那段写回手册"}, "base"),
+        # 自定义写回泡泡
+        (
+            {
+                "chip": "u.a1b2c3",
+                "custom_chip": {"id": "u.a1b2c3", "label": "写回", "prompt": "做点什么",
+                                "writeback": True},
+            },
+            "base",
+        ),
+        # 自定义只读泡泡
+        (
+            {
+                "chip": "u.a1b2c3",
+                "custom_chip": {"id": "u.a1b2c3", "label": "举例", "prompt": "举两个例子",
+                                "writeback": False},
+            },
+            "fast",
+        ),
+    ],
+)
+def test_chat_routes_each_bubble(monkeypatch, over: dict, want_route: str) -> None:
+    """哪些气泡走快模型——端到端走一遍真的请求体。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        body = _chat_body(sid, _q1_line(), fast=True, **over)
+        assert client.post("/v1/chat", json=body).status_code == 200
+    assert seen["route"] == want_route
+    # 真正传下去的两份 cfg：llm 恒是基座，fast_llm 是快模型那份
+    assert seen["llm"].base_url == "https://api.deepseek.com"
+    assert seen["fast_llm"] is not None
+    assert seen["fast_llm"].base_url == "https://fast.example/v1"
+    assert seen["fast_llm"].model == config.FAST_MODEL
+
+
+def test_fast_without_a_key_falls_back_to_base(monkeypatch) -> None:
+    """开关开着但没配快模型的钥匙 → 走基座，不报错、不拦对话。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        client.put("/v1/llm/key", json={"api_key": "sk-base-0987654321",
+                                        "base_url": "https://api.deepseek.com"})
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        r = client.post("/v1/chat", json=_chat_body(sid, _q1_line(), fast=True))
+        assert r.status_code == 200
+    assert seen["route"] == "base"
+    assert seen["fast_llm"] is None
+
+
+def test_old_path_is_byte_identical_without_fast(monkeypatch) -> None:
+    """不带 fast 的请求：route 是 base、fast_llm 是 None，和 v0.21.1 一样。"""
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        client.post("/v1/chat", json=_chat_body(sid, _q1_line()))
+    assert seen["route"] == "base"
+    assert seen["fast_llm"] is None, "没开 Fast Mode 却把快模型的 cfg 传下去了"
+
+
+def test_approve_half_turn_never_goes_fast() -> None:
+    """审批后的后半轮必然执行 edit_file，恒走基座。
+
+    这是结构性保证：ApproveBody 上压根没有 fast 字段，resume_chat 也不收
+    route。加字段的人必须先看到这条断言。
+    """
+    import inspect
+
+    from pen.app import ApproveBody
+    from pen.tutor import resume_chat
+
+    assert "fast" not in ApproveBody.model_fields, "给 ApproveBody 加了 fast——后半轮会写盘"
+    params = inspect.signature(resume_chat).parameters
+    assert "route" not in params and "fast_llm" not in params

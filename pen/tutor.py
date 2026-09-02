@@ -526,7 +526,14 @@ def stream_chat(
     user_text: str = "",
     limits: RuntimeLimits | None = None,
     images: list[dict[str, str]] | None = None,
+    route: str = "base",
+    fast_llm: LLMConfig | None = None,
 ) -> Iterator[dict[str, Any]]:
+    """`llm` 恒是**基座**那份，`fast_llm` 是快模型那份，`route` 说这一轮从哪个起步。
+
+    两份都往下传而不是只传选中的那一份：`_agent_loop` 里那道 edit_file 绊线
+    要在半路换回基座，手里必须有基座的 cfg。
+    """
     # 请求换了主机却没带 key 时 merge_llm 会返回 None；不能再 or resolve_llm() 把 .env 钥匙挪用过去。
     cfg = llm if llm is not None else (resolve_llm() if allow_env_fallback else None)
     if cfg is None:
@@ -564,7 +571,13 @@ def stream_chat(
 
     ctx = _tool_ctx(session, original_path, read_roots(extra_roots), limits)
     ctx["user_text"] = user_text
-    yield from _agent_loop(session, ctx, cfg, lang)
+    # 快模型没配好（fast_llm 是 None）就当没开过 Fast Mode。这一格在 app.py
+    # 的 route_for 里已经判过一次（no-fast-key），这里是第二道保险：
+    # stream_chat 也被 test 直接调，不该假设调用方一定先跑过路由。
+    start_fast = route == "fast" and fast_llm is not None
+    yield from _agent_loop(
+        session, ctx, fast_llm if start_fast else cfg, lang, base_cfg=cfg, fast=start_fast
+    )
 
 
 def _agent_loop(
@@ -572,9 +585,18 @@ def _agent_loop(
     ctx: dict[str, Any],
     cfg: LLMConfig,
     lang: str = "zh",
+    *,
+    base_cfg: LLMConfig | None = None,
+    fast: bool = False,
 ) -> Iterator[dict[str, Any]]:
+    """`cfg` 是这一轮起步用的配置，`fast` 说它是不是快模型那份。
+
+    `base_cfg` 是**永远可用的那份**（基座）。快轮半路要写盘时靠它换回去。
+    """
     from openai import OpenAI, OpenAIError
 
+    # cfg / client 都不是常量：快轮撞上 edit_file 时会当场换成基座重绑。
+    # _create 是闭包，读的就是这两个名字，重新赋值下一枪就生效。
     client = OpenAI(base_url=cfg.base_url, api_key=cfg.api_key, timeout=120.0)
     tools = schemas()
     # usage 是「最后一枪」的快照（此刻窗口占多大），meter 是累加器（一共花了多少）。
