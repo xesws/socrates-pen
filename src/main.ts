@@ -228,6 +228,17 @@ export default class SocratesPenPlugin extends Plugin {
     delete (this.settings as PenSettings & { apiKey?: string }).apiKey;
     this.settings.thinking = coerceThinking(this.settings.thinking);
     this.settings.vision = this.settings.vision === true;
+    // 三格快模型配置。**开关默认关**：没配钥匙时开着也只是不生效，
+    // 但默认打开等于替读者做了一个「这一轮由小模型执笔」的决定。
+    this.settings.fastMode = this.settings.fastMode === true;
+    this.settings.fastBaseUrl =
+      typeof this.settings.fastBaseUrl === "string"
+        ? this.settings.fastBaseUrl.trim().replace(/\/+$/, "") || DEFAULT_SETTINGS.fastBaseUrl
+        : DEFAULT_SETTINGS.fastBaseUrl;
+    this.settings.fastModel =
+      typeof this.settings.fastModel === "string"
+        ? this.settings.fastModel.trim() || DEFAULT_SETTINGS.fastModel
+        : DEFAULT_SETTINGS.fastModel;
     this.settings.lang = coerceLangPref(this.settings.lang);
     this.settings.sidecarAutoStart = this.settings.sidecarAutoStart !== false;
     this.settings.sidecarKeepAlive = this.settings.sidecarKeepAlive !== false;
@@ -363,6 +374,30 @@ export default class SocratesPenPlugin extends Plugin {
     });
     this.putChain = run.catch(() => {});
     return run;
+  }
+
+  /** 快模型钥匙的 PUT。走**同一条** putChain：和基座那把串行，谁也盖不掉谁。
+   *
+   * 两把钥匙落在同一个 llm.json 的两个槽里，后端是读-改-写。并发 PUT 会让
+   * 后写的那次拿着旧内容覆盖——串起来就没有这条缝。 */
+  sidecarPutFastKey(key: string, baseUrl: string): Promise<LlmStatus | null> {
+    const run = this.putChain.then(async () =>
+      makeApi(this.settings.sidecarUrl).putFastKey(key, baseUrl),
+    );
+    this.putChain = run.catch(() => {});
+    return run;
+  }
+
+  /** 顶栏那枚 Fast Mode 开关的同步口。
+   *
+   * 和 refreshPenViews 分开的理由同 refreshChips：那个走 probeHealth()，是一次
+   * 网络往返。为了刷一个 class 打一发 /v1/health 不值当，而读者完全可能是在
+   * 流式期间去设置页改的。 */
+  refreshFast(): void {
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN)) {
+      const view = leaf.view;
+      if (view instanceof PenView) view.onFastModeChanged();
+    }
   }
 
   /** 设置页改完自定义泡泡之后叫醒所有打开的面板重画那排按钮。

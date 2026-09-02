@@ -68,6 +68,7 @@ type Els = {
   compact: HTMLButtonElement;
   undo: HTMLButtonElement;
   redo: HTMLButtonElement;
+  fast: HTMLButtonElement;
   thumbs: HTMLElement;
 };
 
@@ -317,6 +318,10 @@ export class PenView extends ItemView {
     setIcon(undo, "undo-2");
     const redo = tools.createEl("button", { cls: "sp-icon" });
     setIcon(redo, "redo-2");
+    // Fast Mode。**仓里视图内没有 toggle 先例**，所以沿用这排 sp-icon 的形状，
+    // 靠 .is-on 表示开着——不是新造一种控件，而是让它和旁边四枚同呼吸。
+    const fast = tools.createEl("button", { cls: "sp-icon sp-fast" });
+    setIcon(fast, "zap");
 
     const alert = root.createDiv({ cls: "sp-alert is-off" });
     const log = root.createDiv({ cls: "sp-log" });
@@ -339,7 +344,7 @@ export class PenView extends ItemView {
 
     this.els = {
       dot, brandSub, alert, log, panel,
-      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo, thumbs,
+      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo, fast, thumbs,
     };
 
     // 事件只绑一次。pick 用 bindKeepFocus：pointerdown 阶段就取选区，
@@ -354,6 +359,7 @@ export class PenView extends ItemView {
     compact.onclick = () => void this.compactSession();
     undo.onclick = () => void this.doRollback();
     redo.onclick = () => void this.doRedo();
+    fast.onclick = () => void this.toggleFastMode();
     input.placeholder = t().askPlaceholder;
     ask.onclick = () => this.submitAsk();
     input.addEventListener("keydown", (ev: KeyboardEvent) => {
@@ -376,6 +382,7 @@ export class PenView extends ItemView {
     this.paintQuote();
     this.paintChips();
     this.paintPanel();
+    this.paintFast();
     this.paintThumbs();
     this.setPlaceholder();
     this.setStatus();
@@ -587,6 +594,65 @@ export class PenView extends ItemView {
    *  只重画芯片那一条，**不碰 renderShell / paintBar**：读者很可能是在流式
    *  或审批面板开着的时候去设置页改的，整条底座重建会把审批面板的滚动位置
    *  归零，还会打断正在写的那个气泡。 */
+  /** 上一轮窗口闸压掉了哪几档。**只活在内存、只活到下一轮**——
+   *  快模式的压缩压的是副本，没有任何持久后果，落盘就等于把它说成了折叠。 */
+  private fastTrim: string[] = [];
+
+  /** 顶栏那枚开关。只翻 class 和提示，不碰别的——读者可能正在流式中途点它。 */
+  private paintFast(): void {
+    const e = this.els;
+    if (!e) return;
+    const on = this.plugin.settings.fastMode === true;
+    e.fast.classList.toggle("is-on", on);
+    e.fast.classList.toggle("is-trim", on && this.fastTrim.length > 0);
+    setTooltip(
+      e.fast,
+      !on
+        ? t().tipFastOff
+        : this.fastTrim.length
+          ? t().tipFastTrimmed(this.fastTrim.join(" → "))
+          : t().tipFastOn,
+    );
+  }
+
+  /** 设置页改完快模型配置之后叫醒开着的面板。 */
+  onFastModeChanged(): void {
+    this.paintFast();
+  }
+
+  private async toggleFastMode(): Promise<void> {
+    const next = this.plugin.settings.fastMode !== true;
+    this.plugin.settings.fastMode = next;
+    this.fastTrim = [];
+    this.paintFast();
+    this.plugin.saveSettingsSoon();
+    // 别的面板也得跟着翻——这是一个全局设置，不是每个面板各一份。
+    this.plugin.refreshFast();
+    if (!next) return;
+    // 开着但没配钥匙时后端会静默走基座（route_for 的 no-fast-key）。
+    // **不做成硬错误**，但要当场说破，别让读者对着一枚亮着的开关猜为什么不快。
+    try {
+      const h = await makeApi(this.plugin.settings.sidecarUrl).health();
+      if (!h.fast?.ok) new Notice(t().noticeFastNoKey);
+    } catch {
+      /* sidecar 没起：顶栏那颗点已经在说这件事了，不再叠一条 */
+    }
+  }
+
+  /** 快轮半路换回基座时插一条说明。
+   *
+   * **不能不说。** 读者点亮了 Fast Mode，然后气泡在半路被清空重来——
+   * 不解释的话那看起来就是个 bug。 */
+  private insertRouteNote(why: string): void {
+    const note: ChatMessage = {
+      role: "note",
+      kind: "route",
+      text: why === "context-too-big" ? t().noteRouteTooBig : t().noteRouteEdit,
+    };
+    this.msgs = [...this.msgs.slice(0, -1), note, ...this.msgs.slice(-1)];
+    void this.paintLog("force");
+  }
+
   onCustomChipsChanged(): void {
     this.chipsSig = ""; // 作废签名缓存，强制重建
     this.paintChips();
@@ -761,7 +827,12 @@ export class PenView extends ItemView {
           if (g !== this.paintGen || !this.els) break;
           if (m.role === "note") {
             const turn = log.createDiv({ cls: "sp-turn is-note" });
-            turn.createDiv({ cls: "sp-kicker", text: t().kickerCompact });
+            // 两种 note 说的不是一件事：compact 是「会话真被折了」，
+            // route 是「这一轮换了模型」。共用一个抬头就会把后者说成前者。
+            turn.createDiv({
+              cls: "sp-kicker",
+              text: m.kind === "route" ? t().kickerRoute : t().kickerCompact,
+            });
             turn.createDiv({
               cls: "sp-body",
               text: m.kind === "compact" || !m.text ? t().compactMarker : m.text,
@@ -1506,6 +1577,8 @@ export class PenView extends ItemView {
     this.usage = null;
     // 本轮从零数起。**this.spend 不清**——那是会话累计，清了第三格就每轮归零。
     this.turnTokens = 0;
+    // 上一轮压了什么，跟这一轮没关系。
+    this.fastTrim = [];
     this.status = phaseText("thinking", "");
     // 这一轮点的是不是读者自己的泡泡。查一次，下面显示文案和请求体都用它。
     const myChip = this.myChips().find((c) => c.id === chip);
@@ -1548,6 +1621,22 @@ export class PenView extends ItemView {
             this.setStatus();
           } else if (ev.type === "compacted") {
             this.insertCompactNote();
+          } else if (ev.type === "trimmed") {
+            // **和 compacted 不是一回事。** 这个只说「这一枪发出去之前压了
+            // 副本」，会话一个字没动，所以不往日志里插永久提示，只挂在
+            // 顶栏那枚开关的提示上，读者想知道时看得见。
+            const steps = Array.isArray(ev.steps) ? ev.steps.map(String) : [];
+            this.fastTrim = steps;
+            this.paintFast();
+          } else if (ev.type === "route") {
+            // 快模型半路要动原文，已经换回基座重打一枪。**必须清空气泡**：
+            // 不清的话快模型开口那半句会和基座接下来整段叠在一起，
+            // 读者看到的是两个人在说话。
+            acc = "";
+            const last = this.msgs[this.msgs.length - 1];
+            if (last?.role === "assistant") last.text = "";
+            this.thinkChars = 0;
+            this.insertRouteNote(String(ev.why || ""));
           } else if (ev.type === "think") {
             this.thinkChars = Number(ev.chars) || 0;
             this.setStatus();

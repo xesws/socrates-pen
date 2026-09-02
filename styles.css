@@ -107,6 +107,26 @@
   opacity: 0.35;
 }
 
+/* Fast Mode。**用 transition 而不是 animation**：加了 @keyframes 就得同步
+   在 prefers-reduced-motion 那块里关掉它（check-css.mjs 第 3 条闸），
+   而这枚开关根本不需要持续动画——它只是从灰变亮。 */
+.socrates-pen button.sp-fast {
+  transition: color 120ms ease;
+}
+
+.socrates-pen button.sp-fast.is-on {
+  color: var(--text-accent);
+}
+
+.socrates-pen button.sp-fast.is-on:hover:not(:disabled) {
+  color: var(--text-accent-hover);
+}
+
+/* 这一轮压过上下文。比 is-on 再退半档，说的是「开着，而且刚才削了点东西」。 */
+.socrates-pen button.sp-fast.is-trim {
+  color: var(--text-warning);
+}
+
 .socrates-pen button.sp-icon .svg-icon {
   width: 15px;
   height: 15px;

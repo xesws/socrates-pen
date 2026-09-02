@@ -61,6 +61,10 @@ const LIMIT_TEXT_ZH: Record<string, [string, string]> = {
     "0 = 不自动折（命令面板仍可手动折）。到了就在下一轮开场把旧回合收成带行号的摘要，侧栏旧气泡还在。这不是花钱硬上限，也不是丢掉旧回合。",
   ],
   max_tool_rounds: ["苏格拉底一轮最多翻几次书", "翻本册不额外收费，跨教材另有下面两道闸。"],
+  fast_context_tokens: [
+    "Fast Mode 给快模型的上下文上限",
+    "只在 Fast Mode 开着时生效。快模型的窗口是输入加输出合计 131072，扣掉输出后输入最多 114688；超了会被节点当场拒掉，所以这里默认留出余量。压不下去时这一轮自动退回基座模型，对话不会断。0 = 不压（不建议）。",
+  ],
   cross_book_chars: ["一轮里翻别的教材的字符预算", "读当前这本不计，本职阅读一次都不受影响。"],
   cross_book_reads: ["一轮里翻别的教材的次数上限", "光封字节封不住：模型每次只读一行时，字节预算永远用不完。"],
   probe_max_per_session: ["每场对话最多深挖几次", "挡不住「开一堆新会话」，那靠上面的每小时配额。"],
@@ -101,6 +105,14 @@ export const zh = {
   tipCompact: "把更早的回合折进摘要。侧栏旧气泡还在，下次请求不再带全文。",
   compactMarker: "上面几轮已经折进摘要",
   kickerCompact: "摘要",
+  tipFastOff: "Fast Mode 关着。开了之后，只问不改的那些轮次交给快模型答。",
+  tipFastOn: "Fast Mode 开着：只读的轮次走快模型。要改原文时自动换回基座模型。",
+  tipFastTrimmed: (steps: string): string =>
+    `Fast Mode 开着。这一轮上下文超了快模型的窗口，已经压过：${steps}。会话本身没有被折。`,
+  kickerRoute: "换模型",
+  noteRouteEdit: "这一轮要动原文，已经换回基座模型重答。上面那半句是快模型说的，不算数。",
+  noteRouteTooBig: "这一轮的上下文压不进快模型的窗口，已经换回基座模型重答。",
+  noticeFastNoKey: "Fast Mode 已打开，但还没填快模型的 API Key，所以暂时还是走基座模型。到设置里补上就生效。",
   noticeCompactEmpty: "还没有可折的对话",
   noticeCompactPending: "有一次编辑在等你审批，先点允许或拒绝，再折摘要。",
   noticeCompactBusy: "这场对话还在跑，先等它结束。",
@@ -365,6 +377,21 @@ export const zh = {
   setVisionDesc:
     "打开后可在对话框粘贴或拖入图片。DeepSeek 文本模型请关；GLM / Qwen 等多模态再开。关着时贴图会直接报错，不会把图发出去。",
   setThinkingDesc: "off 最低，high 是该节点顶档。不支持思考的节点请保持 off。",
+  // ── Fast Mode（v0.22.0）──
+  setSecFast: "Fast Mode",
+  setFastDesc:
+    "只问不改的轮次交给一个更快的模型答，要动原文时自动换回上面那个基座模型。" +
+    "开关在侧栏右上角那枚闪电。这里填快模型的节点、型号和钥匙；不填也不报错，只是开关点了不生效。" +
+    "快模型的上下文窗口小得多，开着时会自动压缩上下文——压缩只影响发给它的那一份，你的会话不会被折。",
+  setFastBaseUrlDesc: "快模型的 Chat Completions 兼容地址，不要带尾斜杠。",
+  setFastModelName: "快模型名",
+  setFastModelDesc: "快模型节点上的 model 字符串。",
+  setFastKeyName: "快模型 API Key",
+  setFastKeyDesc:
+    "和上面那把一样只写不读，存进本机 sidecar，不落这个库。快模型通常在另一台主机上，所以必须单独填一把——基座那把不会被挪用过去。",
+  setFastKeyStatusNone: "尚未保存快模型钥匙。",
+  noticeFastKeySaved: "快模型钥匙已存入本机 sidecar，不进这个库。",
+  noticeFastKeyCleared: "快模型钥匙已清除。",
   setThinkingOff: "off（默认）",
   deepQuotaSpent: "深挖已用满",
   setDeepName: "后台深挖",

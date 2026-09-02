@@ -136,6 +136,9 @@ export type Health = {
   status: string;
   version?: string;
   llm: LlmStatus;
+  /** 快模型那一槽。**形状和 llm 完全一样**（后端 fast_public_status 就是照它
+   *  写的），所以不另立类型。旧 sidecar 没有这个键，故可选。 */
+  fast?: LlmStatus;
 };
 
 export type NoteBinding = {

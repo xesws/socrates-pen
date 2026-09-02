@@ -34,6 +34,11 @@ export interface PenSettings {
   thinking: ThinkingLevel;
   /** 对话框可贴图。默认关：DeepSeek 文本模型没有视觉。 */
   vision: boolean;
+  /** Fast Mode：只读轮走快模型。默认关，开关在侧栏顶栏。 */
+  fastMode: boolean;
+  /** 快模型的节点与型号。钥匙**不在这儿**——它走 PUT /v1/llm/fast-key。 */
+  fastBaseUrl: string;
+  fastModel: string;
   /** 后台深挖。关掉时前端不轮询，且请求带 deep:false 让后端也不起线程。 */
   deepQuestions: boolean;
   /** 花销与频率的旋钮。键名用 snake_case，见 LIMIT_SPEC 的注释。 */
@@ -67,6 +72,9 @@ export const LIMIT_SPEC = {
   compact_chat_tokens: { def: 32000, min: 0, max: 500000, step: 1000 },
   // ── 高级 ──
   max_tool_rounds: { def: 100, min: 1, max: 200 },
+  // 131072 是 input + output **合计**，供应商请求时硬拒；扣掉 16384 的输出
+  // 才是输入的物理顶（114688）。默认 90000 留 24.7K 余量。
+  fast_context_tokens: { def: 90000, min: 0, max: 114688, step: 1000 },
   cross_book_chars: { def: 24000, min: 0, max: 400000, step: 1000 },
   cross_book_reads: { def: 8, min: 0, max: 100 },
   probe_max_per_session: { def: 8, min: 0, max: 200 },
@@ -148,6 +156,9 @@ export const DEFAULT_SETTINGS: PenSettings = {
   model: "deepseek-v4-flash",
   thinking: "off",
   vision: false,
+  fastMode: false,
+  fastBaseUrl: "https://inference.celeris.ai/celeris-1-magnus/v1",
+  fastModel: "celeris-1-magnus",
   deepQuestions: true,
   limits: coerceLimits({}),
   customChips: [],
@@ -167,13 +178,26 @@ export function llmPayload(s: PenSettings): {
   model?: string;
   thinking: ThinkingLevel;
   vision: boolean;
+  fast_base_url?: string;
+  fast_model?: string;
 } {
   const base = s.baseUrl.trim().replace(/\/+$/, "");
+  // 快模型这两格和上面两格同形：只发节点和型号，**钥匙一个字都不上行**。
+  // 它走 PUT /v1/llm/fast-key 落在 sidecar 家目录，和基座那把同一套家法。
+  //
+  // **开关关着就一个字都不发。** 后端确实只在 body.fast 为真时才读这两格，
+  // 所以发了也无害；但「关掉 Fast Mode 之后请求体与 v0.21.1 逐字节一致」
+  // 是这一版对老路的承诺，多两个键就不叫逐字节了。
+  const on = s.fastMode === true;
+  const fastBase = on ? (s.fastBaseUrl || "").trim().replace(/\/+$/, "") : "";
+  const fastModel = on ? (s.fastModel || "").trim() : "";
   return {
     ...(base ? { base_url: base } : {}),
     ...(s.model.trim() ? { model: s.model.trim() } : {}),
     thinking: coerceThinking(s.thinking),
     vision: s.vision === true,
+    ...(fastBase ? { fast_base_url: fastBase } : {}),
+    ...(fastModel ? { fast_model: fastModel } : {}),
   };
 }
 
@@ -256,6 +280,11 @@ type PenHost = {
   refreshPenViews: () => void;
   /** 设置页改完自定义泡泡后叫醒侧栏那排按钮。 */
   refreshChips: () => void;
+  /** 顶栏那枚 Fast Mode 开关的同步口。**不复用 refreshPenViews**——
+   *  那个会顺带再打一次 /v1/health，为了刷一个 class 不值当。 */
+  refreshFast: () => void;
+  /** 快模型钥匙的 PUT 单通道，与基座那把同形、同串行。 */
+  sidecarPutFastKey: (key: string, baseUrl: string) => Promise<LlmStatus | null>;
 };
 
 export class PenSettingTab extends PluginSettingTab {
@@ -285,6 +314,120 @@ export class PenSettingTab extends PluginSettingTab {
     } catch {
       el.setText(t().setKeyStatusUnreachable);
     }
+  }
+
+  /** 快模型钥匙的状态。事实同样只在 sidecar，vault 里没有副本。 */
+  private async paintFastKeyStatus(el: HTMLElement): Promise<void> {
+    try {
+      const h = await makeApi(this.plugin.settings.sidecarUrl).health();
+      // 旧 sidecar 压根没有 fast 这一格 —— 当成没配，不当成出错。
+      el.setText(
+        h.fast?.ok
+          ? t().setKeyStatusSaved(h.fast.key_source, h.fast.key_tail || "")
+          : t().setFastKeyStatusNone,
+      );
+    } catch {
+      el.setText(t().setKeyStatusUnreachable);
+    }
+  }
+
+  /**
+   * Fast Mode 那一节：节点 / 型号 / 钥匙。
+   *
+   * **钥匙那一格和基座那格的家法完全一样**：只写不读、走插件的 PUT 单通道
+   * （和基座那把串行，两把钥匙落在同一个 llm.json 的两个槽里，并发写会互相
+   * 覆盖）、失败就留在框里绝不回退写 data.json。
+   */
+  private fastSection(root: HTMLElement): void {
+    const s = t();
+    new Setting(root).setName(s.setSecFast).setHeading();
+    root.createEl("p", { cls: "setting-item-description", text: s.setFastDesc });
+
+    new Setting(root)
+      .setName("Fast Base URL")
+      .setDesc(s.setFastBaseUrlDesc)
+      .addText((c) =>
+        c
+          .setPlaceholder(DEFAULT_SETTINGS.fastBaseUrl)
+          .setValue(this.plugin.settings.fastBaseUrl)
+          .onChange((v) => {
+            this.plugin.settings.fastBaseUrl = v.trim().replace(/\/+$/, "");
+            if (this.plugin.settings.fastBaseUrl) this.plugin.saveSettingsSoon();
+          }),
+      );
+
+    new Setting(root)
+      .setName(s.setFastModelName)
+      .setDesc(s.setFastModelDesc)
+      .addText((c) =>
+        c
+          .setPlaceholder(DEFAULT_SETTINGS.fastModel)
+          .setValue(this.plugin.settings.fastModel)
+          .onChange((v) => {
+            this.plugin.settings.fastModel = v.trim() || DEFAULT_SETTINGS.fastModel;
+            this.plugin.saveSettingsSoon();
+          }),
+      );
+
+    const statusEl = root.createEl("p", { cls: "setting-item-description" });
+    void this.paintFastKeyStatus(statusEl);
+    let submit = (): void => {};
+    new Setting(root)
+      .setName(s.setFastKeyName)
+      .setDesc(s.setFastKeyDesc)
+      .addText((c) => {
+        c.inputEl.type = "password";
+        c.inputEl.autocomplete = "off";
+        c.setPlaceholder("ck-…").setValue("");
+        submit = () => {
+          const v = c.getValue().trim();
+          if (!v) return; // 清空输入 ≠ 清钥匙；要清点旁边的按钮
+          if (this.plugin.sidecarSnap().phase !== "running") {
+            new Notice(
+              this.plugin.sidecarSnap().phase === "stale"
+                ? t().noticeKeySaveOldSidecar
+                : t().noticeSidecarDown,
+            );
+            return;
+          }
+          void this.plugin
+            .sidecarPutFastKey(v, this.plugin.settings.fastBaseUrl)
+            .then((st) => {
+              if (!st) return;
+              c.setValue("");
+              new Notice(t().noticeFastKeySaved);
+              this.plugin.refreshFast();
+              void this.paintFastKeyStatus(statusEl);
+            })
+            .catch((e: unknown) => {
+              const status = e instanceof ApiError ? e.status : 0;
+              if (status === 404 || status === 405) {
+                new Notice(t().noticeKeySaveOldSidecar);
+                return;
+              }
+              new Notice(t().noticeKeySaveFailed(e instanceof Error ? e.message : String(e)));
+            });
+        };
+        c.inputEl.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") {
+            ev.preventDefault();
+            submit();
+          }
+        });
+      })
+      .addButton((b) => b.setButtonText(s.setKeySave).onClick(() => submit()))
+      .addButton((b) =>
+        b.setButtonText(s.setKeyClear).onClick(() => {
+          void makeApi(this.plugin.settings.sidecarUrl)
+            .deleteFastKey()
+            .then(() => {
+              new Notice(t().noticeFastKeyCleared);
+              this.plugin.refreshFast();
+              void this.paintFastKeyStatus(statusEl);
+            })
+            .catch(() => new Notice(t().noticeSidecarDown));
+        }),
+      );
   }
 
   /** 钥匙按主机落锁（merge_llm 的「不跨主机挪用」）。刚存的这把要是和设置页
@@ -843,6 +986,8 @@ export class PenSettingTab extends PluginSettingTab {
             this.plugin.saveSettingsSoon();
           });
       });
+
+    this.fastSection(containerEl);
 
     new Setting(containerEl)
       .setName(s.setDeepName)

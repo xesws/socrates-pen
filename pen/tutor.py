@@ -790,8 +790,12 @@ def _agent_loop(
         if plan.steps != told:
             told = list(plan.steps)
             if plan.steps:
+                # **不叫 compacted。** 那个名字已经被 app.py:992 占了，
+                # 意思是「会话真的被折了」（破坏性、不可逆，前端会往日志里
+                # 插一条永久提示）。快轮压的是副本，会话一个字没动——
+                # 共用一个事件名就是对读者说谎。
                 yield {
-                    "type": "compacted",
+                    "type": "trimmed",
                     "steps": list(plan.steps),
                     "est": plan.est_tokens,
                 }

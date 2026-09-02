@@ -314,7 +314,11 @@ def test_the_window_gate_compacts_the_shot_not_the_session(monkeypatch, tmp_path
 
 
 def test_the_window_gate_tells_the_reader_what_it_dropped(monkeypatch, tmp_path) -> None:
-    """压了什么要报出来，而且同一档只报一次。"""
+    """压了什么要报出来，而且同一档只报一次。
+
+    **事件名不是 compacted。** 那个名字是「会话真被折了」的意思
+    （app.py 的自动折叠），快轮压的是副本，混用就是骗读者。
+    """
     book = _book(tmp_path)
     sess, book, rec, events = _run(
         monkeypatch,
@@ -323,7 +327,7 @@ def test_the_window_gate_tells_the_reader_what_it_dropped(monkeypatch, tmp_path)
         limits=replace(default_limits(), fast_context_tokens=8000),
         seed_turns=6,
     )
-    told = [e for e in events if e.get("type") == "compacted"]
+    told = [e for e in events if e.get("type") == "trimmed"]
     assert told, "压过就得让读者看见"
     assert all(e["steps"] for e in told), "空档位不该报"
     seq = [e["steps"] for e in told]
@@ -344,7 +348,7 @@ def test_a_roomy_budget_costs_nothing(monkeypatch, tmp_path) -> None:
         limits=replace(default_limits(), fast_context_tokens=90000),
         seed_turns=6,
     )
-    assert [e for e in events if e.get("type") == "compacted"] == []
+    assert [e for e in events if e.get("type") == "trimmed"] == []
     assert _routes(events) == []
     assert rec.shots[-1]["messages"] is sess.messages, "没超预算就该直接发那张表本身"
 
@@ -383,7 +387,7 @@ def test_a_base_turn_is_sent_byte_for_byte_unchanged(monkeypatch, tmp_path) -> N
         route="base",
     )
     assert _routes(events) == []
-    assert [e for e in events if e.get("type") == "compacted"] == []
+    assert [e for e in events if e.get("type") == "trimmed"] == []
     assert rec.shots[-1]["messages"] is sess.messages, "基座该直接发那张表本身，不是副本"
 
 

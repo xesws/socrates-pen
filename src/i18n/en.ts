@@ -43,6 +43,10 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
     "0 = don't auto-fold (the command palette can still fold by hand). When the last prompt hits this many tokens, the next turn starts by folding older rounds into a summary with line anchors; the sidebar bubbles stay. This is not a spend cap, and it does not drop old turns.",
   ],
   max_tool_rounds: ["Tool calls per answer", "Reading this handbook is free; other textbooks have the two gates below."],
+  fast_context_tokens: [
+    "Context cap for the fast model",
+    "Only applies while Fast Mode is on. The fast model's window is 131072 for input and output combined, leaving at most 114688 for input; going over is rejected outright by the provider, so this default keeps some headroom. If it still will not fit, that turn falls back to the base model and the conversation carries on. 0 = no compression (not recommended).",
+  ],
   cross_book_chars: ["Character budget for other textbooks", "Reading this handbook doesn't count — normal reading is never affected."],
   cross_book_reads: ["Read count for other textbooks", "A byte budget alone can't cap this: reading one line at a time never exhausts it."],
   probe_max_per_session: ["Deep digs per conversation", "Doesn't stop «open lots of new sessions» — the hourly quota does."],
@@ -79,6 +83,14 @@ export const en: Dict = {
   tipCompact: "Fold earlier turns into a summary. Sidebar bubbles stay; the next request will not resend the full text.",
   compactMarker: "Earlier turns folded into the summary",
   kickerCompact: "Summary",
+  tipFastOff: "Fast Mode is off. Turn it on and read-only turns get answered by the fast model.",
+  tipFastOn: "Fast Mode is on: read-only turns run on the fast model. Turns that rewrite your note switch back to the base model.",
+  tipFastTrimmed: (steps: string): string =>
+    `Fast Mode is on. This turn's context did not fit the fast model's window, so it was trimmed: ${steps}. Your session itself was not folded.`,
+  kickerRoute: "Model switch",
+  noteRouteEdit: "This turn wants to rewrite your note, so it was handed back to the base model. Ignore the half-sentence above — that was the fast model.",
+  noteRouteTooBig: "This turn's context would not fit the fast model's window, so it was handed back to the base model.",
+  noticeFastNoKey: "Fast Mode is on, but there is no API key for the fast model yet, so turns still run on the base model. Add one in settings.",
   noticeCompactEmpty: "Nothing to fold yet",
   noticeCompactPending: "Allow or reject the pending edit first, then compact.",
   noticeCompactBusy: "This conversation is still running — let it finish first.",
@@ -312,6 +324,20 @@ export const en: Dict = {
   setVisionName: "Image understanding",
   setVisionDesc:
     "When on, you can paste or drop images in the chat box. Leave it off for text-only models like DeepSeek. Turn it on for multimodal GLM / Qwen. Pasting while off errors immediately — the image is not sent.",
+  setSecFast: "Fast Mode",
+  setFastDesc:
+    "Turns that only ask get answered by a faster model; turns that rewrite your note switch back to the base model above. " +
+    "The toggle is the lightning bolt at the top right of the sidebar. Fill in the fast model's endpoint, name and key here; leaving them empty is not an error, the toggle just will not do anything. " +
+    "The fast model has a much smaller context window, so Fast Mode compresses context automatically — that only affects the copy sent to it, your session is never folded.",
+  setFastBaseUrlDesc: "Chat Completions compatible endpoint for the fast model, no trailing slash.",
+  setFastModelName: "Fast model name",
+  setFastModelDesc: "The model string on the fast endpoint.",
+  setFastKeyName: "Fast model API key",
+  setFastKeyDesc:
+    "Write-only like the one above: stored in the local sidecar, never in this vault. The fast model usually lives on a different host, so it needs its own key — the base key is never reused for it.",
+  setFastKeyStatusNone: "No fast model key saved yet.",
+  noticeFastKeySaved: "Fast model key saved to the local sidecar, not to this vault.",
+  noticeFastKeyCleared: "Fast model key cleared.",
   setThinkingDesc:
     "off is the lowest; high is the top tier for that endpoint. Keep off if the model doesn't reason.",
   setThinkingOff: "off (default)",

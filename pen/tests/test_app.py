@@ -2076,6 +2076,46 @@ def test_old_path_is_byte_identical_without_fast(monkeypatch) -> None:
     assert seen["fast_llm"] is None, "没开 Fast Mode 却把快模型的 cfg 传下去了"
 
 
+def test_the_body_can_point_the_fast_slot_at_another_endpoint(monkeypatch) -> None:
+    """设置页那两格随请求上行，能改节点和型号——**但改不了钥匙**。
+
+    这是前端真正走的那条路：llmPayload 发 fast_base_url / fast_model，
+    钥匙留在托管槽。改了节点却沿用旧钥匙是有意的：读者换的是同一家的
+    另一个型号时不用重填钥匙；真换了家，重填一次就是了。
+    """
+    for name in ("OPENAI_API_KEY", "DEEPSEEK_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(config, "parse_dotenv", lambda *a, **k: {})
+    seen: dict = {}
+    monkeypatch.setattr("pen.app.stream_chat", _fake_stream_capturing(seen))
+    with TestClient(app) as client:
+        _with_both_keys(client)
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        body = _chat_body(sid, _q1_line(), fast=True, chip="examples")
+        body["fast_base_url"] = "https://fast.example/v2"
+        body["fast_model"] = "celeris-1-minor"
+        r = client.post("/v1/chat", json=body)
+        assert r.status_code == 200
+    assert seen["route"] == "fast"
+    assert seen["fast_llm"].base_url == "https://fast.example/v2"
+    assert seen["fast_llm"].model == "celeris-1-minor"
+    assert seen["fast_llm"].api_key == "ck-fast-1234567890", "钥匙必须还是托管槽那把"
+    # 基座那份一个字都没被带偏
+    assert seen["llm"].base_url == "https://api.deepseek.com"
+    assert seen["llm"].api_key == "sk-base-0987654321"
+
+
+def test_the_body_can_never_carry_a_fast_key() -> None:
+    """`fast_api_key` 在请求体上**不存在**，不是「存在但被忽略」。
+
+    形状同 check-key.mjs 守前端那一半：两边合起来才是一条完整的通道。
+    """
+    from pen.app import ChatBody, LlmOverrideBody
+
+    for model in (ChatBody, LlmOverrideBody):
+        assert "fast_api_key" not in model.model_fields, model.__name__
+
+
 def test_approve_half_turn_never_goes_fast() -> None:
     """审批后的后半轮必然执行 edit_file，恒走基座。
 

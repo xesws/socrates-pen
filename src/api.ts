@@ -89,6 +89,15 @@ export function makeApi(baseUrl: string) {
       }),
     deleteLlmKey: () =>
       j<LlmStatus>(baseUrl, "/v1/llm/key", { method: "DELETE" }),
+    /** 快模型的钥匙。**必须是独立通道**：它在另一台主机上，而后端那条
+     *  跨主机保护见到「换了主机又没自带 key」会直接判成没配置。 */
+    putFastKey: (api_key: string, base_url?: string) =>
+      j<LlmStatus>(baseUrl, "/v1/llm/fast-key", {
+        method: "PUT",
+        body: JSON.stringify({ api_key, base_url: base_url || "" }),
+      }),
+    deleteFastKey: () =>
+      j<LlmStatus>(baseUrl, "/v1/llm/fast-key", { method: "DELETE" }),
     importHandbook: (original_path: string, handbook_id: string, vault_root?: string) =>
       j<HandbookMeta>(baseUrl, "/v1/handbooks/import", {
         method: "POST",
@@ -158,6 +167,13 @@ export async function streamChat(
       // 只发改过的那几个；一个都没动时 limitsPayload 返回 undefined，
       // 请求体里连 limits 这个键都不出现——「上线当天逐字节一致」就是这么来的。
       ...(lim ? { limits: lim } : {}),
+      // Fast Mode 的开关位。**从 settings 取，不从 body 取**：开关写的就是
+      // settings.fastMode，从 body 走等于让每个调用点各记一遍同一个状态。
+      // 关着时这个键压根不出现，老路逐字节一致。
+      //
+      // streamApprove 那边**故意没有这一段**：点了允许的那半轮必然执行
+      // edit_file，让它跑在写不了盘的模型上没有意义。
+      ...(settings?.fastMode === true ? { fast: true } : {}),
     }),
   });
   await readSse(res, onEvent);
