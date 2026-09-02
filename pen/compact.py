@@ -45,6 +45,26 @@ class CompactResult:
 
 
 @dataclass
+class Fold:
+    """一次折叠的**结果**，纯数据，不含任何 session 状态的改动。
+
+    这个类型存在的理由：「怎么压」和「压完写给谁」以前是焊死的——
+    `compact_session` 一口气既算出新 messages 又就地改掉 session，于是
+    想复用那套抽槽逻辑就必然连带把会话改坏。拆开之后：
+
+      fold_messages()   纯函数，只读入参，算出新 messages       ← 唯一的「怎么压」
+      compact_session() 破坏性外壳，写回 session               ← Base / 手动命令
+      pen/compaction.py FastWindow 拿同一份结果当副本用         ← Fast Mode
+
+    Fast 那一路**绝不能**走破坏性外壳：`session.compacted` 一旦为真就
+    全仓无处置回 False，之后连基座轮次都永远拿不到目录 / 邻域 / 书架。
+    """
+
+    messages: list[dict[str, Any]]
+    dropped_reads: int
+
+
+@dataclass
 class _Slots:
     book: str = ""
     shelf: list[str] = field(default_factory=list)
@@ -124,21 +144,27 @@ def _is_force_answer(content: str) -> bool:
     return False
 
 
-def compact_session(
-    session: PenSession,
+def fold_messages(
+    messages: Sequence[dict[str, Any]],
     *,
-    allow_paths: Sequence[Path],
-    original_path: Path | None = None,
-) -> CompactResult:
-    """就地改 `session.messages` / `read_ok_paths` / `ui_messages` 的 note。
+    allowed: Sequence[Path],
+    lang: str = "zh",
+    book_title: str = "",
+    last_chips: Sequence[dict[str, Any]] = (),
+    last_anchor: dict[str, Any] | None = None,
+) -> Fold | None:
+    """把 messages 折成 `[system, 摘要, 最后一轮]`。**只读入参，一个字都不写回。**
 
-    待审批时抛 `CompactPending`，调用方不得再 save。
+    没什么可折时返回 `None`——空表，或只剩一份旧摘要 / 收口话术。
+    调用方拿到 None 就当没折（`compact_session` 回 `did=False`）。
+
+    `allowed` 是**已经解析过的**白名单（`_allowed_files` 的产物）。这里不自己
+    去算，是因为它要读 `session.last_anchor`，而这个函数的立身之本就是不碰
+    session——白名单由调用方备好，两条路（破坏性 / 副本）各自决定怎么备。
     """
-    if session.pending:
-        raise CompactPending()
-    msgs = list(session.messages or [])
+    msgs = list(messages or [])
     if not msgs:
-        return CompactResult(did=False)
+        return None
 
     system: list[dict[str, Any]] = []
     rest: list[dict[str, Any]] = []
@@ -157,36 +183,69 @@ def compact_session(
         last_user = i
     if last_user < 0:
         # 只有 system，或只有一份旧摘要 / 收口话术：没什么可折。
-        return CompactResult(did=False)
+        return None
 
     middle = rest[:last_user]
     last_turn = rest[last_user:]
 
-    allowed = _allowed_files(allow_paths, original_path, session)
     slots = _Slots()
     _eat_system_book(slots, system)
-    if (session.book_title or "").strip() and not slots.book:
-        slots.book = session.book_title.strip()
+    if (book_title or "").strip() and not slots.book:
+        slots.book = book_title.strip()
     all_rest = middle + last_turn
     calls = _tool_calls_by_id(all_rest)
     for m in all_rest:
         _eat_message(slots, m, allowed, calls)
-    for chip in session.last_chips or []:
+    for chip in last_chips or []:
         text = str(chip.get("text") or "").strip()
         if text and text not in slots.cracks:
             slots.cracks.append(text)
-    _eat_last_anchor(slots, session)
+    _eat_anchor(slots, last_anchor)
 
-    stubbed_last, dropped_n = _stub_tools(last_turn, allowed, session.lang)
-    slimmed_last = [_slim_if_user(m, session.lang) for m in stubbed_last]
+    stubbed_last, dropped_n = _stub_tools(last_turn, allowed, lang)
+    slimmed_last = [_slim_if_user(m, lang) for m in stubbed_last]
     dropped_n += sum(
         1
         for m in middle
         if m.get("role") == "tool" and str((calls.get(str(m.get("tool_call_id") or "")) or {}).get("name") or "") == "read_file"
     )
 
-    summary = _render_summary(slots, session.lang)
-    session.messages = [*system, {"role": "user", "content": summary}, *slimmed_last]
+    summary = _render_summary(slots, lang)
+    return Fold(
+        messages=[*system, {"role": "user", "content": summary}, *slimmed_last],
+        dropped_reads=dropped_n,
+    )
+
+
+def compact_session(
+    session: PenSession,
+    *,
+    allow_paths: Sequence[Path],
+    original_path: Path | None = None,
+) -> CompactResult:
+    """就地改 `session.messages` / `read_ok_paths` / `ui_messages` 的 note。
+
+    待审批时抛 `CompactPending`，调用方不得再 save。
+
+    **这是破坏性的那一条路**：`compacted` 置真之后全仓没有任何地方改回来，
+    之后每个 packet 都永久走精简路径。要一份不污染会话的压缩，走
+    `fold_messages()` 或 `pen/compaction.py` 的 FastWindow。
+    """
+    if session.pending:
+        raise CompactPending()
+    allowed = _allowed_files(allow_paths, original_path, session)
+    fold = fold_messages(
+        session.messages,
+        allowed=allowed,
+        lang=session.lang,
+        book_title=session.book_title,
+        last_chips=session.last_chips,
+        last_anchor=session.last_anchor,
+    )
+    if fold is None:
+        return CompactResult(did=False)
+
+    session.messages = fold.messages
     session.read_ok_paths = []
     session.compacted = True
     # 折完之后上一枪的 prompt_tokens 不再描述当前窗口。清零让下次
@@ -204,7 +263,7 @@ def compact_session(
             )
             session.last_anchor["selected_text"] = capped
             session.last_anchor["selection_capped"] = True
-    return CompactResult(did=True, dropped_reads=dropped_n, kept_user_packets=1)
+    return CompactResult(did=True, dropped_reads=fold.dropped_reads, kept_user_packets=1)
 
 
 def _allowed_files(
@@ -271,8 +330,9 @@ def _eat_system_book(slots: _Slots, system: Sequence[dict[str, Any]]) -> None:
         slots.book = m.group(1).strip()
 
 
-def _eat_last_anchor(slots: _Slots, session: PenSession) -> None:
-    a = session.last_anchor
+def _eat_anchor(slots: _Slots, a: dict[str, Any] | None) -> None:
+    """把 last_anchor 抽成一行锚点。收的是那个 dict 本身，不是 session——
+    fold_messages 的纯度全靠这一条。"""
     if not isinstance(a, dict):
         return
     start = int(a.get("start_line") or 0)
