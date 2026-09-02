@@ -13,6 +13,8 @@ from pen.i18n import msg
 from pen import meter as metermod
 from pen.config import LLMConfig, REPO_ROOT, RuntimeLimits, default_limits, resolve_llm
 from pen.chips import CustomChipSpec, chip_intent, custom_intent
+from pen.compact import allow_paths_for
+from pen.compaction import fast_budget, strategy_for
 from pen.index import HandbookIndex, neighborhood
 from pen.agent.permissions import decide, read_first_block
 from pen.agent.registry import dispatch, schemas
@@ -343,6 +345,16 @@ def _is_glm(model: str) -> bool:
     return "glm-" in m or m.startswith("glm")
 
 
+def _is_celeris(model: str) -> bool:
+    """celeris 只认 none / low / medium / xhigh。**它没有 high。**
+
+    实测传 `reasoning_effort="high"` 当场 400，节点原话：
+    `Supported types are xhigh (default), medium, and low`。
+    设置页的「高」是个常见档位，不映射的话每个高档快轮都打不出去。
+    """
+    return "celeris" in _model_id(model)
+
+
 def _glm_forced_thinking(model: str) -> bool:
     """官方写明 thinking.type=disabled 会 400 的型号：仅 5.3 / 5.3-FLASH。
 
@@ -366,6 +378,16 @@ def thinking_wire(model: str, level: str) -> dict[str, Any]:
     lv = (level or "off").strip().lower()
     if lv not in ("off", "low", "medium", "high"):
         lv = "off"
+    if _is_celeris(model):
+        # 四档一次映完，不掺进下面的 off/glm 分支——它的档名和别人一个都不重。
+        # extra_body.thinking 这一路**收下但完全不理会**（实测 disabled 照样
+        # 吐 49 个 reasoning token），所以只发 reasoning_effort，不发那把空枪。
+        # off 走 "none"：实测 0 个 reasoning token、0.36 秒，这才是快模式该有的样子。
+        return {
+            "reasoning_effort": {
+                "off": "none", "low": "low", "medium": "medium", "high": "xhigh"
+            }[lv]
+        }
     glm = _is_glm(model)
     if lv == "off":
         if _glm_forced_thinking(model):
@@ -580,6 +602,20 @@ def stream_chat(
     )
 
 
+def _needs_human(reply: Any) -> bool:
+    """这一批里有没有需要人点头的工具。**快模型的绊线判据。**
+
+    判据借 `permissions.decide()`，不在这儿再列一遍工具名。「哪些工具会动
+    磁盘」是那个模块的职责，两处分家的话，将来多一个写类工具就会出现
+    「审批面板弹了、但快模型已经把它执行完了」。
+    """
+    for tc in getattr(reply, "tool_calls", None) or []:
+        name = str(getattr(getattr(tc, "function", None), "name", "") or "")
+        if decide(name) == "ask":
+            return True
+    return False
+
+
 def _agent_loop(
     session: PenSession,
     ctx: dict[str, Any],
@@ -604,6 +640,11 @@ def _agent_loop(
     # test_tutor.test_usage_snapshot_is_last_call_not_a_sum。
     usage = usage_snapshot(0, 0)
     meter = metermod.Meter(kind=metermod.KIND_CHAT)
+    # 这一枪实际要发的 messages。**None = 就用 session.messages 原表。**
+    # 只有快轮的窗口闸会往里放东西，放的是压缩后的**副本**；session 一个字
+    # 都不改（理由见 pen/compaction.py 开头：compact_session 会把
+    # session.compacted 置真，而全仓没有任何地方把它改回去）。
+    shot: list[dict[str, Any]] | None = None
 
     def _create(*, with_tools: bool) -> Iterator[dict[str, Any]]:
         """打一枪，边收边报。**用 `yield from` 调它，返回值就是那条消息。**
@@ -619,7 +660,7 @@ def _agent_loop(
         """
         kwargs = llm_create_kwargs(
             cfg,
-            messages=session.messages,
+            messages=session.messages if shot is None else shot,
             tools=tools if with_tools else None,
         )
         parts: list[str] = []
@@ -641,7 +682,12 @@ def _agent_loop(
                 delta = getattr(choices[0], "delta", None)
                 if delta is None:
                     continue
-                think = getattr(delta, "reasoning_content", None)
+                # 两个字段名都认：DeepSeek / GLM 走 reasoning_content，
+                # celeris 走 reasoning。少认一个不影响正确性，但状态行的
+                # 「在想…」会恒为 0——而那正是「没卡住」的唯一信号。
+                think = getattr(delta, "reasoning_content", None) or getattr(
+                    delta, "reasoning", None
+                )
                 if think:
                     think_chars += len(str(think))
                     yield {"type": "think", "chars": think_chars}
@@ -691,6 +737,65 @@ def _agent_loop(
             "chat": dict(session.spend.get(metermod.KIND_CHAT) or metermod.blank()),
         }
 
+    def _to_base(why: str) -> dict[str, Any]:
+        """把这一轮从快模型换回基座。**返回要 yield 的 route 事件。**
+
+        **不回滚任何消息。** `session.messages` 是供应商中立的，换个 client
+        接着发就行；快模型已经读到的正文和 `ctx["read_ok"]` 全部留着，基座的
+        edit_file 因此不用重读就能过 `read_first_block` 那道硬闸。代价只有
+        浪费掉的那一枪。
+        """
+        nonlocal cfg, client, fast, shot
+        cfg = base_cfg or cfg
+        client = OpenAI(base_url=cfg.base_url, api_key=cfg.api_key, timeout=120.0)
+        fast = False
+        # 窗口闸压的那份副本作废：基座是 1M 窗口，发全量。
+        shot = None
+        return {"type": "route", "to": "base", "why": why}
+
+    # 已经报给读者的压缩档位。每一枪都会重算一次，档位没变就别再报一遍。
+    told: list[str] = []
+    # 摘要里允许指名道姓的文件。**一轮只算一次**：allow_paths_for 要翻书架
+    # 索引（磁盘 I/O），而窗口闸是每一枪都跑的，max_tool_rounds 默认 100。
+    allowed_names: list[Path] | None = None
+
+    def _fit() -> Iterator[dict[str, Any]]:
+        """快轮的窗口闸：这一枪发出去之前，先确认它塞得进 131072。
+
+        **和旁边那道 `metermod.over` 花销闸不同源，不能互相替代。** 那道量的是
+        「这一轮花了多少钱」，默认 0（关着），撞线只是收口；这道量的是「这一枪
+        有多大」，由供应商在**请求时**硬拒。而 `_agent_loop` 每轮把整段 messages
+        重发，一次 read_file 最多加 5000 字符且**永不裁剪**，
+        `max_tool_rounds` 默认 100——基座 1M 窗口从没暴露过这件事，
+        快模型没这道闸会在对话中途吃 400。
+        """
+        nonlocal shot, told, allowed_names
+        if not fast:
+            shot = None
+            return
+        if allowed_names is None:
+            allowed_names = allow_paths_for(ctx["original_path"])
+        plan = strategy_for("fast").plan(
+            session,
+            budget=fast_budget(limits_of(ctx)),
+            allow_paths=allowed_names,
+            original_path=ctx["original_path"],
+        )
+        if not plan.fits:
+            # 压到底还是超。**不硬发**——把上下文压成废墟去迁就窗口，
+            # 不如让 1M 窗口的基座跑。这也正是「保守」。
+            yield _to_base("context-too-big")
+            return
+        shot = plan.messages if plan.changed else None
+        if plan.steps != told:
+            told = list(plan.steps)
+            if plan.steps:
+                yield {
+                    "type": "compacted",
+                    "steps": list(plan.steps),
+                    "est": plan.est_tokens,
+                }
+
     capped = False
     for _step in range(limits_of(ctx).max_tool_rounds):
         # 进这一枪之前判一次。**这里不留余量，是想清楚的，不是漏了**：
@@ -708,6 +813,7 @@ def _agent_loop(
         if metermod.over(metermod.total(session.turn_spend), limits_of(ctx).max_tokens_chat):
             capped = True
             break
+        yield from _fit()
         yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
         try:
             # 不要叫 msg：会遮蔽模块级的 i18n msg()，下面那条空正文文案就调不到了
@@ -715,6 +821,16 @@ def _agent_loop(
         except ProviderError as exc:
             yield {"type": "error", "message": str(exc)}
             return
+        if fast and _needs_human(reply):
+            # 快轮张口要动磁盘。**dispatch 之前就拦下**——它物理上到不了
+            # handle_edit_file，点「允许」之前磁盘一个字节都不会动。
+            #
+            # 这条 assistant 消息**不 append**：带 tool_calls 的消息必须有
+            # 配对的 tool 结果，不 append 就没有这个配对义务，历史天然保持
+            # 合法，一行回滚都不用写。钱照报，这一枪是真花过的。
+            yield _spend_ev()
+            yield _to_base("wants-edit")
+            continue
         session.messages.append(reply.model_dump(exclude_none=True))
         # 刚花完钱就报。前端只拿它刷状态行那一个文本节点，成本可以忽略。
         yield _spend_ev()
@@ -764,6 +880,9 @@ def _agent_loop(
     session.messages.append(
         {"role": "user", "content": _force_answer(capped, lang)}
     )
+    # 收口枪是**整轮里 messages 最长的一枪**（工具正文全在里面了），
+    # 最该撞窗口的就是它。闸放在 append 之后，量的才是真正要发的那份。
+    yield from _fit()
     yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
     try:
         reply = yield from _create(with_tools=False)

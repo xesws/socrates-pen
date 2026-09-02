@@ -281,6 +281,26 @@ def compact_session(
     return CompactResult(did=True, dropped_reads=fold.dropped_reads, kept_user_packets=1)
 
 
+def allow_paths_for(original_path: Path) -> list[Path]:
+    """摘要里**允许指名道姓**的文件：当前笔记 + 已登记书架。不把 vault 当白名单。
+
+    **这条规则的唯一定义点。** 手动 /compact、自动折叠、Fast Mode 的窗口闸
+    三处共用它——分家就会出现「同一段历史在不同入口下，路径一会儿露出来
+    一会儿变成 (path omitted)」。
+
+    libraries 读不出来就只给当前笔记：路径少露几条只是摘要里少几个可点的
+    线索，不该把一次压缩弄挂。
+    """
+    paths = [original_path]
+    try:
+        from pen import libraries
+
+        paths.extend(Path(m.original_path) for m in libraries.list_handbooks())
+    except Exception:
+        pass
+    return paths
+
+
 def _allowed_files(
     allow_paths: Sequence[Path],
     original_path: Path | None,

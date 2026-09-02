@@ -36,7 +36,12 @@ from pen.sandbox import SandboxError, assert_handbook_path, parse_vault_root, re
 from pen.chips import CUSTOM_ID_RE, CustomChipSpec, normalize_custom_chip
 from pen.routing import route_for
 from pen.session import FIXED_CHIPS, STORE, apply_session_lang, chip_label
-from pen.compact import CompactPending, compact_session, should_auto_compact
+from pen.compact import (
+    CompactPending,
+    allow_paths_for,
+    compact_session,
+    should_auto_compact,
+)
 from pen.tutor import (
     ProviderError,
     build_user_packet,
@@ -236,16 +241,6 @@ def _no_session(lang: str) -> HTTPException:
 
 def _sse(ev: dict[str, Any]) -> str:
     return f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
-
-
-def _compact_allow_paths(original_path: Path) -> list[Path]:
-    """摘要只许写当前笔记和已登记书架上的文件，不把 vault 目录当白名单。"""
-    paths = [original_path]
-    try:
-        paths.extend(Path(m.original_path) for m in libraries.list_handbooks())
-    except Exception:
-        pass
-    return paths
 
 
 def _try_lock_session(sess, lang: str = "zh"):
@@ -793,7 +788,7 @@ def compact_chat(session_id: str, lang: str = Depends(req_lang)) -> dict[str, An
         try:
             result = compact_session(
                 sess,
-                allow_paths=_compact_allow_paths(path),
+                allow_paths=allow_paths_for(path),
                 original_path=path,
             )
         except CompactPending:
@@ -923,7 +918,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         if should_auto_compact(sess, limits):
             folded = compact_session(
                 sess,
-                allow_paths=_compact_allow_paths(path),
+                allow_paths=allow_paths_for(path),
                 original_path=path,
             )
             auto_compacted = folded.did
