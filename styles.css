@@ -906,6 +906,322 @@
   }
 }
 
+/* ── 学习画像面板（v0.25.0）。第二个视图挂同一个 .socrates-pen 类，继承
+   .sp-icon / .sp-bar / .sp-alert / .is-off；根是 overflow:hidden，所以
+   .sp-report-scroll 是唯一的滚动容器。颜色一律主题变量，雷达跟 accent 走。 ── */
+.socrates-pen .sp-report-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--size-4-2) var(--size-4-3) var(--size-4-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.socrates-pen.sp-report .sp-alert {
+  flex: 0 0 auto;
+  max-height: none;
+  border-bottom: none;
+  padding: 4px 0;
+}
+
+.socrates-pen .sp-report-head {
+  margin: 0;
+  font-size: var(--font-ui-large);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.socrates-pen .sp-report-sub {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.socrates-pen .sp-report-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-line;
+  padding: 4px 8px;
+  border-left: 3px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  border-radius: 0 4px 4px 0;
+}
+
+.socrates-pen .sp-report-hint {
+  color: var(--text-faint);
+  font-size: 11px;
+}
+
+.socrates-pen .sp-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.socrates-pen .sp-report-progress {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* 确定型进度条：知道编到第几轮就画到第几轮。放在 .sp-bar-fill 之后，
+   压过穿梭动画；「减少动态效果」下那条 100% 宽的兜底也被这里的宽度接管。 */
+.socrates-pen .sp-bar-fill.is-det {
+  animation: none;
+  width: var(--sp-pct, 0%);
+  opacity: 1;
+  transition: width 200ms ease-out;
+}
+
+/* 雷达 */
+.socrates-pen .sp-radar-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.socrates-pen .sp-radar {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  color: var(--text-muted);
+}
+
+.socrates-pen .sp-radar-ring,
+.socrates-pen .sp-radar-spoke {
+  fill: none;
+  stroke: var(--background-modifier-border);
+  stroke-width: 1;
+}
+
+.socrates-pen .sp-radar-area {
+  fill: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  stroke: var(--interactive-accent);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.socrates-pen .sp-radar-pt {
+  fill: var(--interactive-accent);
+  stroke: var(--background-primary);
+  stroke-width: 1;
+}
+
+.socrates-pen .sp-radar-pt.is-null {
+  fill: var(--background-primary);
+  stroke: var(--text-faint);
+  stroke-dasharray: 2 1;
+}
+
+.socrates-pen .sp-radar-label {
+  fill: var(--text-normal);
+  font-family: var(--font-interface);
+}
+
+.socrates-pen .sp-radar-label.is-weak {
+  fill: var(--text-error);
+}
+
+.socrates-pen .sp-radar-label.is-strong {
+  fill: var(--text-success);
+}
+
+.socrates-pen .sp-radar-scale {
+  fill: var(--text-faint);
+  font-family: var(--font-monospace);
+}
+
+/* 轴表：summary 就是表格行，展开看证据 */
+.socrates-pen .sp-axes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.socrates-pen .sp-axes-head,
+.socrates-pen .sp-axis-sum {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.4em 3.4em 5.5em;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.socrates-pen .sp-axes-head {
+  color: var(--text-faint);
+  font-size: 11px;
+  padding: 0 6px;
+}
+
+.socrates-pen .sp-axis > summary {
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  list-style: none;
+}
+
+.socrates-pen .sp-axis > summary::-webkit-details-marker {
+  display: none;
+}
+
+.socrates-pen .sp-axis > summary:hover {
+  background: var(--background-modifier-hover);
+}
+
+.socrates-pen .sp-axis[open] > summary {
+  background: var(--background-secondary);
+}
+
+.socrates-pen .sp-axis-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.socrates-pen .sp-score {
+  font-family: var(--font-monospace);
+  text-align: right;
+  font-weight: 600;
+}
+
+.socrates-pen .sp-score.is-weak {
+  color: var(--text-error);
+}
+
+.socrates-pen .sp-score.is-strong {
+  color: var(--text-success);
+}
+
+.socrates-pen .sp-score.is-null {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.socrates-pen .sp-axis-mastery,
+.socrates-pen .sp-axis-n {
+  font-family: var(--font-monospace);
+  color: var(--text-muted);
+  text-align: right;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.socrates-pen .sp-axis-body {
+  padding: 4px 6px 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.socrates-pen .sp-axis-def {
+  color: var(--text-muted);
+}
+
+.socrates-pen .sp-axis-h {
+  color: var(--text-faint);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.socrates-pen .sp-why,
+.socrates-pen .sp-evs {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.socrates-pen .sp-evs li {
+  margin-bottom: 4px;
+}
+
+.socrates-pen .sp-ev-time,
+.socrates-pen .sp-ev-ref,
+.socrates-pen .sp-ev-type {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-right: 6px;
+}
+
+.socrates-pen .sp-ev-type.is-bad {
+  color: var(--text-error);
+}
+
+.socrates-pen .sp-ev-type.is-good {
+  color: var(--text-success);
+}
+
+/* 照 .sp-quote：读者原话，左边一道 accent */
+.socrates-pen .sp-ev-quote {
+  border-left: 3px solid var(--text-accent);
+  padding: 2px 8px;
+  color: var(--text-muted);
+  background: var(--background-secondary);
+  border-radius: 0 4px 4px 0;
+  overflow-wrap: anywhere;
+}
+
+/* 书架 */
+.socrates-pen .sp-report-h3 {
+  margin: var(--size-4-2) 0 0;
+  font-size: var(--font-ui-medium);
+  font-weight: 600;
+}
+
+.socrates-pen .sp-vault-wrap {
+  overflow-x: auto;
+}
+
+.socrates-pen table.sp-vault {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.socrates-pen .sp-vault th,
+.socrates-pen .sp-vault td {
+  text-align: left;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: top;
+}
+
+.socrates-pen .sp-vault th {
+  color: var(--text-faint);
+  font-weight: 500;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.socrates-pen .sp-vault td.is-num {
+  font-family: var(--font-monospace);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.socrates-pen .sp-vault tr.is-current {
+  background: color-mix(in srgb, var(--interactive-accent) 7%, transparent);
+}
+
+.socrates-pen .sp-vault-merged {
+  display: block;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+
+.socrates-pen .sp-vault-chip {
+  display: inline-block;
+  margin: 0 6px 2px 0;
+  white-space: nowrap;
+}
+
 /* 放在最后。双类名提一级特异性，压过上面那些 display:flex，不用 !important。 */
 .socrates-pen .is-off.is-off {
   display: none;

@@ -9,6 +9,9 @@ import type {
   Health,
   LlmStatus,
   PreflightReport,
+  ProfileCodeResult,
+  ProfileList,
+  ProfileView,
   SessionView,
   SnapshotStatus,
   UsageTotal,
@@ -146,6 +149,38 @@ export function makeApi(baseUrl: string) {
         method: "POST",
         body: JSON.stringify({ handbook_id }),
       }),
+    /**
+     * v0.25.0 学习画像：编下一批轮次。**一律主模型**——body 与 /v1/chat 同源
+     * （`llmPayload`），所以永远不含 api_key（check-key.mjs / check-api.mjs 守着）。
+     * `force` 只在真时出现：重算是读者两步确认过的动作，老路请求体一个键不多。
+     * 每次是一枪真实的 API 调用，调用方（ReportView）自带停滞保护。
+     */
+    codeProfile: (
+      handbook_id: string,
+      settings: PenSettings,
+      opts?: { force?: boolean; maxBatches?: number; signal?: AbortSignal },
+    ) => {
+      const lim = limitsPayload(settings);
+      return j<ProfileCodeResult>(baseUrl, `/v1/handbooks/${handbook_id}/profile/code`, {
+        method: "POST",
+        ...(opts?.signal ? { signal: opts.signal } : {}),
+        body: JSON.stringify({
+          ...llmPayload(settings),
+          ...(lim ? { limits: lim } : {}),
+          max_batches: opts?.maxBatches ?? 3,
+          ...(opts?.force ? { force: true } : {}),
+        }),
+      });
+    },
+    getProfile: (handbook_id: string, signal?: AbortSignal) =>
+      j<ProfileView>(baseUrl, `/v1/handbooks/${handbook_id}/profile`, signal ? { signal } : undefined),
+    /** 这个库的书架。`vault_root` 是绝对路径，带空格和中文，必须编码。 */
+    listProfiles: (vault_root: string, signal?: AbortSignal) =>
+      j<ProfileList>(
+        baseUrl,
+        `/v1/profiles?vault_root=${encodeURIComponent(vault_root)}`,
+        signal ? { signal } : undefined,
+      ),
   };
 }
 

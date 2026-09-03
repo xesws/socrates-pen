@@ -14,6 +14,7 @@ import {
 import { readLivePick, type EditorPick } from "./selection";
 import type { NoteBinding, LlmStatus } from "./types";
 import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
+import { ReportView, VIEW_TYPE_REPORT } from "./views/ReportView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
 import { SidecarManager, type EnsureKind, type StopResult } from "./sidecar";
 
@@ -47,6 +48,7 @@ export default class SocratesPenPlugin extends Plugin {
   private cmdAsk: Command | null = null;
   private cmdOpen: Command | null = null;
   private cmdCompact: Command | null = null;
+  private cmdReport: Command | null = null;
   readonly sidecar = new SidecarManager();
 
   async onload(): Promise<void> {
@@ -66,6 +68,7 @@ export default class SocratesPenPlugin extends Plugin {
     }
     if (this.migrateKey) void this.migrateKeyOut();
     this.registerView(VIEW_TYPE_PEN, (leaf) => new PenView(leaf, this));
+    this.registerView(VIEW_TYPE_REPORT, (leaf) => new ReportView(leaf, this));
     this.addSettingTab(new PenSettingTab(this.app, this));
     this.registerDomEvent(document, "selectionchange", () => this.cachePick());
     this.registerDomEvent(document, "mouseup", () => this.cachePick());
@@ -100,6 +103,13 @@ export default class SocratesPenPlugin extends Plugin {
         void this.activateView().then((view) => view.compactSession());
       },
     });
+    this.cmdReport = this.addCommand({
+      id: "socrates-pen-report",
+      name: t().cmdOpenReport,
+      callback: () => {
+        void this.activateReport();
+      },
+    });
   }
 
   onunload(): void {
@@ -129,9 +139,14 @@ export default class SocratesPenPlugin extends Plugin {
     if (this.cmdAsk) this.cmdAsk.name = prefix + s.cmdAskSelection;
     if (this.cmdOpen) this.cmdOpen.name = prefix + s.cmdOpenPanel;
     if (this.cmdCompact) this.cmdCompact.name = prefix + s.cmdCompactSession;
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN)) {
+    if (this.cmdReport) this.cmdReport.name = prefix + s.cmdOpenReport;
+    const leaves = [
+      ...this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN),
+      ...this.app.workspace.getLeavesOfType(VIEW_TYPE_REPORT),
+    ];
+    for (const leaf of leaves) {
       const view = leaf.view;
-      if (view instanceof PenView) view.relocalize();
+      if (view instanceof PenView || view instanceof ReportView) view.relocalize();
       // updateHeader 未进 .d.ts，但它是刷新 tab 标题的直接办法；
       // 兜底走公开 API：type 相同且非 deferred 时 setViewState 不会重建 view，
       // 且 getViewState() 不含 active，不会抢焦点。
@@ -141,24 +156,41 @@ export default class SocratesPenPlugin extends Plugin {
     }
   }
 
-  async activateView(): Promise<PenView> {
-    const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN);
+  /**
+   * 把某种视图露到右侧栏。两个视图（对话面板、学习画像）共用这一份，
+   * 「三步」只写在这儿：
+   * 右侧栏折叠时 setActiveLeaf 什么都不露，点丝带像没反应（评测报告 P1）。
+   * 只用 rightSplit.collapsed：revealLeaf 1.7.2 才有，商店审核的
+   * no-unsupported-api 闸按 @since 标注拦引用（哪怕在能力探测的 cast 里），
+   * minAppVersion 1.5.0 下不能出现它（v0.18.6 审核打回的正是这行）。
+   */
+  private async revealSide(type: string): Promise<WorkspaceLeaf> {
+    const existing = this.app.workspace.getLeavesOfType(type);
     const leaf = existing[0] ?? this.app.workspace.getRightLeaf(false);
     if (!leaf) throw new Error(t().errNoRightLeaf);
-    // 右侧栏折叠时 setActiveLeaf 什么都不露，点丝带像没反应（评测报告 P1）。
-    // 只用 rightSplit.collapsed：revealLeaf 1.7.2 才有，商店审核的
-    // no-unsupported-api 闸按 @since 标注拦引用（哪怕在能力探测的 cast 里），
-    // minAppVersion 1.5.0 下不能出现它（v0.18.6 审核打回的正是这行）。
     try {
       this.app.workspace.rightSplit.collapsed = false;
     } catch {
       new Notice(t().noticeRightOpened);
     }
-    await leaf.setViewState({ type: VIEW_TYPE_PEN, active: true });
+    await leaf.setViewState({ type, active: true });
     // revealLeaf 从 1.7.2 才有，minAppVersion 是 1.5.0。
     this.app.workspace.setActiveLeaf(leaf, { focus: true });
+    return leaf;
+  }
+
+  async activateView(): Promise<PenView> {
+    const leaf = await this.revealSide(VIEW_TYPE_PEN);
     const view = leaf.view;
     if (!(view instanceof PenView)) throw new Error(t().errViewNotMounted);
+    return view;
+  }
+
+  /** 学习画像页签。已开着就切过去，没开就在右侧栏新开一个（对话面板留在原位）。 */
+  async activateReport(): Promise<ReportView> {
+    const leaf = await this.revealSide(VIEW_TYPE_REPORT);
+    const view = leaf.view;
+    if (!(view instanceof ReportView)) throw new Error(t().errViewNotMounted);
     return view;
   }
 

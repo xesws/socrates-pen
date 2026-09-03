@@ -26,6 +26,7 @@ from pen import insert as insertmod
 from pen.outline import file_outline
 from pen import libraries, snapshots
 from pen import diagnose as diagnosemod
+from pen import profile as profilemod
 from pen import proposals as proposalsmod
 from pen import probe as probemod, probe_store, retention, trajectory
 from pen import config as configmod
@@ -1557,3 +1558,81 @@ def narrate_diagnosis(handbook_id: str, lang: str = Depends(req_lang)) -> dict[s
     # 这一格**不进「本会话累计」**：诊断按 handbook 索引，没有会话可挂。
     # 只放在这里，谁想看谁看。见 docs/v0.10.0。
     return {"handbook_id": handbook_id, "narrative": text, "spend": m.to_dict()}
+
+
+# ── 学习画像（v0.25.0）。规则、缓存、算分都在 pen/profile.py，这里只做三件事：
+# 找书、拿主模型、把厂商异常翻成 400。──
+
+
+class ProfileCodeBody(LlmOverrideBody):
+    # 处理器里夹到 1..10、看不懂当缺省，**不 422**：面板传个离谱值应得到正常进度。
+    max_batches: int | None = None
+    force: bool = False
+
+
+def _clamp_batches(raw: Any) -> int:
+    try:
+        n = int(raw)
+    except (TypeError, ValueError):
+        return profilemod.MAX_BATCHES_DEFAULT
+    return max(1, min(10, n))
+
+
+@app.post("/v1/handbooks/{handbook_id}/profile/code")
+def code_profile(
+    handbook_id: str, body: ProfileCodeBody, lang: str = Depends(req_lang)
+) -> dict[str, Any]:
+    """编下一批轮次。**一律主模型**，思考档同主对话；key 只从托管槽 / env 来。
+
+    厂商异常 → 400 `{code, message}`，和 /v1/chat 一个码表；已经编好的那几批
+    在抛之前就落盘了，读者下次打开面板从断点续。
+    """
+    _meta_or_404(handbook_id, lang)
+    cfg = body.merged()
+    if cfg is None:
+        raise HTTPException(400, msg("llm.missing_config_short", lang))
+    from openai import OpenAIError
+
+    try:
+        result = profilemod.code_next(
+            handbook_id,
+            cfg,
+            limits=body.merged_limits(),
+            max_batches=_clamp_batches(body.max_batches),
+            lang=lang,
+            force=bool(body.force),
+        )
+    except (OpenAIError, OSError, TimeoutError) as exc:
+        raise HTTPException(
+            400,
+            {
+                "code": tutormod.provider_error_code(exc, sent_image=False),
+                "message": tutormod.provider_error_message(
+                    exc, lang, cfg.model, sent_image=False
+                ),
+            },
+        ) from exc
+    return {"handbook_id": handbook_id, **result}
+
+
+@app.get("/v1/handbooks/{handbook_id}/profile")
+def get_profile(handbook_id: str, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """这本书的画像。没缓存也 200（全是 uncoded）——面板靠它决定要不要去编。"""
+    meta = _meta_or_404(handbook_id, lang)
+    return {
+        "handbook_id": handbook_id,
+        "title": meta.title,
+        **profilemod.report(handbook_id, lang),
+    }
+
+
+@app.get("/v1/profiles")
+def list_profiles(vault_root: str | None = None, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    """这个库里每本书一行的书架。只读缓存，不调模型。"""
+    try:
+        roots = parse_vault_root(vault_root)
+    except SandboxError as exc:
+        raise HTTPException(400, localized(exc, lang)) from exc
+    if not roots:
+        raise HTTPException(400, msg("profile.vault_root_required", lang))
+    return profilemod.overview(roots[0], lang)

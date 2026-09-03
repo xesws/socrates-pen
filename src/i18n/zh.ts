@@ -30,6 +30,23 @@ const k = (v: number | undefined): string => {
 };
 
 
+/** 逐轮编码的七类。键是 pen/profile.py 的 TYPES，不是随手起的。 */
+const TYPE_ZH: Record<string, string> = {
+  ASK: "在问",
+  VERIFY: "求证",
+  DEMAND: "要东西",
+  REJECT: "顶回",
+  GAP: "盲区",
+  DECLARE: "说懂了",
+  META: "操作",
+};
+const VERIFY_ZH: Record<string, string> = {
+  confirmed: "被确认",
+  corrected: "被纠正",
+  unclear: "没判定",
+};
+
+
 /**
  * 每个旋钮的「名字 / 一句人话说明」。和 settings.ts 的 LIMIT_SPEC 键一一对应，
  * 由 scripts/check-limits.mjs 守着不许缺。
@@ -479,6 +496,69 @@ export const zh = {
   setDefaultHint: (v: number): string => ` 默认 ${v}。`,
   limitName: (k: string): string => LIMIT_TEXT_ZH[k]?.[0] ?? k,
   limitDesc: (k: string): string => LIMIT_TEXT_ZH[k]?.[1] ?? "",
+
+  // ── v0.25.0 学习画像面板（ReportView）──
+  viewTitleReport: "学习画像",
+  cmdOpenReport: "打开学习画像",
+  tipReport: "学习画像：这本书你哪里强、哪里卡",
+  reportLoading: "在拿画像…",
+  reportNoFile: "打开一篇 Markdown 笔记，这里会显示它的学习画像。下面是这个库里已有的书。",
+  reportNotRegistered: "这篇笔记还没在苏格拉底里问过。先在面板里框选一段提问，画像才有原料。",
+  reportNoTurns: "这本书还没有对话记录。",
+  btnAnalyze: "分析这本书",
+  btnResume: "继续分析",
+  btnRecompute: "重算",
+  btnRecomputeSure: "确定重算？从头再编一遍，按轮计费",
+  btnCancel: "取消",
+  btnStop: "停止",
+  reportUnrated: "未评",
+  reportNoMastery: "—",
+  reportColAxis: "能力轴",
+  reportColScore: "分",
+  reportColMastery: "掌握",
+  reportColN: "证据",
+  reportWhyTitle: "这一分怎么来的",
+  reportGapsTitle: "自陈盲区",
+  reportEvidenceTitle: "证据",
+  reportVaultTitle: "这个库里的书",
+  reportVaultEmpty: "这个库里还没有登记过的书。",
+  reportVaultDown: "书架暂时拿不到：sidecar 没应答。",
+  reportColBook: "书",
+  reportColTurns: "轮",
+  reportColAxes: "轴",
+  reportColWeakest: "最弱",
+  reportColAskedMost: "问得最多",
+  reportNoKeyHint: "还没配模型钥匙，暂时只能看已有的画像。到设置 → Socrates 填 API Key 后再来分析。",
+  reportNotAnalyzed: (turns: number): string =>
+    `这本书有 ${n(turns)} 轮对话，还没分析过。分析要把每一轮交给主模型编码，按轮计费。`,
+  reportProgress: (coded: number, total: number, tokens: number): string =>
+    `已编码 ${n(coded)} / ${n(total)} 轮 · 本次 ${k(tokens)} token`,
+  reportTurns: (total: number, coded: number, meta: number): string =>
+    `${n(total)} 轮 · 已编码 ${n(coded)} · 其中 ${n(meta)} 轮是操作记录`,
+  reportDegraded: (remaining: number): string =>
+    `还有 ${n(remaining)} 轮没编码。配好模型钥匙、再打开这页会自动补上。`,
+  reportLegacy: (count: number): string =>
+    `其中 ${n(count)} 轮是 v0.24.0 之前的旧记录：只进频率统计，不进分数。`,
+  reportGivenUp: (count: number): string =>
+    `${n(count)} 轮模型三次都没给出合规编码，已放弃。`,
+  reportTurnRef: (idx: number): string => `第 ${idx} 轮`,
+  reportMerged: (count: number): string => `${count} 次登记合并`,
+  reportRadarLabel: (count: number): string => `${count} 根能力轴的雷达图`,
+  reportMastery: (pct: string, obs: number): string => `掌握概率 ${pct}，来自 ${obs} 次可判定的观测`,
+  reportScoreTip: (score: number): string => `规则分 ${score} / 10`,
+  reportEvidenceCount: (count: number, legacy: number): string =>
+    legacy > 0 ? `${count} 轮（旧 ${legacy}）` : `${count} 轮`,
+  reportCodedAt: (stamp: string): string => `上次编码 ${stamp}`,
+  reportSpend: (tokens: number): string => `画像累计 ${k(tokens)} token`,
+  reportAxisScore: (name: string, score: number): string => `${name} ${score}`,
+  reportAxisN: (name: string, count: number): string => `${name} ×${count}`,
+  reportType: (typ: string): string => TYPE_ZH[typ] ?? typ,
+  reportVerify: (outcome: string): string => VERIFY_ZH[outcome] ?? "",
+  reportRejectRight: "顶对了",
+  reportRejectWrong: "顶错了",
+  errReportFailed: (detail: string): string => `画像没拿到：${detail}`,
+  errReportUnreachable: (detail: string): string => `连不上 sidecar，画像拿不到：${detail}`,
+  errReportStalled: "编码没有推进，已停下：sidecar 连续三次没编出新的轮次。重开这页会再试。",
 
   setSidecarDesc:
     "本机服务的地址。一般不用改。插件只会往 loopback 上拉起进程。",

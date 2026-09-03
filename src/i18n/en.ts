@@ -12,6 +12,22 @@ const k = (v: number | undefined): string => {
   return `${(v / 1000).toFixed(a >= 100000 ? 0 : 1)}k`;
 };
 
+const TYPE_EN: Record<string, string> = {
+  ASK: "asking",
+  VERIFY: "self-check",
+  DEMAND: "demand",
+  REJECT: "pushback",
+  GAP: "blind spot",
+  DECLARE: "declared understood",
+  META: "bookkeeping",
+};
+const VERIFY_EN: Record<string, string> = {
+  confirmed: "confirmed",
+  corrected: "corrected",
+  unclear: "unjudged",
+};
+
+
 /**
  * 这一行的 `: Dict` 就是全部的强制力：
  *   缺键   -> TS2741 Property 'x' is missing
@@ -424,6 +440,69 @@ export const en: Dict = {
   setDefaultHint: (v) => ` Default ${v}.`,
   limitName: (k) => LIMIT_TEXT_EN[k]?.[0] ?? k,
   limitDesc: (k) => LIMIT_TEXT_EN[k]?.[1] ?? "",
+
+  // ── v0.25.0 learner profile panel (ReportView) ──
+  viewTitleReport: "Learner profile",
+  cmdOpenReport: "Open learner profile",
+  tipReport: "Learner profile: where you are strong and where you get stuck in this book",
+  reportLoading: "Loading the profile…",
+  reportNoFile: "Open a Markdown note to see its learner profile. The books in this vault are listed below.",
+  reportNotRegistered: "This note has not been asked about in Socrates yet. Select a passage in the panel and ask first; the profile needs material.",
+  reportNoTurns: "No conversation on this book yet.",
+  btnAnalyze: "Analyze this book",
+  btnResume: "Resume analysis",
+  btnRecompute: "Recompute",
+  btnRecomputeSure: "Recompute from scratch? Billed per turn",
+  btnCancel: "Cancel",
+  btnStop: "Stop",
+  reportUnrated: "unrated",
+  reportNoMastery: "—",
+  reportColAxis: "Skill",
+  reportColScore: "Score",
+  reportColMastery: "Mastery",
+  reportColN: "Evidence",
+  reportWhyTitle: "How this score was built",
+  reportGapsTitle: "Self-declared blind spots",
+  reportEvidenceTitle: "Evidence",
+  reportVaultTitle: "Books in this vault",
+  reportVaultEmpty: "No registered books in this vault yet.",
+  reportVaultDown: "The shelf is unavailable: the sidecar did not answer.",
+  reportColBook: "Book",
+  reportColTurns: "Turns",
+  reportColAxes: "Axes",
+  reportColWeakest: "Weakest",
+  reportColAskedMost: "Asked most",
+  reportNoKeyHint: "No model key yet, so only the existing profile is shown. Add an API key under Settings → Socrates, then come back to analyze.",
+  reportNotAnalyzed: (turns) =>
+    `This book has ${n(turns)} turns and has not been analyzed. Analysis sends every turn to the main model for coding and is billed per turn.`,
+  reportProgress: (coded, total, tokens) =>
+    `Coded ${n(coded)} / ${n(total)} turns · ${k(tokens)} tokens this run`,
+  reportTurns: (total, coded, meta) =>
+    `${n(total)} turns · ${n(coded)} coded · ${n(meta)} of them are bookkeeping`,
+  reportDegraded: (remaining) =>
+    `${n(remaining)} turns are still uncoded. Add a model key and reopen this page to fill them in.`,
+  reportLegacy: (count) =>
+    `${n(count)} turns predate v0.24.0: they count toward frequencies only, never toward scores.`,
+  reportGivenUp: (count) =>
+    `${n(count)} turns got no valid coding after three attempts and were given up.`,
+  reportTurnRef: (idx) => `turn ${idx}`,
+  reportMerged: (count) => `${count} registrations merged`,
+  reportRadarLabel: (count) => `Radar chart of ${count} skill axes`,
+  reportMastery: (pct, obs) => `Mastery probability ${pct}, from ${obs} judged observations`,
+  reportScoreTip: (score) => `Rule score ${score} / 10`,
+  reportEvidenceCount: (count, legacy) =>
+    legacy > 0 ? `${count} turns (${legacy} old)` : `${count} turns`,
+  reportCodedAt: (stamp) => `Last coded ${stamp}`,
+  reportSpend: (tokens) => `Profile total ${k(tokens)} tokens`,
+  reportAxisScore: (name, score) => `${name} ${score}`,
+  reportAxisN: (name, count) => `${name} ×${count}`,
+  reportType: (typ) => TYPE_EN[typ] ?? typ,
+  reportVerify: (outcome) => VERIFY_EN[outcome] ?? "",
+  reportRejectRight: "and was right",
+  reportRejectWrong: "and was wrong",
+  errReportFailed: (detail) => `Could not load the profile: ${detail}`,
+  errReportUnreachable: (detail) => `Cannot reach the sidecar, so no profile: ${detail}`,
+  errReportStalled: "Coding stopped making progress: the sidecar coded no new turns three times in a row. Reopen this page to retry.",
 
   setSidecarDesc:
     "Where the local service listens. You rarely need to touch this. The plugin only spawns on loopback.",

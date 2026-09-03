@@ -43,7 +43,8 @@ export function handbookIdFromPath(absPath: string): string {
   return `${short}-${hex}`;
 }
 
-function absFor(app: App, file: TFile): string {
+/** 笔记的绝对路径。ReportView 也用它推 handbook_id——id 的推导只有一份。 */
+export function absFor(app: App, file: TFile): string {
   return `${vaultRoot(app)}/${file.path}`;
 }
 

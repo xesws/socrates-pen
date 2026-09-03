@@ -160,3 +160,101 @@ export type NoteBinding = {
   handbook_id: string;
   session_id: string;
 };
+
+// ── 学习画像（v0.25.0）。镜像 pen/profile.py 的 report() / overview()。
+// **插件不复算任何分数**：分、掌握概率、「怎么算的」全是服务端给的。──
+
+export type ProfileArc = {
+  start_idx: number;
+  end_idx: number;
+  turns: number;
+  asking: number;
+  closed: boolean;
+  penalty: number;
+};
+
+export type ProfileLapse = { declare_idx: number; reopen_idx: number; minutes: number };
+
+export type ProfileGap = { key: string; idx: number; quote: string; asked_at: string };
+
+export type ProfileEvidence = {
+  key: string;
+  idx: number;
+  type: string;
+  quote: string;
+  asked_at: string;
+  verify: string | null;
+  reject_right: boolean | null;
+};
+
+export type ProfileAxis = {
+  id: string;
+  name: string;
+  definition: string;
+  first_seen: string;
+  /** 这轴一共几轮（含旧行）。 */
+  n: number;
+  /** 其中 v0.24.0 之前的旧行几轮——只进频率，不进分。 */
+  n_legacy: number;
+  /** 1–10；证据不足 3 轮是 null（未评）。 */
+  score: number | null;
+  /** 「这一分怎么来的」，按 Accept-Language 成文，逐条 setText。 */
+  why: string[];
+  /** BKT 掌握概率 0–1；没有观测是 null。与 score 并列显示，不平均。 */
+  mastery: number | null;
+  n_obs: number;
+  arcs: ProfileArc[];
+  lapses: ProfileLapse[];
+  gaps: ProfileGap[];
+  evidence: ProfileEvidence[];
+};
+
+/** GET /v1/handbooks/{id}/profile */
+export type ProfileView = {
+  handbook_id: string;
+  title: string;
+  n_turns: number;
+  n_coded: number;
+  n_legacy: number;
+  n_uncoded: number;
+  n_given_up: number;
+  n_meta: number;
+  axes: ProfileAxis[];
+  coded_at: string;
+  spend: TokenRow;
+};
+
+/** POST /v1/handbooks/{id}/profile/code —— 一次最多编 max_batches 批，插件循环到 remaining == 0。 */
+export type ProfileCodeResult = {
+  handbook_id: string;
+  coded: number;
+  n_coded: number;
+  n_turns: number;
+  remaining: number;
+  uncoded_batches: number;
+  spend: TokenRow;
+  axes: { id: string; name: string; definition: string; aliases: string[]; first_seen: string }[];
+};
+
+export type ProfileAxisBrief = { id: string; name: string; score: number | null; n?: number };
+
+export type ProfileBook = {
+  handbook_id: string;
+  title: string;
+  original_path: string;
+  n_turns: number;
+  n_coded: number;
+  n_axes: number;
+  axes: ProfileAxisBrief[];
+  weakest: ProfileAxisBrief[];
+  strongest: ProfileAxisBrief[];
+  asked_most: { id: string; name: string; n: number }[];
+  spend: TokenRow;
+};
+
+/** GET /v1/profiles?vault_root= —— 这个库里每本书一行；merged_by_title 指出同名的多次登记。 */
+export type ProfileList = {
+  vault_root: string;
+  books: ProfileBook[];
+  merged_by_title: Record<string, string[]>;
+};

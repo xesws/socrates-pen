@@ -29,6 +29,7 @@ import { sidecarUsable } from "../sidecar";
 import { configSignature, keyHostGap } from "../settings";
 import { measureMonoAdvance, renderSplash, type SplashLevel } from "./splash";
 import { AVATAR } from "../logo";
+import { reportIconName } from "./ReportView";
 
 export const VIEW_TYPE_PEN = "socrates-pen-view";
 
@@ -71,6 +72,7 @@ type Els = {
   undo: HTMLButtonElement;
   redo: HTMLButtonElement;
   fast: HTMLButtonElement;
+  report: HTMLButtonElement;
   thumbs: HTMLElement;
 };
 
@@ -331,6 +333,9 @@ export class PenView extends ItemView {
     // 靠 .is-on 表示开着——不是新造一种控件，而是让它和旁边四枚同呼吸。
     const fast = tools.createEl("button", { cls: "sp-icon sp-fast" });
     setIcon(fast, "zap");
+    // v0.25.0 学习画像。第六枚，独立面板页：这本书你哪里强、哪里卡。
+    const report = tools.createEl("button", { cls: "sp-icon sp-report-btn" });
+    setIcon(report, reportIconName());
 
     const alert = root.createDiv({ cls: "sp-alert is-off" });
     const log = root.createDiv({ cls: "sp-log" });
@@ -353,7 +358,7 @@ export class PenView extends ItemView {
 
     this.els = {
       dot, brandSub, alert, log, panel,
-      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo, fast, thumbs,
+      quote, chips, bar, status, input, ask, pick, fresh, compact, undo, redo, fast, report, thumbs,
     };
 
     // 事件只绑一次。pick 用 bindKeepFocus：pointerdown 阶段就取选区，
@@ -369,6 +374,8 @@ export class PenView extends ItemView {
     undo.onclick = () => void this.doRollback();
     redo.onclick = () => void this.doRedo();
     fast.onclick = () => void this.toggleFastMode();
+    setTooltip(report, t().tipReport);
+    report.onclick = () => void this.plugin.activateReport();
     input.placeholder = t().askPlaceholder;
     ask.onclick = () => this.submitAsk();
     input.addEventListener("keydown", (ev: KeyboardEvent) => {
@@ -563,6 +570,8 @@ export class PenView extends ItemView {
     e.compact.disabled = blocked || !this.sessionId;
     e.undo.disabled = this.busy || this.undoN <= 0;
     e.redo.disabled = this.busy || this.redoN <= 0;
+    // 画像页不按 busy 灰、不按 handbookId 灰：没登记的笔记也能看书架。只看 sidecar 通不通。
+    e.report.disabled = !this.sidecarReachable;
     setTooltip(e.undo, this.undoN > 0 ? t().tipUndo(this.undoN) : t().tipUndoEmpty);
     setTooltip(e.redo, this.redoN > 0 ? t().tipRedo(this.redoN) : t().tipRedoEmpty);
     this.syncChipDisabled();

@@ -46,7 +46,7 @@ const check = (name, pass) => checks.push([name, Boolean(pass)]);
 let seen = [];
 function stubFetch({ status, detail, ok }) {
   globalThis.fetch = async (url, init) => {
-    seen.push({ url: String(url), method: init?.method || "GET" });
+    seen.push({ url: String(url), method: init?.method || "GET", body: init?.body });
     return {
       ok: ok ?? status < 400,
       status,
@@ -143,6 +143,52 @@ stubFetch({ status: 404, detail: "Not Found" });
 err = await grab(() => api.purgeExpired("http://x"));
 check("旧 sidecar 上 purgeExpired 抛得出来（调用方负责吞）", err?.status === 404);
 check("旧 sidecar 没这个路由 ≠ 会话没了", api.isGone(err) === false);
+
+// ── v0.25.0 学习画像：三个新路由的请求形状 ─────────────────────────
+// 编码那一枪的 body 与 /v1/chat 同源（llmPayload）。这里守的不是「有没有发对」，
+// 而是「**钥匙一个字都不上行**」——设置页那把 apiKey 只走 PUT /v1/llm/key。
+const CANARY = "sk-canary-never-travels-0001";
+const settings = {
+  baseUrl: "https://api.deepseek.com/",
+  model: "deepseek-chat",
+  thinking: "high",
+  vision: false,
+  fastMode: false,
+  provider: "auto",
+  limits: {},
+  apiKey: CANARY,
+  fastApiKey: CANARY,
+};
+seen = [];
+stubFetch({ status: 200 });
+await api.makeApi("http://x").codeProfile("hb-1", settings);
+let body = JSON.parse(seen[0]?.body || "{}");
+check("codeProfile 打的是 POST …/profile/code", seen[0]?.method === "POST" && seen[0]?.url === "http://x/v1/handbooks/hb-1/profile/code");
+check("codeProfile 的 body 没有 api_key", !("api_key" in body) && !("apiKey" in body));
+check("codeProfile 的 body 里没有金丝雀钥匙", !String(seen[0]?.body).includes(CANARY));
+check("codeProfile 带 thinking（一律主模型，思考档同主对话）", body.thinking === "high");
+check("codeProfile 带 base_url 去尾斜杠", body.base_url === "https://api.deepseek.com");
+check("codeProfile 缺省 max_batches=3", body.max_batches === 3);
+check("codeProfile 不重算时 body 里没有 force 键", !("force" in body));
+check("codeProfile 没改过旋钮时 body 里没有 limits 键", !("limits" in body));
+
+seen = [];
+await api.makeApi("http://x").codeProfile("hb-1", settings, { force: true, maxBatches: 1 });
+body = JSON.parse(seen[0]?.body || "{}");
+check("重算时 force:true 出现", body.force === true);
+check("maxBatches 透传", body.max_batches === 1);
+
+seen = [];
+await api.makeApi("http://x").getProfile("hb-1");
+check("getProfile 是 GET …/profile", seen[0]?.method === "GET" && seen[0]?.url === "http://x/v1/handbooks/hb-1/profile");
+
+seen = [];
+await api.makeApi("http://x").listProfiles("/a b/中文 vault");
+check("listProfiles 的 vault_root 已编码", seen[0]?.url === "http://x/v1/profiles?vault_root=" + encodeURIComponent("/a b/中文 vault"));
+
+stubFetch({ status: 400, detail: { code: "bad-key", message: "钥匙被节点拒了" } });
+err = await grab(() => api.makeApi("http://x").codeProfile("hb-1", settings));
+check("codeProfile 的 400 是 ApiError 且带厂商码", err instanceof api.ApiError && err.code === "bad-key" && err.message === "钥匙被节点拒了");
 
 let bad = 0;
 for (const [name, pass] of checks) {

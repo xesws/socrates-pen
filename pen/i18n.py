@@ -187,6 +187,48 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "vault_root 不是目录：{got}",
         "en": "vault_root is not a directory: {got}",
     },
+    # ── 学习画像。why.* 是「这一分怎么来的」，参数只有数字和轮号，绝不带读者原话 ──
+    "profile.vault_root_required": {
+        "zh": "缺 vault_root：画像的书架按库根找书。",
+        "en": "vault_root is required: the shelf lists the books registered from this vault.",
+    },
+    "profile.why.unrated": {
+        "zh": "证据只有 {n} 轮，不足 3 轮，未评",
+        "en": "Only {n} turns of evidence, fewer than 3: unrated",
+    },
+    "profile.why.base": {"zh": "起评 {base}", "en": "Starts at {base}"},
+    "profile.why.arc_closed": {
+        "zh": "追问弧线 第{start}→{end}轮（{turns} 轮，{asking} 轮在问，有收口）：−{p}",
+        "en": "Follow-up arc, turns {start}→{end} ({turns} turns, {asking} asking, closed): −{p}",
+    },
+    "profile.why.arc_open": {
+        "zh": "追问弧线 第{start}→{end}轮（{turns} 轮，{asking} 轮在问，未收口）：−{p}",
+        "en": "Follow-up arc, turns {start}→{end} ({turns} turns, {asking} asking, never closed): −{p}",
+    },
+    "profile.why.lapse": {
+        "zh": "第{a}轮说懂了，第{b}轮又回来（{min} 分钟后）：−{p}",
+        "en": "Declared understood at turn {a}, came back at turn {b} ({min} min later): −{p}",
+    },
+    "profile.why.lapse_cancelled": {
+        "zh": "第{a}轮说懂了、第{b}轮回来，但第{c}轮求证被确认——算核对，不算遗忘",
+        "en": "Declared at turn {a}, came back at turn {b}, but turn {c} was confirmed — a check, not a lapse",
+    },
+    "profile.why.gap": {"zh": "自陈盲区 ×{n}：−{p}", "en": "Self-declared blind spot ×{n}: −{p}"},
+    "profile.why.corrected": {"zh": "求证被纠正 ×{n}：−{p}", "en": "Self-check corrected ×{n}: −{p}"},
+    "profile.why.confirmed": {"zh": "求证被确认 ×{n}：+{p}", "en": "Self-check confirmed ×{n}: +{p}"},
+    "profile.why.reject": {"zh": "顶回导师且对 ×{n}：+{p}", "en": "Pushed back and was right ×{n}: +{p}"},
+    "profile.why.adopted": {
+        "zh": "自己提出的模型被导师采纳：+{p}",
+        "en": "Own model adopted by the tutor: +{p}",
+    },
+    "profile.why.hold": {
+        "zh": "说懂了之后没再回来 ×{n}：+{p}",
+        "en": "Declared understood and never came back ×{n}: +{p}",
+    },
+    "profile.why.cap": {
+        "zh": "证据只有 {n} 轮，不足 6 轮，封顶 {cap}",
+        "en": "Only {n} turns of evidence, fewer than 6: capped at {cap}",
+    },
     "index.line_out_of_range": {
         "zh": "行号越界：{line}（全书 {n_lines} 行）",
         "en": "Line out of range: {line} (the manual has {n_lines} lines)",
