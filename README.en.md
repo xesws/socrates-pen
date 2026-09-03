@@ -44,7 +44,8 @@
 [System design](#4--system-design) ·
 [Install · Use · Privacy](#5--install--use--privacy) ·
 [Development](#6--development--tests--license) ·
-[Future work](#7--future-work)
+[Future work](#7--future-work) ·
+[Recent releases](#8--recent-releases)
 
 ---
 
@@ -1063,6 +1064,56 @@ headings, still work for the main conversation; cross-chapter probes get weaker.
 **Very few model combinations have been tested.** The examples in this README all ran on
 `deepseek/deepseek-v4-flash`. Other OpenAI-compatible endpoints should work by protocol; they have
 not been tried one by one.
+
+---
+
+## 8 · Recent releases
+
+Every minor version has a design note in [`docs/`](docs/) (Chinese): what the reader saw, the root
+cause, what changed, which gate guards it. Only the minors since 0.19 are listed here, with patch
+releases in one line each.
+
+**0.25.0 · 2026-09-03 · Learning profile.** A sixth sidebar button opens its own tab: a radar that
+grows with the number of axes, a 1–10 rule score side by side with a BKT mastery probability, every
+point of the score itemised, and a shelf of every book in this vault. Turn-by-turn coding always
+uses the main model; the first full pass takes one click from the reader, later opens top up
+incrementally, and pre-0.24.0 log rows count toward frequency only, never the score. The whole diff
+was reviewed with Codex (gpt-5.6-sol) before release; 16 findings fixed.
+[Design note](docs/v0.25.0-学习画像.md)
+
+**0.24.0 · 2026-09-03 · Logs you can actually read.** The raw material for the profile. Trajectory
+rows now carry local time, the reader's full words and the tutor's full reply, real anchors (reading
+view no longer pretends an unmatched selection sits on the cover), whether a suggested follow-up was
+clicked, the half-turn after an approved write-back, and which model answered.
+[Design note](docs/v0.24.0-日志要够看.md)
+
+**0.23.0 · 2026-09-02 · Vendor dialect table and true-shape health check.** The thinking level
+(off / low / medium / high) maps automatically to each vendor's wire format by model name: DeepSeek,
+Google Gemini, OpenAI, GLM, Kimi, Meta, with a provider picker in settings as the fallback. The
+health check now sends the exact shape of a main-conversation request instead of guessing.
+0.23.1: Gemini 3's thought signature is carried back. [Design note](docs/v0.23.0-厂商方言表与真形状体检.md)
+
+**0.22.0 · 2026-09-02 · Fast Mode.** A lightning toggle in the top bar: read-only turns go to a
+fast model, write-back turns stay on the base model. The fast model's window is small, so a
+compression layer steps through stub → slim → fold without polluting the session; switch it off and
+the full context is back. 0.22.1–0.22.5: downgrades are no longer silent, a config health check, the
+check may not guess, thinking text carried back, Gemini's thinking level.
+[Design note](docs/v0.22.0-Fast%20Mode%20与压缩策略层.md)
+
+**0.21.0 · 2026-09-01 · Custom bubbles.** The chip row is open: each chip is a prompt the reader
+writes, plus a "rewrites the note" switch; stored in the vault's data.json so it syncs with the
+vault, and the backend stays stateless. Three starter templates ship.
+[Design note](docs/v0.21.0-自定义泡泡.md)
+
+**0.20.0 · 2026-08-30 · Images in the chat box.** An "image understanding" switch in settings; once
+on, paste or drop up to 4 images of 2 MB each into the chat box, sent as OpenAI-compatible
+image_url content. Pixels are dropped when the session is saved, so the session file cannot bloat.
+[Design note](docs/v0.20.0-对话框贴图.md)
+
+**0.19.0 · 2026-08-25 · Rolling summary for the main conversation.** Earlier turns fold into an
+extractive summary with line anchors, no second LLM call; a selection over 4,000 characters keeps
+only its opening in the first packet. Fold by command, or automatically at the
+`compact_chat_tokens` threshold. [Design note](docs/v0.19.0-主对话compact.md)
 
 ---
 
