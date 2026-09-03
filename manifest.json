@@ -1,7 +1,7 @@
 {
   "id": "socrates-pen",
   "name": "Socrates",
-  "version": "0.22.5",
+  "version": "0.23.0",
   "minAppVersion": "1.5.0",
   "description": "The Socratic method for going deep on any handbook: keep asking, write answers back, get questioned. Desktop only.",
   "author": "xesws",
