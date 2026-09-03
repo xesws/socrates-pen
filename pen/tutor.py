@@ -519,14 +519,28 @@ class _ToolCallDraft:
     `delta.tool_calls[i].function.arguments` 是**一片一片来的**，`id` 和 `name`
     通常只在第一片出现，之后的片只带 index 和 arguments 的碎片。拼错一个字节
     json.loads 就炸，整轮对话失败——所以这块单独测。
+
+    除了这三样，分片上还可能有**我们不认识、但产出它的那个节点要求原样带
+    回**的字段。v0.23.1 撞上的是 Gemini 3：它在每个 tool_call 上挂一个
+    `extra_content.google.thought_signature`，下一枪回传时缺了它就是
+    `Function call is missing a thought_signature in functionCall part`
+    ——也就是说**任何一次工具调用之后，这轮对话就再也发不出去了**。
+
+    所以这里不认字段名，只认来路：**分片上带的，原样留住、原样带回。**
+    写死 `extra_content` 一个键的话，下一家换个名字我们就再修一次——
+    这已经是同一个病的第三次发作了（v0.22.4 是推理正文，见 model_dump）。
     """
 
-    __slots__ = ("id", "name", "args")
+    __slots__ = ("id", "name", "args", "extra")
+
+    # 这四个我们自己拆开处理，别的一律照抄。
+    _OURS = ("index", "id", "type", "function")
 
     def __init__(self) -> None:
         self.id = ""
         self.name = ""
         self.args: list[str] = []
+        self.extra: dict[str, Any] = {}
 
     def eat(self, piece: Any) -> None:
         if getattr(piece, "id", None):
@@ -538,12 +552,19 @@ class _ToolCallDraft:
             frag = getattr(fn, "arguments", None)
             if frag:
                 self.args.append(str(frag))
+        dump = getattr(piece, "model_dump", None)
+        if callable(dump):
+            for k, v in dump(exclude_none=True).items():
+                # 只收非空值：空片盖掉前面那片带来的签名就白留了。
+                if k not in self._OURS and v:
+                    self.extra[k] = v
 
     def done(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "type": "function",
             "function": {"name": self.name, "arguments": "".join(self.args)},
+            **self.extra,
         }
 
 

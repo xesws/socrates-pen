@@ -1293,6 +1293,83 @@ def test_tool_call_fragments_reassemble_into_valid_json() -> None:
     assert got[0]["function"]["name"] == "read_file"
 
 
+class _Piece:
+    """一片 delta.tool_calls[i]。**带 model_dump**，SDK 的分片就是这样的对象。"""
+
+    def __init__(self, **kw: Any) -> None:
+        self.__dict__.update(kw)
+
+    def model_dump(self, exclude_none: bool = True) -> dict[str, Any]:
+        out = dict(self.__dict__)
+        if exclude_none:
+            out = {k: v for k, v in out.items() if v is not None}
+        fn = out.get("function")
+        if fn is not None:
+            out["function"] = {k: v for k, v in fn.__dict__.items() if v is not None}
+        return out
+
+
+SIG = {"google": {"thought_signature": "EsECCr4CARFNMg880AxR7jah"}}
+
+
+def test_a_vendor_field_on_the_fragment_rides_back_out() -> None:
+    """**产出它的那一枪要把它带回去。**
+
+    v0.23.0 撞上的是 Gemini 3：它在每个 tool_call 上挂一个
+    `extra_content.google.thought_signature`，下一枪回传时缺了它，节点原话是
+    `Function call is missing a thought_signature in functionCall parts`
+    ——也就是说**任何一次工具调用之后，这轮对话就再也发不出去了**。真机验过：
+    抹掉这一句，第二枪当场 400；带上，第二枪正常作答。
+
+    这条断言不认字段名，只认来路：分片上带的，`done()` 里就得有。写死
+    `extra_content` 一个键的话，下一家换个名字我们还得再修一次——这已经是
+    同一个病的第三次发作了（v0.22.4 是推理正文）。
+    """
+    from pen.tutor import _ToolCallDraft, assemble_tool_calls
+
+    frags = [
+        _Piece(index=0, id="a", type="function", extra_content=SIG,
+               function=SimpleNamespace(name="read_file", arguments='{"pa')),
+        # 后续片不带签名。**不许把前面那片留下的盖成空。**
+        _Piece(index=0, id=None, type=None, extra_content=None,
+               function=SimpleNamespace(name=None, arguments='th":"x.md"}')),
+    ]
+    drafts: dict[int, Any] = {}
+    for f in frags:
+        drafts.setdefault(0, _ToolCallDraft()).eat(f)
+    got = assemble_tool_calls(drafts)[0]
+    assert got["extra_content"] == SIG
+    # 我们自己拆开处理的那四个不许重复混进去。
+    assert "index" not in got
+    assert got["function"] == {"name": "read_file", "arguments": '{"path":"x.md"}'}
+
+
+def test_a_fragment_without_model_dump_still_assembles() -> None:
+    """老 SDK、别家的桩、我们自己的测试都可能给个光板对象。
+
+    **多留字段是锦上添花，拿不到就当没有——不许因此炸掉整轮对话。**
+    """
+    from pen.tutor import _ToolCallDraft
+
+    d = _ToolCallDraft()
+    d.eat(SimpleNamespace(id="a", function=SimpleNamespace(name="fetch", arguments="{}")))
+    assert d.done() == {"id": "a", "type": "function",
+                        "function": {"name": "fetch", "arguments": "{}"}}
+
+
+def test_the_signature_survives_into_the_stored_message() -> None:
+    """闸得走读者真正走的那条路：分片 → draft → _StreamedMessage.model_dump()
+    → session.messages。中间任何一环把它滤掉，下一枪就是那个 400。
+    """
+    from pen.tutor import _StreamedMessage, _ToolCallDraft, assemble_tool_calls
+
+    d = _ToolCallDraft()
+    d.eat(_Piece(index=0, id="a", type="function", extra_content=SIG,
+                 function=SimpleNamespace(name="fetch", arguments="{}")))
+    stored = _StreamedMessage("", assemble_tool_calls({0: d})).model_dump(exclude_none=True)
+    assert stored["tool_calls"][0]["extra_content"] == SIG
+
+
 def test_reasoning_is_reported_as_a_count_not_as_text(monkeypatch, tmp_path: Path) -> None:
     """读者要的是「没卡住」，不是「让我读它的草稿」。推理内容实测 1633 个分片，
     塞进窄侧栏是灾难——只报字数，让状态行跳数字。"""
