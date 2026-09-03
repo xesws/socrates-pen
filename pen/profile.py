@@ -57,6 +57,8 @@ TAIL_CHARS = 300  # 批首附上一轮导师回复的结尾，给顶回 / 求证
 MAX_AXES = 24  # 轴的上限；再多就归不进去，只计数不算分
 NAME_MAX, DEF_MAX = 16, 80  # 轴名 / 定义会回灌进后续 prompt 和界面，必须夹紧
 ALIAS_MAX = 40  # 别名只用来归并，不上界面；模型提的原名再长也记一份，下次同名就能认出来
+CODER_LOG_MAX = 2_000_000  # profiles/<id>.coder.jsonl 超过这个字节数就从头写；它是排障用的，不是账
+QUIZ_CHIPS = frozenset({"socratic"})  # 只点这些芯片没打字 = 「考我」，是操作不是证据，不送模型
 
 TYPES = ("ASK", "VERIFY", "DEMAND", "REJECT", "GAP", "DECLARE", "META")
 VERIFY_OUTCOMES = ("confirmed", "corrected", "unclear")
@@ -350,6 +352,10 @@ def deterministic_coding(t: Turn) -> Coding | None:
         auto = "writeback"
     elif not t.reader_text.strip() and t.chip in _NO_INTENT_CHIPS:
         auto = "empty"
+    elif not t.reader_text.strip() and t.chip in QUIZ_CHIPS:
+        # 「先别揭晓，问我一个问题」不打字：读者要的是被考，不是在问哪条能力。
+        # 送模型它也答 META、给不出轴；真正有信息的是下一轮读者的作答。
+        auto = "quiz"
     if not auto:
         return None
     return Coding(type="META", legacy=t.legacy, auto=auto, coded_at=now_iso())
@@ -362,6 +368,10 @@ def _seed_deterministic(turns: list[Turn], cache: Cache) -> int:
         if t.key in cache.codings:
             continue
         d = deterministic_coding(t)
+        if d is None and not t.reader_text.strip() and cache.attempts.get(t.key, 0) >= MAX_ATTEMPTS:
+            # 没打字的芯片轮模型三次都归不了轴：没有原话就没有更多可找的，当操作记录收口，
+            # 别让它永远挂着「已放弃」。v0.25.0 二审那版把这种轮次硬归轴，留下过 11 条。
+            d = Coding(type="META", legacy=t.legacy, auto="chip", coded_at=now_iso())
         if d is not None:
             cache.codings[t.key] = d
             n += 1
@@ -668,9 +678,15 @@ def apply_batch(
         # 校验都过了才解析轴。作废的那条不许留下一条没有证据的空轴：它会占 MAX_AXES
         # 的名额、以「未评」上雷达，而它唯一的证据已经被判无效。
         axis = resolve_axis(it.get("axis"), cache.axes, t.when)
+        if axis is None and chip_only:
+            # 只点芯片、模型也给不出轴：没有原话就没有更多可找的。记成操作记录，不重试——
+            # 重试三次每次都是一枪真实调用，而结果不会变。
+            cache.codings[t.key] = Coding(type="META", legacy=t.legacy, auto="chip", coded_at=stamp, model=model)
+            coded += 1
+            continue
         if axis is None and len(cache.axes) < MAX_AXES:
-            # 不是轴满了，是模型没给轴（null / 空串 / 看不懂的形状）。存成无轴编码的话
-            # n_coded 会加一，但任何轴的频率和证据里都看不见它——等于永久丢失。再来一次。
+            # 有原话却没给轴（null / 空串 / 看不懂的形状）。存成无轴编码的话 n_coded 会加一，
+            # 但任何轴的频率和证据里都看不见它——等于永久丢失。再来一次。
             cache.attempts[t.key] = cache.attempts.get(t.key, 0) + 1
             continue
         gap = str(it.get("gap_quote") or "")
@@ -708,6 +724,24 @@ def pending_batches(turns: list[Turn], cache: Cache) -> list[list[Turn]]:
     return [todo[i : i + BATCH] for i in range(0, len(todo), BATCH)]
 
 
+def coder_log_path(handbook_id: str) -> Path:
+    return profiles_dir() / f"{handbook_id}.coder.jsonl"
+
+
+def _log_batch(handbook_id: str, entry: dict[str, Any]) -> None:
+    """编码器每一枪的原始回复落一行 JSONL：排「为什么这几轮被放弃」只能靠它。
+    永不抛：日志写不进去不能拖垮编码。里面只有模型回复和轮号，没有钥匙。"""
+    try:
+        p = coder_log_path(handbook_id)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        if p.exists() and p.stat().st_size > CODER_LOG_MAX:
+            p.write_text("", encoding="utf-8")
+        with p.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts": now_iso(), **entry}, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
 _LOCKS: dict[str, threading.Lock] = {}
 _LOCKS_GUARD = threading.Lock()
 
@@ -743,6 +777,7 @@ def code_next(
         batches = pending_batches(turns, cache)
         coded = 0
         m = Meter(kind=KIND_PROFILE)
+        batch: list[Turn] = []
         try:
             for batch in batches[: max(1, max_batches)]:
                 first = batch[0]
@@ -752,12 +787,24 @@ def code_next(
                 if items is None:
                     for t in batch:
                         cache.attempts[t.key] = cache.attempts.get(t.key, 0) + 1
+                    got = 0
                 else:
-                    coded += apply_batch(batch, items, cache, cfg.model)
+                    got = apply_batch(batch, items, cache, cfg.model)
+                coded += got
+                _log_batch(handbook_id, {
+                    "model": cfg.model,
+                    "turns": [t.idx for t in batch],
+                    "raw": raw,
+                    "parsed": None if items is None else len(items),
+                    "coded": got,
+                    "rejected": [{"idx": t.idx, "chip": t.chip, "attempts": cache.attempts.get(t.key, 0)}
+                                 for t in batch if t.key not in cache.codings],
+                })
                 cache.spend = metermod.merge(cache.spend, m.to_dict())
                 m = Meter(kind=KIND_PROFILE)
                 save_cache(cache)
-        except BaseException:
+        except BaseException as exc:
+            _log_batch(handbook_id, {"model": cfg.model, "turns": [t.idx for t in batch], "error": f"{type(exc).__name__}: {exc}"})
             cache.spend = metermod.merge(cache.spend, m.to_dict())
             save_cache(cache)
             raise

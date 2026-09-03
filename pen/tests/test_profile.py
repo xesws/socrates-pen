@@ -383,6 +383,33 @@ def test_bad_cache_container_types_fall_back_to_empty() -> None:
         assert c.codings == {} and c.axes == [] and c.attempts == {}
 
 
+def test_chip_only_turns_never_burn_attempts() -> None:
+    """v0.25.1：只点芯片没打字的轮次。「问我一个问题」是操作，不送模型；其他芯片模型给不出轴
+    就记操作记录，不重试——重试三次每次都是一枪真实调用，结果不会变（真数据上留过 11 条「已放弃」）。"""
+    quiz = profile.deterministic_coding(_turn(1, text="", chip="socratic"))
+    assert quiz is not None and (quiz.type, quiz.auto) == ("META", "quiz")
+    assert profile.deterministic_coding(_turn(1, text="", chip="examples")) is None, "举例子那种还是送模型归轴"
+    cache = Cache(handbook_id="hb-chip")
+    batch = [_turn(1, text="", chip="examples"), _turn(2, text="", chip="explain_zero")]
+    items = [
+        {"i": 1, "type": "META", "axis": None, "evidence_quote": ""},
+        {"i": 2, "type": "ASK", "axis": {"name": "磁带", "definition": "录制回放"}, "evidence_quote": ""},
+    ]
+    assert profile.apply_batch(batch, items, cache, "m") == 2
+    assert cache.attempts == {}
+    assert (cache.codings[batch[0].key].type, cache.codings[batch[0].key].auto) == ("META", "chip")
+    assert (cache.codings[batch[1].key].type, cache.codings[batch[1].key].axis) == ("ASK", "ax01")
+    # 旧缓存里已经「放弃」的芯片轮，下次补编码时收成操作记录；有原话的放弃轮不动
+    stale = Cache(handbook_id="hb-stale")
+    t = _turn(3, text="", chip="u.abc")
+    stale.attempts[t.key] = profile.MAX_ATTEMPTS
+    assert profile._seed_deterministic([t], stale) == 1 and stale.codings[t.key].auto == "chip"
+    typed = Cache(handbook_id="hb-typed")
+    t2 = _turn(4, text="有字的放弃轮")
+    typed.attempts[t2.key] = profile.MAX_ATTEMPTS
+    assert profile._seed_deterministic([t2], typed) == 0
+
+
 def test_gap_without_a_real_gap_quote_downgrades_to_ask_and_verify_defaults_unclear() -> None:
     cache = Cache(handbook_id="hb-g")
     batch = [_turn(1, text="这一段我没看懂"), _turn(2, text="它是不是一个 list？")]
@@ -818,6 +845,37 @@ def test_max_batches_garbage_string_is_default_not_422(tmp_path: Path, monkeypat
         r = client.post("/v1/handbooks/hb-many/profile/code", json={"api_key": "sk-test-1234567890", "max_batches": "many"})
         assert r.status_code == 200, r.text
         assert len(calls) == profile.MAX_BATCHES_DEFAULT and r.json()["remaining"] == 10
+
+
+def test_coder_log_records_raw_reply_and_rejections_without_keys(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """v0.25.1：编码器每一枪的原始回复落 profiles/<id>.coder.jsonl。排「这几轮为什么被放弃」只能靠它；
+    GET 不写；超过 CODER_LOG_MAX 就从头写；里面没有钥匙。"""
+    reply = json.dumps({"codings": [
+        {"i": 1, "type": "ASK", "axis": {"name": "缓存", "definition": ""}, "evidence_quote": "为什么"},
+        {"i": 2, "type": "ASK", "axis": "缓存", "evidence_quote": "编造的引文"},
+    ]}, ensure_ascii=False)
+    _stub_create(monkeypatch, reply)
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-log")
+        _rows("hb-log", 2)
+        assert client.get("/v1/handbooks/hb-log/profile").status_code == 200
+        log = profile.coder_log_path("hb-log")
+        assert not log.exists(), "GET 不写日志"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text("x" * (profile.CODER_LOG_MAX + 1), encoding="utf-8")
+        r = client.post("/v1/handbooks/hb-log/profile/code", json={"api_key": "sk-test-1234567890", "max_batches": 1})
+        assert r.status_code == 200, r.text
+        lines = [json.loads(l) for l in log.read_text(encoding="utf-8").splitlines()]
+        assert len(lines) == 1, "超长就从头写"
+        e = lines[0]
+        assert e["turns"] == [1, 2] and e["parsed"] == 2 and e["coded"] == 1
+        assert e["rejected"] == [{"idx": 2, "chip": "free", "attempts": 1}]
+        assert "编造的引文" in e["raw"]
+        _stub_create(monkeypatch, OSError("boom"))
+        assert client.post("/v1/handbooks/hb-log/profile/code", json={"api_key": "sk-test-1234567890"}).status_code == 400
+        lines = [json.loads(l) for l in log.read_text(encoding="utf-8").splitlines()]
+        assert len(lines) == 2 and lines[1]["error"].startswith("OSError") and lines[1]["turns"] == [2]
+        assert "sk-test" not in log.read_text(encoding="utf-8")
 
 
 def test_profile_spend_stays_out_of_usage_and_handbook_is_untouched(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
