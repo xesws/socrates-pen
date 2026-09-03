@@ -46,20 +46,42 @@ const varNames = [...tupleBody.slice(0, tupleBody.indexOf(")")).matchAll(/_([A-Z
   .map((m) => `_${m[1]}`);
 const backend = varNames.map((v) => {
   const at = py.indexOf(`${v} = Provider(`);
-  const key = /key=(?:"([a-z]+)"|([A-Z]+))/.exec(py.slice(at, at + 400));
-  // key=GENERIC 那一格用的是模块常量，值就是 "generic"。
-  return key[1] || (key[2] === "GENERIC" ? "generic" : key[2]);
+  // 窗口卡到下一个 Provider 定义为止，免得某一家漏写 base_url 时把下一家的偷过来。
+  const next = py.indexOf(" = Provider(", at + 12);
+  const body = py.slice(at, next < 0 ? py.length : next);
+  const key = /key=(?:"([a-z]+)"|([A-Z]+))/.exec(body);
+  const base = /base_url="([^"]*)"/.exec(body);
+  return {
+    // key=GENERIC 那一格用的是模块常量，值就是 "generic"。
+    key: key[1] || (key[2] === "GENERIC" ? "generic" : key[2]),
+    base: base ? base[1] : null,
+  };
 });
 
-check(`后端表抠得出来（${backend.length} 家）`, backend.length >= 8 && backend.every(Boolean));
+check(
+  `后端表抠得出来（${backend.length} 家）`,
+  backend.length >= 8 && backend.every((b) => b.key && b.base !== null),
+);
 
 // ── 前端那张表 ─────────────────────────────────────────────────────
 const front = mod.PROVIDERS.map((p) => p.key);
 check("前端第一档是自动", front[0] === "auto");
 check(
   `前后端厂商逐键一致（${backend.length} 家）`,
-  JSON.stringify(front.slice(1)) === JSON.stringify(backend),
+  JSON.stringify(front.slice(1)) === JSON.stringify(backend.map((b) => b.key)),
 );
+
+// ── 官方地址也是一条规则，而它现在写了两遍 ──────────────────────────
+//
+// 前端拿它预填 Base URL，后端 Provider.base_url 是同一件事的另一份拷贝。
+// 两边飘开的后果比键名飘开更隐蔽：读者选了 Kimi，预填进去一个**过期的**
+// 地址，钥匙是对的、型号是对的，只有主机名不对——报出来是一个 404
+// 「这个节点没有这个型号」，指向完全错误的方向。
+const baseOf = Object.fromEntries(backend.map((b) => [b.key, b.base]));
+const drift = mod.PROVIDERS.filter((p) => p.key !== "auto" && p.base !== baseOf[p.key]).map(
+  (p) => `${p.key}(前 ${p.base || "空"} ≠ 后 ${baseOf[p.key] ?? "缺"})`,
+);
+check(`前后端官方地址逐字一致（飘了 ${drift.join("; ") || "无"}）`, drift.length === 0);
 
 // ── 提示语。每一家都得有，两种语言都得有 ────────────────────────────
 const dicts = { zh: readFileSync("src/i18n/zh.ts", "utf8"), en: readFileSync("src/i18n/en.ts", "utf8") };

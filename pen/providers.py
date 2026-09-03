@@ -138,11 +138,14 @@ _DEEPSEEK = Provider(
             # thinking_on 又判成 False，于是那段推理被我们扔掉，正好凑出
             # v0.22.4 那条 400。所以 off 必须明确地关。
             "off": _nested("disabled"),
-            # low/medium/high 逐字保持既有行为。文档的映射是
-            # low→low、medium→high、high→high、max→max：我们发的三个值它全收。
+            # 文档的映射是 low→low、medium→high、high→high、max→max。
+            # high 发 max 是在兑现 thinking_wire 自己的契约「high = 该节点顶档」
+            # ——GLM 那两支早就是 max，DeepSeek V4 现在也有这一档。
+            # medium 保留字面量：它是官方认的兼容别名（实际等同 high），
+            # 发什么读者在设置页就看见什么，不必替他翻译一道。
             "low": _nested("enabled", "low"),
             "medium": _nested("enabled", "medium"),
-            "high": _nested("enabled", "high"),
+            "high": _nested("enabled", "max"),
         },
         "forced": _same(_quiet()),
     },
@@ -201,11 +204,16 @@ _GOOGLE = Provider(
     key="google",
     match=("gemini",),
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    # 文档：Gemini 3 起「reasoning cannot be turned off」，none 只对 2.5 有效。
+    # 文档：Gemini 3 起「reasoning cannot be turned off」。**2.5 那一代也不是
+    # 整代都能关**——只有 Flash / Flash-Lite 收 thinkingBudget=0，2.5 Pro 官方
+    # 写明「N/A: Cannot disable thinking」、最低预算 128。所以 Pro 得单挑出来，
+    # 否则 off 那一档在 2.5 Pro 上就是一个 400。
+    #
     # **认不出版本按「关不掉」处理**——发 low 最坏是慢一点，发 none 给一个
     # 关不掉的型号是 400，两种错的代价不对等。
     variants=(
         (r"gemini-(?:[3-9]|\d{2,})", "forced"),
+        (r"gemini-[\d.]+-pro", "forced"),
         (r"gemini-\d", "optional"),
         (r"", "forced"),
     ),
@@ -234,11 +242,20 @@ _OPENAI = Provider(
     base_url="https://api.openai.com/v1",
     # **非推理型收到 reasoning_effort 就 400**（原话：`Unsupported parameter:
     # 'reasoning.effort' is not supported with this model`）。所以默认变体是
-    # chat：认不出的一律什么都不发，宁可少一个旋钮，不要一个打不出去的请求。
+    # plain：认不出的一律什么都不发，宁可少一个旋钮，不要一个打不出去的请求。
+    # 三条例外必须排在版本规则前面，否则会被 gpt-5+ 那条正则一并卷进推理型：
+    #   -chat      gpt-5-chat-latest / gpt-5.2-chat-latest 是**非推理**型号，
+    #              原话 `Invalid 'reasoning_effort' for non-reasoning model`
+    #   gpt-5-pro  只走 Responses API，且 effort 只收 high；本仓固定走 Chat
+    #              Completions，四档里三档必错。发空的至少不会因为档位被拒。
+    #   ?:^|/      网关会把型号名写成 openai/o3-mini。锚死在串首就漏了它，
+    #              于是 o 系列悄悄落进 plain，推理档变成一个摆设。
     variants=(
-        (r"^o\d", "reasoning"),
+        (r"-chat", "plain"),
+        (r"gpt-5[\d.]*-pro", "plain"),
+        (r"(?:^|/)o\d", "reasoning"),
         (r"gpt-(?:[5-9]|\d{2,})", "reasoning"),
-        (r"", "chat"),
+        (r"", "plain"),
     ),
     table={
         # 推理型关不掉思考（能关的那几个型号还认 none，但认不认按版本走，
@@ -249,7 +266,8 @@ _OPENAI = Provider(
             "medium": _effort("medium"),
             "high": _effort("high"),
         },
-        "chat": _same(_quiet()),
+        # gpt-4 系列不是推理模型；gpt-5-chat / gpt-5-pro 也落这一格。
+        "plain": _same(_quiet()),
     },
 )
 
@@ -262,6 +280,9 @@ _KIMI = Provider(
     # 压根没有思考。传错一边就是 400，所以这三条必须分开。
     variants=(
         (r"moonshot-v1", "plain"),
+        # K2.7 的 thinking.type **只收 enabled，传 disabled 直接报错**
+        # （官方原话）。落进下面那个 k2 的话，off 那一档就是一个必炸的请求。
+        (r"kimi-k2\.7", "forced"),
         (r"kimi-k(?:[3-9]|\d{2,})", "k3"),
         (r"", "k2"),
     ),
@@ -272,6 +293,8 @@ _KIMI = Provider(
             "medium": _effort("high"),
             "high": _effort("max"),
         },
+        # keep 不发：官方说「省略或传合法值 all 都按 all 处理」，那就别发。
+        "forced": _same(_nested("enabled")),
         "k2": {
             "off": _nested("disabled"),
             "low": _nested("enabled"),
@@ -284,17 +307,21 @@ _KIMI = Provider(
 
 _META = Provider(
     key="meta",
-    match=("muse-spark", "llama"),
+    # **只认 muse-spark。** 一度也收了 "llama"，那是错的：Together / Groq /
+    # Ollama / vLLM 上任何一个 llama-3/4 节点都会被当成 Muse Spark，连 off 都会
+    # 发一个它多半不认的 reasoning_effort。一家的方言不能推广到一个生态。
+    match=("muse-spark",),
     base_url="https://api.meta.ai/v1",
     variants=((r"", "default"),),
     # 文档：reasoning_effort 收 minimal/low/medium/high/xhigh，而
-    # **muse-spark 一直在想，传 none 直接 400**。所以 off 落到 minimal。
+    # **muse-spark 一直在想，传 none 直接 400**。所以 off 落到 minimal，
+    # high 落到 xhigh——「high = 该节点顶档」是这张表的通则，它的顶档是 xhigh。
     table={
         "default": {
             "off": _effort("minimal"),
             "low": _effort("low"),
             "medium": _effort("medium"),
-            "high": _effort("high"),
+            "high": _effort("xhigh"),
         }
     },
 )

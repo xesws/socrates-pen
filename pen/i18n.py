@@ -86,9 +86,10 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "provider.no_thinking": {
         "zh": "这个节点不认我们发的推理档写法。到设置里把「模型厂商」选成"
-        "对应的那一家，或把 Thinking 设为 off。节点原话：{detail}",
+        "对应的那一家；不确定是哪一家就选「通用 OpenAI 兼容」。节点原话：{detail}",
         "en": "This endpoint does not accept the reasoning-effort dialect we sent. "
-        "Pick the matching provider in settings, or set Thinking to off. "
+        "Pick the matching provider in settings, or choose the generic "
+        "OpenAI-compatible option if you are not sure which one it is. "
         "The endpoint said: {detail}",
     },
     "provider.unexpected": {

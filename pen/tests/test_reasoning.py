@@ -205,8 +205,9 @@ def test_an_unparseable_gemini_version_errs_toward_the_safe_side() -> None:
 @pytest.mark.parametrize("lv", ["off", "low", "medium", "high"])
 def test_the_gemini_branch_does_not_leak_into_the_others(lv: str) -> None:
     """加一格不许动别人。DeepSeek / GLM / celeris 三家逐字不变。"""
+    # high 发 max：兑现「high = 该节点顶档」，同 GLM 那两支。
     assert thinking_wire("deepseek-v4", "high") == {
-        "reasoning_effort": "high",
+        "reasoning_effort": "max",
         "extra_body": {"thinking": {"type": "enabled"}},
     }
     assert thinking_wire("glm-5.3", "off") == {

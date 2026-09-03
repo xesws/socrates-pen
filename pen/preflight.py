@@ -102,12 +102,15 @@ def check(cfg: LLMConfig | None, *, timeout: float = 20.0) -> Verdict:
     - **只有 400 才进梯子。** 401 / 404 / 连不上跟形状无关，减了也是白减，
       一枪定案。
     - **报的原话用第①枪的。** 那才是描述真实拒绝的那句；后面几枪是我们为了
-      定位自己造的局面。
+      定位自己造的局面。后面某一枪要是撞上别的错（限流、网络抖、钥匙被撤），
+      那是附带伤害不是诊断——**停下来，把第①枪那条拒绝原样报回去**，
+      别拿一句更模糊的话换掉一句更具体的。
     - **这一级没减掉任何东西就跳过。** 推理档是 off 时 wire 本来就是空的，
       白打一枪不说，还会把「我们压根没发推理字段」报成 no-thinking。
 
     梯子只在失败路径上跑，所以日常绿灯**恰好一枪**。
     """
+    import httpx
     from openai import OpenAI, OpenAIError
 
     from pen.agent.registry import schemas
@@ -137,7 +140,20 @@ def check(cfg: LLMConfig | None, *, timeout: float = 20.0) -> Verdict:
                 with resp as stream:
                     for _ in stream:
                         break
-        except (OpenAIError, OSError, TimeoutError) as exc:
+        # **迭代期间的异常 SDK 不包。** `create()` 抛的 httpx 超时会被包成
+        # APITimeoutError，可流一旦开始，读分片的 httpx 错（ReadTimeout /
+        # RemoteProtocolError）和坏 SSE 的 JSONDecodeError 是原样往外扔的——
+        # 逃出去就是 /v1/llm/preflight 一个 500，而体检的全部职责就是**替读者
+        # 把话说清楚**，自己却抛个 500 是最坏的失败方式。
+        # 不写成裸 except Exception：那样连我们自己拼错 kwargs 的 TypeError
+        # 都会被说成「节点返回了意料外的错误」，把自家的 bug 栽给读者。
+        except (
+            OpenAIError,
+            httpx.HTTPError,
+            OSError,
+            TimeoutError,
+            ValueError,  # json.JSONDecodeError 是它的子类：坏 SSE 分片
+        ) as exc:
             # 没挂图就绝不可能是「节点拒收了图片」。**这是按构造排除，不是猜。**
             # v0.22.2 少了这个参数，于是关着视觉的读者被告知「把图像理解关掉」。
             return provider_error_code(exc, sent_image=sent_image), provider_detail(exc)
@@ -162,9 +178,13 @@ def check(cfg: LLMConfig | None, *, timeout: float = 20.0) -> Verdict:
         if thinner == thin:
             continue
         thin = thinner
-        code2, detail2 = shot(thin)
+        code2, _ = shot(thin)
         if not code2:
             return Verdict(blame, cfg.model, detail)
         if code2 != PROVIDER_REJECTED:
-            return Verdict(code2, cfg.model, detail2)
+            # 梯子撞上了**别的**（限流、网络抖一下、钥匙刚好被撤）。那是附带
+            # 伤害，不是第①枪那个 400 的诊断——拿它当结论，就会把一句具体的
+            # 「这个节点不支持工具调用」换成一句「意料外的错误」。
+            # 停在这儿，把原来那条拒绝原样报回去。
+            break
     return Verdict(PROVIDER_REJECTED, cfg.model, detail)

@@ -83,7 +83,10 @@ def test_generic_never_sends_extra_body(variant: str, level: str) -> None:
         ("kimi-k3", "kimi"),
         ("moonshot-v1-8k", "kimi"),
         ("muse-spark-1.3", "meta"),
-        ("llama-4-scout", "meta"),
+        # **llama 不归 Meta 认领。** Together / Groq / Ollama / vLLM 上的
+        # llama-3/4 和 Muse Spark 没有任何方言关系，认走了连 off 都会发一个
+        # 它多半不认的 reasoning_effort。
+        ("llama-4-scout", GENERIC),
         ("gpt-4o", "openai"),
         ("o3-mini", "openai"),
         ("celeris-1-magnus", "celeris"),
@@ -129,7 +132,24 @@ def test_auto_and_junk_fall_back_to_the_guess(explicit: str) -> None:
         ("moonshot-v1-8k", "plain"),
         ("gpt-5.6", "reasoning"),
         ("o3-mini", "reasoning"),
-        ("gpt-4o", "chat"),  # 非推理型收到 reasoning_effort 就 400
+        ("gpt-4o", "plain"),  # 非推理型收到 reasoning_effort 就 400
+        # 名字里带 -chat 的是**非推理**型号，原话
+        # `Invalid 'reasoning_effort' for non-reasoning model: gpt-5-chat-latest`。
+        # 排在版本规则前面，否则被 gpt-5+ 那条一并卷进推理型。
+        ("gpt-5-chat-latest", "plain"),
+        ("gpt-5.2-chat-latest", "plain"),
+        # 只走 Responses API，且 effort 只收 high；本仓固定走 Chat Completions。
+        ("gpt-5-pro", "plain"),
+        # 网关会把型号名写成 openai/o3-mini。锚死在串首就漏了它。
+        ("openai/o3-mini", "reasoning"),
+        # Gemini 2.5 **Pro** 关不掉思考（官方：N/A: Cannot disable thinking），
+        # 只有 Flash / Flash-Lite 收 thinkingBudget=0。整代按 optional 处理，
+        # Pro 的 off 就是一个 400。
+        ("gemini-2.5-pro", "forced"),
+        ("gemini-2.5-flash-lite", "optional"),
+        # K2.7 的 thinking.type 只收 enabled，传 disabled 直接报错。
+        ("kimi-k2.7-code", "forced"),
+        ("kimi-k2.7-code-highspeed", "forced"),
         ("deepseek-reasoner", "forced"),
         ("deepseek-v4-flash", "v4"),
     ],
@@ -224,3 +244,70 @@ def test_a_bad_level_falls_back_to_off_not_a_crash() -> None:
     assert thinking_wire("deepseek-v4-flash", "nonsense") == thinking_wire(
         "deepseek-v4-flash", "off"
     )
+
+
+# ── Codex 那轮审出来的七条，逐条钉住 ────────────────────────────────
+
+
+def test_gemini_25_pro_cannot_turn_thinking_off() -> None:
+    """官方：2.5 Pro「N/A: Cannot disable thinking」，最低预算 128。
+
+    只有 Flash / Flash-Lite 收 thinkingBudget=0。**这条红了就是 2.5 Pro 上
+    每一个 off 档都在打 400。**
+    """
+    assert thinking_wire("gemini-2.5-pro", "off") == {"reasoning_effort": "low"}
+    assert thinking_on("gemini-2.5-pro", "off") is True
+    # 反向闸：别把修复做成「2.5 整代都关不掉」。
+    assert thinking_wire("gemini-2.5-flash", "off") == {"reasoning_effort": "none"}
+
+
+def test_kimi_k27_must_never_be_told_to_stop_thinking() -> None:
+    """官方原话：K2.7 的 thinking.type「只支持 enabled，传 disabled 会报错」。"""
+    for m in ("kimi-k2.7-code", "kimi-k2.7-code-highspeed"):
+        for lv in THINKING_LEVELS:
+            assert thinking_wire(m, lv) == {"extra_body": {"thinking": {"type": "enabled"}}}
+            assert thinking_on(m, lv) is True
+    # 反向闸：K2.6 仍然关得掉。
+    assert thinking_wire("kimi-k2.6", "off") == {"extra_body": {"thinking": {"type": "disabled"}}}
+
+
+@pytest.mark.parametrize("model", ["gpt-5-chat-latest", "gpt-5.2-chat-latest", "gpt-5-pro"])
+def test_openai_chat_and_pro_get_no_reasoning_field(model: str) -> None:
+    """两条都会 400：
+
+    -chat 是非推理型号（`Invalid 'reasoning_effort' for non-reasoning model'`）；
+    gpt-5-pro 只走 Responses API 且 effort 只收 high。
+    """
+    for lv in THINKING_LEVELS:
+        assert thinking_wire(model, lv) == {}
+
+
+def test_a_gateway_prefixed_o_series_still_gets_its_dial() -> None:
+    """网关写成 openai/o3-mini。锚死串首就漏了它，推理档变成一个摆设。"""
+    assert thinking_wire("openai/o3-mini", "high") == {"reasoning_effort": "high"}
+    assert thinking_wire("o3-mini", "high") == {"reasoning_effort": "high"}
+
+
+def test_llama_is_not_muse_spark() -> None:
+    """**一家的方言不能推广到一个生态。**
+
+    Together / Groq / Ollama / vLLM 上任何一个 llama 节点都不该被当成
+    Muse Spark——连 off 都会发一个它多半不认的 reasoning_effort=minimal。
+    """
+    for m in ("llama-4-scout", "meta-llama/Llama-3.3-70B-Instruct", "llama3:8b"):
+        assert provider_for(m).key == GENERIC
+        assert thinking_wire(m, "off") == {}
+
+
+def test_high_is_the_endpoint_top_tier_everywhere() -> None:
+    """thinking_wire 的契约是「high = 该节点顶档」。逐家兑现，别只兑现一半。"""
+    top = {
+        "deepseek-v4-flash": "max",
+        "glm-5.3": "max",
+        "glm-5.2": "max",
+        "celeris-1-magnus": "xhigh",
+        "muse-spark-1.3": "xhigh",
+        "kimi-k3": "max",
+    }
+    for model, want in top.items():
+        assert thinking_wire(model, "high")["reasoning_effort"] == want, model

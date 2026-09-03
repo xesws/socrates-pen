@@ -97,7 +97,8 @@ def test_llm_create_kwargs_thinking_off_vs_high() -> None:
         thinking="high",
     )
     kw_high = llm_create_kwargs(high, messages=[], tools=[{"type": "function"}])
-    assert kw_high["reasoning_effort"] == "high"
+    # v0.23.0 起 high 发该节点的顶档；DeepSeek V4 的顶档是 max。
+    assert kw_high["reasoning_effort"] == "max"
     assert kw_high["extra_body"] == {"thinking": {"type": "enabled"}}
     assert kw_high["tools"] == [{"type": "function"}]
 

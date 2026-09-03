@@ -17,7 +17,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from pen import preflight
+from pen import preflight, tutor
 from pen.config import LLMConfig
 
 
@@ -127,6 +127,24 @@ class _Picky(BaseHTTPRequestHandler):
         # 发出去的那一枪」。
         if model == "no-nested-thinking-model" and "thinking" in body:
             return bad('Unknown name "thinking": Cannot find field')
+        if model == "collateral-model":
+            # 全形状回 400，理由和梯子上任何一级都无关。而**减掉工具之后**
+            # 它回 503——那个 503 是我们自己减出来的局面，不是读者的病。
+            if "tools" not in body:
+                return self._json(503, {"error": {"message": "service unavailable"}})
+            return bad("context length 999999 exceeds the limit of 8192")
+        if model == "garbage-stream-model" and stream:
+            # 头是好的、200 也发了，**烂在正文里**。SDK 只包 create() 抛的错，
+            # 迭代分片时抛的它一个都不包。
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.end_headers()
+            try:
+                self.wfile.write(b"data: {not json at all\n\n")
+                self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return
         if model not in ("real-model", "no-tools-model", "no-stream-model",
                          "no-usage-model", "no-thinking-model",
                          "no-nested-thinking-model"):
@@ -367,6 +385,35 @@ def test_a_dead_key_never_climbs_the_ladder(picky: str) -> None:
         _Picky.log.clear()
         assert preflight.check(_cfg(picky, **over)).code != ""
         assert len(_Picky.log) == 1, (over, _Picky.log)
+
+
+def test_a_rung_that_breaks_something_else_does_not_steal_the_verdict(
+    picky: str,
+) -> None:
+    """**梯子是诊断工具，不是新病人。**
+
+    减配是我们为了定位自己造出来的局面。第③枪回 503，那个 503 属于「工具减
+    掉之后的这台节点」，不属于读者那一枪——把它报出去，读者会去查一个他根本
+    没撞上的故障。所以后面几枪只有两种用处：成了 → 指名道姓；换了个错 →
+    收手，报回第①枪那条拒绝和它的原话。
+    """
+    v = preflight.check(_cfg(picky, model="collateral-model"))
+    assert v.code == tutor.PROVIDER_REJECTED
+    assert "context length" in v.detail  # 第①枪的原话
+    assert "unavailable" not in v.detail  # 不是第③枪那个我们减出来的 503
+
+
+def test_a_stream_that_dies_mid_flight_is_a_verdict_not_a_500(picky: str) -> None:
+    """**SDK 只包 `create()` 抛的错**，迭代分片时抛的一个都不包。
+
+    这台节点 200 和 SSE 头都发了，烂在正文里——解析第一片时抛
+    `json.JSONDecodeError`。漏在网外的话它会一路穿过 check()、穿过
+    `_slot_report`，变成 `/v1/llm/preflight` 的一个 500：读者点「测试连接」
+    等到的不是判词，是转圈。
+    """
+    v = preflight.check(_cfg(picky, model="garbage-stream-model"))
+    assert v.code != ""  # 最要紧的是**它返回了**，而不是抛出去
+    assert v.model == "garbage-stream-model"
 
 
 def test_the_endpoint_renders_the_new_codes_too(picky, tmp_path, monkeypatch):
