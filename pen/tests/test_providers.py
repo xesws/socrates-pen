@@ -20,7 +20,9 @@ from pen.providers import (
     GENERIC,
     PROVIDER_KEYS,
     PROVIDERS,
+    flatten_unsigned,
     provider_for,
+    signed,
     thinking_on,
     thinking_wire,
 )
@@ -311,3 +313,120 @@ def test_high_is_the_endpoint_top_tier_everywhere() -> None:
     }
     for model, want in top.items():
         assert thinking_wire(model, "high")["reasoning_effort"] == want, model
+
+
+# ── 跨厂商的历史：发得出去，且只对要求签名的那一家动手 ──────────────
+
+SIG = {"extra_content": {"google": {"thought_signature": "EsECCr4"}}}
+
+
+def _call(cid: str, *, sig: bool) -> dict:
+    c = {"id": cid, "type": "function",
+         "function": {"name": "read_file", "arguments": '{"path":"x"}'}}
+    return {**c, **SIG} if sig else c
+
+
+def _round(cid: str, *, sig: bool) -> list[dict]:
+    return [
+        {"role": "assistant", "content": "看一下", "tool_calls": [_call(cid, sig=sig)]},
+        {"role": "tool", "tool_call_id": cid, "content": "原文"},
+    ]
+
+
+def test_only_google_asks_for_a_signature() -> None:
+    """别家一个都不要求。多标一家就是白白把结构化的往返压成文本。"""
+    want = {p.key for p in PROVIDERS.values() if p.sig_path}
+    assert want == {"google"}
+
+
+@pytest.mark.parametrize(
+    "call,path,ok",
+    [
+        (_call("a", sig=True), ("extra_content", "google", "thought_signature"), True),
+        (_call("a", sig=False), ("extra_content", "google", "thought_signature"), False),
+        # 半截路径断在中间：不许把 KeyError 当成「有签名」。
+        ({"extra_content": {"google": {}}}, ("extra_content", "google", "thought_signature"), False),
+        ({"extra_content": "不是 dict"}, ("extra_content", "google", "thought_signature"), False),
+        # 空签名值 = 没有。
+        ({"extra_content": {"google": {"thought_signature": ""}}},
+         ("extra_content", "google", "thought_signature"), False),
+        # 不要求签名的家：什么都算过。
+        (_call("a", sig=False), (), True),
+    ],
+)
+def test_signed_reads_the_whole_path(call: dict, path: tuple, ok: bool) -> None:
+    assert signed(call, path) is ok
+
+
+def test_a_vendorless_round_is_flattened_for_google() -> None:
+    """**读者撞的就是这一条。**
+
+    Fast Mode 的快轮（Celeris）产的 tool_call 身上没有 Google 签名，切回基座
+    的第一枪就是 `Function call is missing a thought_signature`。压平之后
+    信息还在——「我调过 read_file、参数是这些、结果是这些」——只是不再是
+    结构化的调用。对**已经执行完**的往返来说这没有损失。
+    """
+    h = [{"role": "user", "content": "hi"}, *_round("a", sig=False)]
+    out = flatten_unsigned(h, "gemini-3.8-flash")
+    assert [m["role"] for m in out] == ["user", "assistant", "user"]
+    assert not any(m.get("tool_calls") for m in out)
+    assert "read_file" in out[1]["content"] and "看一下" in out[1]["content"]
+    assert '{"path":"x"}' in out[1]["content"]   # 参数不能丢
+    assert "原文" in out[2]["content"]            # 工具结果更不能丢
+
+
+def test_googles_own_rounds_keep_their_shape() -> None:
+    """**这条红了，bce3b0b 那个修复就白做了。**
+
+    Gemini 自己产的往返带着签名、发得出去，压平它只会平白丢掉结构。
+    """
+    h = _round("a", sig=True)
+    out = flatten_unsigned(h, "gemini-3.8-flash")
+    assert out == h
+    assert out[0]["tool_calls"][0]["extra_content"] == SIG["extra_content"]
+
+
+def test_a_mixed_history_only_loses_the_unsigned_half() -> None:
+    """换模型的会话里两种往返是混着的。签了名的那些一条都不许动。"""
+    h = [*_round("a", sig=False), *_round("b", sig=True)]
+    out = flatten_unsigned(h, "gemini-3.8-flash")
+    assert [m["role"] for m in out] == ["assistant", "user", "assistant", "tool"]
+    assert out[2:] == h[2:]
+
+
+def test_an_orphan_tool_result_never_survives_alone() -> None:
+    """assistant 压平了，配对的 tool 结果就成了没主人的孤儿——**它本身也非法**。
+
+    只认自己压平过的那些 id：历史里别的 tool 结果（配着签了名的调用）要原样留。
+    """
+    h = [*_round("a", sig=False), *_round("b", sig=True)]
+    out = flatten_unsigned(h, "gemini-3.8-flash")
+    assert out[1]["role"] == "user"    # a 的结果跟着走了
+    assert out[3]["role"] == "tool"    # b 的结果原样留着
+    assert out[3]["tool_call_id"] == "b"
+
+
+@pytest.mark.parametrize("model", ["deepseek-v4-flash", "celeris-1-magnus", "gpt-5.6", "kimi-k3"])
+def test_every_other_vendor_gets_the_very_same_list(model: str) -> None:
+    """**老库和别家逐字节不变。**
+
+    返回同一个列表对象，不是「内容相等的另一个列表」——连拷贝都不做，
+    这条路上一个字节都没动过。
+    """
+    h = [*_round("a", sig=False)]
+    assert flatten_unsigned(h, model) is h
+
+
+def test_the_flattening_rides_the_real_shot() -> None:
+    """闸得走读者真正走的那条路：llm_create_kwargs 是「那一枪长什么样」的
+    唯一定义点，压平挂在别处就是第二个定义点。
+    """
+    from pen.config import LLMConfig
+    from pen.tutor import llm_create_kwargs
+
+    h = [{"role": "user", "content": "hi"}, *_round("a", sig=False)]
+    google = LLMConfig("https://x/v1", "k", "gemini-3.8-flash", "settings", "medium")
+    sent = llm_create_kwargs(google, messages=h)["messages"]
+    assert not any(m.get("tool_calls") for m in sent)
+    other = LLMConfig("https://x/v1", "k", "celeris-1-magnus", "settings", "medium")
+    assert llm_create_kwargs(other, messages=h)["messages"] is h

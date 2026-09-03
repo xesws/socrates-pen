@@ -107,6 +107,10 @@ class Provider:
     # 变体名 → {off/low/medium/high: Shot}。
     table: dict[str, dict[str, Shot]]
 
+    # 这家要求 tool_call **原样带回**的那个签名，在 tool_call 里的路径。
+    # 空元组 = 不要求（绝大多数家）。见 signed / flatten_unsigned。
+    sig_path: tuple[str, ...] = ()
+
     def variant(self, model: str) -> str:
         mid = _model_id(model)
         for pattern, name in self.variants:
@@ -204,6 +208,11 @@ _GOOGLE = Provider(
     key="google",
     match=("gemini",),
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    # **Gemini 3 在每个 tool_call 上挂一个思考签名，下一枪必须原样带回。**
+    # 缺了就是 `Function call is missing a thought_signature in functionCall
+    # parts`——历史长的时候 Google 还会把这句话简化成泛化的
+    # `Request contains an invalid argument.`，红条上一个字都不说。
+    sig_path=("extra_content", "google", "thought_signature"),
     # 文档：Gemini 3 起「reasoning cannot be turned off」。**2.5 那一代也不是
     # 整代都能关**——只有 Flash / Flash-Lite 收 thinkingBudget=0，2.5 Pro 官方
     # 写明「N/A: Cannot disable thinking」、最低预算 128。所以 Pro 得单挑出来，
@@ -426,3 +435,61 @@ def thinking_on(model: str, level: str, provider: str = "") -> bool:
 
 def _copy(v: Any) -> Any:
     return {k: _copy(x) for k, x in v.items()} if isinstance(v, dict) else v
+
+
+# ── 跨厂商的历史怎么发得出去 ────────────────────────────────────────
+#
+# `_switch_to_base` 的注释里写着「session.messages 是**供应商中立的**，换个
+# client 接着发就行」。Gemini 3 把这句话废了：它要求每个 tool_call 回传时
+# 带着自己签发的思考签名，而 Fast Mode 的快轮、或者读者中途换了个厂商，
+# 产出的 tool_call 身上根本没有那个签名——**切回基座的第一枪就是 400**。
+#
+# 这不是边角情况。Fast Mode 是主力功能，两边不同家是常态。
+
+
+def signed(call: dict[str, Any], path: tuple[str, ...]) -> bool:
+    """这个 tool_call 带着 `path` 指的那个签名吗。`path` 为空 = 这家不要求。"""
+    if not path:
+        return True
+    node: Any = call
+    for seg in path:
+        if not isinstance(node, dict):
+            return False
+        node = node.get(seg)
+    return bool(node)
+
+
+def flatten_unsigned(
+    messages: list[dict[str, Any]], model: str, provider: str = ""
+) -> list[dict[str, Any]]:
+    """把这一家发不出去的工具往返**压平成文本**，别的一个字不动。
+
+    压平丢的是结构，不是信息：模型照样读得到「我调过 read_file、参数是这些、
+    结果是这些」，只是不能再引用那个 call_id。对**已经发生过**的往返来说这
+    没有损失——它们早就执行完了，没人会再去引用。
+
+    不要求签名的家（除 Google 外全部）**逐字节原样返回同一个列表**，老库和
+    别的厂商一个字都不受影响。
+    """
+    path = provider_for(model, provider).sig_path
+    if not path:
+        return messages
+    out: list[dict[str, Any]] = []
+    orphan: set[str] = set()
+    for m in messages:
+        calls = m.get("tool_calls") or []
+        # 一条消息里的调用是同一枪产的，要么全有签名要么全没有。混着的话
+        # 按最坏情况办——留一个没签名的就够挂整条。
+        if m.get("role") == "assistant" and calls and not all(signed(c, path) for c in calls):
+            lines = [str(m.get("content") or "")]
+            for c in calls:
+                orphan.add(str(c.get("id") or ""))
+                fn = c.get("function") or {}
+                lines.append(f"（我调用了 {fn.get('name') or '工具'}，参数 {fn.get('arguments') or '{}'}）")
+            out.append({"role": "assistant", "content": "\n".join(x for x in lines if x)})
+        elif m.get("role") == "tool" and str(m.get("tool_call_id") or "") in orphan:
+            # 孤立的 tool 消息本身也是非法的，得跟着变成普通文本。
+            out.append({"role": "user", "content": f"（工具返回）\n{m.get('content') or ''}"})
+        else:
+            out.append(m)
+    return out

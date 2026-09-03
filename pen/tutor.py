@@ -445,16 +445,29 @@ def thinking_on(model: str, level: str, provider: str = "") -> bool:
     return providers.thinking_on(model, level, provider)
 
 
+def flatten_unsigned(
+    messages: list[dict[str, Any]], model: str, provider: str = ""
+) -> list[dict[str, Any]]:
+    """同上：**规则住在 pen/providers.py**，这里一个字都不判。"""
+    return providers.flatten_unsigned(messages, model, provider)
+
+
 def llm_create_kwargs(
     cfg: LLMConfig,
     *,
     messages: list[dict[str, Any]],
     tools: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """组 chat.completions.create 参数。thinking 档按型号收口，不原样上线。"""
+    """组 chat.completions.create 参数。thinking 档按型号收口，不原样上线。
+
+    **这里是「主对话那一枪长什么样」的唯一定义点**，体检也调它。所以历史的
+    修补也放在这儿：别处补一遍就是第二个定义点，而这个仓踩过三次。
+    """
     kwargs: dict[str, Any] = {
         "model": cfg.model,
-        "messages": messages,
+        # 这一家发不出去的工具往返，压平成文本。不要求签名的家原样返回同一个
+        # 列表，一个字节都不动。
+        "messages": flatten_unsigned(messages, cfg.model, cfg.provider),
         # 主对话线走真流式：读者要等 14.5 秒才看到第一个正文字，那段时间里
         # 屏幕上什么都没有。推理内容 1.3 秒就开始流，拿它当「没卡住」的信号。
         # include_usage 让末片带回 usage——不加就没账可记。
