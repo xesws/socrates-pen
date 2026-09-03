@@ -737,7 +737,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 **测试闸门**
 
-前端 `npm test` 是九道独立的闸，各守一件事。它们都**打包真代码来跑**，
+前端 `npm test` 是十二道独立的闸，各守一件事。它们都**打包真代码来跑**，
 不读源码找特征——插件这边没有测试框架，也不值得为这点事引一个：
 
 | 闸 | 守什么 |
@@ -751,10 +751,13 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | `check-limits.mjs` | **前后端那两张夹紧表必须逐项相等**——同一道闸的两半 |
 | `check-sidecar.mjs` | 版本比对、端口占用的解析，各家 `lsof`/`netstat`/`ss` 输出都喂一遍 |
 | `check-chips.mjs` | 自定义泡泡的归一化和消毒（[见 3.9](#39--自己定一枚泡泡)），外加**拿同一批语料把前后端那两份消毒逐字对跑一遍** |
+| `check-preflight.mjs` | 体检结论到状态栏文案的映射，每一种码都要有一句人话 |
+| `check-providers.mjs` | 前端厂商下拉表和 `pen/providers.py` 方言表逐项相等，含 base_url |
+| `check-locate.mjs` | 阅读视图划到的渲染文本对回原文行号：粗体、代码、表格、标题、折叠块都要对得上；对不上返回 null 而不是第 1 行 |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **587 passed**，
+后端 `python -m pytest pen/tests -q` → **1014 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
