@@ -832,7 +832,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
-| Python tests | 10,006 lines, **587 passed** |
+| Python tests | **1060 passed** |
 | TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -853,7 +853,7 @@ That's the first thing you'll trip over integrating this API. Eight kinds:
 
 **Test gates**
 
-`npm test` is nine independent gates, each guarding one thing. They all **run the real
+`npm test` is thirteen independent gates, each guarding one thing. They all **run the real
 compiled code** rather than grepping the source — the plugin side has no test framework,
 and it isn't worth pulling one in for this:
 
@@ -868,10 +868,14 @@ and it isn't worth pulling one in for this:
 | `check-limits.mjs` | **The two clamp tables, frontend and backend, must match item for item** — two halves of one gate |
 | `check-sidecar.mjs` | Version comparison and port-occupancy parsing, fed real `lsof` / `netstat` / `ss` output |
 | `check-chips.mjs` | Normalizing and sanitizing your own buttons ([see 3.9](#39--make-your-own-button)) — including a **differential run of the two sanitizers**, frontend against backend, on the same corpus |
+| `check-preflight.mjs` | Preflight verdict → status-bar wording; every code must map to a human sentence |
+| `check-providers.mjs` | The frontend provider dropdown and the `pen/providers.py` dialect table must match item for item, base_url included |
+| `check-locate.mjs` | Reading-view selections map back to source line numbers: bold, code, tables, headings and fold blocks all resolve; a miss returns null, never line 1 |
+| `check-report.mjs` | Learner-profile radar geometry and shelf merging: axes grow from 3 to 30 without labels leaving the box, unrated points never draw as 0, order is never re-sorted; two registrations of one title merge into one row |
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **587 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **1060 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -1011,7 +1015,7 @@ The first launch builds a venv and pip-installs — that's where things break. I
 
 ```bash
 npm install
-npm test        # nine gates: i18n / poll / api / key / fold / css / limits / sidecar / chips
+npm test        # thirteen gates, see the "Test gates" table
 npm run build   # tsc --noEmit && npm test && esbuild
 ```
 
@@ -1028,7 +1032,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 587 passed
+python -m pytest pen/tests -q       # 1060 passed
 python -m pen.index --check your-note.md
 ```
 
