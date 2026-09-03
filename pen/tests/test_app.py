@@ -2212,3 +2212,139 @@ def test_approve_half_turn_never_goes_fast() -> None:
     assert "fast" not in ApproveBody.model_fields, "给 ApproveBody 加了 fast——后半轮会写盘"
     params = inspect.signature(resume_chat).parameters
     assert "route" not in params and "fast_llm" not in params
+
+
+# ── v0.24.0 日志要够看：轨迹行自足、气泡带钟、锚点不撒谎、approve 那半截也记 ──
+
+
+def _rows(tmp_path: Path) -> list[dict]:
+    return [
+        json.loads(raw)
+        for raw in (tmp_path / "trajectories" / "swe-agent-v2.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+        if raw.strip()
+    ]
+
+
+def _q1_line() -> int:
+    text = config.DEFAULT_HANDBOOK.read_text(encoding="utf-8").splitlines()
+    return next(i for i, ln in enumerate(text, 1) if ln.startswith("**Q1. shell 和 Bash"))
+
+
+def _stream_that_answers(counter: dict):
+    def fake_stream(sess, path, packet, llm=None, extra_roots=None, allow_env_fallback=True,
+                    lang="zh", **kw):
+        counter["n"] = counter.get("n", 0) + 1
+        sess.last_assistant = f"第{counter['n']}答：" + "答" * 500
+        sess.last_chips = [{"text": "为什么这里要重试？"}, {"text": "和第二拍对得上吗？"}]
+        yield {
+            "type": "done",
+            "usage": {"context_tokens": 1, "completion_tokens": 1, "prompt_tokens": 1},
+            "dynamic_chips": [c["text"] for c in sess.last_chips],
+            "has_substantive": True,
+        }
+
+    return fake_stream
+
+
+def test_trajectory_row_is_self_sufficient_and_bubbles_carry_a_clock(tmp_path: Path, monkeypatch) -> None:
+    """轨迹是分析读者的唯一原料：整句（不截 240 字）、整段回答（不是 200 字预览）、
+    抛出的追问、读者这句是不是点的追问、走哪条路、什么时候问的、答了多久。
+    v0.24.0 之前一样都没有。"""
+    from datetime import datetime
+
+    _isolate_pen(tmp_path, monkeypatch)
+    monkeypatch.setattr("pen.app.stream_chat", _stream_that_answers({}))
+    line = _q1_line()
+    long_q = "这个地方我没看懂，" * 40  # 360 字，超过以前的 240 上限
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        base = {"session_id": sid, "selected_text": "shell 和 Bash", "start_line": line, "end_line": line}
+        assert client.post("/v1/chat", json={**base, "chip": "free", "user_text": long_q}).status_code == 200
+        # 点了上一轮抛的追问：插件发的也是 chip="free" + 原文
+        assert client.post("/v1/chat", json={**base, "chip": "free", "user_text": "为什么这里要重试？"}).status_code == 200
+        sess = STORE.get(sid)
+
+    first, second = _rows(tmp_path)[-2:]
+    assert first["user_text"] == long_q
+    assert first["assistant_text"].endswith("答" * 500) and "assistant_preview" not in first
+    assert first["assistant_chars"] == len(first["assistant_text"])
+    assert first["offered"] == ["为什么这里要重试？", "和第二拍对得上吗？"]
+    assert first["phase"] == "chat" and first["route"] in ("base", "fast")
+    assert first["picked"] == "" and second["picked"] == "dyn"
+    for key in ("asked_at", "ts"):
+        assert datetime.fromisoformat(first[key]).utcoffset() is not None, key
+    assert isinstance(first["duration_s"], float) and first["duration_s"] >= 0
+    assert first["anchor"]["located"] == "exact"
+
+    assert [m["role"] for m in sess.ui_messages] == ["user", "assistant", "user", "assistant"]
+    for m in sess.ui_messages:
+        assert datetime.fromisoformat(m["ts"]).utcoffset() is not None
+    assert sess.ui_messages[0]["ts"] == first["asked_at"], "气泡和轨迹行按同一个时刻对齐"
+
+
+def test_unlocated_selection_over_http_sticks_then_admits_none(tmp_path: Path, monkeypatch) -> None:
+    """插件对不回行号时发 0（以前发 1 → 记在封面）。同一会话里沿用上一处并标
+    sticky；全新会话没有上一处就标 none。分析时按 located 取信。"""
+    _isolate_pen(tmp_path, monkeypatch)
+    monkeypatch.setattr("pen.app.stream_chat", _stream_that_answers({}))
+    line = _q1_line()
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        located = {"session_id": sid, "selected_text": "shell 和 Bash", "chip": "free", "user_text": "问"}
+        assert client.post("/v1/chat", json={**located, "start_line": line, "end_line": line}).status_code == 200
+        assert client.post("/v1/chat", json={**located, "start_line": 0, "end_line": 0}).status_code == 200
+        fresh = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        assert client.post(
+            "/v1/chat", json={**located, "session_id": fresh, "start_line": 0, "end_line": 0}
+        ).status_code == 200
+
+    exact, sticky, none = [r["anchor"] for r in _rows(tmp_path)[-3:]]
+    assert exact["located"] == "exact"
+    assert sticky["located"] == "sticky" and sticky["start_line"] == line
+    assert sticky["level"] == exact["level"] and sticky["level"] != "封面"
+    assert none["located"] == "none" and none["start_line"] == 1
+
+
+def test_approve_half_turn_is_logged_as_its_own_row(tmp_path: Path, monkeypatch) -> None:
+    """写回是读者最重的学习动作，批准后的后半截以前一个字都没进轨迹。
+    现在另起一行 phase="approve"，气泡也带钟；aggregate 不把它数成第二轮。"""
+    from datetime import datetime
+
+    _isolate_pen(tmp_path, monkeypatch)
+
+    def fake_resume(sess, path, *, allow, pending_id, llm=None, extra_roots=None,
+                    allow_env_fallback=True, lang="zh", **_kw):
+        sess.last_assistant = "后半截：已经写进手册了。"
+        yield {
+            "type": "done",
+            "usage": {"context_tokens": 1, "completion_tokens": 1, "prompt_tokens": 1},
+            "dynamic_chips": [],
+            "has_substantive": True,
+        }
+
+    monkeypatch.setattr("pen.app.resume_chat", fake_resume)
+    with TestClient(app) as client:
+        sid = client.post("/v1/sessions", json={"handbook_id": "swe-agent-v2"}).json()["session_id"]
+        sess = STORE.get(sid)
+        sess.last_anchor = {"path": "/x.md", "level": "Level 0", "start_line": 3, "end_line": 3}
+        sess.pending = {
+            "id": "pend9", "name": "edit_file",
+            "args": {"old_string": "a", "new_string": "b"}, "tool_call_id": "c1", "rest": [],
+        }
+        STORE.save(sess)
+        resp = client.post("/v1/chat/approve", json={"session_id": sid, "pending_id": "pend9", "allow": True})
+        assert resp.status_code == 200
+        sess = STORE.get(sid)
+
+    row = _rows(tmp_path)[-1]
+    assert row["phase"] == "approve" and row["allow"] is True and row["ok"] is True
+    assert row["assistant_text"] == "后半截：已经写进手册了。"
+    assert row["anchor"]["level"] == "Level 0"
+    assert datetime.fromisoformat(row["asked_at"]).utcoffset() is not None
+    assert sess.ui_messages[-1]["role"] == "assistant"
+    assert datetime.fromisoformat(sess.ui_messages[-1]["ts"]).utcoffset() is not None
+    from pen import diagnose as diagnosemod, trajectory as trajmod
+
+    assert diagnosemod.aggregate(trajmod.load_turns("swe-agent-v2"))["n_turns"] == 0

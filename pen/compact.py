@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from pen.clock import now_iso
 from pen.config import SELECTED_TEXT_CHARS
 from pen.session import PenSession
 from pen.vision import IMAGE_PLACEHOLDER, content_text, has_image_parts
@@ -725,7 +726,8 @@ def _render_summary(slots: _Slots, lang: str) -> str:
 def _upsert_note(session: PenSession) -> None:
     rows = list(session.ui_messages or [])
     kept = [r for r in rows if not (r.get("role") == "note" and r.get("kind") == NOTE_KIND)]
-    kept.append({"role": "note", "kind": NOTE_KIND, "text": ""})
+    # 什么时候折的也要记：回看时「这之前的气泡是折叠前的」得有个钟。
+    kept.append({"role": "note", "kind": NOTE_KIND, "text": "", "ts": now_iso()})
     session.ui_messages = kept
 
 

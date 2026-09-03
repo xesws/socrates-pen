@@ -7,6 +7,8 @@ import re
 from collections import defaultdict
 from typing import Any
 
+from pen import trajectory
+
 WEAK_MIN_HITS = 2
 CHIP_WEIGHT = {
     "explain_zero": 2,
@@ -150,6 +152,8 @@ def extract_keywords(
 
 
 def aggregate(turns: list[dict[str, Any]]) -> dict[str, Any]:
+    # approve 那半截不是一轮。什么算一轮只在 trajectory.is_turn 定。
+    turns = [t for t in turns if trajectory.is_turn(t)]
     buckets: dict[str, dict[str, Any]] = {}
     level_hits: dict[str, int] = defaultdict(int)
     n_curriculum = 0

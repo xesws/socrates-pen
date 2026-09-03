@@ -7,6 +7,7 @@ import json
 import os
 import re
 import signal
+import time
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -29,6 +30,7 @@ from pen import proposals as proposalsmod
 from pen import probe as probemod, probe_store, retention, trajectory
 from pen import config as configmod
 from pen import meter as metermod
+from pen.clock import now_iso
 from pen.config import DEFAULT_HANDBOOK_ID, LLMConfig, llm_public_status, merge_llm
 from pen.i18n import localized, msg, norm_lang
 from pen.libraries import RegisterError
@@ -680,7 +682,7 @@ def _footprint(handbook_id: str) -> str:
     对提问这个用途，「反复回到的地方」才是准确的说法。
     """
     try:
-        turns = trajectory.load_turns(handbook_id)
+        turns = [t for t in trajectory.load_turns(handbook_id) if trajectory.is_turn(t)]
         rep = diagnosemod.aggregate(turns)
     except Exception:
         return ""
@@ -937,6 +939,12 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         meta = _meta_or_404(sess.handbook_id, lang)
         idx = libraries.load_index(sess.handbook_id)
         path = Path(meta.original_path)
+        # 这一轮从这一刻起算：气泡和轨迹行都记这个时刻，分析时按它对齐。
+        asked_at = now_iso()
+        t0 = time.monotonic()
+        # 读者这句是点了哪种追问：deep（深挖抛的）/ dyn（上一轮回复末尾抛的）/
+        # 空（自己打的）。点追问和自己打字是两种学习动作，轨迹里分不出来就白记了。
+        picked = ""
         # 读者点幽灵按钮时会以 chip="free" 把原文当 user_text 发回来，
         # 在这里精确匹配即可——这是整个深挖功能唯一的真实质量反馈信号。
         # 顺带认出 open 题：光在生成问题时标记没用，读者点下去以后模型如果
@@ -945,6 +953,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         try:
             clicked = probe_store.mark_clicked(sess.session_id, body.user_text or "")
             if clicked is not None:
+                picked = "deep"
                 # 出处在别本的题**不能**走 open 那条「凭记忆讲」——书就在读者库里，
                 # 沙箱放行，本轮跨书预算满额，它本可以直接去读。
                 intent_extra = probemod.cross_intent(clicked.anchors, lang)
@@ -1020,11 +1029,16 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 lang=lang,
                 compact_fed=bool(sess.compacted),
                 custom=custom,
+                fallback=sess.last_anchor,
             )
         except ValueError as exc:
             raise HTTPException(400, localized(exc, lang)) from exc
         sess.last_anchor = anchor
         typed = (body.user_text or "").strip()
+        if not picked and typed:
+            # 上一轮回复末尾抛的两条追问，读者点下去也是 chip="free" + 原文。
+            if typed in {str(c.get("text") or "").strip() for c in sess.last_chips}:
+                picked = "dyn"
         # 自定义芯片的 label 只有请求里那一份：chip_label() 只认 FIXED_CHIPS，
         # 查不到会**返回 id 本身**，于是气泡上写着 `u.a1b2c3` 并且就这么落盘进
         # ui_messages，换机器、换语言都救不回来。
@@ -1039,7 +1053,7 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         )
         # 点芯片时多存一个 chip id：label 是中文且会落盘，只存文本的话，
         # 英文用户恢复旧会话时自己的历史气泡会是中文。存了 id，前端就能查表。
-        row: dict[str, Any] = {"role": "user", "text": shown}
+        row: dict[str, Any] = {"role": "user", "text": shown, "ts": asked_at}
         if not typed:
             row["chip"] = body.chip
         if chat_images:
@@ -1117,7 +1131,9 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             yield _sse({"type": "error", "message": msg("chat.unexpected", lang)})
         finally:
             if sess.last_assistant and sess.last_assistant != prior_assistant:
-                sess.ui_messages.append({"role": "assistant", "text": sess.last_assistant})
+                sess.ui_messages.append(
+                    {"role": "assistant", "text": sess.last_assistant, "ts": now_iso()}
+                )
             # 轮次不能挂在「回复内容变了」上：模型偶尔会把同一段话再说一遍，
             # 那仍然是走完的一轮。ui_messages 用内容去重是对的，turns 不是。
             if ok and sess.last_assistant:
@@ -1127,16 +1143,22 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             except Exception:
                 pass
             try:
-                preview = (sess.last_assistant or "")[:200]
+                # 整句、整段、追问、钟——这一行要自足，见 trajectory 模块开头。
                 trajectory.append_turn(
                     sess.handbook_id,
                     {
                         "session_id": sess.session_id,
+                        "phase": "chat",
+                        "asked_at": asked_at,
+                        "duration_s": round(time.monotonic() - t0, 1),
                         "chip": body.chip,
-                        "user_text": (body.user_text or "")[:240],
+                        "picked": picked,
+                        "route": str(getattr(route, "value", route)),
+                        "user_text": body.user_text or "",
                         "anchor": anchor,
+                        "assistant_text": sess.last_assistant or "",
                         "assistant_chars": len(sess.last_assistant or ""),
-                        "assistant_preview": preview,
+                        "offered": [str(c.get("text") or "") for c in sess.last_chips],
                         "has_substantive": has_sub or sess.has_substantive,
                         "ok": ok,
                     },
@@ -1161,6 +1183,8 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
         meta = _meta_or_404(sess.handbook_id, lang)
         path = Path(meta.original_path)
         prior_assistant = sess.last_assistant
+        asked_at = now_iso()
+        t0 = time.monotonic()
     except Exception:
         lock.release()
         raise
@@ -1197,13 +1221,40 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
             yield _sse({"type": "error", "message": msg("approve.unexpected", lang)})
         finally:
             if sess.last_assistant and sess.last_assistant != prior_assistant:
-                sess.ui_messages.append({"role": "assistant", "text": sess.last_assistant})
+                sess.ui_messages.append(
+                    {"role": "assistant", "text": sess.last_assistant, "ts": now_iso()}
+                )
             try:
                 STORE.save(sess)
             except Exception:
                 pass
+            # 批准后的后半截也要进轨迹——写回是读者最重的学习动作，以前这半截
+            # 一个字都没记。phase="approve" 标明它不是新的一轮。
+            try:
+                changed = bool(sess.last_assistant) and sess.last_assistant != prior_assistant
+                trajectory.append_turn(
+                    sess.handbook_id,
+                    {
+                        "session_id": sess.session_id,
+                        "phase": "approve",
+                        "asked_at": asked_at,
+                        "duration_s": round(time.monotonic() - t0, 1),
+                        "allow": bool(body.allow),
+                        "chip": "",
+                        "picked": "",
+                        "route": "base",
+                        "user_text": "",
+                        "anchor": sess.last_anchor,
+                        "assistant_text": (sess.last_assistant or "") if changed else "",
+                        "assistant_chars": len(sess.last_assistant or "") if changed else 0,
+                        "offered": [str(c.get("text") or "") for c in sess.last_chips],
+                        "has_substantive": sess.has_substantive,
+                        "ok": ok,
+                    },
+                )
+            except Exception:
+                pass
             lock.release()
-            _ = ok
 
     return StreamingResponse(gen(), media_type="text/event-stream")
 

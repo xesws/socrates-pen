@@ -284,3 +284,18 @@ def test_old_snapshot_without_compact_fields_still_loads() -> None:
     loaded = PenSession.from_dict(data)
     assert loaded.compacted is False
     assert loaded.last_context_tokens == 0
+
+
+def test_compact_note_carries_a_clock() -> None:
+    """折叠那一刻也要有钟：回看时才知道哪些气泡是折叠前的。"""
+    from datetime import datetime
+
+    from pen.compact import _upsert_note
+    from pen.session import PenSession
+
+    sess = PenSession(session_id="s-clock", handbook_id="hb")
+    sess.ui_messages = [{"role": "user", "text": "hi"}]
+    _upsert_note(sess)
+    note = sess.ui_messages[-1]
+    assert note["role"] == "note"
+    assert datetime.fromisoformat(note["ts"]).utcoffset() is not None

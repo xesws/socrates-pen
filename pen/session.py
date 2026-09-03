@@ -9,10 +9,10 @@ import threading
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from pen.clock import now_iso
 from pen import config
 from pen import meter as metermod
 
@@ -316,7 +316,7 @@ class PenSession:
             "turn_spend": dict(self.turn_spend),
             "last_context_tokens": int(self.last_context_tokens or 0),
             "compacted": bool(self.compacted),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": now_iso(),
         }
 
     def to_public(self) -> dict[str, Any]:

@@ -666,3 +666,42 @@ def test_tool_rounds_limit_is_honoured(monkeypatch, tmp_path) -> None:
     with_tools = [k for k in seen if "tools" in k]
     assert len(with_tools) == 3, f"轮数上限设成 3，带 tools 的调用应恰好 3 次，实际 {len(with_tools)}"
     assert "tools" not in seen[-1], "收口那一枪不能带 tools，否则它还会接着翻"
+
+
+def test_unlocated_selection_sticks_to_the_previous_anchor_and_says_so() -> None:
+    """阅读视图下插件对不回行号时发 0。以前发 1，那一轮就记在「封面」——
+    实测一场 65 轮的对话 36 轮这样记丢。0 的解释只在 _place：同一本书里上一处
+    锚点还在就沿用并标 sticky；没有就老实标 none；别本书的锚点不沿用。"""
+    from pathlib import Path
+
+    from pen import libraries
+    from pen.tutor import build_user_packet
+
+    libraries.ensure_default()
+    idx = libraries.load_index("swe-agent-v2")
+    line = _a_line(idx)
+    path = Path(idx.original_path)
+
+    def go(start: int, fallback=None):
+        _, anchor = build_user_packet(
+            idx, path, selected_text="渲染后的字", start_line=start, end_line=start,
+            chip="free", user_text="", fallback=fallback,
+        )
+        return anchor
+
+    exact = go(line)
+    assert exact["located"] == "exact" and exact["start_line"] == line
+
+    sticky = go(0, fallback=exact)
+    assert sticky["located"] == "sticky"
+    assert sticky["start_line"] == line and sticky["level"] == exact["level"]
+    assert sticky["selected_text"] == "渲染后的字", "沿用的是位置，不是上一轮的划选"
+
+    none = go(0, fallback=None)
+    assert none["located"] == "none" and none["start_line"] == 1
+
+    other_book = go(0, fallback={**exact, "path": "/elsewhere/other.md"})
+    assert other_book["located"] == "none"
+
+    gone = go(0, fallback={**exact, "start_line": 10**9, "end_line": 10**9})
+    assert gone["located"] == "none", "上一处锚点已越界（书被改短了）就不能沿用"

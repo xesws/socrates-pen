@@ -219,3 +219,15 @@ def test_narrate_prompt_excludes_user_text() -> None:
     _system, user = diagnose.narrate_prompt(report)
     assert "hunter2" not in user
     assert "Q3" in user or "chmod" in user
+
+
+def test_aggregate_does_not_count_the_approve_half_turn_twice() -> None:
+    """写回要人批准时一轮跨两个请求，轨迹里是两行。第二行 phase="approve"
+    不是新的一轮——不筛掉，每次写回都会把同一处的 hits 翻倍，一轮就成「薄弱」。"""
+    chat = _q(level="Level 0", title="**Q3. chmod**", user="把这段写回去")
+    approve = {**chat, "phase": "approve", "user_text": ""}
+    report = diagnose.aggregate([chat, approve])
+    assert report["n_turns"] == 1
+    assert report["n_curriculum"] == 1
+    assert report["weak"] == []
+    assert report["footprints"][0]["hits"] == 1

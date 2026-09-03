@@ -102,6 +102,35 @@ def _budget_lines(lines: Sequence[str], budget: int) -> str:
     return "\n".join(out)
 
 
+def _place(
+    idx: HandbookIndex,
+    start_line: int,
+    end_line: int,
+    original_path: Path,
+    fallback: dict[str, Any] | None,
+) -> tuple[int, int, str]:
+    """**start_line=0 的解释只在这里。**
+
+    阅读视图下读者划到的是渲染后的字，插件对不回原文行号时发 0。以前它发 1——
+    1 是一个真实的行号，sidecar 老老实实把那一轮记在「封面」，实测一场 65 轮的
+    对话有 36 轮这样记丢，磁带那 11 轮全在里面。
+
+    同一本书里上一处锚点还在就沿用它，标 sticky（读者多半还在原地追问）；
+    没有就老实记在第 1 行，标 none。三个值都进 anchor，分析时按可信度用。
+    """
+    if start_line >= 1:
+        return start_line, end_line, "exact"
+    prev = fallback if isinstance(fallback, dict) else {}
+    try:
+        a = int(prev.get("start_line") or 0)
+        b = int(prev.get("end_line") or a)
+    except (TypeError, ValueError):
+        a = b = 0
+    if str(prev.get("path") or "") == str(original_path) and 1 <= a <= max(idx.n_lines, 1):
+        return a, max(a, b), "sticky"
+    return 1, 1, "none"
+
+
 def build_user_packet(
     idx: HandbookIndex,
     original_path: Path,
@@ -119,9 +148,12 @@ def build_user_packet(
     shelf: str = "",
     lang: str = "zh",
     compact_fed: bool = False,
+    # 上一轮的锚点。插件定位不到划选时发 start_line=0，这时沿用它。
+    fallback: dict[str, Any] | None = None,
 ) -> tuple[str, dict[str, Any]]:
     from pen.compact import cap_selected_text, compact_fed_packet_suffix
 
+    start_line, end_line, located = _place(idx, start_line, end_line, original_path, fallback)
     section = idx.locate(start_line)
     capped_sel, selection_capped = cap_selected_text(
         selected_text, lang=lang, start_line=start_line, end_line=end_line
@@ -242,6 +274,8 @@ chip = {chip}
         "selected_text": capped_sel,
         "selection_capped": selection_capped,
         "selected_chars": len(selected_text or ""),
+        # exact / sticky / none。分析时按可信度用：sticky 是「大概还在上一处」。
+        "located": located,
     }
     return packet, anchor
 

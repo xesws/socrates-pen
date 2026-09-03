@@ -97,7 +97,9 @@ function pickFromPreview(app: App): EditorPick | null {
       continue;
     }
     const src = view.getViewData?.() ?? view.editor.getValue();
-    const lines = linesFromQuote(src, text) ?? { startLine: 1, endLine: 1 };
+    // 对不回原文就发 0，不发 1。1 是一个真实的行号，sidecar 会老老实实把这轮
+    // 记在「封面」；0 才是「不知道在哪」，sidecar 见到它会沿用上一处锚点。
+    const lines = linesFromQuote(src, text) ?? { startLine: 0, endLine: 0 };
     return {
       text,
       startLine: lines.startLine,
