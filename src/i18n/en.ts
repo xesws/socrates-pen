@@ -324,6 +324,24 @@ export const en: Dict = {
   setKeepAliveDesc:
     "The local service is a Python process on your machine, shared by all vaults. On by default: it survives quitting Obsidian, so reopening is instant. Turn off to stop the one this plugin spawned when it unloads — don't if another vault is using it.",
   setBaseUrlDesc: "A Chat Completions-compatible address. No trailing slash.",
+  setProviderName: "Provider",
+  setFastProviderName: "Fast model provider",
+  setProviderDesc:
+    "Pick one and the thinking level is sent the way that provider expects. Auto reads the model name and falls back to a generic form. Picking one also prefills the Base URL, without overwriting an address you typed yourself.",
+  setProviderAuto: "Auto (from the model name)",
+  setProviderGeneric: "Generic OpenAI-compatible",
+  providerHint: {
+    auto: "Read from the model name: deepseek / gemini / glm / kimi / gpt- and so on pick that provider. Anything else uses the generic form.",
+    celeris: "https://inference.celeris.ai/celeris-1-magnus/v1 · models like celeris-1-magnus · it has no high tier, so high is sent as xhigh.",
+    google: "https://generativelanguage.googleapis.com/v1beta/openai/ · models like gemini-3-pro · Gemini 3 cannot turn thinking off, so off drops to the lowest tier.",
+    deepseek: "https://api.deepseek.com · models like deepseek-v4-flash · it thinks at full effort when no level is given, so off means explicitly off.",
+    glm: "https://open.bigmodel.cn/api/paas/v4 · models like glm-5.3 · GLM-5.3 cannot turn thinking off, so off drops to the lowest tier.",
+    kimi: "https://api.moonshot.ai/v1 · models like kimi-k3 or kimi-k2.6 · K3 cannot turn thinking off, and its wire format differs entirely from K2.",
+    meta: "https://api.meta.ai/v1 · models like muse-spark-1.3 · it always reasons, so off drops to the lowest tier.",
+    openai: "https://api.openai.com/v1 · models like gpt-5 or o3-mini · the gpt-4 family are not reasoning models, so no reasoning field is sent at all.",
+    openrouter: "https://openrouter.ai/api/v1 · model names carry a vendor prefix, e.g. google/gemini-3-pro · auto-detection is easiest to get wrong here, so pick explicitly.",
+    generic: "Any OpenAI-compatible endpoint. Sends only the common reasoning_effort and never a vendor-specific form — the safest choice for an endpoint you don't know well.",
+  },
   setModelName: "Model",
   setModelDesc:
     "The model string your endpoint expects, e.g. deepseek-v4-flash or gpt-4.1-mini.",

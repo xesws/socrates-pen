@@ -6,13 +6,24 @@
 是形状全对、行为全错：钥匙是废的、model 字符串在这个节点上不存在、或者节点
 根本没有视觉。这些只有节点自己知道，问本机问不出来。
 
-所以体检发一条最小的真请求：`max_tokens=1`、不带工具、一句 "hi"。开着
-「图像理解」时再挂一个 1×1 的 PNG——**节点收不收图，只有把图递过去才知道**。
+所以体检发一条真请求，而且**按主对话那一枪的真实形状发**：调
+`tutor.llm_create_kwargs()` 本人，于是流式、`stream_options`、工具表、推理档
+方言一样不少。内容仍是最小的一句 "hi"；开着「图像理解」时再挂一个 1×1 的
+PNG——**节点收不收图，只有把图递过去才知道**。
+
+形状不照抄的理由和别处一样：照抄就是第二个定义点。主对话那一枪将来长出新
+字段，探针得自动跟着长，否则「体检过了、真发一轮还是错」会再来一次——
+v0.22.5 那个 Google 400 就是这么漏过去的（当时探针不带推理档，状态栏一路绿灯）。
 
 ## 花销
 
-一枪的输入约十几个 token，输出 1 个。1×1 PNG 的 base64 是 68 个字符。
-按最贵的档算也不到千分之一分钱。它只在**配置变了**的时候跑，不进轮询。
+输入是一句 "hi" 加三个工具的 schema，约七百个 token；输出**收到第一片就断开**。
+1×1 PNG 的 base64 是 68 个字符。按最贵的档算也是千分之几分钱。
+它只在**配置变了**的时候跑，不进轮询。
+
+省钱靠断开，不靠 `max_tokens`。原先那个 `max_tokens=1` 是我们自己加的字段，
+推理型模型常对最小输出有要求，于是体检招来过读者根本撞不上的 400，再把它报成
+读者的配置问题。现在请求体里**一个我们自造的字段都没有**，那类误报按构造消失。
 
 ## 错在哪，由谁说
 
@@ -69,48 +80,91 @@ def probe_messages(vision: bool) -> list[dict[str, Any]]:
 
 
 def check(cfg: LLMConfig | None, *, timeout: float = 20.0) -> Verdict:
-    """体检一套配置。
+    """体检一套配置。码为空串表示这套配置**真的能用**——不是「看起来填齐了」。
 
-    码为空串表示这套配置**真的能用**——不是「看起来填齐了」。
+    ## 一枪打不出去时，是哪一样打不出去
 
-    ## 为什么有第二枪
+    主对话那一枪同时带着四样东西：推理档方言、工具表、流式、`stream_options`。
+    任何一样节点不认都是同一个 400，而读者的补救动作完全不同：换厂商、换型号、
+    还是这个节点压根做不了 Socrates 要它做的事。
 
-    第一枪带 `max_tokens=1`，图便宜。可**那个 1 是我们自己加的**：推理型模型
-    常常对最小输出有要求，于是体检可能招来一个真实对话根本不会撞上的 400，
-    然后把它当成读者的配置问题报出去。
+    所以失败时**逐级把这四样减掉**，减到哪一级突然打得出去，就是哪一样的错：
 
-    误报和漏报一样坏——读者会去改一套本来没坏的设置。所以分不出类的 400
-    要再打一枪，这一枪不带 `max_tokens`，形状和真实轮次一致：还错就是真错，
-    不错就说明第一枪是被我们自己的省钱手法绊倒的。
+        ① 全形状              成 → 绿灯
+        ② −推理档             成 → no-thinking
+        ③ −推理档 −工具        成 → no-tools
+        ④ ③ −stream_options   成 → no-usage
+        ⑤ ④ −stream           成 → no-stream
+        减到光了还错 → 沿用原有分类（bad-key / no-model / no-vision / rejected）
 
-    只在失败路径上多打这一枪，所以日常一分钱不多花。
+    三条纪律：
+
+    - **只有 400 才进梯子。** 401 / 404 / 连不上跟形状无关，减了也是白减，
+      一枪定案。
+    - **报的原话用第①枪的。** 那才是描述真实拒绝的那句；后面几枪是我们为了
+      定位自己造的局面。
+    - **这一级没减掉任何东西就跳过。** 推理档是 off 时 wire 本来就是空的，
+      白打一枪不说，还会把「我们压根没发推理字段」报成 no-thinking。
+
+    梯子只在失败路径上跑，所以日常绿灯**恰好一枪**。
     """
     from openai import OpenAI, OpenAIError
 
-    from pen.tutor import provider_detail, provider_error_code, PROVIDER_REJECTED
+    from pen.agent.registry import schemas
+    from pen.tutor import (
+        PROVIDER_NO_STREAM,
+        PROVIDER_NO_THINKING,
+        PROVIDER_NO_TOOLS,
+        PROVIDER_NO_USAGE,
+        PROVIDER_REJECTED,
+        llm_create_kwargs,
+        provider_detail,
+        provider_error_code,
+        thinking_wire,
+    )
 
     if cfg is None:
         return Verdict(NO_CONFIG, "", "")
     client = OpenAI(base_url=cfg.base_url, api_key=cfg.api_key, timeout=timeout)
     sent_image = bool(cfg.vision)
 
-    def shot(**extra: Any) -> tuple[str, str]:
+    def shot(kwargs: dict[str, Any]) -> tuple[str, str]:
         try:
-            client.chat.completions.create(
-                model=cfg.model,
-                messages=probe_messages(sent_image),
-                # **不带 thinking_wire。** 体检要回答的是「钥匙 / 型号 / 视觉」这
-                # 三件，推理档配错了是另一条错误，混进来会让一个 400 说不清是
-                # 哪一格的问题。
-                **extra,
-            )
+            resp = client.chat.completions.create(**kwargs)
+            if kwargs.get("stream"):
+                # **真收一片。** 有些节点的 400 是在第一片里发过来的，不收就
+                # 看不见；收到一片就够了，剩下的不要，当场关连接。
+                with resp as stream:
+                    for _ in stream:
+                        break
         except (OpenAIError, OSError, TimeoutError) as exc:
             # 没挂图就绝不可能是「节点拒收了图片」。**这是按构造排除，不是猜。**
             # v0.22.2 少了这个参数，于是关着视觉的读者被告知「把图像理解关掉」。
             return provider_error_code(exc, sent_image=sent_image), provider_detail(exc)
         return "", ""
 
-    code, detail = shot(max_tokens=1)
-    if code == PROVIDER_REJECTED:
-        code, detail = shot()
-    return Verdict(code, cfg.model, detail)
+    full = llm_create_kwargs(
+        cfg, messages=probe_messages(sent_image), tools=schemas()
+    )
+    code, detail = shot(full)
+    if code != PROVIDER_REJECTED:
+        return Verdict(code, cfg.model, detail)
+
+    wire = thinking_wire(cfg.model, cfg.thinking, cfg.provider)
+    thin = dict(full)
+    for blame, drop in (
+        (PROVIDER_NO_THINKING, tuple(wire)),
+        (PROVIDER_NO_TOOLS, ("tools",)),
+        (PROVIDER_NO_USAGE, ("stream_options",)),
+        (PROVIDER_NO_STREAM, ("stream",)),
+    ):
+        thinner = {k: v for k, v in thin.items() if k not in drop}
+        if thinner == thin:
+            continue
+        thin = thinner
+        code2, detail2 = shot(thin)
+        if not code2:
+            return Verdict(blame, cfg.model, detail)
+        if code2 != PROVIDER_REJECTED:
+            return Verdict(code2, cfg.model, detail2)
+    return Verdict(PROVIDER_REJECTED, cfg.model, detail)

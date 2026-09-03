@@ -105,6 +105,10 @@ class LlmOverrideBody(BaseModel):
     # 永不随请求体上行（scripts/check-key.mjs 机械守着这条）。
     fast_base_url: str | None = None
     fast_model: str | None = None
+    # 读者显式选的厂商。**只影响推理档怎么拼**（pen/providers.py），
+    # 缺省 / "auto" 就按型号名猜，也就是 v0.23.0 之前的行为。
+    provider: str | None = None
+    fast_provider: str | None = None
 
     def merged_limits(self) -> configmod.RuntimeLimits:
         return configmod.merge_limits(self.limits)
@@ -116,6 +120,7 @@ class LlmOverrideBody(BaseModel):
             model=self.fast_model,
             thinking=self.thinking,
             vision=self.vision,
+            provider=self.fast_provider,
         )
 
     def merged_fast(self) -> LLMConfig | None:
@@ -129,6 +134,7 @@ class LlmOverrideBody(BaseModel):
             model=self.model,
             thinking=self.thinking,
             vision=self.vision,
+            provider=self.provider,
         )
 
 

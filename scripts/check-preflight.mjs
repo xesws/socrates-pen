@@ -47,14 +47,21 @@ const sig = (over = {}, tail = "abcd", fastTail = "wxyz") =>
   mod.configSignature({ ...S, ...over }, tail, fastTail);
 const BASE = sig();
 
-// ① 这八项每一项都得让签名变。**每加一格上行的模型配置，这张表要跟着长。**
+// ① 这几项每一项都得让签名变。**每加一格上行的模型配置，这张表要跟着长。**
 const MOVES = [
   ["Base URL", { baseUrl: "https://other.example" }],
   ["model", { model: "some-other-model" }],
   ["图像理解", { vision: !S.vision }],
+  ["模型厂商", { provider: "google" }],
+  // v0.23.0 起体检按主对话那一枪的**真实形状**打（流式 + 工具 + 推理档），
+  // 所以推理档从「不相干的设置」变成了那一枪的一部分：换一档真有可能把一套
+  // 本来能用的配置打挂（节点不认这家的推理写法就是一个 400）。
+  // **这条以前在下面那张 NOISE 表里，是一条谎。**
+  ["thinking 档", { thinking: S.thinking === "off" ? "high" : "off" }],
   ["Fast Mode 开关", { fastMode: !S.fastMode }],
   ["Fast Base URL", { fastBaseUrl: "https://fast.other.example" }],
   ["Fast model", { fastModel: "other-fast" }],
+  ["快模型厂商", { fastProvider: "meta" }],
 ];
 for (const [name, over] of MOVES) {
   check(`改${name} → 重新体检`, sig(over) !== BASE);
@@ -65,7 +72,6 @@ check("换了一把快模型钥匙 → 重新体检", sig({}, "abcd", "0000") !=
 // ② 不相干的设置不许触发体检。多算一项就是按操作烧钱。
 const NOISE = [
   ["sidecarUrl", { sidecarUrl: "http://127.0.0.1:9999" }],
-  ["thinking 档", { thinking: S.thinking === "off" ? "high" : "off" }],
   ["语言", { lang: "en" }],
 ];
 for (const [name, over] of NOISE) {
@@ -78,6 +84,9 @@ check(
   "首尾空白不算改动",
   sig({ model: `  ${S.model}  ` }) === BASE,
 );
+// 认不得的厂商当没选（coerceProvider 回落 "auto"），不许被当成配置变了——
+// 被 Sync 合坏的 data.json 不该在每次开设置页时都白打一枪。
+check("认不得的厂商 → 不打枪", sig({ provider: "no-such-vendor" }) === BASE);
 
 let bad = 0;
 for (const [name, pass] of checks) {

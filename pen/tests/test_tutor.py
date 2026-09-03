@@ -85,7 +85,9 @@ def test_llm_create_kwargs_thinking_off_vs_high() -> None:
     )
     kw_off = llm_create_kwargs(off, messages=[{"role": "user", "content": "hi"}])
     assert "reasoning_effort" not in kw_off
-    assert "extra_body" not in kw_off
+    # v0.23.0 起 off 是**明确地关**，不再是「什么都不发」。文档写明 DeepSeek
+    # 不传推理字段时默认满档思考，所以旧的空 dict 等于把 off 这一档做成了摆设。
+    assert kw_off["extra_body"] == {"thinking": {"type": "disabled"}}
     assert kw_off["model"] == "deepseek-v4-flash"
     high = LLMConfig(
         base_url="https://api.deepseek.com",
@@ -148,10 +150,18 @@ def test_glm52_ui_high_is_max_off_still_disabled() -> None:
     assert thinking_wire("glm-5.2", "high")["reasoning_effort"] == "max"
 
 
-def test_deepseek_off_still_omits_thinking() -> None:
+def test_deepseek_off_really_disables_thinking() -> None:
+    """**官方文档：不传推理字段时，思考模式默认开着、强度 high。**
+
+    所以「什么都不发」从来就不是 off——它是满档思考，外加 thinking_on 判成
+    False、把那段推理扔掉，正好凑出 v0.22.4 那条 400。理由与整张表见
+    pen/providers.py，这里只钉住 DeepSeek 这一格。
+    """
     from pen.tutor import thinking_wire
 
-    assert thinking_wire("deepseek-v4-flash", "off") == {}
+    assert thinking_wire("deepseek-v4-flash", "off") == {
+        "extra_body": {"thinking": {"type": "disabled"}}
+    }
     assert thinking_wire("deepseek-v4-flash", "medium")["reasoning_effort"] == "medium"
 
 

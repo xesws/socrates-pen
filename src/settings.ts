@@ -19,6 +19,41 @@ import type { EnsureKind, SidecarSnap, StopResult } from "./sidecar";
 
 export type ThinkingLevel = "off" | "low" | "medium" | "high";
 
+/** 模型厂商。**唯一作用是决定推理档怎么拼上线**，见 pen/providers.py。
+ *  "auto" = 按型号名猜，也就是 v0.23.0 之前的行为，所以老库升级无感。 */
+export type ProviderKey =
+  | "auto"
+  | "celeris"
+  | "google"
+  | "deepseek"
+  | "glm"
+  | "kimi"
+  | "meta"
+  | "openai"
+  | "openrouter"
+  | "generic";
+
+/** 下拉的顺序、显示名和 Base URL 预填值。
+ *
+ *  **键必须与 pen/providers.py 的 PROVIDER_KEYS 逐个一致**——读者选了一个后端
+ *  不认的值不会报错，只会静默落回 generic，那种失效没人看得见。
+ *  scripts/check-providers.mjs 机械守着这条。
+ *
+ *  厂商名是专名，按仓库惯例不进词表（同 addOption("low", "low")）；
+ *  进词表的只有"自动"那一档和每家的提示语。 */
+export const PROVIDERS: { key: ProviderKey; label: string; base: string }[] = [
+  { key: "auto", label: "", base: "" },
+  { key: "celeris", label: "Celeris", base: "https://inference.celeris.ai/celeris-1-magnus/v1" },
+  { key: "google", label: "Google", base: "https://generativelanguage.googleapis.com/v1beta/openai/" },
+  { key: "deepseek", label: "DeepSeek", base: "https://api.deepseek.com" },
+  { key: "glm", label: "GLM", base: "https://open.bigmodel.cn/api/paas/v4" },
+  { key: "kimi", label: "Kimi", base: "https://api.moonshot.ai/v1" },
+  { key: "meta", label: "Meta", base: "https://api.meta.ai/v1" },
+  { key: "openai", label: "OpenAI", base: "https://api.openai.com/v1" },
+  { key: "openrouter", label: "OpenRouter", base: "https://openrouter.ai/api/v1" },
+  { key: "generic", label: "", base: "" },
+];
+
 export interface PenSettings {
   /** 界面语言。"auto" 跟随 Obsidian。 */
   lang: LangPref;
@@ -31,6 +66,8 @@ export interface PenSettings {
   pythonPath: string;
   baseUrl: string;
   model: string;
+  /** 模型厂商。"auto" = 按型号名猜。只影响推理档的线上拼法。 */
+  provider: ProviderKey;
   thinking: ThinkingLevel;
   /** 对话框可贴图。默认关：DeepSeek 文本模型没有视觉。 */
   vision: boolean;
@@ -39,6 +76,7 @@ export interface PenSettings {
   /** 快模型的节点与型号。钥匙**不在这儿**——它走 PUT /v1/llm/fast-key。 */
   fastBaseUrl: string;
   fastModel: string;
+  fastProvider: ProviderKey;
   /** 后台深挖。关掉时前端不轮询，且请求带 deep:false 让后端也不起线程。 */
   deepQuestions: boolean;
   /** 花销与频率的旋钮。键名用 snake_case，见 LIMIT_SPEC 的注释。 */
@@ -154,11 +192,13 @@ export const DEFAULT_SETTINGS: PenSettings = {
   pythonPath: "",
   baseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-flash",
+  provider: "auto",
   thinking: "off",
   vision: false,
   fastMode: false,
   fastBaseUrl: "https://inference.celeris.ai/celeris-1-magnus/v1",
   fastModel: "celeris-1-magnus",
+  fastProvider: "auto",
   deepQuestions: true,
   limits: coerceLimits({}),
   customChips: [],
@@ -170,16 +210,47 @@ export function coerceThinking(raw: unknown): ThinkingLevel {
   return THINKING.includes(raw as ThinkingLevel) ? (raw as ThinkingLevel) : "off";
 }
 
+const PROVIDER_KEYS: ProviderKey[] = PROVIDERS.map((p) => p.key);
+
+/** 手改过、或被 Sync 合坏的 data.json 会带来任何东西。认不得就当没选。 */
+export function coerceProvider(raw: unknown): ProviderKey {
+  return PROVIDER_KEYS.includes(raw as ProviderKey) ? (raw as ProviderKey) : "auto";
+}
+
+/** 下拉里显示什么。**厂商名是专名，不进词表**（同 addOption("low", "low")）；
+ *  只有"自动"和"通用"这两档不是专名，得跟着界面语言走。 */
+export function providerLabel(p: { key: ProviderKey; label: string }): string {
+  return p.label || (p.key === "auto" ? t().setProviderAuto : t().setProviderGeneric);
+}
+
+/** 选中这一家时 Base URL 该预填什么。空串 = 这一家不预填。 */
+export function providerBase(key: ProviderKey): string {
+  return PROVIDERS.find((p) => p.key === key)?.base || "";
+}
+
+/** 换厂商时该不该动这一格 Base URL。
+ *
+ *  **绝不覆盖读者自己打的地址**——走网关、走中转站的人最需要这个下拉，
+ *  而他们填的恰恰是一个不属于任何一家的地址。只有空着、或者还停在另一家的
+ *  默认值上时才填：那两种情况下这一格没有任何读者的意思在里面。 */
+export function shouldPrefillBase(current: string): boolean {
+  const now = (current || "").trim().replace(/\/+$/, "");
+  if (!now) return true;
+  return PROVIDERS.some((p) => p.base && p.base.replace(/\/+$/, "") === now);
+}
+
 /** 随请求带的 LLM 覆盖项。**v0.18.0 起永远不含 api_key**：钥匙住在 sidecar 的
  *  llm.json 里，请求里那把旧的"设置页钥匙"通道已拆——data.json 会跟着
  *  Sync / iCloud / git 走，明文钥匙放在那儿等于随身携带。 */
 export function llmPayload(s: PenSettings): {
   base_url?: string;
   model?: string;
+  provider?: ProviderKey;
   thinking: ThinkingLevel;
   vision: boolean;
   fast_base_url?: string;
   fast_model?: string;
+  fast_provider?: ProviderKey;
 } {
   const base = s.baseUrl.trim().replace(/\/+$/, "");
   // 快模型这两格和上面两格同形：只发节点和型号，**钥匙一个字都不上行**。
@@ -191,13 +262,20 @@ export function llmPayload(s: PenSettings): {
   const on = s.fastMode === true;
   const fastBase = on ? (s.fastBaseUrl || "").trim().replace(/\/+$/, "") : "";
   const fastModel = on ? (s.fastModel || "").trim() : "";
+  // 厂商同理：**"auto" 就一个键都不发。** 后端缺省本来就是按型号名猜，
+  // 发一个 "auto" 上去只是让「没改过设置的库，请求体与上一版逐字节一致」
+  // 这条承诺不再成立。
+  const prov = coerceProvider(s.provider);
+  const fastProv = on ? coerceProvider(s.fastProvider) : "auto";
   return {
     ...(base ? { base_url: base } : {}),
     ...(s.model.trim() ? { model: s.model.trim() } : {}),
+    ...(prov !== "auto" ? { provider: prov } : {}),
     thinking: coerceThinking(s.thinking),
     vision: s.vision === true,
     ...(fastBase ? { fast_base_url: fastBase } : {}),
     ...(fastModel ? { fast_model: fastModel } : {}),
+    ...(fastProv !== "auto" ? { fast_provider: fastProv } : {}),
   };
 }
 
@@ -240,10 +318,16 @@ export function configSignature(s: PenSettings, keyTail: string, fastTail: strin
   return [
     (s.baseUrl || "").trim(),
     (s.model || "").trim(),
+    coerceProvider(s.provider),
+    // v0.23.0 起体检按主对话那一枪的真实形状打，**推理档也在那一枪里**。
+    // 所以改推理档确实可能把一套本来能用的配置打挂（换厂商同理），
+    // 它不再是「不相干的设置」。
+    coerceThinking(s.thinking),
     String(s.vision === true),
     String(s.fastMode === true),
     (s.fastBaseUrl || "").trim(),
     (s.fastModel || "").trim(),
+    coerceProvider(s.fastProvider),
     keyTail,
     fastTail,
   ].join("\u0000");
@@ -398,6 +482,43 @@ export class PenSettingTab extends PluginSettingTab {
   }
 
   /**
+   * 厂商下拉 + 提示行。**基座和快模型共用这一份。**
+   *
+   * 选一家做三件事：决定推理档怎么拼上线（pen/providers.py 那张表）、
+   * 预填 Base URL、把这家的脾气写在提示行里（官方地址、型号名长什么样、
+   * 思考关不关得掉）。前两件是读者能看见的，第三件是他撞过一次才会想起来的。
+   *
+   * 改完当场重画整页：预填要落进 Base URL 那个输入框，而首画那一行
+   * `paintKeyStatus(el, true)` 会顺手把体检重跑一遍——换厂商正是最该重检的
+   * 时刻（推理档方言变了，那一枪的形状就变了）。重画的手法照语言下拉。
+   */
+  private providerRow(root: HTMLElement, slot: "base" | "fast"): void {
+    const s = t();
+    const st = this.plugin.settings;
+    const cur = coerceProvider(slot === "fast" ? st.fastProvider : st.provider);
+    new Setting(root)
+      .setName(slot === "fast" ? s.setFastProviderName : s.setProviderName)
+      .setDesc(s.setProviderDesc)
+      .addDropdown((d) => {
+        for (const p of PROVIDERS) d.addOption(p.key, providerLabel(p));
+        d.setValue(cur).onChange((v) => {
+          const key = coerceProvider(v);
+          const base = providerBase(key);
+          if (slot === "fast") {
+            st.fastProvider = key;
+            if (base && shouldPrefillBase(st.fastBaseUrl)) st.fastBaseUrl = base;
+          } else {
+            st.provider = key;
+            if (base && shouldPrefillBase(st.baseUrl)) st.baseUrl = base;
+          }
+          this.plugin.saveSettingsSoon();
+          this.display();
+        });
+      });
+    root.createEl("p", { cls: "setting-item-description", text: s.providerHint[cur] });
+  }
+
+  /**
    * Fast Mode 那一节：节点 / 型号 / 钥匙。
    *
    * **钥匙那一格和基座那格的家法完全一样**：只写不读、走插件的 PUT 单通道
@@ -408,6 +529,8 @@ export class PenSettingTab extends PluginSettingTab {
     const s = t();
     new Setting(root).setName(s.setSecFast).setHeading();
     root.createEl("p", { cls: "setting-item-description", text: s.setFastDesc });
+
+    this.providerRow(root, "fast");
 
     new Setting(root)
       .setName("Fast Base URL")
@@ -1000,6 +1123,8 @@ export class PenSettingTab extends PluginSettingTab {
       });
     paintStatus();
 
+    this.providerRow(containerEl, "base");
+
     new Setting(containerEl)
       .setName("Base URL")
       .setDesc(s.setBaseUrlDesc)
@@ -1074,6 +1199,10 @@ export class PenSettingTab extends PluginSettingTab {
           .onChange((v) => {
             this.plugin.settings.thinking = coerceThinking(v);
             this.plugin.saveSettingsSoon();
+            // v0.23.0 起体检按主对话那一枪的真实形状打，**推理档也在那一枪里**。
+            // 所以改这一格真有可能把一套本来能用的配置打挂——它不再是
+            // 「不相干的设置」，得当场重检一次。
+            void this.paintKeyStatus(keyStatusEl, true);
           });
       });
 

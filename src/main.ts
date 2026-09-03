@@ -4,6 +4,7 @@ import { coerceCustomChips } from "./customchips";
 import { ApiError } from "./apierror";
 import {
   coerceLimits,
+  coerceProvider,
   coerceThinking,
   DEFAULT_SETTINGS,
   PenSettingTab,
@@ -227,6 +228,9 @@ export default class SocratesPenPlugin extends Plugin {
     // 嵌套展开在运行时仍会把 apiKey 带进来（类型看不见，磁盘看得见），显式拔掉。
     delete (this.settings as PenSettings & { apiKey?: string }).apiKey;
     this.settings.thinking = coerceThinking(this.settings.thinking);
+    // 认不得的厂商当没选（"auto"），不抛——设置项绝不能把一轮对话弄挂。
+    this.settings.provider = coerceProvider(this.settings.provider);
+    this.settings.fastProvider = coerceProvider(this.settings.fastProvider);
     this.settings.vision = this.settings.vision === true;
     // 三格快模型配置。**开关默认关**：没配钥匙时开着也只是不生效，
     // 但默认打开等于替读者做了一个「这一轮由小模型执笔」的决定。

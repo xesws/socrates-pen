@@ -377,6 +377,26 @@ export const zh = {
   setKeepAliveDesc:
     "本机服务是你机器上的一个 Python 进程，多个库共用同一只。默认开启：退出 Obsidian 后它继续在，下次秒开。关掉则退出时停掉由本插件拉起的那只——别的库正在用时请别关。",
   setBaseUrlDesc: "Chat Completions 兼容地址，不要带尾斜杠。",
+  setProviderName: "模型厂商",
+  setFastProviderName: "快模型厂商",
+  setProviderDesc:
+    "选一家，推理档就按这家的写法发。自动 = 按型号名判断，认不出就用通用写法。选中后会顺手预填 Base URL（已经手打过地址的不会被覆盖）。",
+  setProviderAuto: "自动（按型号名判断）",
+  setProviderGeneric: "通用 OpenAI 兼容",
+  // 每家的脾气：官方地址、型号名长什么样、思考关不关得掉。
+  // 第三条是读者撞过一次才会想起来的那种事，所以写在明面上。
+  providerHint: {
+    auto: "按型号名判断：名字里有 deepseek / gemini / glm / kimi / gpt- 等字样就按那家发。认不出走通用写法。",
+    celeris: "https://inference.celeris.ai/celeris-1-magnus/v1 · 型号如 celeris-1-magnus · 没有 high 档，界面的高档发的是 xhigh。",
+    google: "https://generativelanguage.googleapis.com/v1beta/openai/ · 型号如 gemini-3-pro · Gemini 3 起思考关不掉，选「关」会落到最低档。",
+    deepseek: "https://api.deepseek.com · 型号如 deepseek-v4-flash · 不指定推理档时它默认满档思考，所以「关」是明确关掉。",
+    glm: "https://open.bigmodel.cn/api/paas/v4 · 型号如 glm-5.3 · GLM-5.3 思考关不掉，选「关」会落到最低档。",
+    kimi: "https://api.moonshot.ai/v1 · 型号如 kimi-k3 或 kimi-k2.6 · K3 思考关不掉，且写法与 K2 完全不同。",
+    meta: "https://api.meta.ai/v1 · 型号如 muse-spark-1.3 · 它一直在思考，选「关」会落到最低档。",
+    openai: "https://api.openai.com/v1 · 型号如 gpt-5 或 o3-mini · gpt-4 系列不是推理模型，四档都不发推理字段。",
+    openrouter: "https://openrouter.ai/api/v1 · 型号带厂商前缀，如 google/gemini-3-pro · 自动判断在这里最容易猜错，建议显式选。",
+    generic: "任何 OpenAI 兼容节点。只发通用的 reasoning_effort，绝不发各家私有的写法——配不熟的节点选这个最不容易被拒。",
+  },
   setModelName: "模型名",
   setModelDesc: "节点上的 model 字符串，例如 deepseek-v4-flash 或 gpt-4.1-mini。",
   setVisionName: "图像理解",

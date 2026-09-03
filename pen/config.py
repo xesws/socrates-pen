@@ -208,6 +208,9 @@ class LLMConfig:
     key_source: str
     thinking: str = "off"
     vision: bool = False
+    # 读者在设置页显式选的厂商（"" 或 "auto" = 按型号名猜）。**只影响推理档的
+    # 线上拼法**，见 pen/providers.py。空着完全不改行为，所以老库无感升级。
+    provider: str = ""
 
 
 @dataclass(frozen=True)
@@ -612,6 +615,7 @@ def _merge_over(
     model: str | None,
     thinking: str | None,
     vision: bool | None,
+    provider: str | None,
     default_base: str,
     default_model: str,
 ) -> LLMConfig | None:
@@ -642,6 +646,7 @@ def _merge_over(
         key_source=source,
         thinking=normalize_thinking(thinking),
         vision=bool(vision),
+        provider=(provider or "").strip().lower(),
     )
 
 
@@ -652,6 +657,7 @@ def merge_llm(
     model: str | None = None,
     thinking: str | None = None,
     vision: bool | None = None,
+    provider: str | None = None,
     env_file: Path | None = None,
 ) -> LLMConfig | None:
     """请求体非空字段优先，缺的回退 resolve_llm()（托管文件或 env）。两边都没有
@@ -664,6 +670,7 @@ def merge_llm(
         model=model,
         thinking=thinking,
         vision=vision,
+        provider=provider,
         default_base=DEEPSEEK_BASE,
         default_model=DEEPSEEK_MODEL,
     )
@@ -705,6 +712,7 @@ def fast_llm_status(
     model: str | None = None,
     thinking: str | None = None,
     vision: bool | None = None,
+    provider: str | None = None,
 ) -> tuple[LLMConfig | None, str]:
     """快模型这一路的 cfg **和它没配成的理由**。配成了理由是空串。
 
@@ -721,6 +729,7 @@ def fast_llm_status(
         model=model,
         thinking=thinking,
         vision=vision,
+        provider=provider,
         default_base=FAST_BASE,
         default_model=FAST_MODEL,
     )
@@ -735,6 +744,7 @@ def merge_fast_llm(
     model: str | None = None,
     thinking: str | None = None,
     vision: bool | None = None,
+    provider: str | None = None,
 ) -> LLMConfig | None:
     """快模型的请求体覆盖。**没有 api_key 参数**——钥匙只走托管槽。
 
@@ -744,7 +754,11 @@ def merge_fast_llm(
     只要 cfg 不要理由的调用方用这个；**实现只有 fast_llm_status 一份**。
     """
     return fast_llm_status(
-        base_url=base_url, model=model, thinking=thinking, vision=vision
+        base_url=base_url,
+        model=model,
+        thinking=thinking,
+        vision=vision,
+        provider=provider,
     )[0]
 
 

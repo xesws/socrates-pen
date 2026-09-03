@@ -12,6 +12,7 @@ from typing import Any
 
 from pen.i18n import msg
 from pen import meter as metermod
+from pen import providers
 from pen.config import LLMConfig, REPO_ROOT, RuntimeLimits, default_limits, resolve_llm
 from pen.chips import CustomChipSpec, chip_intent, custom_intent
 from pen.compact import allow_paths_for
@@ -299,6 +300,12 @@ PROVIDER_NO_VISION = "no-vision"
 PROVIDER_REJECTED = "rejected"
 PROVIDER_UNREACHABLE = "unreachable"
 PROVIDER_UNEXPECTED = "unexpected"
+# 下面四条**只有体检会给**（pen/preflight.py 的减配梯子）。对话里撞上时，
+# 节点回的仍是一个笼统的 400，只有把同一枪减掉一样再打一次才分得出是哪一样。
+PROVIDER_NO_TOOLS = "no-tools"
+PROVIDER_NO_STREAM = "no-stream"
+PROVIDER_NO_USAGE = "no-usage"
+PROVIDER_NO_THINKING = "no-thinking"
 
 _CODE_MSG = {
     PROVIDER_BAD_KEY: "provider.bad_key",
@@ -307,6 +314,10 @@ _CODE_MSG = {
     PROVIDER_REJECTED: "provider.rejected",
     PROVIDER_UNREACHABLE: "provider.unreachable",
     PROVIDER_UNEXPECTED: "provider.unexpected",
+    PROVIDER_NO_TOOLS: "provider.no_tools",
+    PROVIDER_NO_STREAM: "provider.no_stream",
+    PROVIDER_NO_USAGE: "provider.no_usage",
+    PROVIDER_NO_THINKING: "provider.no_thinking",
 }
 
 
@@ -420,121 +431,18 @@ def _finish_text(
     }
 
 
-def _model_id(model: str) -> str:
-    return (model or "").strip().lower()
+def thinking_wire(model: str, level: str, provider: str = "") -> dict[str, Any]:
+    """转发。**规则住在 pen/providers.py**，这里一个字都不判。
 
-
-def _is_glm(model: str) -> bool:
-    m = _model_id(model)
-    return "glm-" in m or m.startswith("glm")
-
-
-def _is_celeris(model: str) -> bool:
-    """celeris 只认 none / low / medium / xhigh。**它没有 high。**
-
-    实测传 `reasoning_effort="high"` 当场 400，节点原话：
-    `Supported types are xhigh (default), medium, and low`。
-    设置页的「高」是个常见档位，不映射的话每个高档快轮都打不出去。
+    在 v0.23.0 之前，这里是一串按型号名分叉的 `if`，认不出的一律走 DeepSeek
+    那一支——那正是 Google 那个 `Unknown name "thinking"` 400 的成因。
     """
-    return "celeris" in _model_id(model)
+    return providers.thinking_wire(model, level, provider)
 
 
-def _is_gemini(model: str) -> bool:
-    """Gemini 的 OpenAI 兼容层**自己就认 `reasoning_effort`**，不用嵌套。
-
-    读者报的 400 原话：`Invalid JSON payload received. Unknown name "thinking":
-    Cannot find field.` —— 我们把 DeepSeek 那套 `extra_body.thinking` 塞到了
-    请求体顶层，Google 不认。官方文档给的那层
-    `extra_body.extra_body.google.thinking_config` 是另一条路，**这条更窄的路
-    （裸 reasoning_effort）文档也写了支持，就不引进第二种嵌套形状。**
-    """
-    return "gemini" in _model_id(model)
-
-
-def _gemini_forced_thinking(model: str) -> bool:
-    """Gemini 3 起思考关不掉；2.5 可以用 `reasoning_effort="none"` 关。
-
-    **认不出版本时按「关不掉」处理。** 发 low 最坏是慢一点、贵一点；
-    发 none 给一个关不掉的型号是 400——两种错的代价不对等。
-    """
-    m = re.search(r"gemini-(\d+)", _model_id(model))
-    return int(m.group(1)) >= 3 if m else True
-
-
-def _glm_forced_thinking(model: str) -> bool:
-    """官方写明 thinking.type=disabled 会 400 的型号：仅 5.3 / 5.3-FLASH。
-
-    4.7 / 4.5V 的「强制思考」是 enabled 时每轮都想，不是不能 disabled。
-    """
-    return "glm-5.3" in _model_id(model)
-
-
-def _glm_sends_effort(model: str) -> bool:
-    """reasoning_effort 仅 GLM-5.2 及以上。5.3 只认 low/high/max。"""
-    m = _model_id(model)
-    return "glm-5.3" in m or "glm-5.2" in m
-
-
-def thinking_wire(model: str, level: str) -> dict[str, Any]:
-    """UI 四档 → 节点真正收的字段。空 dict = 不传推理。
-
-    设置页保持 off/low/medium/high。high = 该节点顶档（DeepSeek 仍是 high，
-    GLM-5.2/5.3 是 max）。强制思考的型号不能 disabled：off 改成 enabled + 最低档。
-    """
-    lv = (level or "off").strip().lower()
-    if lv not in ("off", "low", "medium", "high"):
-        lv = "off"
-    if _is_celeris(model):
-        # 四档一次映完，不掺进下面的 off/glm 分支——它的档名和别人一个都不重。
-        # extra_body.thinking 这一路**收下但完全不理会**（实测 disabled 照样
-        # 吐 49 个 reasoning token），所以只发 reasoning_effort，不发那把空枪。
-        # off 走 "none"：实测 0 个 reasoning token、0.36 秒，这才是快模式该有的样子。
-        return {
-            "reasoning_effort": {
-                "off": "none", "low": "low", "medium": "medium", "high": "xhigh"
-            }[lv]
-        }
-    if _is_gemini(model):
-        # 兼容层的映射是 minimal/low→low、medium→medium、high→high，
-        # 四档里只有 off 需要我们自己决定：能关就关，关不掉就落到最低档
-        # （同 _glm_forced_thinking 那一支的处理）。
-        if lv == "off":
-            return {"reasoning_effort": "low" if _gemini_forced_thinking(model) else "none"}
-        return {"reasoning_effort": lv}
-    glm = _is_glm(model)
-    if lv == "off":
-        if _glm_forced_thinking(model):
-            return {
-                "reasoning_effort": "low",
-                "extra_body": {"thinking": {"type": "enabled"}},
-            }
-        if glm:
-            return {"extra_body": {"thinking": {"type": "disabled"}}}
-        return {}
-    out: dict[str, Any] = {}
-    if glm:
-        out["extra_body"] = {"thinking": {"type": "enabled"}}
-        if _glm_sends_effort(model):
-            out["reasoning_effort"] = {"low": "low", "medium": "high", "high": "max"}[lv]
-        return out
-    out["reasoning_effort"] = lv
-    out["extra_body"] = {"thinking": {"type": "enabled"}}
-    return out
-
-
-def thinking_on(model: str, level: str) -> bool:
-    """这一枪是不是真的在思考模式里。**从 thinking_wire 推导，不另写一张表。**
-
-    「UI 的 off 对某些型号仍是开着的」这件事只有 thinking_wire 知道
-    （`_glm_forced_thinking` 那一支）。这里再判一次型号名，两处迟早会漂。
-    """
-    wire = thinking_wire(model, level)
-    if not wire:
-        return False
-    if wire.get("reasoning_effort") == "none":
-        return False
-    tk = (wire.get("extra_body") or {}).get("thinking") or {}
-    return tk.get("type") != "disabled"
+def thinking_on(model: str, level: str, provider: str = "") -> bool:
+    """同上：转发到那张表的同一格，不在这儿再判一次型号名。"""
+    return providers.thinking_on(model, level, provider)
 
 
 def llm_create_kwargs(
@@ -555,7 +463,7 @@ def llm_create_kwargs(
     }
     if tools:
         kwargs["tools"] = tools
-    kwargs.update(thinking_wire(cfg.model, cfg.thinking))
+    kwargs.update(thinking_wire(cfg.model, cfg.thinking, cfg.provider))
     return kwargs
 
 
@@ -893,7 +801,7 @@ def _agent_loop(
             # **只有这一枪自己在思考模式里才带回正文。** 关着思考的节点收到
             # 这个字段没有好处，而个别节点对没要过的字段会挑剔。
             reasoningmod.clip("".join(think_text))
-            if thinking_on(cfg.model, cfg.thinking)
+            if thinking_on(cfg.model, cfg.thinking, cfg.provider)
             else "",
         )
 

@@ -62,6 +62,35 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "连不上节点。检查设置里的 Base URL 有没有填对。",
         "en": "Can't reach the endpoint. Check the Base URL in settings.",
     },
+    # ── 体检的减配梯子才给得出的四条。占位符只能用 {kind}/{model}/{detail}
+    # （app._slot_report 那句是写死的三个参数，用别的名字就是一个 500）。
+    "provider.no_tools": {
+        "zh": "这个节点不支持工具调用，而读手册、改原文、取网页都要靠它。"
+        "换一个支持 function calling 的型号。节点原话：{detail}",
+        "en": "This endpoint does not support tool calling, which is how Socrates "
+        "reads your handbook, edits it, and fetches pages. Pick a model that "
+        "supports function calling. The endpoint said: {detail}",
+    },
+    "provider.no_stream": {
+        "zh": "这个节点不支持流式输出，回答没法边写边显示。换一个支持流式的型号。"
+        "节点原话：{detail}",
+        "en": "This endpoint does not support streaming, so answers can't appear as "
+        "they are written. Pick a model that streams. The endpoint said: {detail}",
+    },
+    "provider.no_usage": {
+        "zh": "这个节点不认 stream_options，花销记不了账。换一个型号，"
+        "或换一个兼容度更高的节点。节点原话：{detail}",
+        "en": "This endpoint rejects stream_options, so token usage can't be "
+        "recorded. Pick another model or a more compatible endpoint. "
+        "The endpoint said: {detail}",
+    },
+    "provider.no_thinking": {
+        "zh": "这个节点不认我们发的推理档写法。到设置里把「模型厂商」选成"
+        "对应的那一家，或把 Thinking 设为 off。节点原话：{detail}",
+        "en": "This endpoint does not accept the reasoning-effort dialect we sent. "
+        "Pick the matching provider in settings, or set Thinking to off. "
+        "The endpoint said: {detail}",
+    },
     "provider.unexpected": {
         "zh": "节点返回了意料外的错误（{kind}）。稍后再试，或检查设置里的配置。",
         "en": "The endpoint returned an unexpected error ({kind}). Try again later, or check your settings.",
