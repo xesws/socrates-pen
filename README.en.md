@@ -833,7 +833,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
-| Python tests | **1060 passed** |
+| Python tests | **1062 passed** |
 | TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -876,7 +876,7 @@ and it isn't worth pulling one in for this:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **1060 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **1062 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -1033,7 +1033,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 1060 passed
+python -m pytest pen/tests -q       # 1062 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -1078,8 +1078,9 @@ grows with the number of axes, a 1–10 rule score side by side with a BKT maste
 point of the score itemised, and a shelf of every book in this vault. Turn-by-turn coding always
 uses the main model; the first full pass takes one click from the reader, later opens top up
 incrementally, and pre-0.24.0 log rows count toward frequency only, never the score. The whole diff
-was reviewed with Codex (gpt-5.6-sol) before release; 16 findings fixed.
-[Design note](docs/v0.25.0-学习画像.md)
+was reviewed with Codex (gpt-5.6-sol) before release; 16 findings fixed. 0.25.1: a chip click with
+no typed text is an operation, not evidence, and is no longer forced onto an axis three times over;
+the coder's raw replies are logged. [Design note](docs/v0.25.0-学习画像.md)
 
 **0.24.0 · 2026-09-03 · Logs you can actually read.** The raw material for the profile. Trajectory
 rows now carry local time, the reader's full words and the tutor's full reply, real anchors (reading

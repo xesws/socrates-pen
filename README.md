@@ -717,7 +717,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | 部分 | 规模 |
 | --- | --- |
 | Python（sidecar，不含测试） | 32 个模块，9719 行 |
-| Python 测试 | **1060 passed** |
+| Python 测试 | **1062 passed** |
 | TypeScript（插件） | 18 个文件，6137 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -759,7 +759,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **1060 passed**，
+后端 `python -m pytest pen/tests -q` → **1062 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -891,7 +891,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 1060 passed
+python -m pytest pen/tests -q       # 1062 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -930,7 +930,8 @@ OpenAI 兼容节点按协议能接，但没有逐家测过。
 **0.25.0 · 2026-09-03 · 学习画像。** 侧栏第六枚按钮打开一个独立页签：一张随轴数增长的雷达、
 十分制规则分与 BKT 掌握概率并列、每一分怎么来的逐条列出、这个库里每本书的书架。逐轮编码一律主模型，
 第一次全量要读者点一下，之后打开面板增量补编，旧日志只进频率不进分。发版前用 Codex（gpt-5.6-sol）
-审了一遍整段 diff，修了 16 条。[设计说明](docs/v0.25.0-学习画像.md)
+审了一遍整段 diff，修了 16 条。0.25.1：只点芯片没打字的轮次是操作不是证据，不再硬归轴重试三次；
+编码器每一枪的原始回复落日志。[设计说明](docs/v0.25.0-学习画像.md)
 
 **0.24.0 · 2026-09-03 · 日志要够看。** 画像的原料。轨迹补上本地时间、读者原话与导师回复全文、
 真锚点（阅读视图下对不上行号不再假装在封面）、抛出的追问点没点、写回批准之后那半截、这一轮走的
