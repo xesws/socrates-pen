@@ -1566,7 +1566,7 @@ def narrate_diagnosis(handbook_id: str, lang: str = Depends(req_lang)) -> dict[s
 
 class ProfileCodeBody(LlmOverrideBody):
     # 处理器里夹到 1..10、看不懂当缺省，**不 422**：面板传个离谱值应得到正常进度。
-    max_batches: int | None = None
+    max_batches: Any = None  # 故意 Any：传个 "many" 也不 422，_clamp_batches 看不懂当缺省
     force: bool = False
 
 
@@ -1602,6 +1602,9 @@ def code_profile(
             lang=lang,
             force=bool(body.force),
         )
+    except profilemod.ProfileStoreError as exc:
+        # 模型答了、缓存写不进去（目录只读 / 磁盘满）：是本机的事，不是厂商的事
+        raise HTTPException(500, msg("profile.store_failed", lang, path=str(exc))) from exc
     except (OpenAIError, OSError, TimeoutError) as exc:
         raise HTTPException(
             400,

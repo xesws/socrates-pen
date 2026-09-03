@@ -158,6 +158,11 @@ class Lapse:
 # ── 存储 ──────────────────────────────────────────────────────────────
 
 
+class ProfileStoreError(RuntimeError):
+    """画像缓存写不进去（目录只读、磁盘满）。**不是厂商错误**：app 层单独翻成 500，
+    不能和「模型不可达」混成一个 400——那会让读者去查网络，而且重试会再付一遍钱。"""
+
+
 def profiles_dir() -> Path:
     """调用时现算：conftest 会 patch config.PEN_DIR。**不在这里建目录**——
     GET 只读，读不到就是空缓存，磁盘上不该留下任何痕迹。"""
@@ -182,7 +187,7 @@ def _coerce_coding(raw: Any) -> Coding | None:
         reject_right=rr if isinstance(rr, bool) else None,
         gap_quote=str(raw.get("gap_quote") or ""),
         evidence_quote=str(raw.get("evidence_quote") or ""),
-        adopted=bool(raw.get("adopted")),
+        adopted=raw.get("adopted") is True,  # 只认真布尔："false" 这种字符串是真值
         legacy=bool(raw.get("legacy")),
         auto=str(raw.get("auto") or ""),
         coded_at=str(raw.get("coded_at") or ""),
@@ -205,8 +210,14 @@ def load_cache(handbook_id: str) -> Cache:
         return empty
     if not isinstance(data, dict) or data.get("schema") != SCHEMA:
         return empty
+    raw_axes = data.get("axes") or []
+    raw_codings = data.get("codings") or {}
+    raw_attempts = data.get("attempts") or {}
+    # 容器形状也要验：合法 JSON 里 codings 是个 list 的话，.items() 会把两个 GET 都炸成 500
+    if not (isinstance(raw_axes, list) and isinstance(raw_codings, dict) and isinstance(raw_attempts, dict)):
+        return empty
     axes: list[Axis] = []
-    for a in data.get("axes") or []:
+    for a in raw_axes:
         if isinstance(a, dict) and a.get("id") and a.get("name"):
             axes.append(
                 Axis(
@@ -218,13 +229,13 @@ def load_cache(handbook_id: str) -> Cache:
                 )
             )
     codings: dict[str, Coding] = {}
-    for k, v in (data.get("codings") or {}).items():
+    for k, v in raw_codings.items():
         c = _coerce_coding(v)
         if c is not None:
             codings[str(k)] = c
     attempts = {
         str(k): int(v)
-        for k, v in (data.get("attempts") or {}).items()
+        for k, v in raw_attempts.items()
         if isinstance(v, int) and v > 0
     }
     return Cache(
@@ -261,8 +272,11 @@ def save_cache(cache: Cache) -> Path:
         "attempts": {k: v for k, v in cache.attempts.items() if v > 0},
     }
     dest = _path(cache.handbook_id)
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    _atomic_write(dest, json.dumps(body, ensure_ascii=False))
+    try:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        _atomic_write(dest, json.dumps(body, ensure_ascii=False))
+    except OSError as exc:
+        raise ProfileStoreError(str(dest)) from exc
     return dest
 
 
@@ -341,13 +355,17 @@ def deterministic_coding(t: Turn) -> Coding | None:
     return Coding(type="META", legacy=t.legacy, auto=auto, coded_at=now_iso())
 
 
-def _seed_deterministic(turns: list[Turn], cache: Cache) -> None:
+def _seed_deterministic(turns: list[Turn], cache: Cache) -> int:
+    """把确定性编码补进缓存。返回补了几条：一条都没补、也没批要编，就不必写盘。"""
+    n = 0
     for t in turns:
         if t.key in cache.codings:
             continue
         d = deterministic_coding(t)
         if d is not None:
             cache.codings[t.key] = d
+            n += 1
+    return n
 
 
 # ── 编码器 ────────────────────────────────────────────────────────────
@@ -583,12 +601,14 @@ def resolve_axis(raw: Any, axes: list[Axis], when: str) -> str | None:
             return None
     else:
         return None
+    # 原名先夹到 ALIAS_MAX 再比、再存：比和存用同一个值，同一个 41 字的名字第二次来才认得出
+    name = name[:ALIAS_MAX]
     norm = _normalize_name(name)
     if not norm:
         return None
     for a in axes:
         if _normalize_name(a.name) == norm or any(_normalize_name(x) == norm for x in a.aliases):
-            if a.name != name and name not in a.aliases and len(name) <= ALIAS_MAX:
+            if a.name != name and name not in a.aliases:
                 # 同一条轴换了个写法：记成别名，first_seen 不动
                 i = axes.index(a)
                 axes[i] = Axis(a.id, a.name, a.definition, a.aliases + (name,), a.first_seen)
@@ -598,7 +618,7 @@ def resolve_axis(raw: Any, axes: list[Axis], when: str) -> str | None:
     shown = name[:NAME_MAX]
     # 名字被截了就把原名记成别名。真跑第一版没记：模型下一批又提「HTTP 状态码与协议规范」
     # （13 字），和截成 12 字的存名对不上，同一条轴建了三份。
-    aliases = (name,) if shown != name and len(name) <= ALIAS_MAX else ()
+    aliases = (name,) if shown != name else ()
     new = Axis(
         id=f"ax{len(axes) + 1:02d}",
         name=shown,
@@ -629,18 +649,28 @@ def apply_batch(
             continue
         typ = str(it["type"])
         chip_only = not t.reader_text.strip()
-        if typ == "META":
+        if chip_only:
+            # 只点芯片没打字：能走到模型这儿的芯片都带意图（讲讲这个 / 举例 / 追问），
+            # 类型一律 ASK——模型答 META 也不算数；引文是芯片标签，跳过子串核对。
+            typ = "ASK"
+            evidence = chip_label(t.chip) if not t.chip.startswith("u.") else t.chip
+        elif typ == "META":
             cache.codings[t.key] = Coding(
                 type="META", legacy=t.legacy, coded_at=stamp, model=model
             )
             coded += 1
             continue
+        else:
+            evidence = str(it.get("evidence_quote") or "")
+            if not _is_quote(evidence, t.reader_text):
+                cache.attempts[t.key] = cache.attempts.get(t.key, 0) + 1
+                continue
+        # 校验都过了才解析轴。作废的那条不许留下一条没有证据的空轴：它会占 MAX_AXES
+        # 的名额、以「未评」上雷达，而它唯一的证据已经被判无效。
         axis = resolve_axis(it.get("axis"), cache.axes, t.when)
-        evidence = str(it.get("evidence_quote") or "")
-        if chip_only:
-            typ = "ASK"
-            evidence = chip_label(t.chip) if not t.chip.startswith("u.") else t.chip
-        elif not _is_quote(evidence, t.reader_text):
+        if axis is None and len(cache.axes) < MAX_AXES:
+            # 不是轴满了，是模型没给轴（null / 空串 / 看不懂的形状）。存成无轴编码的话
+            # n_coded 会加一，但任何轴的频率和证据里都看不见它——等于永久丢失。再来一次。
             cache.attempts[t.key] = cache.attempts.get(t.key, 0) + 1
             continue
         gap = str(it.get("gap_quote") or "")
@@ -659,7 +689,7 @@ def apply_batch(
             reject_right=rr if isinstance(rr, bool) else None,
             gap_quote=gap,
             evidence_quote=evidence,
-            adopted=bool(it.get("adopted")),
+            adopted=it.get("adopted") is True,
             legacy=t.legacy,
             auto="chip" if chip_only else "",
             coded_at=stamp,
@@ -709,9 +739,8 @@ def code_next(
         cache = load_cache(handbook_id)
         if force:
             cache = Cache(handbook_id=handbook_id, spend=cache.spend)  # 钱花了就是花了，账留着
-        _seed_deterministic(turns, cache)
+        seeded = _seed_deterministic(turns, cache)
         batches = pending_batches(turns, cache)
-        by_key = {t.key: t for t in turns}
         coded = 0
         m = Meter(kind=KIND_PROFILE)
         try:
@@ -732,8 +761,10 @@ def code_next(
             cache.spend = metermod.merge(cache.spend, m.to_dict())
             save_cache(cache)
             raise
-        if not batches:
-            save_cache(cache)  # 只有确定性编码也要落：GET 才能和 code 看到同一份
+        if not batches and (force or seeded):
+            # 只有确定性编码也要落：GET 才能和 code 看到同一份。什么都没变（编完了再点一次）
+            # 就不写——updated_at 是面板上的「上次编码时间」，空转不该刷新它。
+            save_cache(cache)
         left = pending_batches(turns, cache)
         chat_turns = [t for t in turns if t.is_chat]
         n_coded = sum(1 for t in chat_turns if t.key in cache.codings)
@@ -852,7 +883,10 @@ def rule_score(seq: list[Pair], lang: str = "zh") -> tuple[int | None, list[str]
         why.append(
             msg(key, lang, start=a.start_idx, end=a.end_idx, turns=a.turns, asking=a.asking, p=a.penalty)
         )
-    arc_total = min(ARCS_TOTAL_CAP, arc_total)
+    if arc_total > ARCS_TOTAL_CAP:
+        # 每条弧线照实写自己的扣分，再加一行封顶说明——读者拿 why 逐行相加要对得上最终分
+        why.append(msg("profile.why.arc_cap", lang, raw=arc_total, cap=ARCS_TOTAL_CAP))
+        arc_total = ARCS_TOTAL_CAP
     pts -= arc_total
     for lp in lapses:
         why.append(msg("profile.why.lapse", lang, a=lp.declare_idx, b=lp.reopen_idx, min=lp.minutes, p=LAPSE_EACH))
@@ -988,7 +1022,9 @@ def report(handbook_id: str, lang: str = "zh") -> dict[str, Any]:
     """GET /profile 的正文。没缓存也能答（全是 uncoded），永不 500。"""
     turns = load_turns(handbook_id)
     cache = load_cache(handbook_id)
-    _seed_deterministic(turns, cache)  # 只在内存里：GET 不写盘
+    # **不在这里补确定性编码。** GET 只读盘上有的：没跑过 /code 的书 n_coded 必须是 0，
+    # 面板靠这个数决定「第一次要读者点一下」。在内存里补上会把一条写回 META 算成
+    # 「已分析过」，面板一打开就自动付费补编。
     chat = [t for t in turns if t.is_chat]
     coded = [t for t in chat if t.key in cache.codings]
     given_up = [t for t in chat if t.key not in cache.codings and cache.attempts.get(t.key, 0) >= MAX_ATTEMPTS]
@@ -1038,10 +1074,11 @@ def overview(root: Path, lang: str = "zh") -> dict[str, Any]:
             continue
         rep = report(meta.handbook_id, lang)
         rated = [a for a in rep["axes"] if a["score"] is not None]
-        asked: list[dict[str, Any]] = [
-            {"id": a["id"], "name": a["name"], "n": sum(1 for e in a["evidence"] if e["type"] in ("ASK", "DEMAND", "GAP", "VERIFY")) + a["n_legacy"]}
+        asked_of = {
+            a["id"]: sum(1 for e in a["evidence"] if e["type"] in ("ASK", "DEMAND", "GAP", "VERIFY")) + a["n_legacy"]
             for a in rep["axes"]
-        ]
+        }
+        asked: list[dict[str, Any]] = [{"id": a["id"], "name": a["name"], "n": asked_of[a["id"]]} for a in rep["axes"]]
         books.append(
             {
                 "handbook_id": meta.handbook_id,
@@ -1050,7 +1087,8 @@ def overview(root: Path, lang: str = "zh") -> dict[str, Any]:
                 "n_turns": rep["n_turns"],
                 "n_coded": rep["n_coded"],
                 "n_axes": len(rep["axes"]),
-                "axes": [{"id": a["id"], "name": a["name"], "score": a["score"], "n": a["n"]} for a in rep["axes"]],
+                # 每条轴都带 asked：同标题的两次登记要在插件里合并，合并前不能在这儿裁成 top 3
+                "axes": [{"id": a["id"], "name": a["name"], "score": a["score"], "n": a["n"], "asked": asked_of[a["id"]]} for a in rep["axes"]],
                 "weakest": [{"id": a["id"], "name": a["name"], "score": a["score"]} for a in sorted(rated, key=lambda a: a["score"])[:3]],
                 "strongest": [{"id": a["id"], "name": a["name"], "score": a["score"]} for a in sorted(rated, key=lambda a: -a["score"])[:3]],
                 "asked_most": sorted(asked, key=lambda a: -a["n"])[:3],

@@ -97,9 +97,11 @@ check("顶部标签在点上方（baseline auto）", top.baseline === "auto");
 check("3 点钟 start", anchorFor(0) === "start" && baselineFor(0) === "middle");
 check("9 点钟 end", anchorFor(Math.PI) === "end");
 check("6 点钟 hanging", baselineFor(Math.PI / 2) === "hanging");
-const four = layoutRadar(mk(4)).points;
+const lay4 = layoutRadar(mk(4));
+const four = lay4.points;
 check("四根轴依次上右下左", four[1].anchor === "start" && four[2].baseline === "hanging" && four[3].anchor === "end");
-check("辐条末端在外环上", four.every((p) => Math.abs(Math.hypot(p.ex - 150 - 0, p.ey - 150 - 0) - 0) >= 0));
+// 真量半径。第一版写成 `abs(hypot(…) − 0) >= 0`，对任何有限坐标恒真——Codex review 抓的假绿。
+check("辐条末端在外环上", four.every((p) => Math.abs(Math.hypot(p.ex - lay4.cx, p.ey - lay4.cy) - lay4.r) < 0.6));
 const lay8 = layoutRadar(mk(8));
 check("环与分数同一尺度（10 分在外环）", lay8.rings[lay8.rings.length - 1].r === lay8.r && lay8.rings[0].r === lay8.r / 5);
 check("满分的点落在外环上", (() => {
@@ -127,14 +129,15 @@ check("中间的不标、未评不标", !tone.has("e") && !tone.has("f"));
 check("pickLabeled 13 根只挑 6 个 id", pickLabeled(mk(13)).size === 6);
 
 // ── 书架 ──
+// 合并要从每本书的**全部**轴算。「并发」在两次登记里都只排第 4（9 + 9），合起来 18 才是第一；
+// 服务端先裁成 top 3 再合并的话它在合并前就丢了（Codex review #12）。
+const ax = (id, name, score, asked) => ({ id, name, score, asked });
 const books = [
   { handbook_id: "b1", title: "第二册", n_turns: 40, n_coded: 40, n_axes: 5,
-    weakest: [{ id: "x", name: "磁带", score: 1 }, { id: "y", name: "CI", score: 2 }],
-    asked_most: [{ id: "x", name: "磁带", n: 12 }, { id: "z", name: "SDK", n: 5 }] },
-  { handbook_id: "b2", title: "第二册", n_turns: 10, n_coded: 8, n_axes: 3,
-    weakest: [{ id: "q", name: "HTTP", score: 3 }, { id: "x", name: "磁带", score: 4 }],
-    asked_most: [{ id: "z", name: "SDK", n: 9 }] },
-  { handbook_id: "b3", title: "第一册", n_turns: 60, n_coded: 0, n_axes: 0, weakest: [], asked_most: [] },
+    axes: [ax("x", "磁带", 1, 12), ax("t", "术语", null, 11), ax("y", "CI", 2, 10), ax("w", "并发", 5, 9), ax("z", "SDK", 6, 5)] },
+  { handbook_id: "b2", title: "第二册", n_turns: 10, n_coded: 8, n_axes: 4,
+    axes: [ax("z", "SDK", 7, 12), ax("q", "HTTP", 3, 11), ax("w", "并发", 5, 9), ax("x", "磁带", 4, 1)] },
+  { handbook_id: "b3", title: "第一册", n_turns: 60, n_coded: 0, n_axes: 0, axes: [] },
 ];
 const rows = mergeVaultRows(books, { 第二册: ["b1", "b2"] }, "b2");
 check("同标题合并成一行", rows.length === 2);
@@ -143,7 +146,7 @@ check("轮数相加", merged?.n_turns === 50 && merged?.n_coded === 48);
 check("merged=2", merged?.merged === 2 && merged?.ids.join() === "b1,b2");
 check("当前书那行排最前", rows[0].title === "第二册" && rows[0].current === true);
 check("最弱按名字去重、取分低的那次", merged?.weakest.map((a) => `${a.name}${a.score}`).join() === "磁带1,CI2,HTTP3");
-check("问得最多按名字相加", merged?.asked_most[0].name === "SDK" && merged?.asked_most[0].n === 14);
+check("问得最多按名字相加，两边都第 4 的合起来第一", merged?.asked_most.map((a) => `${a.name}${a.n}`).join() === "并发18,SDK17,磁带13");
 check("没登记两次的书不动", rows[1].title === "第一册" && rows[1].merged === 1);
 check("没有 merged_by_title 也不炸", mergeVaultRows(books, {}, null).length === 3);
 check("weakest 跳 null", weakest([{ id: "a", name: "a", score: null }, { id: "b", name: "b", score: 7 }]).length === 1);

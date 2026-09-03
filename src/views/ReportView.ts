@@ -11,9 +11,11 @@ import type { ProfileAxis, ProfileView, TokenRow } from "../types";
 export const VIEW_TYPE_REPORT = "socrates-pen-report";
 
 /**
- * 连续几枪 `coded == 0` 而 `remaining > 0` 就停。= 服务端 MAX_ATTEMPTS：模型一直
- * 吐坏 JSON 时，第三枪服务端会放弃那批、remaining 归零，循环正常收口；服务端真有
- * bug 不推进时也最多三枪就停——**每一枪都是真实的 API 调用**，不能无限计费。
+ * 连续几枪没有推进就停。「推进」= 编出了新轮次，**或 remaining 变小**（服务端放弃了
+ * 编不出来的行也是收口——只看 coded 会在最后一批全被放弃、还剩一条没试过时误报）。
+ * = 服务端 MAX_ATTEMPTS：模型一直吐坏 JSON 时，第三枪服务端会放弃那批、remaining
+ * 归零，循环正常收口；服务端真有 bug 不推进时也最多三枪就停——**每一枪都是真实的
+ * API 调用**，不能无限计费。
  */
 const STALL_MAX = 3;
 
@@ -90,6 +92,9 @@ export class ReportView extends ItemView {
    *  请求谁后完成都不许覆盖新的事实。 */
   private runGen = 0;
   private abort: AbortController | null = null;
+  /** 书架请求自己的序号：同一代次里会发两枪（开面板一枪、编完再一枪），慢的那枪后到
+   *  不许把新计数盖回旧的。 */
+  private vaultSeq = 0;
 
   constructor(leaf: WorkspaceLeaf, plugin: SocratesPenPlugin) {
     super(leaf);
@@ -126,9 +131,28 @@ export class ReportView extends ItemView {
     this.els = null;
   }
 
-  /** 切语言：重建骨架、按现有状态重画。`err` 可能是 sidecar 原文，保留不动。 */
+  /** 切语言：重建骨架、按现有状态重画。`err` 可能是 sidecar 原文，保留不动。
+   *  「这一分怎么来的」那几行是服务端按 Accept-Language 现算的：报告态下重取一次
+   *  （只 GET，不编码、不花钱），书架同理。 */
   relocalize(): void {
     this.renderShell();
+    const hid = this.hid;
+    if (!hid || this.state !== "report") return;
+    const { gen, signal } = this.begin();
+    void this.refetch(hid, gen, signal);
+    void this.loadVault(gen, signal);
+  }
+
+  private async refetch(hid: string, gen: number, signal: AbortSignal): Promise<void> {
+    try {
+      const v = await this.api().getProfile(hid, signal);
+      if (!this.alive(gen)) return;
+      this.view = v;
+      this.note = v.n_uncoded > 0 ? t().reportDegraded(v.n_uncoded) : "";
+      this.paint();
+    } catch {
+      // 拿不到就留着旧文案。切个语言不该冒红。
+    }
   }
 
   // ── 生命周期 ────────────────────────────────────────────────────
@@ -290,6 +314,7 @@ export class ReportView extends ItemView {
     let stalls = 0;
     let first = true;
     let stalled = false;
+    let lastRemaining = Number.NaN;
     try {
       for (;;) {
         const r = await api.codeProfile(hid, this.plugin.settings, { force: force && first, signal });
@@ -302,13 +327,13 @@ export class ReportView extends ItemView {
         };
         this.paintProgress();
         if (r.remaining <= 0) break;
-        if (r.coded <= 0) {
-          if (++stalls >= STALL_MAX) {
-            stalled = true;
-            break;
-          }
-        } else {
+        const progressed = r.coded > 0 || (Number.isFinite(lastRemaining) && r.remaining < lastRemaining);
+        lastRemaining = r.remaining;
+        if (progressed) {
           stalls = 0;
+        } else if (++stalls >= STALL_MAX) {
+          stalled = true;
+          break;
         }
       }
     } catch (e) {
@@ -332,6 +357,7 @@ export class ReportView extends ItemView {
   }
 
   private async loadVault(gen: number, signal: AbortSignal): Promise<void> {
+    const seq = ++this.vaultSeq;
     let root: string;
     try {
       root = vaultRoot(this.app);
@@ -343,11 +369,11 @@ export class ReportView extends ItemView {
     }
     try {
       const l = await this.api().listProfiles(root, signal);
-      if (!this.alive(gen)) return;
+      if (!this.alive(gen) || seq !== this.vaultSeq) return;
       this.vaultRows = mergeVaultRows(l.books, l.merged_by_title, this.hid);
       this.vaultErr = "";
     } catch {
-      if (!this.alive(gen)) return;
+      if (!this.alive(gen) || seq !== this.vaultSeq) return;
       // 书架拿不到只在自己那一区说一声，不进 this.err：它不该盖住上面的画像。
       this.vaultRows = null;
       this.vaultErr = t().reportVaultDown;

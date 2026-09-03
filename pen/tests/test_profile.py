@@ -305,6 +305,84 @@ def test_apply_batch_enforces_substring_quotes_and_closed_vocabulary() -> None:
     assert [a.name for a in cache.axes] == ["磁带"]
 
 
+def test_discarded_coding_leaves_no_empty_axis_and_chip_only_ignores_meta() -> None:
+    """两条 v0.25.0 review 抓到的：(1) 引文不是子串的编码作废时，它提的新轴也不能留下——
+    否则雷达上多一根「未评」的空轴，还占 MAX_AXES 名额；(2) 只点芯片的轮次模型答 META
+    也得按 ASK 记，芯片本身就是意图。"""
+    cache = Cache(handbook_id="hb-e")
+    batch = [_turn(1, text="录下来的是什么"), _turn(2, text="", chip="examples")]
+    items = [
+        {"i": 1, "type": "ASK", "axis": {"name": "幻影轴", "definition": "不该存在"}, "evidence_quote": "编造的引文"},
+        {"i": 2, "type": "META", "axis": {"name": "磁带", "definition": "录制回放"}, "evidence_quote": ""},
+    ]
+    assert profile.apply_batch(batch, items, cache, "m") == 1
+    assert batch[0].key not in cache.codings and cache.attempts[batch[0].key] == 1
+    assert [a.name for a in cache.axes] == ["磁带"], "作废的编码不留空轴；芯片轮的轴照常建"
+    chip = cache.codings[batch[1].key]
+    assert (chip.type, chip.auto, chip.axis) == ("ASK", "chip", "ax01")
+
+
+def test_adopted_only_counts_a_real_boolean() -> None:
+    """review #8：bool("false") 是真。模型偶尔把布尔写成字符串，不能因此多加 2 分。"""
+    cache = Cache(handbook_id="hb-ad")
+    batch = [_turn(1, text="我觉得它像一个邮筒")]
+    items = [{"i": 1, "type": "VERIFY", "axis": {"name": "A", "definition": ""}, "verify": "confirmed",
+              "adopted": "false", "evidence_quote": "像一个邮筒"}]
+    assert profile.apply_batch(batch, items, cache, "m") == 1
+    assert cache.codings[batch[0].key].adopted is False
+    assert profile._coerce_coding({"type": "ASK", "adopted": "false"}).adopted is False
+    assert profile._coerce_coding({"type": "ASK", "adopted": True}).adopted is True
+
+
+def test_axis_missing_is_a_retry_unless_axes_are_full() -> None:
+    """review #7：模型给 axis=null 的非 META 编码若照存，n_coded 加一但任何轴都看不见它。
+    轴没满就当没编好、记一次 attempt；轴真满了才允许无轴（只计数不算分）。"""
+    cache = Cache(handbook_id="hb-ax")
+    batch = [_turn(1, text="这一段讲的是什么")]
+    items = [{"i": 1, "type": "ASK", "axis": None, "evidence_quote": "讲的是什么"}]
+    assert profile.apply_batch(batch, items, cache, "m") == 0
+    assert batch[0].key not in cache.codings and cache.attempts[batch[0].key] == 1
+    full = Cache(handbook_id="hb-full")
+    for i in range(profile.MAX_AXES):
+        assert profile.resolve_axis({"name": f"轴{i}", "definition": ""}, full.axes, "t") is not None
+    items = [{"i": 1, "type": "ASK", "axis": {"name": "第二十五条", "definition": ""}, "evidence_quote": "讲的是什么"}]
+    assert profile.apply_batch(batch, items, full, "m") == 1
+    assert full.codings[batch[0].key].axis is None and len(full.axes) == profile.MAX_AXES
+
+
+def test_same_overlong_axis_name_twice_makes_one_axis() -> None:
+    """review #13：超过 ALIAS_MAX 的名字第一版不记别名，同一个名字第二批再来就建了第二条。"""
+    axes: list[profile.Axis] = []
+    long = "甲" * (profile.ALIAS_MAX + 1)
+    a = profile.resolve_axis({"name": long, "definition": "x"}, axes, "t")
+    b = profile.resolve_axis({"name": long, "definition": "x"}, axes, "t")
+    assert a == b == "ax01" and len(axes) == 1
+    assert len(axes[0].name) == profile.NAME_MAX and len(axes[0].aliases[0]) == profile.ALIAS_MAX
+
+
+def test_arc_total_cap_is_spelled_out_in_why() -> None:
+    """review #15：两条 7 轮未收口弧线各 −4，合计 8 却只扣 5。why 逐行相加要对得上最终分，
+    所以封顶得有自己的一行。"""
+    seq = [(_turn(i), _coding("ASK", "A")) for i in range(1, 8)]
+    seq += [(_turn(i), _coding("ASK", "A")) for i in range(20, 27)]
+    score, why, arcs, _ = profile.rule_score(seq, "zh")
+    assert [a.penalty for a in arcs] == [4, 4]
+    assert score == 1 and any("封顶 −5" in w for w in why)
+    assert any("capped at −5" in w for w in profile.rule_score(seq, "en")[1])
+    short = [(_turn(i), _coding("ASK", "A")) for i in range(1, 4)]
+    assert not any("封顶" in w for w in profile.rule_score(short, "zh")[1]), "没超就不写这一行"
+
+
+def test_bad_cache_container_types_fall_back_to_empty() -> None:
+    """review #9：合法 JSON 里 codings 是个 list，.items() 会把两个 GET 都炸成 500。"""
+    for bad in ({"codings": [{}]}, {"axes": "nope"}, {"attempts": [1]}):
+        body = {"schema": 1, "handbook_id": "hb-bad", "axes": [], "codings": {}, "attempts": {}} | bad
+        profile.profiles_dir().mkdir(parents=True, exist_ok=True)
+        (profile.profiles_dir() / "hb-bad.json").write_text(json.dumps(body), encoding="utf-8")
+        c = profile.load_cache("hb-bad")
+        assert c.codings == {} and c.axes == [] and c.attempts == {}
+
+
 def test_gap_without_a_real_gap_quote_downgrades_to_ask_and_verify_defaults_unclear() -> None:
     cache = Cache(handbook_id="hb-g")
     batch = [_turn(1, text="这一段我没看懂"), _turn(2, text="它是不是一个 list？")]
@@ -660,6 +738,86 @@ def test_profiles_overview_filters_by_vault_and_validates_root(tmp_path: Path, m
         assert bad.status_code == 400 and "vault_root" in bad.json()["detail"]
         en = client.get("/v1/profiles", headers={"Accept-Language": "en"})
         assert "vault_root" in en.json()["detail"] and "required" in en.json()["detail"]
+
+
+def test_get_before_any_code_never_counts_deterministic_meta_as_coded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """review #1（high）：没跑过 /code 的书，GET 的 n_coded 必须是 0。第一版在内存里补确定性
+    编码，一条写回 META 就让 n_coded=1、n_uncoded>0——面板把它读成「分析过了」，一打开就
+    自动付费补编，绕过了「第一次要读者点一下」。"""
+    calls = _stub_create(monkeypatch, lambda n: _ask_all(2))
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-meta0")
+        _rows("hb-meta0", 2)
+        when = (_BASE + timedelta(hours=1)).isoformat(timespec="seconds")
+        trajectory.append_turn("hb-meta0", {
+            "session_id": "sess", "ts": when, "asked_at": when, "chip": "writeback", "user_text": "",
+            "anchor": {"level": "Level 1", "path": "/v/book.md", "start_line": 5, "located": True},
+            "ok": True, "assistant_text": "写好了。", "phase": "chat",
+        })
+        rep = client.get("/v1/handbooks/hb-meta0/profile").json()
+        assert (rep["n_turns"], rep["n_coded"], rep["n_uncoded"], rep["n_meta"]) == (3, 0, 3, 0)
+        assert not (config.PEN_DIR / "profiles").exists()
+        r = client.post("/v1/handbooks/hb-meta0/profile/code", json={"api_key": "sk-test-1234567890"})
+        assert r.status_code == 200 and r.json()["n_coded"] == 3 and r.json()["remaining"] == 0 and len(calls) == 1
+        rep = client.get("/v1/handbooks/hb-meta0/profile").json()
+        assert (rep["n_coded"], rep["n_uncoded"], rep["n_meta"]) == (3, 0, 1), "跑过 /code 之后 META 才算编过"
+
+
+def test_bad_cache_on_disk_keeps_both_gets_at_200(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-badget")
+        profile.profiles_dir().mkdir(parents=True, exist_ok=True)
+        (profile.profiles_dir() / "hb-badget.json").write_text(
+            json.dumps({"schema": 1, "handbook_id": "hb-badget", "axes": [], "codings": [{}]}), encoding="utf-8"
+        )
+        assert client.get("/v1/handbooks/hb-badget/profile").status_code == 200
+        assert client.get("/v1/profiles", params={"vault_root": str(tmp_path / "vault")}).status_code == 200
+
+
+def test_store_failure_is_500_with_its_own_message_not_provider_400(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """review #3：模型答了、缓存写不进去（磁盘满）——第一版走 except OSError 报成「厂商不可达」。"""
+    _stub_create(monkeypatch, lambda n: _ask_all(3))
+
+    def boom(*a: Any, **k: Any) -> None:
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(profile, "_atomic_write", boom)
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-disk")
+        _rows("hb-disk", 3)
+        r = client.post("/v1/handbooks/hb-disk/profile/code", json={"api_key": "sk-test-1234567890"})
+        assert r.status_code == 500, r.text
+        assert "画像缓存写不进去" in r.json()["detail"] and "hb-disk.json" in r.json()["detail"]
+        r = client.post("/v1/handbooks/hb-disk/profile/code", json={"api_key": "sk-test-1234567890"}, headers={"Accept-Language": "en"})
+        assert "profile cache" in r.json()["detail"]
+
+
+def test_noop_code_call_does_not_rewrite_cache_and_overview_carries_asked(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """review #17：编完了再点一次，coded=0、不调模型，也**不许**改文件——updated_at 是面板上的
+    「上次编码时间」。顺带守 review #12：书架每条轴都带 asked，插件合并同标题登记要用。"""
+    _stub_create(monkeypatch, lambda n: _ask_all(3))
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-noop")
+        _rows("hb-noop", 3)
+        assert client.post("/v1/handbooks/hb-noop/profile/code", json={"api_key": "sk-test-1234567890"}).status_code == 200
+        p = config.PEN_DIR / "profiles" / "hb-noop.json"
+        before = (p.read_bytes(), p.stat().st_mtime_ns)
+        r = client.post("/v1/handbooks/hb-noop/profile/code", json={"api_key": "sk-test-1234567890"})
+        assert r.json()["coded"] == 0 and r.json()["remaining"] == 0
+        assert (p.read_bytes(), p.stat().st_mtime_ns) == before
+        books = client.get("/v1/profiles", params={"vault_root": str(tmp_path / "vault")}).json()["books"]
+        assert [(a["name"], a["n"], a["asked"]) for a in books[0]["axes"]] == [("缓存", 3, 3)]
+
+
+def test_max_batches_garbage_string_is_default_not_422(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """review #16：字段类型是 int 的话 "many" 在 _clamp_batches 之前就 422 了。"""
+    calls = _stub_create(monkeypatch, lambda n: _ask_all(10))
+    with TestClient(app) as client:
+        _register(client, tmp_path / "vault", "hb-many")
+        _rows("hb-many", 40)
+        r = client.post("/v1/handbooks/hb-many/profile/code", json={"api_key": "sk-test-1234567890", "max_batches": "many"})
+        assert r.status_code == 200, r.text
+        assert len(calls) == profile.MAX_BATCHES_DEFAULT and r.json()["remaining"] == 10
 
 
 def test_profile_spend_stays_out_of_usage_and_handbook_is_untouched(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

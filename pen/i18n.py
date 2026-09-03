@@ -225,6 +225,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "zh": "说懂了之后没再回来 ×{n}：+{p}",
         "en": "Declared understood and never came back ×{n}: +{p}",
     },
+    "profile.why.arc_cap": {
+        "zh": "追问弧线合计 −{raw}，封顶 −{cap}",
+        "en": "Arcs total −{raw}, capped at −{cap}",
+    },
+    "profile.store_failed": {
+        "zh": "画像缓存写不进去：{path}。看看目录权限和磁盘空间。",
+        "en": "Could not write the profile cache: {path}. Check the directory permissions and free disk space.",
+    },
     "profile.why.cap": {
         "zh": "证据只有 {n} 轮，不足 6 轮，封顶 {cap}",
         "en": "Only {n} turns of evidence, fewer than 6: capped at {cap}",

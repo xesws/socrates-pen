@@ -7,14 +7,18 @@
 export type Brief = { id: string; name: string; score: number | null };
 export type Asked = { id: string; name: string; n: number };
 
+/** 书架里每条轴：score 给「最弱」，asked 给「问得最多」。 */
+export type AxisCount = { id: string; name: string; score: number | null; asked: number };
+
 export type BookRow = {
   handbook_id: string;
   title: string;
   n_turns: number;
   n_coded: number;
   n_axes: number;
-  weakest: Brief[];
-  asked_most: Asked[];
+  /** 这本书的**每一条**轴。合并同标题的登记要从这里算：服务端裁成 top 3 再合并，
+   *  两次都排第 4 的那条轴加起来本该第一，却在合并前就丢了。 */
+  axes: AxisCount[];
 };
 
 export type VaultRow = {
@@ -51,7 +55,7 @@ export function askedMost(axes: Asked[], k = 3): Asked[] {
 
 /**
  * 同一本书登记过两次（路径变了 id 就变），服务端在 merged_by_title 里指出来，
- * 这里并成一行：轮数相加，最弱/问得最多按名字去重后重排。
+ * 这里并成一行：轮数相加，最弱/问得最多从两边的全部轴按名字合并后再取前 3。
  * 当前书那行排最前，其余按轮数降序。
  */
 export function mergeVaultRows(
@@ -87,8 +91,8 @@ export function mergeVaultRows(
     row.n_axes = Math.max(row.n_axes, b.n_axes);
     row.merged = row.ids.length;
     row.current = row.current || b.handbook_id === currentId;
-    row.weakest = dedupeByName([...row.weakest, ...b.weakest]);
-    row.asked_most = sumByName([...row.asked_most, ...b.asked_most]);
+    row.weakest = dedupeByName([...row.weakest, ...b.axes.map((a) => ({ id: a.id, name: a.name, score: a.score }))]);
+    row.asked_most = sumByName([...row.asked_most, ...b.axes.map((a) => ({ id: a.id, name: a.name, n: a.asked }))]);
   }
   const out = [...rows.values()].map((r) => ({
     ...r,

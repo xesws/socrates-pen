@@ -236,7 +236,9 @@ export type ProfileCodeResult = {
   axes: { id: string; name: string; definition: string; aliases: string[]; first_seen: string }[];
 };
 
-export type ProfileAxisBrief = { id: string; name: string; score: number | null; n?: number };
+export type ProfileAxisBrief = { id: string; name: string; score: number | null };
+/** 书架里每条轴的计数：n 是证据轮数，asked 是「在问」的轮数（含旧行）。插件合并同标题登记时用它。 */
+export type ProfileAxisCount = { id: string; name: string; score: number | null; n: number; asked: number };
 
 export type ProfileBook = {
   handbook_id: string;
@@ -245,7 +247,7 @@ export type ProfileBook = {
   n_turns: number;
   n_coded: number;
   n_axes: number;
-  axes: ProfileAxisBrief[];
+  axes: ProfileAxisCount[];
   weakest: ProfileAxisBrief[];
   strongest: ProfileAxisBrief[];
   asked_most: { id: string; name: string; n: number }[];
