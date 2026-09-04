@@ -833,7 +833,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
-| Python tests | **1062 passed** |
+| Python tests | **1101 passed** |
 | TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -876,7 +876,7 @@ and it isn't worth pulling one in for this:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **1062 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **1101 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -1033,7 +1033,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 1062 passed
+python -m pytest pen/tests -q       # 1101 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -1072,6 +1072,8 @@ not been tried one by one.
 Every minor version has a design note in [`docs/`](docs/) (Chinese): what the reader saw, the root
 cause, what changed, which gate guards it. Only the minors since 0.19 are listed here, with patch
 releases in one line each.
+
+**0.26.0 · 2026-09-03 · Overflow returns the batch.** Two tool-layer safeguards for small-window models (64k / 128k). A "context too long" reply from the endpoint is no longer reported to the reader as a plain rejection: the overflow messages of six endpoint families are recognised, and the size of the call, the model's limit and a "read in slices" instruction are returned to the model as the tool result so the same call is retried; when there is nothing to return, the turn switches to the base model or folds the history once, at most three returns per turn. `read_file` now truncates on a line boundary and names the next offset, says how long the file is when a read stops short, and a malformed offset / limit is a tool error instead of a crashed turn. [Design note](docs/v0.26.0-窗口撞了退一批.md)
 
 **0.25.0 · 2026-09-03 · Learning profile.** A sixth sidebar button opens its own tab: a radar that
 grows with the number of axes, a 1–10 rule score side by side with a BKT mastery probability, every

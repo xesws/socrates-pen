@@ -717,7 +717,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | 部分 | 规模 |
 | --- | --- |
 | Python（sidecar，不含测试） | 32 个模块，9719 行 |
-| Python 测试 | **1062 passed** |
+| Python 测试 | **1101 passed** |
 | TypeScript（插件） | 18 个文件，6137 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -759,7 +759,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **1062 passed**，
+后端 `python -m pytest pen/tests -q` → **1101 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -891,7 +891,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 1062 passed
+python -m pytest pen/tests -q       # 1101 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -926,6 +926,8 @@ OpenAI 兼容节点按协议能接，但没有逐家测过。
 
 每个小版本都有一份设计说明在 [`docs/`](docs/)：读者看到了什么、病根在哪、改了什么、哪道闸守着。
 这里只列 0.19 以来的大版本，补丁版顺带一句。
+
+**0.26.0 · 2026-09-03 · 窗口撞了退一批。** 给小窗口模型（64k / 128k）的两道工具层保险。节点回「上下文太长」不再当普通拒绝报给读者：认出六家节点的溢出报文，把这一枪多少 token、模型上限多少连同「改成分段读」一起退回给模型，同一枪重打；退不了的换基座或折一次历史，一轮最多退三次。`read_file` 的截断改成按整行切并写明下一段的 offset，读到一半会说文件共几行，offset / limit 写错是工具错误不再炸掉整轮。[设计说明](docs/v0.26.0-窗口撞了退一批.md)
 
 **0.25.0 · 2026-09-03 · 学习画像。** 侧栏第六枚按钮打开一个独立页签：一张随轴数增长的雷达、
 十分制规则分与 BKT 掌握概率并列、每一分怎么来的逐条列出、这个库里每本书的书架。逐轮编码一律主模型，
