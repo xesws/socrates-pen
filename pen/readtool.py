@@ -9,24 +9,25 @@ from pen.config import MAX_OUTPUT, READ_LIMIT_DEFAULT
 from pen.sandbox import SandboxError, assert_readable, resolve_read_target
 
 
-def _cap_lines(numbered: list[str]) -> tuple[str, int]:
+def _cap_lines(numbered: list[str]) -> tuple[str, int, bool]:
     """把带行号的行拼起来，超过 MAX_OUTPUT 就在**整行边界**停。
 
-    返回 (正文, 保留的行数)。v0.26.0 之前是按字符硬切，最后一行常常只剩半句，
-    而且只写「已截断」——模型不知道停在第几行、下一段该从哪儿读，于是要么重读
-    整段，要么假装读完了。第一行本身就超过 MAX_OUTPUT 时保留它的硬切，
-    否则一行都给不出。
+    返回 (正文, 保留的行数, 第一行是不是只给了开头)。v0.26.0 之前是按字符硬切，
+    最后一行常常只剩半句，而且只写「已截断」——模型不知道停在第几行、下一段该
+    从哪儿读，于是要么重读整段，要么假装读完了。第一行本身就超过 MAX_OUTPUT 时
+    保留它的硬切（否则一行都给不出），但要**如实说它没读完**，不能把 offset
+    推到下一行去——被切掉的那半行按行号永远读不到（二审 #3）。
     """
     out: list[str] = []
     used = 0
     for i, line in enumerate(numbered):
         if used + len(line) > MAX_OUTPUT:
             if i == 0:
-                return line[:MAX_OUTPUT], 1
+                return line[:MAX_OUTPUT], 1, True
             break
         out.append(line)
         used += len(line)
-    return "".join(out), len(out)
+    return "".join(out), len(out), False
 
 
 def read_file_report(
@@ -74,13 +75,18 @@ def read_file_report(
             "truncated": False,
         }
     numbered = [f"{start + i + 1}\t{line}" for i, line in enumerate(chunk)]
-    body, kept = _cap_lines(numbered)
+    body, kept, partial = _cap_lines(numbered)
     first = start + 1
     last = start + kept
-    truncated = kept < len(chunk)
+    truncated = partial or kept < len(chunk)
     sep = "" if body.endswith("\n") else "\n"
     if not resume_hint:
         pass
+    elif partial:
+        body += (
+            f"{sep}…（已截断：第 {first} 行本身超过 {MAX_OUTPUT} 字符，这里只有它的开头，"
+            f"按行号读不到它的剩余部分；文件共 {total} 行）"
+        )
     elif truncated:
         body += (
             f"{sep}…（已截断：本次只到第 {last} 行，文件共 {total} 行。"

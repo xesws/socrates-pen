@@ -43,12 +43,13 @@ def _overflow(text: str = OVERFLOW_TEXT) -> openai.BadRequestError:
 
 def _scripted(monkeypatch, shots: list[Any]) -> dict[str, Any]:
     """一枪一条：`_Msg` 正常回话，异常当场从 create() 抛。记每一枪的 messages 快照和主机。"""
-    rec: dict[str, Any] = {"sent": [], "urls": []}
+    rec: dict[str, Any] = {"sent": [], "urls": [], "tools": []}
     script = list(shots)
 
     class _Completions:
         def create(self, **kwargs: Any) -> Any:
             rec["sent"].append([dict(m) for m in kwargs.get("messages") or []])
+            rec["tools"].append("tools" in kwargs)
             item = script.pop(0) if script else _Msg(content="用手上的东西答一段。" * 10)
             if isinstance(item, BaseException):
                 raise item
@@ -258,3 +259,52 @@ def test_resume_after_approval_also_returns_the_batch(monkeypatch, tmp_path) -> 
     assert by_id["e1"].startswith("读者不允许"), "edit_file 的结果不退"
     assert by_id["r2"].startswith(OVERFLOW_MARK)
     assert len(rec["sent"]) == 2
+
+
+# ── 二审 ────────────────────────────────────────────────────────────
+
+
+def test_a_returned_read_loses_its_read_first_credit(monkeypatch, tmp_path) -> None:
+    """二审 #1：节点拒了那一枪，模型其实没见过原文。退回之后它要 edit_file，
+    必须被 read-first 那道闸拦下，而不是直接进审批。"""
+    from pen.agent.permissions import READ_FIRST_MSG
+
+    book = _book(tmp_path)
+    rec = _scripted(
+        monkeypatch,
+        [
+            _Msg(tool_calls=_reads(book, 1)),
+            _overflow(),
+            _Msg(tool_calls=[_Tc("e1", "edit_file", {"path": str(book), "old_string": "第 1 段原文", "new_string": "改"})]),
+            _Msg(content="那我先再读一遍。" * 8),
+        ],
+    )
+    sess = PenSession(session_id="k" * 32, handbook_id="demo")
+    evs = _run(sess, book)
+    assert evs[-1]["type"] == "done"
+    assert not [e for e in evs if e["type"] == "approval"], "没真读过就不能进审批"
+    blocked = [e for e in evs if e["type"] == "tool" and e.get("name") == "edit_file"]
+    assert blocked and blocked[0]["ok"] is False and blocked[0]["preview"] == READ_FIRST_MSG[:200]
+    assert str(book.resolve()) not in [str(Path(p).resolve()) for p in sess.read_ok_paths]
+    assert len(rec["sent"]) == 4
+
+
+def test_an_overflow_retry_does_not_eat_a_tool_round(monkeypatch, tmp_path) -> None:
+    """二审 #2：失败的那一枪不算一轮。max_tool_rounds=2 时模型退批之后还得有
+    机会按建议分段读，而不是直接被推进禁用工具的收口枪。"""
+    book = _book(tmp_path)
+    rec = _scripted(
+        monkeypatch,
+        [
+            _Msg(tool_calls=_reads(book, 2)),
+            _overflow(),
+            _Msg(tool_calls=[_Tc("r1", "read_file", {"path": str(book), "offset": 1, "limit": 20})]),
+            _Msg(content="分段读完。" * 10),
+        ],
+    )
+    sess = PenSession(session_id="t" * 32, handbook_id="demo")
+    evs = _run(sess, book, limits=replace(default_limits(), max_tool_rounds=2))
+    assert evs[-1]["type"] == "done"
+    reads = [e for e in evs if e["type"] == "tool" and e.get("name") == "read_file"]
+    assert len(reads) == 3, "两次整批 + 一次分段，分段那次必须真的执行"
+    assert rec["tools"] == [True, True, True, False]

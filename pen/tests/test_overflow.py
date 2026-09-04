@@ -65,8 +65,18 @@ def test_six_shapes_of_overflow_are_all_too_long() -> None:
         assert provider_error_code(_exc(text), sent_image=False) == PROVIDER_TOO_LONG, text
     coded = _exc("Invalid request.", code="context_length_exceeded")
     assert provider_error_code(coded, sent_image=False) == PROVIDER_TOO_LONG
-    big = _exc("Request too large for model qwen-3.8-27b", status=413)
+    big = _exc("Request too large: prompt tokens exceed the model context", status=413)
     assert provider_error_code(big, sent_image=False) == PROVIDER_TOO_LONG
+
+
+def test_a_big_request_body_is_not_a_context_overflow() -> None:
+    """二审 #5：「request too large」单独不算——图片把请求体撑爆也是这句话，
+    退批、折叠都救不了它。得同时提到 token 或 context 才是窗口的事。"""
+    entity = _exc("Request Entity Too Large", status=413)
+    assert not looks_like_context_overflow(entity)
+    assert provider_error_code(entity, sent_image=False) == PROVIDER_UNEXPECTED
+    count = _exc("input token count is 5; billing enabled")
+    assert not looks_like_context_overflow(count)
 
 
 def test_ordinary_400s_stay_rejected_and_tpm_413_is_not_overflow() -> None:
@@ -144,7 +154,8 @@ def _msgs(book: str) -> list[dict]:
                 _tc("c3", "edit_file", {"path": book, "old_string": "a", "new_string": "b"}),
             ],
         },
-        {"role": "tool", "tool_call_id": "c1", "content": "1\tline one\n2\tline two\n3\tline three\n"},
+        # 60 行：比退回文案长，才轮得到被退（短结果不换，见 test_short_results_…）
+        {"role": "tool", "tool_call_id": "c1", "content": "".join(f"{i}\tline {i} of the handbook body\n" for i in range(1, 61))},
         {"role": "tool", "tool_call_id": "c2", "content": "网页正文。" * 100},
         {"role": "tool", "tool_call_id": "c3", "content": "已编辑 note.md（第 3 行起替换 1 处，现 9 行）"},
     ]
@@ -154,10 +165,10 @@ def test_trailing_batch_is_stubbed_with_numbers_and_ranges_but_edits_are_kept() 
     msgs = _msgs("/v/note.md")
     got = stub_trailing_batch(msgs, model="qwen-3.8-27b", got=70000, limit=65536, lang="zh", nth=1, cap=3)
     assert [g["tool_call_id"] for g in got] == ["c1", "c2"]
-    assert got[0]["name"] == "read_file" and got[0]["span"] == (1, 3) and got[0]["chars"] > 0
+    assert got[0]["name"] == "read_file" and got[0]["span"] == (1, 60) and got[0]["chars"] > 0
     c1 = msgs[3]["content"]
     assert c1.startswith(OVERFLOW_MARK)
-    for needle in ("第 1–3 行", "qwen-3.8-27b", "70000", "65536", "offset", "limit", "1/3"):
+    for needle in ("第 1–60 行", "qwen-3.8-27b", "70000", "65536", "offset", "limit", "1/3"):
         assert needle in c1, needle
     c2 = msgs[4]["content"]
     assert c2.startswith(OVERFLOW_MARK) and "fetch" in c2 and "整页" in c2
@@ -193,3 +204,19 @@ def test_english_stub_and_estimate_wording() -> None:
     assert "offset" in c1 and "limit" in c1 and "estimate" in c1.lower()
     assert is_overflow_stub(c1) and is_overflow_stub(OVERFLOW_MARK + "x")
     assert not is_overflow_stub("1\tline")
+
+
+def test_short_results_are_never_replaced_by_a_longer_stub() -> None:
+    """二审 #6：叫 shrink 就得真变小。两个字的错误结果换成 170 字的 stub 是在
+    把上下文撑大，下一枪照样 400 而且白烧一次。"""
+    msgs = _msgs("/v/note.md")
+    msgs[3]["content"] = "错误：找不到。"
+    msgs[4]["content"] = "网页正文。" * 100
+    got = stub_trailing_batch(msgs, model="m", got=70000, limit=65536, lang="zh", nth=1, cap=3)
+    assert [g["tool_call_id"] for g in got] == ["c2"]
+    assert msgs[3]["content"] == "错误：找不到。"
+    assert len(msgs[4]["content"]) < len("网页正文。" * 100)
+    only_short = _msgs("/v/note.md")
+    only_short[3]["content"] = "错误：找不到。"
+    only_short[4]["content"] = "错误：取网页超时。"
+    assert stub_trailing_batch(only_short, model="m", got=1, limit=1, lang="zh", nth=1, cap=3) == []

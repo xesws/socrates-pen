@@ -29,11 +29,13 @@ READ_FILE_SCHEMA = {
                 "offset": {
                     "type": "integer",
                     "default": 1,
+                    "minimum": 1,
                     "description": "起始行号，从 1 起。接着上一段读就用它末尾给的 offset。",
                 },
                 "limit": {
                     "type": "integer",
                     "default": READ_LIMIT_DEFAULT,
+                    "minimum": 1,
                     "description": f"读几行。默认 {READ_LIMIT_DEFAULT}，别一次要几千行——超过约 {MAX_OUTPUT} 字符会被截断。",
                 },
             },

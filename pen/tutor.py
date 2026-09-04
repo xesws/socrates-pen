@@ -1037,6 +1037,20 @@ def _agent_loop(
             estimated=exc.estimated,
         )
         if stubbed:
+            # 节点拒了那一枪，模型**没见过**这些原文。撤销它们的 read-first 资格，
+            # 不然退回之后它照样能 edit_file、直接进审批（二审 #1）。
+            original = Path(ctx["original_path"])
+            gone: set[Path] = set()
+            for item in stubbed:
+                if item["name"] != "read_file":
+                    continue
+                tried = resolve_read_target(original, str(item["path"] or original))
+                gone.add(Path(tried).expanduser().resolve())
+            if gone:
+                ctx["read_ok"] = {p for p in (ctx.get("read_ok") or set()) if p not in gone}
+                session.read_ok_paths = [
+                    p for p in session.read_ok_paths if Path(p).expanduser().resolve() not in gone
+                ]
             n = len(stubbed)
             yield {
                 "type": "status",
@@ -1095,17 +1109,21 @@ def _agent_loop(
         if metermod.over(metermod.total(session.turn_spend), limits_of(ctx).max_tokens_chat):
             capped = True
             break
-        yield from _fit()
-        yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
-        try:
-            # 不要叫 msg：会遮蔽模块级的 i18n msg()，下面那条空正文文案就调不到了
-            reply = yield from _create(with_tools=True)
-        except ProviderError as exc:
-            # 上下文太长是**可重试**的：弄小一点再打同一枪（占一格轮数，无妨）。
-            if exc.code == PROVIDER_TOO_LONG and (yield from _shrink(exc)):
-                continue
-            yield {"type": "error", "message": str(exc)}
-            return
+        while True:
+            yield from _fit()
+            yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
+            try:
+                # 不要叫 msg：会遮蔽模块级的 i18n msg()，下面那条空正文文案就调不到了
+                reply = yield from _create(with_tools=True)
+                break
+            except ProviderError as exc:
+                # 上下文太长是**可重试**的：弄小一点再打同一枪。**不占轮数**：失败的
+                # 那一枪模型什么都没做，占了的话 max_tool_rounds 小时它还没机会
+                # 分段读就被推进禁用工具的收口枪（二审 #2）。终止靠 _shrink 的封顶。
+                if exc.code == PROVIDER_TOO_LONG and (yield from _shrink(exc)):
+                    continue
+                yield {"type": "error", "message": str(exc)}
+                return
         if fast and _needs_human(reply):
             # 快轮张口要动磁盘。**dispatch 之前就拦下**——它物理上到不了
             # handle_edit_file，点「允许」之前磁盘一个字节都不会动。

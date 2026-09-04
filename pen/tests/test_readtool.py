@@ -160,3 +160,31 @@ def test_probe_excerpts_can_switch_the_resume_hint_off(tmp_path: Path) -> None:
     r = read_file_report(book, str(book), offset=1, limit=10, resume_hint=False)
     assert r["text"] == "".join(f"{i}\t第 {i} 行，这一行凑一点长度好让字符先到顶。\n" for i in range(1, 11))
     assert r["lines"] == [1, 10] and r["total"] == 1000
+
+
+def test_a_single_line_longer_than_the_cap_is_reported_not_faked(tmp_path: Path) -> None:
+    """二审 #3：第一行本身就超过 MAX_OUTPUT 时，以前硬切之后 kept=1、不标截断、
+    offset 推到第 2 行——被切掉的那半行永远读不到，还声称读完了。"""
+    from pen.config import MAX_OUTPUT
+
+    book = tmp_path / "wide.md"
+    book.write_text("x" * (MAX_OUTPUT + 500) + "\n第二行\n", encoding="utf-8")
+    r = read_file_report(book, str(book), offset=1, limit=1)
+    assert r["truncated"] is True
+    assert r["lines"] == [1, 1]
+    assert "超过" in r["text"] and "第 1 行" in r["text"]
+    assert "offset=2" not in r["text"], "不能假装第 1 行读完了"
+    assert len(r["text"]) <= MAX_OUTPUT + 200
+    # 后面还有整行时，超长那行照样是「本次只到」的边界
+    r2 = read_file_report(book, str(book), offset=1, limit=2)
+    assert r2["truncated"] is True and r2["lines"] == [1, 1]
+
+
+def test_digits_that_int_cannot_parse_are_still_a_tool_error(tmp_path: Path) -> None:
+    """二审 #4：`"²".isdigit()` 为真但 int() 抛；几千位的数字串也抛。都不能炸。"""
+    from pen.agent.tools_impl import handle_read_file
+
+    book = _long_book(tmp_path, n=5)
+    for bad in ("²", "9" * 5000, "١٢"):
+        out = handle_read_file({"path": str(book), "offset": bad}, _ctx(book))
+        assert out["ok"] is False and "正整数" in out["text"], bad

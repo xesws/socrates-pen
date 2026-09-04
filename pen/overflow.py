@@ -32,12 +32,14 @@ _OVERFLOW_WORDS = (
     "prompt is too long",
     "input is too long",
     "too many tokens",
-    "input token count",
     "prompt contains at least",
     "reduce the length of the messages",
     "exceeds the maximum number of tokens",
-    "request too large",
 )
+# 单独不够、还得同时提到 token 或 context 的：图片把**请求体**撑爆时节点也说
+# "Request too large"，那不是窗口的事，退批、折叠都救不了它（二审 #5）。
+_WEAK_WORDS = ("request too large",)
+_TOKEN_WORDS = ("token", "context")
 # 命中这些的一律不是溢出，哪怕上面那张表也命中（Groq 的 413 限流报文里
 # 就有 "Request too large"）。
 _NOT_OVERFLOW = ("per minute", "per hour", "per day", "rate limit")
@@ -102,7 +104,9 @@ def looks_like_context_overflow(exc: BaseException) -> bool:
         return False
     if _error_code(exc) in _OVERFLOW_CODES:
         return True
-    return any(word in bits for word in _OVERFLOW_WORDS)
+    if any(word in bits for word in _OVERFLOW_WORDS):
+        return True
+    return any(word in bits for word in _WEAK_WORDS) and any(t in bits for t in _TOKEN_WORDS)
 
 
 def _first_number(res: Sequence[re.Pattern[str]], text: str) -> int:
@@ -198,7 +202,9 @@ def stub_trailing_batch(
     从尾巴往前：先跳过收口枪塞的那条假 user（`_is_force_answer`），再收连续
     的 `role == "tool"` 块。块里三种不退：已经退过的（开头是 OVERFLOW_MARK）、
     `edit_file` 的（那是写回记录，短，而且 `_eat_tool_result` 要靠它收
-    writebacks）。尾巴不是 tool 块——第一枪就撞——返回空表，一个字不改。
+    writebacks）、比退回文案还短的（叫 shrink 就得真变小——两个字的错误结果
+    换成一段 stub 是在把上下文撑大，二审 #6）。尾巴不是 tool 块——第一枪就撞——
+    返回空表，一个字不改。
     """
     end = len(messages)
     while end > 0 and messages[end - 1].get("role") == "user" and _is_force_answer(
@@ -224,7 +230,7 @@ def stub_trailing_batch(
         args = dict(meta.get("args") or {})
         span = _line_span(content) if name == "read_file" else None
         chars = len(content)
-        m["content"] = overflow_stub_text(
+        stub = overflow_stub_text(
             name=name,
             chars=chars,
             span=span,
@@ -236,6 +242,9 @@ def stub_trailing_batch(
             cap=cap,
             estimated=estimated,
         )
+        if len(stub) >= chars:
+            continue
+        m["content"] = stub
         out.append(
             {
                 "tool_call_id": tid,
