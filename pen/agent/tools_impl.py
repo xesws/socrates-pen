@@ -60,14 +60,56 @@ def _is_cross_book(original: Path, resolved: str) -> bool:
         return False
 
 
+def _int_arg(args: dict[str, Any], key: str, default: int) -> int | None:
+    """模型给的 offset / limit → 正整数。认不出来回 None，调用方给工具错误。
+
+    以前是 `int(args.get("offset", 1) or 1)`：模型把 offset 写成 "L100" 或
+    true，ValueError 一路抛到 SSE，整轮对话变成「对话中途出了意外错误」。
+    数字串和整数值的 float 照收（小模型常把 80 写成 "80" 或 80.0）；
+    0 和负数回落默认，和以前的 `or` 行为一致。bool 要先挡：isinstance(True, int)
+    为真，一个 JSON 里的 true 会静默变成第 1 行。
+    """
+    got = args.get(key, default)
+    if got is None or got == "":
+        return default
+    if isinstance(got, bool):
+        return None
+    if isinstance(got, int):
+        n = got
+    elif isinstance(got, float):
+        if not got.is_integer():
+            return None
+        n = int(got)
+    elif isinstance(got, str):
+        s = got.strip()
+        if not s.lstrip("-").isdigit():
+            return None
+        n = int(s)
+    else:
+        return None
+    return n if n >= 1 else default
+
+
 def handle_read_file(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
     original = Path(ctx["original_path"])
     raw_path = str(args.get("path") or "").strip() or str(original)
+    offset = _int_arg(args, "offset", 1)
+    limit = _int_arg(args, "limit", config.READ_LIMIT_DEFAULT)
+    if offset is None or limit is None:
+        return {
+            "ok": False,
+            "text": (
+                "错误：offset 和 limit 必须是正整数（例如 offset=120, limit=80）。"
+                "offset 是起始行号，limit 是读几行。"
+            ),
+            "resolved": str(resolve_read_target(original, raw_path)),
+            "detail": raw_path,
+        }
     report = read_file_report(
         original,
         raw_path,
-        offset=int(args.get("offset", 1) or 1),
-        limit=int(args.get("limit", 80) or 80),
+        offset=offset,
+        limit=limit,
         extra_roots=ctx.get("extra_roots") or [],
     )
     text = str(report["text"])

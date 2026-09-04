@@ -197,6 +197,7 @@ export const en: Dict = {
     reading: "Flipping through the manual…",
     tool: "Working on it…",
     selection_capped: "Selection too long — first packet has the start; the rest is read on demand",
+    overflow: "Context overflowed; returning this batch and retrying…",
   },
   thinkTick: (chars) => `Socrates is thinking… ${k(chars)} chars`,
   statusEditing: "Editing the note…",

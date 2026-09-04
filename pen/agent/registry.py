@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from pen.agent.fetch import handle_fetch
 from pen.agent.tools_impl import handle_edit_file, handle_read_file
+from pen.config import MAX_OUTPUT, READ_LIMIT_DEFAULT
 
 Handler = Callable[[dict[str, Any], dict[str, Any]], dict[str, Any]]
 
@@ -18,13 +19,23 @@ READ_FILE_SCHEMA = {
             "返回带行号文本，每行格式「N\\t原文」，offset 从 1 起。行号只是坐标，不是文件内容。"
             "读当前手册就复制 [来源] handbook_path；读别的教材就复制那一段给出的 path。"
             "相对路径相对手册目录。不要读 ~/.zshrc、/etc、.env。"
+            f"文件长就分段读：limit 默认 {READ_LIMIT_DEFAULT} 行，一次最多约 {MAX_OUTPUT} 字符，"
+            "超出会截断并在末尾告诉你下一段的 offset。不要一次读整本书。"
         ),
         "parameters": {
             "type": "object",
             "properties": {
                 "path": {"type": "string"},
-                "offset": {"type": "integer", "default": 1},
-                "limit": {"type": "integer", "default": 80},
+                "offset": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "起始行号，从 1 起。接着上一段读就用它末尾给的 offset。",
+                },
+                "limit": {
+                    "type": "integer",
+                    "default": READ_LIMIT_DEFAULT,
+                    "description": f"读几行。默认 {READ_LIMIT_DEFAULT}，别一次要几千行——超过约 {MAX_OUTPUT} 字符会被截断。",
+                },
             },
             "required": ["path"],
         },

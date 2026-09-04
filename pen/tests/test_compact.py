@@ -299,3 +299,34 @@ def test_compact_note_carries_a_clock() -> None:
     note = sess.ui_messages[-1]
     assert note["role"] == "note"
     assert datetime.fromisoformat(note["ts"]).utcoffset() is not None
+
+
+def test_stub_tools_treats_an_overflow_stub_like_any_read_result(tmp_path: Path) -> None:
+    """v0.26.0：撞窗口退回的那批工具结果留在历史里，下次折叠照样换成 drop note，不炸。"""
+    from pen.compact import _stub_tools
+    from pen.overflow import overflow_stub_text
+
+    book = tmp_path / "book.md"
+    book.write_text("x\n", encoding="utf-8")
+    stub = overflow_stub_text(
+        name="read_file", chars=4800, span=(1, 90), model="m", got=70000, limit=65536,
+        lang="zh", nth=1, cap=3,
+    )
+    msgs = [
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": "c1",
+                    "type": "function",
+                    "function": {"name": "read_file", "arguments": json.dumps({"path": str(book), "offset": 1, "limit": 90})},
+                }
+            ],
+        },
+        {"role": "tool", "tool_call_id": "c1", "content": stub},
+    ]
+    out, dropped = _stub_tools(msgs, [book], "zh")
+    assert dropped == 1
+    assert "正文已从上下文拿掉" in out[1]["content"]
+    assert "退回" not in out[1]["content"]

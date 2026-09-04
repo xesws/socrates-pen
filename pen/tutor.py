@@ -13,10 +13,19 @@ from typing import Any
 from pen.i18n import msg
 from pen import meter as metermod
 from pen import providers
-from pen.config import LLMConfig, REPO_ROOT, RuntimeLimits, default_limits, resolve_llm
+from pen.config import (
+    FAST_WINDOW,
+    OVERFLOW_RETRIES,
+    LLMConfig,
+    REPO_ROOT,
+    RuntimeLimits,
+    default_limits,
+    resolve_llm,
+)
 from pen.chips import CustomChipSpec, chip_intent, custom_intent
-from pen.compact import allow_paths_for
-from pen.compaction import fast_budget, strategy_for
+from pen.compact import CompactPending, allow_paths_for, compact_session
+from pen.compaction import est_tokens, fast_budget, strategy_for
+from pen.overflow import overflow_numbers, stub_trailing_batch
 from pen.index import HandbookIndex, neighborhood
 from pen.agent.permissions import decide, read_first_block
 from pen.agent.registry import dispatch, schemas
@@ -318,7 +327,28 @@ def usage_snapshot(prompt: int, completion: int) -> dict[str, int]:
 
 
 class ProviderError(RuntimeError):
-    """供应商调用失败。message 已是给用户看的中文，不含 key。"""
+    """供应商调用失败。message 已是给用户看的中文，不含 key。
+
+    `code` 是 `provider_error_code` 给的稳定码；只有 `PROVIDER_TOO_LONG` 那一格
+    带 `got` / `limit`（这一枪多少 token、模型上限多少），`_agent_loop` 靠它们
+    决定「退回这一批重打」还是报错。`estimated` 说 `got` 是我们估的，
+    不是节点说的——退回给模型的那句话要如实标出来。
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "",
+        got: int = 0,
+        limit: int = 0,
+        estimated: bool = False,
+    ) -> None:
+        super().__init__(message)
+        self.code = code
+        self.got = got
+        self.limit = limit
+        self.estimated = estimated
 
 
 # 「节点这一下为什么失败」——**这张表是唯一定义点**。对话里的红字气泡、
@@ -334,6 +364,9 @@ PROVIDER_NO_VISION = "no-vision"
 PROVIDER_REJECTED = "rejected"
 PROVIDER_UNREACHABLE = "unreachable"
 PROVIDER_UNEXPECTED = "unexpected"
+# 上下文太长。对话里**可重试**：_agent_loop 会退回这一批工具结果再打一枪，
+# 判定住在 pen/overflow.py。
+PROVIDER_TOO_LONG = "too-long"
 # 下面四条**只有体检会给**（pen/preflight.py 的减配梯子）。对话里撞上时，
 # 节点回的仍是一个笼统的 400，只有把同一枪减掉一样再打一次才分得出是哪一样。
 PROVIDER_NO_TOOLS = "no-tools"
@@ -348,6 +381,7 @@ _CODE_MSG = {
     PROVIDER_REJECTED: "provider.rejected",
     PROVIDER_UNREACHABLE: "provider.unreachable",
     PROVIDER_UNEXPECTED: "provider.unexpected",
+    PROVIDER_TOO_LONG: "provider.too_long",
     PROVIDER_NO_TOOLS: "provider.no_tools",
     PROVIDER_NO_STREAM: "provider.no_stream",
     PROVIDER_NO_USAGE: "provider.no_usage",
@@ -374,9 +408,15 @@ def provider_error_code(exc: BaseException, *, sent_image: bool) -> str:
         # 读者截图里那条「意料外的错误（NotFoundError）」就是它。404 在
         # OpenAI 兼容节点上几乎只有一个意思：这个节点没有这个型号。
         return PROVIDER_NO_MODEL
-    if status == 400:
+    if status in (400, 413):
+        from pen.overflow import looks_like_context_overflow
         from pen.vision import looks_like_vision_reject
 
+        # 溢出排在视觉之前：溢出报文写明了 token，视觉那条是在猜。
+        if looks_like_context_overflow(exc):
+            return PROVIDER_TOO_LONG
+        if status == 413:
+            return PROVIDER_UNEXPECTED
         if sent_image and looks_like_vision_reject(exc):
             return PROVIDER_NO_VISION
         return PROVIDER_REJECTED
@@ -839,8 +879,29 @@ def _agent_loop(
                     idx = int(getattr(piece, "index", 0) or 0)
                     drafts.setdefault(idx, _ToolCallDraft()).eat(piece)
         except (OpenAIError, OSError, TimeoutError) as exc:
+            code = provider_error_code(exc, sent_image=with_pics)
+            got = limit = 0
+            estimated = False
+            if code == PROVIDER_TOO_LONG:
+                # 节点说了多少就用多少；没说就用我们的窗口估算，并且标明是估的。
+                # 上限：快模型的窗口是写死的常量；基座的我们不知道，留 0。
+                got, limit = overflow_numbers(exc)
+                if not got:
+                    got, estimated = est_tokens(sent), True
+                if not limit and fast:
+                    limit = FAST_WINDOW
             raise ProviderError(
-                provider_error_message(exc, lang, cfg.model, sent_image=with_pics)
+                provider_message_for(
+                    code,
+                    lang,
+                    kind=type(exc).__name__,
+                    model=cfg.model,
+                    detail=provider_detail(exc),
+                ),
+                code=code,
+                got=got,
+                limit=limit,
+                estimated=estimated,
             ) from exc
         # 冲掉尾巴：没有芯片块时上面那个保守切法会压着最后十几个字不吐。
         buf = "".join(parts)
@@ -945,6 +1006,78 @@ def _agent_loop(
                     "est": plan.est_tokens,
                 }
 
+    # 这一轮已经因为「上下文太长」退过几次。封顶 OVERFLOW_RETRIES，循环必然终止。
+    overflows = 0
+
+    def _shrink(exc: ProviderError) -> Iterator[dict[str, Any]]:
+        """撞窗口之后把上下文弄小一点。**用 `yield from` 调，返回值 = 能不能重打。**
+
+        三级，从最便宜、最不伤历史的开始：
+          1  退这一批   尾巴那批工具结果换成带数字的错误（pen/overflow.py），
+                        模型下一枪自己改成按行号区间读。这是读者要的那个
+                        「可重试错误」。
+          2  换基座     快模型且没东西可退：交给 1M 窗口的基座（现有事件）。
+          3  真折一次   基座且没东西可退（第一枪就撞）：历史本身太大了，
+                        `compact_session` 走破坏性那条路——和轮与轮之间的
+                        自动折是同一件事，只是发生在一轮中间。
+          -  都不行     False，调用方如实报错。
+        """
+        nonlocal overflows, allowed_names
+        overflows += 1
+        if overflows > OVERFLOW_RETRIES:
+            return False
+        stubbed = stub_trailing_batch(
+            session.messages,
+            model=cfg.model,
+            got=exc.got,
+            limit=exc.limit,
+            lang=lang,
+            nth=overflows,
+            cap=OVERFLOW_RETRIES,
+            estimated=exc.estimated,
+        )
+        if stubbed:
+            n = len(stubbed)
+            yield {
+                "type": "status",
+                "phase": "overflow",
+                "text": (
+                    f"Context overflowed; returning {n} tool results and retrying…"
+                    if lang == "en"
+                    else f"上下文超限，退回 {n} 条工具结果重试…"
+                ),
+            }
+            return True
+        if fast:
+            yield _to_base("context-too-big")
+            return True
+        if allowed_names is None:
+            allowed_names = allow_paths_for(ctx["original_path"])
+        # 先用纯预览问一句「折了会变小吗」。`fold_messages` 对一份已经只剩
+        # [system, 包] 的历史照样折出一份摘要（did=True），但一个 token 都省不下，
+        # 白打一枪不说，还把 session.compacted 置真——那是不可逆的。
+        before = est_tokens(session.messages)
+        preview = strategy_for("base").plan(
+            session,
+            budget=fast_budget(limits_of(ctx)),
+            allow_paths=allowed_names,
+            original_path=ctx["original_path"],
+        )
+        if not preview.changed or preview.est_tokens >= before:
+            return False
+        try:
+            folded = compact_session(
+                session, allow_paths=allowed_names, original_path=ctx["original_path"]
+            )
+        except CompactPending:
+            return False
+        if not folded.did:
+            return False
+        # 折叠说明写的就是「旧读不算数」：edit_file 之前得再 read_file 一次。
+        ctx["read_ok"] = set()
+        yield {"type": "compacted", "dropped_reads": folded.dropped_reads}
+        return True
+
     capped = False
     for _step in range(limits_of(ctx).max_tool_rounds):
         # 进这一枪之前判一次。**这里不留余量，是想清楚的，不是漏了**：
@@ -968,6 +1101,9 @@ def _agent_loop(
             # 不要叫 msg：会遮蔽模块级的 i18n msg()，下面那条空正文文案就调不到了
             reply = yield from _create(with_tools=True)
         except ProviderError as exc:
+            # 上下文太长是**可重试**的：弄小一点再打同一枪（占一格轮数，无妨）。
+            if exc.code == PROVIDER_TOO_LONG and (yield from _shrink(exc)):
+                continue
             yield {"type": "error", "message": str(exc)}
             return
         if fast and _needs_human(reply):
@@ -1031,13 +1167,18 @@ def _agent_loop(
     )
     # 收口枪是**整轮里 messages 最长的一枪**（工具正文全在里面了），
     # 最该撞窗口的就是它。闸放在 append 之后，量的才是真正要发的那份。
-    yield from _fit()
-    yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
-    try:
-        reply = yield from _create(with_tools=False)
-    except ProviderError as exc:
-        yield {"type": "error", "message": str(exc)}
-        return
+    # 撞了同样退一批重打：stub_trailing_batch 会跳过刚 append 的那条假 user。
+    while True:
+        yield from _fit()
+        yield {"type": "status", "phase": "thinking", "text": "苏格拉底在想…"}
+        try:
+            reply = yield from _create(with_tools=False)
+            break
+        except ProviderError as exc:
+            if exc.code == PROVIDER_TOO_LONG and (yield from _shrink(exc)):
+                continue
+            yield {"type": "error", "message": str(exc)}
+            return
     session.messages.append(reply.model_dump(exclude_none=True))
     yield _spend_ev()
     raw = (reply.content or "").strip()

@@ -132,7 +132,14 @@ class _Picky(BaseHTTPRequestHandler):
             # 它回 503——那个 503 是我们自己减出来的局面，不是读者的病。
             if "tools" not in body:
                 return self._json(503, {"error": {"message": "service unavailable"}})
-            return bad("context length 999999 exceeds the limit of 8192")
+            return bad("this endpoint declines that request shape, reason withheld")
+        if model == "tiny-window-model":
+            # 窗口小到连体检那一枪都装不下。这是真溢出，不是形状问题：
+            # 梯子减什么都没用，**一枪定案**，而且要叫它的真名。
+            return bad(
+                "This model's maximum context length is 512 tokens. However, you "
+                "requested 5800 tokens (5700 in the messages, 100 in the completion)."
+            )
         if model == "garbage-stream-model" and stream:
             # 头是好的、200 也发了，**烂在正文里**。SDK 只包 create() 抛的错，
             # 迭代分片时抛的它一个都不包。
@@ -399,8 +406,21 @@ def test_a_rung_that_breaks_something_else_does_not_steal_the_verdict(
     """
     v = preflight.check(_cfg(picky, model="collateral-model"))
     assert v.code == tutor.PROVIDER_REJECTED
-    assert "context length" in v.detail  # 第①枪的原话
+    assert "reason withheld" in v.detail  # 第①枪的原话
     assert "unavailable" not in v.detail  # 不是第③枪那个我们减出来的 503
+
+
+def test_a_window_too_small_for_the_probe_is_named_in_one_shot(picky: str) -> None:
+    """溢出跟形状无关，减了也是白减——和 401 / 404 同一条路：一枪定案。
+
+    v0.26.0 之前这条 400 会被当成普通 rejected 去爬梯子，爬完还是 rejected，
+    读者拿到的是「节点拒绝了这次请求」加一句英文原话。
+    """
+    _Picky.log.clear()
+    v = preflight.check(_cfg(picky, model="tiny-window-model"))
+    assert v.code == tutor.PROVIDER_TOO_LONG
+    assert "512" in v.detail
+    assert len(_Picky.log) == 1, _Picky.log
 
 
 def test_a_stream_that_dies_mid_flight_is_a_verdict_not_a_500(picky: str) -> None:

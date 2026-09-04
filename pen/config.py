@@ -36,6 +36,13 @@ DEFAULT_HANDBOOK_ID = "swe-agent-v2"
 DEFAULT_HANDBOOK: Path = REPO_ROOT / "SWE-Agent通关手册v2.md"
 
 MAX_OUTPUT = 5000
+# read_file 不带 limit 时读几行。schema 的 default、handler 的回落、readtool 的
+# 形参、退回文案里「一次不超过多少行」四处都读它——以前是 80 / 80 / 200 三个数。
+READ_LIMIT_DEFAULT = 80
+# 一轮里「上下文超限 → 退回这一批工具结果重打」最多几次。**不是读者旋钮**，
+# 不进 RuntimeLimits：0 就是 v0.25 的行为（撞一次这一轮就废），太大等于让
+# 模型对着同一堵墙反复烧 400。三次之后还撞，就如实报给读者。
+OVERFLOW_RETRIES = 3
 # 一轮对话里读**当前手册以外**的文件的总字符预算（别的教材、lab/ 对照文件）。
 # 读当前手册不计：写回要先 read_file 看原文、翻本册别的 Level 都是本职，
 # 一次都不该受影响——这是这道闸零回归的关键，别改成按次数或按总量。

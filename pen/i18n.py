@@ -92,6 +92,17 @@ MESSAGES: dict[str, dict[str, str]] = {
         "OpenAI-compatible option if you are not sure which one it is. "
         "The endpoint said: {detail}",
     },
+    # 上下文太长，而且退回工具结果、折叠历史都试过了还是装不下。
+    # 占位符只能用 {kind}/{model}/{detail}（app._slot_report 写死的三个名）。
+    "provider.too_long": {
+        "zh": "上下文超过了 {model} 的窗口（节点原话：{detail}）。已经退回这一批工具结果、"
+        "也折过历史，还是装不下。用「/compact」折一次、把设置里的自动折叠阈值调低，"
+        "或换一个窗口更大的模型。",
+        "en": "The context exceeds {model}'s window (the endpoint said: {detail}). "
+        "Returning this batch of tool results and folding the history were both tried and "
+        "it still does not fit. Run /compact once, lower the auto-fold threshold in settings, "
+        "or switch to a model with a larger window.",
+    },
     "provider.unexpected": {
         "zh": "节点返回了意料外的错误（{kind}）。稍后再试，或检查设置里的配置。",
         "en": "The endpoint returned an unexpected error ({kind}). Try again later, or check your settings.",

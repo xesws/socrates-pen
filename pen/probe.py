@@ -565,6 +565,7 @@ def anchor_source(
             got = read_file_report(
                 original_path, str(original_path), offset=start, limit=span,
                 extra_roots=extra_roots or [config.REPO_ROOT],
+                resume_hint=False,  # 摘录，不是模型接着读的工具结果
             )
         except Exception:
             continue
@@ -1008,6 +1009,7 @@ def _read_excerpts(
             offset=start,
             limit=max(1, min(span, job.limits.probe_read_lines)),
             extra_roots=job.extra_roots or [config.REPO_ROOT],
+            resume_hint=False,  # 同上：摘录里不要「接着读 offset=…」
         )
         if out.get("ok"):
             chunks.append(label + str(out.get("text") or ""))

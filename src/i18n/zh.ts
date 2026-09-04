@@ -238,6 +238,7 @@ export const zh = {
     reading: "在翻手册…",
     tool: "在动手…",
     selection_capped: "划选太长，第一包只带了开头，其余按需再读",
+    overflow: "上下文超限，退回这批内容重试…",
   } as Record<string, string>,
   // 推理阶段的活体计数。读者看的不是这个数本身，是**它在跳**——
   // 实测正文要等 14.5 秒才开始，那段时间以前屏幕上什么都没有。
