@@ -188,3 +188,13 @@ def test_digits_that_int_cannot_parse_are_still_a_tool_error(tmp_path: Path) -> 
     for bad in ("²", "9" * 5000, "١٢"):
         out = handle_read_file({"path": str(book), "offset": bad}, _ctx(book))
         assert out["ok"] is False and "正整数" in out["text"], bad
+
+
+def test_negative_numbers_fall_back_the_same_way_whether_int_or_string(tmp_path: Path) -> None:
+    """三审：`-1` 回落默认而 `"-1"` 报错，是两种契约。统一成回落。"""
+    from pen.agent.tools_impl import handle_read_file
+
+    book = _long_book(tmp_path, n=5)
+    for neg in (-1, "-1", -3.0, "-3"):
+        out = handle_read_file({"path": str(book), "offset": neg, "limit": neg}, _ctx(book))
+        assert out["ok"] is True and out["text"].startswith("1\t"), neg

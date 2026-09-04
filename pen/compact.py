@@ -594,6 +594,14 @@ def _stub_tools(
         raw_path = str(args.get("path") or "")
         content = content_text(m.get("content"))
         span = _line_span(content)
+        # 撞窗口退回的那条（pen/overflow.py）原样留着：它已经够短，而且带着窗口
+        # 数字和「分段读」的指令，换成通用 drop note 会把这些丢掉。它也不是一次
+        # 被折掉的阅读，dropped 不计它。懒导入：overflow 依赖本模块。
+        from pen.overflow import is_overflow_stub
+
+        if is_overflow_stub(content):
+            out.append(m)
+            continue
         if name == "read_file":
             dropped += 1
             hit = _allowed(raw_path, roots)

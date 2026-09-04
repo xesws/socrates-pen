@@ -25,7 +25,7 @@ from pen.config import (
 from pen.chips import CustomChipSpec, chip_intent, custom_intent
 from pen.compact import CompactPending, allow_paths_for, compact_session
 from pen.compaction import est_tokens, fast_budget, strategy_for
-from pen.overflow import overflow_numbers, stub_trailing_batch
+from pen.overflow import delivered_read_paths, overflow_numbers, stub_trailing_batch
 from pen.index import HandbookIndex, neighborhood
 from pen.agent.permissions import decide, read_first_block
 from pen.agent.registry import dispatch, schemas
@@ -1040,12 +1040,14 @@ def _agent_loop(
             # 节点拒了那一枪，模型**没见过**这些原文。撤销它们的 read-first 资格，
             # 不然退回之后它照样能 edit_file、直接进审批（二审 #1）。
             original = Path(ctx["original_path"])
-            gone: set[Path] = set()
-            for item in stubbed:
-                if item["name"] != "read_file":
-                    continue
-                tried = resolve_read_target(original, str(item["path"] or original))
-                gone.add(Path(tried).expanduser().resolve())
+
+            def _as_read(raw: str) -> Path:
+                return Path(resolve_read_target(original, raw or str(original))).expanduser().resolve()
+
+            gone = {_as_read(str(item["path"])) for item in stubbed if item["name"] == "read_file"}
+            # 同一路径更早那次读要是还带着正文留在历史里，那次是真送达过的，
+            # 资格留着（三审）。
+            gone -= {_as_read(raw) for raw in delivered_read_paths(session.messages)}
             if gone:
                 ctx["read_ok"] = {p for p in (ctx.get("read_ok") or set()) if p not in gone}
                 session.read_ok_paths = [
@@ -1260,6 +1262,16 @@ def _run_tool_batch(
             args = json.loads(tc.function.arguments or "{}")
         except json.JSONDecodeError as exc:
             result = f"错误：工具参数不是合法 JSON：{exc}"
+            yield {"type": "tool", "name": name, "detail": "", "ok": False, "preview": result[:200]}
+            session.messages.append(
+                {"role": "tool", "tool_call_id": tc.id, "content": result}
+            )
+            continue
+        if not isinstance(args, dict):
+            # `json.loads("null")` / `"[]"` / `"5"` 都合法，随后 `args.get` 抛——而
+            # assistant 那条 tool_call 已经落进会话，没有配对结果的话这场会话
+            # 之后每一枪都 400。给它一条配对的错误，接着走（三审）。
+            result = "错误：工具参数必须是 JSON 对象，例如 {\"path\": \"...\", \"offset\": 1, \"limit\": 80}。"
             yield {"type": "tool", "name": name, "detail": "", "ok": False, "preview": result[:200]}
             session.messages.append(
                 {"role": "tool", "tool_call_id": tc.id, "content": result}

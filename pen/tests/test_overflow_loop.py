@@ -308,3 +308,45 @@ def test_an_overflow_retry_does_not_eat_a_tool_round(monkeypatch, tmp_path) -> N
     reads = [e for e in evs if e["type"] == "tool" and e.get("name") == "read_file"]
     assert len(reads) == 3, "两次整批 + 一次分段，分段那次必须真的执行"
     assert rec["tools"] == [True, True, True, False]
+
+
+# ── 三审 ────────────────────────────────────────────────────────────
+
+
+def test_an_earlier_real_read_keeps_its_credit_when_a_later_one_is_returned(monkeypatch, tmp_path) -> None:
+    """三审：撤销 read-first 资格不能按路径一刀切。同一本书更早那次读是真送达过的，
+    退掉后一次不该连它也抹掉——stub 里写的就是「前面已经读到的不必重读」。"""
+    book = _book(tmp_path)
+    rec = _scripted(
+        monkeypatch,
+        [
+            _Msg(tool_calls=[_Tc("c0", "read_file", {"path": str(book), "offset": 1, "limit": 20})]),
+            _Msg(tool_calls=[_Tc("c1", "read_file", {"path": str(book), "offset": 21, "limit": 100})]),
+            _overflow(),
+            _Msg(tool_calls=[_Tc("e1", "edit_file", {"path": str(book), "old_string": "第 1 段原文", "new_string": "改"})]),
+        ],
+    )
+    sess = PenSession(session_id="w" * 32, handbook_id="demo")
+    evs = _run(sess, book)
+    assert [e for e in evs if e["type"] == "approval"], "c0 真读过，编辑该进审批"
+    by_id = {m["tool_call_id"]: m["content"] for m in sess.messages if m.get("role") == "tool"}
+    assert by_id["c0"].startswith("1\t") and is_overflow_stub(by_id["c1"])
+    assert len(rec["sent"]) == 4
+
+
+def test_non_object_tool_arguments_get_a_paired_error_not_a_crash(monkeypatch, tmp_path) -> None:
+    """三审：`json.loads("null")` 合法，随后 `args.get` 抛——assistant 那条 tool_call
+    已经落进会话却没有配对结果，这场会话之后每一枪都 400。"""
+    book = _book(tmp_path)
+    bad = _Tc("c1", "read_file", {})
+    bad.function.arguments = "null"
+    other = _Tc("c2", "read_file", {})
+    other.function.arguments = "[1, 2]"
+    rec = _scripted(monkeypatch, [_Msg(tool_calls=[bad, other]), _Msg(content="那我再来。" * 10)])
+    sess = PenSession(session_id="n" * 32, handbook_id="demo")
+    evs = _run(sess, book)
+    assert evs[-1]["type"] == "done"
+    tool_evs = [e for e in evs if e["type"] == "tool"]
+    assert len(tool_evs) == 2 and all(not e["ok"] for e in tool_evs)
+    assert all("JSON 对象" in e["preview"] for e in tool_evs)
+    assert _paired(sess.messages)

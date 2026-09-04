@@ -84,9 +84,11 @@ def _int_arg(args: dict[str, Any], key: str, default: int) -> int | None:
         elif isinstance(got, str):
             # 只认 ASCII 数字：`"²".isdigit()` 为真但 int() 抛，阿拉伯-印度数字
             # int() 倒是认，可模型写出那种东西时多半是别的意思。几千位的数字串
-            # int() 也抛（二审 #4）——所以整段包在 except 里。
+            # int() 也抛（二审 #4）——所以整段包在 except 里。带负号的串和负整数
+            # 走同一条路：回落默认（三审）。
             s = got.strip()
-            if not (s.isascii() and s.isdigit()):
+            digits = s[1:] if s.startswith("-") else s
+            if not (digits.isascii() and digits.isdigit()):
                 return None
             n = int(s)
         else:

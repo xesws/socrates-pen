@@ -19,6 +19,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from pen.compact import _is_force_answer, _line_span, _tool_calls_by_id
+from pen.compaction import est_tokens
 from pen.config import READ_LIMIT_DEFAULT
 from pen.vision import content_text
 
@@ -99,11 +100,13 @@ def looks_like_context_overflow(exc: BaseException) -> bool:
     """这个 400 / 413 是不是「上下文太长」。**只看报文，不看状态码以外的东西。**"""
     if getattr(exc, "status_code", None) not in (400, 413):
         return False
+    # 结构化错误码是节点的结论，排在文本启发式前面：附带文字里恰好有
+    # "rate limit" 也推翻不了它（三审）。
+    if _error_code(exc) in _OVERFLOW_CODES:
+        return True
     bits = _wording(exc)
     if any(word in bits for word in _NOT_OVERFLOW):
         return False
-    if _error_code(exc) in _OVERFLOW_CODES:
-        return True
     if any(word in bits for word in _OVERFLOW_WORDS):
         return True
     return any(word in bits for word in _WEAK_WORDS) and any(t in bits for t in _TOKEN_WORDS)
@@ -112,9 +115,15 @@ def looks_like_context_overflow(exc: BaseException) -> bool:
 def _first_number(res: Sequence[re.Pattern[str]], text: str) -> int:
     for pat in res:
         m = pat.search(text)
-        if m:
+        if not m:
+            continue
+        try:
             n = int(m.group(1))
-            return n if n >= _MIN_TOKENS else 0
+        except ValueError:
+            # 几千位的数字串 int() 会抛。这是错误处理路径，再抛一次就退化成
+            # 「意料外的错误」——跳过这一条，试下一个正则（三审）。
+            continue
+        return n if n >= _MIN_TOKENS else 0
     return 0
 
 
@@ -242,7 +251,9 @@ def stub_trailing_batch(
             cap=cap,
             estimated=estimated,
         )
-        if len(stub) >= chars:
+        # 按 token 比，不按字符：中文 stub 每 1.5 字一个 token，ASCII 正文每 2.5 字
+        # 一个，134 个 ASCII 字符换成 133 字的中文 stub 是字符少了、token 多了（三审）。
+        if est_tokens([{"content": stub}]) >= est_tokens([{"content": content}]):
             continue
         m["content"] = stub
         out.append(
@@ -254,4 +265,26 @@ def stub_trailing_batch(
                 "span": span,
             }
         )
+    return out
+
+
+def delivered_read_paths(messages: Sequence[dict[str, Any]]) -> list[str]:
+    """历史里**仍然带着带行号正文**的 read_file 读的是哪些 path（原始参数，未解析）。
+
+    撤销 read-first 资格时用：退掉一条长结果，不该连同一路径更早那次真送达过的
+    读一起抹掉——stub 里写的就是「前面已经读到的不必重读」（三审）。
+    stub、drop note、越界那种没有行号的结果都不算「送达过正文」。
+    """
+    calls = _tool_calls_by_id(messages)
+    out: list[str] = []
+    for m in messages:
+        if m.get("role") != "tool":
+            continue
+        meta = calls.get(str(m.get("tool_call_id") or "")) or {}
+        if str(meta.get("name") or "") != "read_file":
+            continue
+        content = content_text(m.get("content"))
+        if is_overflow_stub(content) or _line_span(content) is None:
+            continue
+        out.append(str((meta.get("args") or {}).get("path") or ""))
     return out

@@ -301,8 +301,10 @@ def test_compact_note_carries_a_clock() -> None:
     assert datetime.fromisoformat(note["ts"]).utcoffset() is not None
 
 
-def test_stub_tools_treats_an_overflow_stub_like_any_read_result(tmp_path: Path) -> None:
-    """v0.26.0：撞窗口退回的那批工具结果留在历史里，下次折叠照样换成 drop note，不炸。"""
+def test_stub_tools_keeps_an_overflow_stub_as_it_is(tmp_path: Path) -> None:
+    """v0.26.0 三审：撞窗口退回的那批工具结果留在历史里，折叠时**原样保留**——
+    它已经够短，而且带着窗口数字和「分段读」的指令；换成通用 drop note 会把这些
+    丢掉。它也不是一次「被折掉的阅读」，dropped 不计它。"""
     from pen.compact import _stub_tools
     from pen.overflow import overflow_stub_text
 
@@ -327,6 +329,5 @@ def test_stub_tools_treats_an_overflow_stub_like_any_read_result(tmp_path: Path)
         {"role": "tool", "tool_call_id": "c1", "content": stub},
     ]
     out, dropped = _stub_tools(msgs, [book], "zh")
-    assert dropped == 1
-    assert "正文已从上下文拿掉" in out[1]["content"]
-    assert "退回" not in out[1]["content"]
+    assert dropped == 0
+    assert out[1]["content"] == stub

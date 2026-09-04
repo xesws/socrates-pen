@@ -96,12 +96,12 @@ MESSAGES: dict[str, dict[str, str]] = {
     # 只有主对话那条路真的退过批、折过历史，不能替别的路径宣称做过什么（二审 #7）。
     # 占位符只能用 {kind}/{model}/{detail}（app._slot_report 写死的三个名）。
     "provider.too_long": {
-        "zh": "上下文超过了 {model} 的窗口（节点原话：{detail}）。让这一轮要装进去的东西少一点："
-        "分段 read_file、用「/compact」折一次历史、把设置里的自动折叠阈值调低，"
+        "zh": "上下文超过了 {model} 的窗口（节点原话：{detail}）。让发出去的东西少一点："
+        "主对话里分段 read_file、折叠一次历史或把设置里的自动折叠阈值调低；"
         "或换一个窗口更大的模型。",
-        "en": "The context exceeds {model}'s window (the endpoint said: {detail}). Put less into "
-        "this turn: read_file in slices, run /compact once, lower the auto-fold threshold in "
-        "settings, or switch to a model with a larger window.",
+        "en": "The context exceeds {model}'s window (the endpoint said: {detail}). Send less: "
+        "in the chat, read_file in slices, fold the history once or lower the auto-fold "
+        "threshold in settings; or switch to a model with a larger window.",
     },
     "provider.unexpected": {
         "zh": "节点返回了意料外的错误（{kind}）。稍后再试，或检查设置里的配置。",

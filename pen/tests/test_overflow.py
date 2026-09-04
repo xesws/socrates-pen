@@ -220,3 +220,36 @@ def test_short_results_are_never_replaced_by_a_longer_stub() -> None:
     only_short[3]["content"] = "错误：找不到。"
     only_short[4]["content"] = "错误：取网页超时。"
     assert stub_trailing_batch(only_short, model="m", got=1, limit=1, lang="zh", nth=1, cap=3) == []
+
+
+# ── 三审 ────────────────────────────────────────────────────────────
+
+
+def test_the_structured_code_beats_the_exclusion_words() -> None:
+    """三审：`code=context_length_exceeded` 是节点的结构化结论，附带文字里恰好有
+    "rate limit" 也不能把它推翻——高置信度字段不该被低置信度启发式盖掉。"""
+    exc = _exc("see the rate limit docs for details", code="context_length_exceeded")
+    assert looks_like_context_overflow(exc)
+
+
+def test_absurdly_long_numbers_in_the_message_never_raise() -> None:
+    """三审：报文里正则抓到的数字也可能是几千位，int() 会抛——错误处理路径再抛
+    一次就退化成「意料外的错误」。"""
+    exc = _exc("This model's maximum context length is " + "9" * 5000 + " tokens, you requested 5 tokens")
+    assert overflow_numbers(exc) == (0, 0)
+    assert provider_error_code(exc, sent_image=False) == PROVIDER_TOO_LONG
+
+
+def test_replacement_is_judged_in_tokens_not_characters() -> None:
+    """三审：中文 stub 每 1.5 字一个 token，ASCII 正文每 2.5 字一个——134 个 ASCII
+    字符换成 133 字的中文 stub，字符少了、token 反而多了。"""
+    from pen.compaction import est_tokens
+
+    msgs = _msgs("/v/note.md")
+    ascii_body = "a" * 134
+    msgs[4]["content"] = ascii_body
+    before = est_tokens([msgs[4]])
+    got = stub_trailing_batch(msgs, model="m", got=70000, limit=65536, lang="zh", nth=1, cap=3)
+    assert "c2" not in [g["tool_call_id"] for g in got]
+    assert msgs[4]["content"] == ascii_body
+    assert est_tokens([msgs[4]]) <= before
