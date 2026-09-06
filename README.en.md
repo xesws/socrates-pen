@@ -99,8 +99,9 @@ Two further promises are kept **in code, not in a prompt**. The model may not ed
 unless it genuinely read that file in an earlier turn, and the execution layer keeps that ledger —
 claiming to have read it does not count. Sessions, snapshots and the deep-dive ledger, meanwhile,
 never leave your machine and no telemetry exists in this repository. What goes out is the model
-endpoint you configured, a fresh sidecar on the first restart after a plugin upgrade, and a GET
-to a URL when the model calls `fetch` (public http/https only). Where the first two are enforced,
+endpoint you configured, a fresh sidecar on the first restart after a plugin upgrade, the keywords
+sent to DuckDuckGo / Bing / Wikipedia when the model calls `search`, and a GET to a URL when the
+model calls `fetch` (public http/https only). Where the first two are enforced,
 line by line, is [section 4](#4--system-design).
 
 Every example below runs against a different book: *Building DQN from Scratch*, 1,405 lines,
@@ -436,6 +437,7 @@ Rolling back restores the original **byte for byte**.
 | --- | --- |
 | `decide("read_file")` | `allow` — read-only passes automatically |
 | `decide("fetch")` | `allow` — fetching a public page passes automatically |
+| `decide("search")` | `allow` — a public web search passes automatically |
 | `decide("edit_file")` | `ask` — **every single time** |
 | `decide("bash")` / `decide("write_file")` | `deny` — unregistered tools are refused |
 | `read_first_block("edit_file", book, read_before=∅)` | ⛔ blocked |
@@ -619,18 +621,23 @@ first, and a successful ping means it just attaches and downloads nothing. Only 
 and the service has to be restarted does it compare versions — and only a stale version fetches a
 matching sidecar once more.
 
-### 4.2 · The toolbox holds three tools
+### 4.2 · The toolbox holds four tools
 
-The toolbox holds `read_file`, `fetch` and `edit_file` — **no bash, no write_file, no shell**.
-Permissions aren't a switch either, they're three-valued: `read_file` and `fetch` are allow and
+The toolbox holds `read_file`, `search`, `fetch` and `edit_file` — **no bash, no write_file, no shell**.
+Permissions aren't a switch either, they're three-valued: `read_file`, `search` and `fetch` are allow and
 pass automatically; `edit_file` is ask and opens an approval **every single time**; any other name
 is deny, because unrecognised means refused. That last one is deny by default rather than allow by
 default, so if the model hallucinates a `run_command`, it hits a wall.
 
-`fetch` takes an http or https URL, GETs the page, strips the tags, and hands the text to the
-model. It is not search: the sidebar chip for papers / provenance is still grey, and with no URL
-it will not go looking. Public addresses only — loopback, private networks and `file://` are
-refused. After resolving the host it connects to that IP, with Host / SNI still the original name.
+`search` needs no key and no search API: the sidecar GETs DuckDuckGo's plain-HTML result page
+itself (Bing when that is down) and asks Wikipedia for a second opinion; the three are merged by
+canonical URL, ranked by Reciprocal Rank Fusion, and handed to the model as a title / URL / snippet
+list — 5 by default, 10 at most — with a footer saying how many there are, how many are left and
+the next offset; paging the same query within ten minutes is served from a cache, not the engines.
+`fetch` takes an http or https URL, GETs the page, strips the tags and hands the text to the model
+numbered by paragraph, with offset / limit working exactly as in `read_file`; re-reading the same
+page does not download it again. Public addresses only — loopback, private networks and `file://`
+are refused. After resolving the host it connects to that IP, with Host / SNI still the original name.
 
 ### 4.3 · Read-first is a hard gate
 
@@ -833,7 +840,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
-| Python tests | **1101 passed** |
+| Python tests | **1138 passed** |
 | TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -876,7 +883,7 @@ and it isn't worth pulling one in for this:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **1101 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **1138 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -981,10 +988,11 @@ carry it away. Upgrading from an older version migrates the key out of `data.jso
 scrubs it. If this vault was ever synced or committed to git back then, that key is in history and
 can't be scrubbed — **rotate it** at your provider. For development you can skip the settings page
 entirely: leave `OPENAI_API_KEY` or `DEEPSEEK_API_KEY` in the sidecar's environment (or a `.env` in
-the source tree) and it works the same. Two, the network is touched in three places: installing pulls the sidecar and its
+the source tree) and it works the same. Two, the network is touched in four places: installing pulls the sidecar and its
 dependencies from GitHub and PyPI into `~/.socrates-pen`, and the first restart after a plugin
 upgrade fetches them once more; the model call itself leaves from that local process to the
-endpoint you configured; and when the model calls `fetch` it issues a GET to that URL (public
+endpoint you configured; when the model calls `search` the keywords go to DuckDuckGo / Bing /
+Wikipedia; and when the model calls `fetch` it issues a GET to that URL (public
 http/https only — loopback and private addresses are refused). Three, disabling the plugin does
 not stop the sidecar by default —
 that Python process keeps running, so re-enabling is instant, and multiple vaults share it. If you'd
@@ -1033,7 +1041,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 1101 passed
+python -m pytest pen/tests -q       # 1138 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -1072,6 +1080,8 @@ not been tried one by one.
 Every minor version has a design note in [`docs/`](docs/) (Chinese): what the reader saw, the root
 cause, what changed, which gate guards it. Only the minors since 0.19 are listed here, with patch
 releases in one line each.
+
+**0.27.0 · 2026-09-05 · No link? Search first.** A new `search` tool with no key and no search API (no Firecrawl, no Tavily): the sidecar GETs DuckDuckGo's plain-HTML result page itself, falls back to Bing, and always asks Wikipedia too; the three are stripped of ads and private hosts, merged by canonical URL, ranked by Reciprocal Rank Fusion plus keyword coverage, and served 5 at a time (10 at most) with a footer naming the total, what is left and the next offset — paging the same query within ten minutes never touches the engines again. `fetch` now numbers the page by paragraph and takes offset / limit, sharing one slicing-and-footer definition with `read_file`; re-reading the same page does not download it again. [Design note](docs/v0.27.0-不知道链接先搜.md)
 
 **0.26.0 · 2026-09-03 · Overflow returns the batch.** Two tool-layer safeguards for small-window models (64k / 128k). A "context too long" reply from the endpoint is no longer reported to the reader as a plain rejection: the overflow messages of six endpoint families are recognised, and the size of the call, the model's limit and a "read in slices" instruction are returned to the model as the tool result so the same call is retried; when there is nothing to return, the turn switches to the base model or folds the history once, at most three returns per turn. `read_file` now truncates on a line boundary and names the next offset, says how long the file is when a read stops short, and a malformed offset / limit is a tool error instead of a crashed turn. [Design note](docs/v0.26.0-窗口撞了退一批.md)
 

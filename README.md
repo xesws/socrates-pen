@@ -85,8 +85,8 @@
 另外两件事它不靠提示词自觉，**靠代码兜住**。模型想改你笔记里的任何一段，必须在更早的
 一轮里真的读过那个文件，这笔账由执行层记，声称读过不算数。会话、快照、深挖账本则全在
 你自己机器上的本地目录里，仓库里没有任何埋点。出网的是发给你在设置里填的那个模型节点、
-插件升级后重新拉起服务时取一份新 sidecar，以及模型调用 `fetch` 时向那个 URL 发的 GET
-（只接受公网 http/https）。前两条各自拦在哪一行，[第 4 章](#4--系统设计)有逐条的实现。
+插件升级后重新拉起服务时取一份新 sidecar，模型调用 `search` 时发给 DuckDuckGo / Bing /
+Wikipedia 的关键词，以及模型调用 `fetch` 时向那个 URL 发的 GET（只接受公网 http/https）。前两条各自拦在哪一行，[第 4 章](#4--系统设计)有逐条的实现。
 
 下面所有例子跑的都是另一本书：仓库 [`docs/demo/`](docs/demo/) 里那本 1405 行的
 《从零手写 DQN · 强化学习通关手册》。它随仓公开，你可以导进自己的库把后面每一段对话
@@ -365,6 +365,7 @@
 | --- | --- |
 | `decide("read_file")` | `allow` — 只读自动过 |
 | `decide("fetch")` | `allow` — 取公网页面，自动过 |
+| `decide("search")` | `allow` — 公网搜索，自动过 |
 | `decide("edit_file")` | `ask` — **每一次**都问人 |
 | `decide("bash")` / `decide("write_file")` | `deny` — 没登记的工具一律拒 |
 | `read_first_block("edit_file", 教材, read_before=∅)` | ⛔ 挡下 |
@@ -530,16 +531,19 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 服务，ping 通就直接接上、什么都不下载；只有 ping 不通、要重新拉起时才比对版本号，发现旧
 了才照着新版本号再取一份。
 
-### 4.2 · 工具箱里三把
+### 4.2 · 工具箱里四把
 
-工具箱里是 `read_file`、`fetch` 和 `edit_file`——**没有 bash，没有 write_file，没有 shell**。
-权限也不是一个开关，是三值的：`read_file` 和 `fetch` 是 allow，自动过；`edit_file` 是 ask，
+工具箱里是 `read_file`、`search`、`fetch` 和 `edit_file`——**没有 bash，没有 write_file，没有 shell**。
+权限也不是一个开关，是三值的：`read_file`、`search` 和 `fetch` 是 allow，自动过；`edit_file` 是 ask，
 **每一次**都弹审批；其他任何名字一律 deny，不认识就拒。最后这一条是默认拒绝，不是默认放行，
 模型幻觉出一个 `run_command` 来，撞的是墙。
 
-`fetch` 给定一个 http 或 https 的 URL，GET 那一页，去掉标签，把正文交给模型。它不是搜索：
-侧栏「查相关论文 / 算法出处」仍是灰的，没有 URL 就不会去网上翻。只接受公网地址，内网、
-本机、`file://` 一律拒；解析出 IP 之后按这个 IP 去连，Host / SNI 仍用原来的名字。
+`search` 不用任何钥匙、不接任何搜索 API：sidecar 自己 GET DuckDuckGo 的纯 HTML 结果页（倒了换
+Bing），再向 Wikipedia 要一份；三家合起来按规范化 URL 去重、按 Reciprocal Rank Fusion 排好，给模型
+「标题 / URL / 摘要」的列表，一次默认 5 条、最多 10 条，尾注写共几条、还剩几条、下一段的 offset；
+同一个 query 十分钟内翻页从缓存切，不再打引擎。`fetch` 给定一个 http 或 https 的 URL，GET 那一页，
+去掉标签，按段落编号交给模型，offset / limit 和 `read_file` 一个用法，续读同一页不重新下载。
+只接受公网地址，内网、本机、`file://` 一律拒；解析出 IP 之后按这个 IP 去连，Host / SNI 仍用原来的名字。
 
 ### 4.3 · read-first 是一道硬闸
 
@@ -717,7 +721,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 | 部分 | 规模 |
 | --- | --- |
 | Python（sidecar，不含测试） | 32 个模块，9719 行 |
-| Python 测试 | **1101 passed** |
+| Python 测试 | **1138 passed** |
 | TypeScript（插件） | 18 个文件，6137 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -759,7 +763,7 @@ Obsidian 插件（TypeScript）、本机 sidecar（Python / FastAPI）、你自�
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **1101 passed**，
+后端 `python -m pytest pen/tests -q` → **1138 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -845,9 +849,10 @@ pip 安装 sidecar，这一步要访问 GitHub 和 PyPI。装完之后**设置 �
 （权限 0600），**不写进这个库**——Sync / iCloud / git 带不走它；从旧版本升级时会把钥匙从
 `data.json` 自动迁过去并抹掉。若这个库在旧版本时代被同步或提交过 git，历史里的那把钥匙
 清不掉，请去服务商**轮换一把**。开发场景也可以不用设置页：给 sidecar 留 `OPENAI_API_KEY`
-或 `DEEPSEEK_API_KEY` 环境变量（或源码树里的 `.env`）同样有效。二，网络有三处：装的时候从
+或 `DEEPSEEK_API_KEY` 环境变量（或源码树里的 `.env`）同样有效。二，网络有四处：装的时候从
 GitHub 和 PyPI 拉 sidecar 和依赖到 `~/.socrates-pen`，插件升级后重新拉起服务时会再取一
-次；模型调用由这个本机进程发到你填的那个节点；模型调用 `fetch` 时会向那个 URL 发 GET
+次；模型调用由这个本机进程发到你填的那个节点；模型调用 `search` 时会把关键词发给
+DuckDuckGo / Bing / Wikipedia；模型调用 `fetch` 时会向那个 URL 发 GET
 （只接受公网 http/https，内网和本机一律拒绝）。三，禁用插件默认不会停掉
 sidecar，那个 Python 进程还在跑，下次启用能立刻用，多个库也共用它；不想让它常驻的，
 设置里有「退出后保持本机服务运行」，关掉之后退出 Obsidian 会停掉由本插件自己拉起的
@@ -891,7 +896,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 1101 passed
+python -m pytest pen/tests -q       # 1138 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -926,6 +931,8 @@ OpenAI 兼容节点按协议能接，但没有逐家测过。
 
 每个小版本都有一份设计说明在 [`docs/`](docs/)：读者看到了什么、病根在哪、改了什么、哪道闸守着。
 这里只列 0.19 以来的大版本，补丁版顺带一句。
+
+**0.27.0 · 2026-09-05 · 不知道链接先搜。** 新工具 `search`，不用任何钥匙、不接 Firecrawl / Tavily 之类的搜索 API：sidecar 自己 GET DuckDuckGo 的纯 HTML 结果页，倒了换 Bing，Wikipedia 总是补一份；三家结果去广告、去内网、按规范化 URL 合并，Reciprocal Rank Fusion 加关键词覆盖排好，一次默认 5 条、最多 10 条，尾注写共几条、还剩几条、下一段的 offset，同一个 query 十分钟内翻页从缓存切。`fetch` 改成按段落编号、带 offset / limit，切片和尾注与 `read_file` 共用同一个定义点，续读同一页不重新下载。[设计说明](docs/v0.27.0-不知道链接先搜.md)
 
 **0.26.0 · 2026-09-03 · 窗口撞了退一批。** 给小窗口模型（64k / 128k）的两道工具层保险。节点回「上下文太长」不再当普通拒绝报给读者：认出六家节点的溢出报文，把这一枪多少 token、模型上限多少连同「改成分段读」一起退回给模型，同一枪重打；退不了的换基座或折一次历史，一轮最多退三次。`read_file` 的截断改成按整行切并写明下一段的 offset，读到一半会说文件共几行，offset / limit 写错是工具错误不再炸掉整轮。[设计说明](docs/v0.26.0-窗口撞了退一批.md)
 
