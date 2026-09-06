@@ -36,6 +36,10 @@ FETCH_MAX_REDIRECTS = 5
 # 16 条够一轮里同时翻的几页；过期就重取。
 FETCH_CACHE_TTL_S = 600.0
 FETCH_CACHE_SIZE = 16
+# 比这长的一行（段落 / 单行 JSON / 长 <pre>）拆成几行再进缓存：拆开之后每一行都
+# 小于 MAX_OUTPUT，模型按行号总能读到，不会落进「本行剩余部分读不到」（四审）。
+# 拆行点是稳定的（缓存里就是拆好的行），续读的 offset 不漂。
+FETCH_LINE_CHARS = 1500
 _SKIP_TAGS = frozenset({"script", "style", "noscript", "template"})
 # 这些标签开始或结束就换一行：一段一行，模型按行号续读时段落不会被切半。
 _BLOCK_TAGS = frozenset(
@@ -126,7 +130,7 @@ def _fail(text: str, *, url: str, resolved: str = "") -> dict[str, Any]:
     }
 
 
-_CACHE: OrderedDict[str, tuple[float, list[str], str]] = OrderedDict()
+_CACHE: OrderedDict[str, tuple[float, list[str], str, bool]] = OrderedDict()
 _CACHE_LOCK = threading.Lock()
 
 
@@ -135,25 +139,42 @@ def _reset_cache() -> None:
         _CACHE.clear()
 
 
-def _cache_get(url: str) -> tuple[list[str], str] | None:
+def _cache_get(url: str) -> tuple[list[str], str, bool] | None:
     with _CACHE_LOCK:
         hit = _CACHE.get(url)
         if hit is None:
             return None
-        ts, lines, resolved = hit
+        ts, lines, resolved, capped = hit
         if time.monotonic() - ts > FETCH_CACHE_TTL_S:
             del _CACHE[url]
             return None
         _CACHE.move_to_end(url)
-        return lines, resolved
+        return lines, resolved, capped
 
 
-def _cache_put(url: str, lines: list[str], resolved: str) -> None:
+def _cache_put(url: str, lines: list[str], resolved: str, capped: bool) -> None:
     with _CACHE_LOCK:
-        _CACHE[url] = (time.monotonic(), lines, resolved)
+        _CACHE[url] = (time.monotonic(), lines, resolved, capped)
         _CACHE.move_to_end(url)
         while len(_CACHE) > FETCH_CACHE_SIZE:
             _CACHE.popitem(last=False)
+
+
+def _split_long(lines: list[str]) -> list[str]:
+    """超过 FETCH_LINE_CHARS 的行在最后一个空白处拆；没有空白就硬切。"""
+    out: list[str] = []
+    for line in lines:
+        while len(line) > FETCH_LINE_CHARS:
+            cut = line.rfind(" ", 0, FETCH_LINE_CHARS)
+            if cut <= 0:
+                cut = FETCH_LINE_CHARS
+            piece = line[:cut].rstrip()
+            if piece:
+                out.append(piece)
+            line = line[cut:].lstrip()
+        if line:
+            out.append(line)
+    return out
 
 
 def _v4_inside(ip: ipaddress.IPv6Address) -> ipaddress.IPv4Address | None:
@@ -292,27 +313,32 @@ def _decode_body(content: bytes, content_type: str) -> list[str]:
     except LookupError:
         text = content.decode("utf-8", errors="replace")
     if "html" in lower or text.lstrip()[:15].lower().startswith(("<!doctype html", "<html")):
-        return html_to_lines(text)
-    return text.splitlines()
+        return _split_long(html_to_lines(text))
+    return _split_long(text.splitlines())
 
 
-def _read_capped(resp: httpx.Response, deadline: float) -> bytes | str:
+def _read_capped(resp: httpx.Response, deadline: float) -> tuple[bytes, bool] | str:
+    """(正文, 是否在字节上限处截断)。截断要传到切片层：不然「页面共 N 行」是在撒谎（四审）。"""
     buf = bytearray()
+    capped = False
     try:
         for chunk in resp.iter_bytes():
             if time.monotonic() > deadline:
                 return "错误：取网页超时。"
             room = FETCH_MAX_BYTES - len(buf)
             if room <= 0:
+                capped = True
                 break
+            if len(chunk) > room:
+                capped = True
             buf.extend(chunk[:room])
-            if len(buf) >= FETCH_MAX_BYTES:
+            if capped:
                 break
     except httpx.TimeoutException:
         return "错误：取网页超时。"
     except httpx.RequestError as exc:
         return f"错误：取网页失败：{exc}"
-    return bytes(buf)
+    return bytes(buf), capped
 
 
 def handle_fetch(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
@@ -332,16 +358,22 @@ def handle_fetch(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
         got = _download(url)
         if isinstance(got, dict):
             return got
-        lines, resolved = got
-        _cache_put(url, lines, resolved)
+        lines, resolved, capped = got
+        _cache_put(url, lines, resolved, capped)
     else:
-        lines, resolved = cached
+        lines, resolved, capped = cached
     report = slice_lines([line + "\n" for line in lines], offset, limit, unit="页面")
-    return {"ok": True, "resolved": resolved, "detail": url, **report}
+    if capped and (not report["lines"] or report["lines"][1] >= report["total"]):
+        # 模型读到了我们手里的最后一行（或越界）：这时它会以为到了页尾，得说清楚。
+        report["text"] += (
+            f"\n（注意：这一页超过 {FETCH_MAX_BYTES} 字节，后面的没取到；"
+            f"「页面共 {report['total']} 行」只算取到的部分）"
+        )
+    return {"ok": True, "resolved": resolved, "detail": url, "capped": capped, **report}
 
 
-def _download(url: str) -> tuple[list[str], str] | dict[str, Any]:
-    """走完跳转链、钉 IP、限字节，返回 (行, 最终 URL)；失败返回 `_fail` 的 dict。"""
+def _download(url: str) -> tuple[list[str], str, bool] | dict[str, Any]:
+    """走完跳转链、钉 IP、限字节，返回 (行, 最终 URL, 是否截断)；失败返回 `_fail` 的 dict。"""
     current = url
     try:
         with httpx.Client(
@@ -379,11 +411,15 @@ def _download(url: str) -> tuple[list[str], str] | dict[str, Any]:
                                 url=url,
                                 resolved=target.logical,
                             )
-                        body = _read_capped(resp, deadline)
-                        if isinstance(body, str):
-                            return _fail(body, url=url, resolved=current)
+                        got = _read_capped(resp, deadline)
+                        if isinstance(got, str):
+                            return _fail(got, url=url, resolved=current)
+                        body, capped = got
                         ctype = resp.headers.get("content-type") or ""
-                        return _decode_body(body, ctype), target.logical
+                        lines = _decode_body(body, ctype)
+                        if capped and len(lines) > 1:
+                            lines = lines[:-1]  # 最后一行多半切了一半
+                        return lines, target.logical, capped
                 except httpx.TimeoutException:
                     return _fail("错误：取网页超时。", url=url, resolved=current)
                 except httpx.RequestError as exc:

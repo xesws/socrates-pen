@@ -121,7 +121,8 @@ def test_fetch_returns_stripped_html(monkeypatch: pytest.MonkeyPatch) -> None:
     assert out["text"] == "1\tDQN paper\n"
     assert "script" not in out["text"].lower()
     assert out["detail"] == "https://example.com/paper"
-    assert set(out) == {"ok", "text", "resolved", "detail", "lines", "total", "truncated"}
+    assert set(out) == {"ok", "text", "resolved", "detail", "lines", "total", "truncated", "capped"}
+    assert out["capped"] is False
 
 
 def test_fetch_refuses_loopback_without_http() -> None:
@@ -303,3 +304,52 @@ def test_fetch_error_pages_are_not_cached(monkeypatch: pytest.MonkeyPatch) -> No
     assert handle_fetch({"url": "https://example.com/flaky"}, {})["ok"] is False
     assert handle_fetch({"url": "https://example.com/flaky"}, {})["text"] == "1\tnow\n"
     assert len(calls) == 2
+
+
+# ── 四审：字节上限要传到切片层；超长段落拆成稳定的续行 ──
+
+
+def test_fetch_says_when_the_page_was_cut_at_the_byte_cap(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(fetchmod, "FETCH_MAX_BYTES", 120)
+    page = "".join(f"<p>para {i}</p>" for i in range(1, 31)).encode("utf-8")
+
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
+        return _Resp(200, page)
+
+    _patch_client(monkeypatch, handler)
+    head = handle_fetch({"url": "https://example.com/big", "limit": 3}, {})
+    assert head["ok"] is True and head["capped"] is True
+    assert head["total"] < 30
+    assert "字节" not in head["text"], "还没读到我们手里的最后一行，不必吓它"
+    tail = handle_fetch({"url": "https://example.com/big", "offset": head["total"], "limit": 3}, {})
+    assert f"{head['total']}\t" in tail["text"]
+    assert "超过 120 字节" in tail["text"] and "后面的没取到" in tail["text"]
+    beyond = handle_fetch({"url": "https://example.com/big", "offset": 999}, {})
+    assert "超过 120 字节" in beyond["text"]
+
+
+def test_overlong_paragraphs_are_split_into_stable_lines(monkeypatch: pytest.MonkeyPatch) -> None:
+    words = "word " * 700  # 3500 字符，一个 <p>；拆完三行加 tail 仍在 MAX_OUTPUT 内
+    blob = f"<p>{words.strip()}</p><p>tail</p>".encode("utf-8")
+
+    def handler(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
+        return _Resp(200, blob)
+
+    _patch_client(monkeypatch, handler)
+    out = handle_fetch({"url": "https://example.com/long-para", "limit": 100}, {})
+    assert out["total"] >= 4
+    body = out["text"].split("\n（", 1)[0]
+    lines = [ln.split("\t", 1)[1] for ln in body.splitlines() if "\t" in ln]
+    assert all(len(ln) <= fetchmod.FETCH_LINE_CHARS for ln in lines)
+    assert " ".join(lines[:-1]) == words.strip() and lines[-1] == "tail"
+    assert out["truncated"] is False, "拆开之后每一行都读得到，不再有「本行剩余部分读不到」"
+
+    def handler_json(url: str, headers: dict[str, str], ext: dict[str, Any]) -> _Resp:
+        return _Resp(200, b'{"k": "' + b"v" * 5000 + b'"}', headers={"content-type": "application/json"})
+
+    fetchmod._reset_cache()
+    _patch_client(monkeypatch, handler_json)
+    out = handle_fetch({"url": "https://example.com/data.json", "limit": 100}, {})
+    assert out["total"] >= 4
+    assert "本身超过" not in out["text"], "拆过行就不会再有「本行剩余读不到」"
+    assert "接着读用 offset=" in out["text"], "总量超过 MAX_OUTPUT 时按行截、给下一段"

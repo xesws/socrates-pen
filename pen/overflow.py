@@ -248,7 +248,7 @@ def stub_trailing_batch(
         if name == "edit_file":
             continue
         args = dict(meta.get("args") or {})
-        span = _line_span(content) if name == "read_file" else None
+        span = _line_span(content) if name in ("read_file", "fetch") else None
         chars = len(content)
         stub = overflow_stub_text(
             name=name,

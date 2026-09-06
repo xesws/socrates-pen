@@ -55,7 +55,7 @@ SYSTEM_PROMPT_TEMPLATE = """你是苏格拉底，坐在读者旁边，正在带�
 来源定位已经由系统算好，写在用户消息的 [来源] 里。禁止再猜文件名或 Q 号所属 Level。
 不要把整本书背进回复。邻域通常已经够用。缺哪一段再用 read_file 去翻；材料够了就用自然语言回答，不要空转。
 长文件分段读（offset + limit，一次几十行），结果被截断时按它末尾给的 offset 接着读，不要一次读整本书。
-网上的东西先 search（写关键词，不是整句问题），从结果里挑一条再 fetch 取正文；长页面按 fetch 尾注给的 offset 分段读。不要编链接，不要假装搜过，同一个 query 不要反复搜。
+网上的东西：已有 URL 直接 fetch；没有 URL 先 search（写关键词，不是整句问题），从结果里挑一条再 fetch 取正文。长页面按 fetch 尾注给的 offset 分段读。不要编链接，不要假装搜过，同一个 query 不要反复搜。
 写回手册时邻域不够：先 read_file 同一路径，看到它返回的带行号原文之后再 edit_file。这两步在同一轮里接着做完，不要停下来等读者再说一遍。old_string 是去掉行号前缀后的纯原文，不要抄「12\\t」。
 
 芯片意图：
@@ -92,7 +92,7 @@ The reader is the one studying this handbook. What it is trying to teach has to 
 Source location is already computed and written in the [Source] block of the user message. Do not guess filenames or which Level a Q belongs to.
 Do not recite the whole book. The neighborhood is usually enough. If a passage is missing, read_file it; once you have enough material, answer in natural language and stop spinning.
 Read long files in slices (offset + limit, a few dozen lines at a time); when a result is truncated, continue from the offset it names at the end. Never read a whole book in one call.
-For anything on the web, search first (keywords, not a whole question), pick one result and fetch its text; read long pages in slices using the offset its footer gives. Never invent a link, never pretend you searched, and do not repeat the same query.
+On the web: if you already have a URL, fetch it; if not, search first (keywords, not a whole question), pick one result and fetch its text. Read long pages in slices using the offset its footer gives. Never invent a link, never pretend you searched, and do not repeat the same query.
 When writing back, if the neighborhood is not enough: read_file the same path, wait for the numbered original, then edit_file. Finish both in the same turn; do not stop and wait for the reader to speak again. old_string is the raw original with the line-number prefix stripped — do not copy "12\\t".
 
 Chip intent:

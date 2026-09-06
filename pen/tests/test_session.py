@@ -273,3 +273,13 @@ def test_store_create_passes_the_title_through(pen_home: Path) -> None:
     back = load_session(sess.session_id)
     assert back is not None
     assert "《从零手写 DQN》" in back.messages[0]["content"]
+
+
+def test_templates_send_a_known_url_straight_to_fetch() -> None:
+    """四审：模板说「网上的东西先 search」和 schema 的「有 URL 就 fetch」打架。"""
+    from pen.session import SYSTEM_PROMPT_TEMPLATE, SYSTEM_PROMPT_TEMPLATE_EN
+
+    assert "已有 URL 直接 fetch" in SYSTEM_PROMPT_TEMPLATE
+    assert "没有 URL 先 search" in SYSTEM_PROMPT_TEMPLATE
+    assert "already have a URL, fetch it" in SYSTEM_PROMPT_TEMPLATE_EN
+    assert "search first" in SYSTEM_PROMPT_TEMPLATE_EN

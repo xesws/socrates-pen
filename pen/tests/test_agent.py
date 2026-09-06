@@ -1499,18 +1499,11 @@ def test_search_then_fetch_in_slices_flows_through_the_loop(monkeypatch, tmp_pat
     )
     page = b"<h1>Paper</h1><p>One</p><p>Two</p><p>Three</p>"
 
-    class _Resp:
-        def __init__(self, status: int, text: str = "", data: Any = None) -> None:
-            self.status_code = status
-            self.text = text
-            self._data = data
-
-        def json(self) -> Any:
-            return self._data
-
     class _Stream:
-        status_code = 200
-        headers = {"content-type": "text/html; charset=utf-8"}
+        def __init__(self, body: bytes, ctype: str) -> None:
+            self.status_code = 200
+            self.headers = {"content-type": ctype}
+            self._body = body
 
         def __enter__(self) -> "_Stream":
             return self
@@ -1519,11 +1512,12 @@ def test_search_then_fetch_in_slices_flows_through_the_loop(monkeypatch, tmp_pat
             return None
 
         def iter_bytes(self) -> Any:
-            yield page
+            yield self._body
 
     class _Client:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             assert kwargs.get("trust_env") is False
+            assert kwargs.get("follow_redirects") is False
 
         def __enter__(self) -> "_Client":
             return self
@@ -1531,13 +1525,13 @@ def test_search_then_fetch_in_slices_flows_through_the_loop(monkeypatch, tmp_pat
         def __exit__(self, *args: Any) -> None:
             return None
 
-        def get(self, url: str, params: Any = None, headers: Any = None) -> _Resp:
-            if httpx.URL(url).host == "html.duckduckgo.com":
-                return _Resp(200, ddg)
-            return _Resp(200, "", {"query": {"search": []}})
-
-        def stream(self, method: str, url: str, headers: Any = None, extensions: Any = None) -> _Stream:
-            return _Stream()
+        def stream(self, method: str, url: str, params: Any = None, headers: Any = None, extensions: Any = None) -> _Stream:
+            host = httpx.URL(url).host
+            if host == "html.duckduckgo.com":
+                return _Stream(ddg.encode("utf-8"), "text/html")
+            if host.endswith("wikipedia.org"):
+                return _Stream(b'{"query": {"search": []}}', "application/json")
+            return _Stream(page, "text/html; charset=utf-8")
 
     monkeypatch.setattr(httpx, "Client", _Client)
     book = tmp_path / "note.md"

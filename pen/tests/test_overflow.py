@@ -277,3 +277,16 @@ def test_search_results_are_stubbed_with_the_query_as_path() -> None:
     msgs[3]["content"] = "x" * 2000
     stub_trailing_batch(msgs, model="m", got=70000, limit=0, lang="en", nth=2, cap=3)
     assert msgs[3]["content"].startswith(OVERFLOW_MARK_EN) and "limit" in msgs[3]["content"]
+
+
+def test_fetch_results_carry_their_line_span_into_the_stub() -> None:
+    """四审：fetch 已经是 N\t段落，退批的 stub 要写「第 a–b 行」，模型才知道从哪个 offset 恢复。"""
+    msgs = [
+        {"role": "system", "content": "sys"},
+        {"role": "user", "content": "packet"},
+        {"role": "assistant", "content": None, "tool_calls": [_tc("f1", "fetch", {"url": "https://example.com/p", "offset": 13, "limit": 60})]},
+        {"role": "tool", "tool_call_id": "f1", "content": "".join(f"{i}\tparagraph {i} of the page body text\n" for i in range(13, 73))},
+    ]
+    got = stub_trailing_batch(msgs, model="m", got=70000, limit=65536, lang="zh", nth=1, cap=3)
+    assert got[0]["span"] == (13, 72)
+    assert "第 13–72 行" in msgs[3]["content"] and "offset" in msgs[3]["content"]
