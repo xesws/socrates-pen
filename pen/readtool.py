@@ -30,6 +30,56 @@ def _cap_lines(numbered: list[str]) -> tuple[str, int, bool]:
     return "".join(out), len(out), False
 
 
+def slice_lines(
+    lines: list[str],
+    offset: int,
+    limit: int,
+    *,
+    unit: str = "文件",
+    resume_hint: bool = True,
+) -> dict[str, Any]:
+    """按 offset / limit 切一段、编行号、按 MAX_OUTPUT 在整行边界停、加尾注。
+
+    **分段读的唯一定义点**：read_file 读磁盘文件、fetch 读网页正文（v0.27.0，
+    按段落一行）都走这里，模型看到的是同一种格式 `N\t原文` 和同一套尾注，
+    压缩层的 `_line_span`、退批的「第 a–b 行」对两种结果都认。`unit` 只换
+    尾注里的名词（「文件共 N 行」/「页面共 N 行」）。`lines` 是带换行符的行
+    （`splitlines(keepends=True)` 的形状）。
+
+    尾注只在**还有没读到的行**时才加（被字符截断、或被 limit 截住而没到底）：
+    读到底的输出没有尾注。尾注不带行号前缀，`_line_span` 认不到它，区间统计
+    不受影响。`resume_hint=False` 关掉尾注：probe 拿它取摘录，那里没有「接着读」
+    这回事，尾注只会混进探索 prompt 和反引号校验的语料里。
+    """
+    total = len(lines)
+    start = max(offset - 1, 0)
+    chunk = lines[start : start + limit]
+    if not chunk:
+        body = f"(空{unit}或超出范围：{unit}共 {total} 行)" if total else f"(空{unit}或超出范围)"
+        return {"text": body, "lines": [], "total": total, "truncated": False}
+    numbered = [f"{start + i + 1}\t{line}" for i, line in enumerate(chunk)]
+    body, kept, partial = _cap_lines(numbered)
+    first = start + 1
+    last = start + kept
+    truncated = partial or kept < len(chunk)
+    sep = "" if body.endswith("\n") else "\n"
+    if not resume_hint:
+        pass
+    elif partial:
+        body += (
+            f"{sep}…（已截断：第 {first} 行本身超过 {MAX_OUTPUT} 字符，这里只有它的开头，"
+            f"按行号读不到它的剩余部分；{unit}共 {total} 行）"
+        )
+    elif truncated:
+        body += (
+            f"{sep}…（已截断：本次只到第 {last} 行，{unit}共 {total} 行。"
+            f"接着读用 offset={last + 1}，limit 不超过 {kept} 行）"
+        )
+    elif last < total:
+        body += f"{sep}（第 {first}–{last} 行，{unit}共 {total} 行；接着读 offset={last + 1}）"
+    return {"text": body, "lines": [first, last], "total": total, "truncated": truncated}
+
+
 def read_file_report(
     original_path: Path,
     path: str,
@@ -41,12 +91,7 @@ def read_file_report(
 ) -> dict[str, Any]:
     """ok / resolved / text / lines / total / truncated。text 始终是给模型的字符串。
 
-    尾注只在**还有没读到的行**时才加（被字符截断、或被 limit 截住而文件没到底）：
-    读到文件尾的输出和以前逐字节一致。尾注不带行号前缀，压缩层的
-    `_line_span` 认不到它，区间统计不受影响。
-
-    `resume_hint=False` 关掉尾注：probe 拿这个函数取摘录，那里没有「接着读」
-    这回事，尾注只会混进探索 prompt 和反引号校验的语料里。
+    读磁盘 + 沙箱校验在这里；切片、编号、尾注在 `slice_lines`。
     """
     try:
         resolved = assert_readable(original_path, path, extra_roots=extra_roots)
@@ -61,47 +106,8 @@ def read_file_report(
             "resolved": str(resolved),
             "text": f"错误：无法读取 {path}：{exc}",
         }
-    total = len(lines)
-    start = max(offset - 1, 0)
-    chunk = lines[start : start + limit]
-    if not chunk:
-        body = f"(空文件或超出范围：文件共 {total} 行)" if total else "(空文件或超出范围)"
-        return {
-            "ok": True,
-            "resolved": str(resolved),
-            "text": body,
-            "lines": [],
-            "total": total,
-            "truncated": False,
-        }
-    numbered = [f"{start + i + 1}\t{line}" for i, line in enumerate(chunk)]
-    body, kept, partial = _cap_lines(numbered)
-    first = start + 1
-    last = start + kept
-    truncated = partial or kept < len(chunk)
-    sep = "" if body.endswith("\n") else "\n"
-    if not resume_hint:
-        pass
-    elif partial:
-        body += (
-            f"{sep}…（已截断：第 {first} 行本身超过 {MAX_OUTPUT} 字符，这里只有它的开头，"
-            f"按行号读不到它的剩余部分；文件共 {total} 行）"
-        )
-    elif truncated:
-        body += (
-            f"{sep}…（已截断：本次只到第 {last} 行，文件共 {total} 行。"
-            f"接着读用 offset={last + 1}，limit 不超过 {kept} 行）"
-        )
-    elif last < total:
-        body += f"{sep}（第 {first}–{last} 行，文件共 {total} 行；接着读 offset={last + 1}）"
-    return {
-        "ok": True,
-        "resolved": str(resolved),
-        "text": body,
-        "lines": [first, last],
-        "total": total,
-        "truncated": truncated,
-    }
+    report = slice_lines(lines, offset, limit, unit="文件", resume_hint=resume_hint)
+    return {"ok": True, "resolved": str(resolved), **report}
 
 
 def read_file_sandboxed(

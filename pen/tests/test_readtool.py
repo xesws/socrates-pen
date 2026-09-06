@@ -198,3 +198,24 @@ def test_negative_numbers_fall_back_the_same_way_whether_int_or_string(tmp_path:
     for neg in (-1, "-1", -3.0, "-3"):
         out = handle_read_file({"path": str(book), "offset": neg, "limit": neg}, _ctx(book))
         assert out["ok"] is True and out["text"].startswith("1\t"), neg
+
+
+# ── v0.27.0：切片和尾注抽成一个定义点，fetch 也用它 ──
+
+
+def test_slice_lines_is_the_single_definition_point_for_slicing_and_footers() -> None:
+    from pen.readtool import slice_lines
+
+    lines = [f"p{i}\n" for i in range(1, 11)]
+    got = slice_lines(lines, 3, 4, unit="页面")
+    assert got["text"].startswith("3\tp3\n4\tp4\n")
+    assert got["lines"] == [3, 6]
+    assert got["total"] == 10
+    assert got["truncated"] is False
+    assert got["text"].endswith("（第 3–6 行，页面共 10 行；接着读 offset=7）")
+    empty = slice_lines(lines, 50, 4, unit="页面")
+    assert empty["text"] == "(空页面或超出范围：页面共 10 行)"
+    assert empty["lines"] == []
+    # 读到底不加尾注，和 read_file 一样
+    tail = slice_lines(lines, 9, 4, unit="页面")
+    assert tail["text"] == "9\tp9\n10\tp10\n"

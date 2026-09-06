@@ -17,6 +17,7 @@ from pen.tutor import resume_chat, stream_chat
 def test_read_allow_edit_ask_unknown_deny() -> None:
     assert decide("read_file") == "allow"
     assert decide("fetch") == "allow"
+    assert decide("search") == "allow"
     assert decide("edit_file") == "ask"
     assert decide("bash") == "deny"
     assert decide("write_file") == "deny"
@@ -31,20 +32,32 @@ def test_read_first_block_requires_earlier_read() -> None:
     assert read_first_block("edit_file", book, {other}) == READ_FIRST_MSG
 
 
-def test_schemas_only_read_edit_and_fetch() -> None:
+def test_schemas_are_read_edit_fetch_and_search() -> None:
+    from pen.config import SEARCH_LIMIT_DEFAULT, SEARCH_LIMIT_MAX
+
     names = [s["function"]["name"] for s in schemas()]
-    assert names == ["read_file", "edit_file", "fetch"]
+    assert names == ["read_file", "edit_file", "fetch", "search"]
     assert "write_file" not in TOOLS
     assert "bash" not in TOOLS
-    read_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "read_file")
-    edit_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "edit_file")
-    fetch_desc = next(s["function"]["description"] for s in schemas() if s["function"]["name"] == "fetch")
+    by_name = {s["function"]["name"]: s["function"] for s in schemas()}
+    read_desc = by_name["read_file"]["description"]
+    edit_desc = by_name["edit_file"]["description"]
+    fetch_desc = by_name["fetch"]["description"]
+    search_desc = by_name["search"]["description"]
     assert "行号" in read_desc
     assert "N\\t原文" in read_desc
     assert "先成功 read_file" in edit_desc
     assert "行号" in edit_desc
-    assert "URL" in fetch_desc
-    assert "不要假装搜过" in fetch_desc
+    assert "URL" in fetch_desc and "先用 search" in fetch_desc and "offset" in fetch_desc
+    assert "不要编链接" in fetch_desc
+    assert "offset" in search_desc and "fetch" in search_desc and "不要反复搜" in search_desc
+    fetch_props = by_name["fetch"]["parameters"]["properties"]
+    assert fetch_props["offset"]["minimum"] == 1 and fetch_props["limit"]["minimum"] == 1
+    search_params = by_name["search"]["parameters"]
+    assert search_params["required"] == ["query"]
+    assert search_params["properties"]["limit"]["default"] == SEARCH_LIMIT_DEFAULT
+    assert search_params["properties"]["limit"]["maximum"] == SEARCH_LIMIT_MAX
+    assert search_params["properties"]["offset"]["minimum"] == 1
 
 
 def test_edit_file_unique_replace(tmp_path: Path) -> None:
@@ -1460,3 +1473,98 @@ def test_streaming_is_actually_requested(monkeypatch, tmp_path: Path) -> None:
                      extra_roots=[tmp_path], allow_env_fallback=False))
     assert seen[0]["stream"] is True
     assert seen[0]["stream_options"] == {"include_usage": True}
+
+
+# ── v0.27.0：先 search 再 fetch，fetch 按尾注的 offset 续读 ──
+
+
+def test_search_then_fetch_in_slices_flows_through_the_loop(monkeypatch, tmp_path: Path) -> None:
+    import socket
+
+    import httpx
+
+    from pen.agent import fetch as fetchmod
+    from pen.agent import search as searchmod
+
+    fetchmod._reset_cache()
+    searchmod._reset_cache()
+    monkeypatch.setattr(
+        socket,
+        "getaddrinfo",
+        lambda host, port, *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", port or 0))],
+    )
+    ddg = (
+        '<a rel="nofollow" class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fpaper&amp;rut=1">Paper</a>'
+        '<a class="result__snippet" href="#">About the paper</a>'
+    )
+    page = b"<h1>Paper</h1><p>One</p><p>Two</p><p>Three</p>"
+
+    class _Resp:
+        def __init__(self, status: int, text: str = "", data: Any = None) -> None:
+            self.status_code = status
+            self.text = text
+            self._data = data
+
+        def json(self) -> Any:
+            return self._data
+
+    class _Stream:
+        status_code = 200
+        headers = {"content-type": "text/html; charset=utf-8"}
+
+        def __enter__(self) -> "_Stream":
+            return self
+
+        def __exit__(self, *args: Any) -> None:
+            return None
+
+        def iter_bytes(self) -> Any:
+            yield page
+
+    class _Client:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            assert kwargs.get("trust_env") is False
+
+        def __enter__(self) -> "_Client":
+            return self
+
+        def __exit__(self, *args: Any) -> None:
+            return None
+
+        def get(self, url: str, params: Any = None, headers: Any = None) -> _Resp:
+            if httpx.URL(url).host == "html.duckduckgo.com":
+                return _Resp(200, ddg)
+            return _Resp(200, "", {"query": {"search": []}})
+
+        def stream(self, method: str, url: str, headers: Any = None, extensions: Any = None) -> _Stream:
+            return _Stream()
+
+    monkeypatch.setattr(httpx, "Client", _Client)
+    book = tmp_path / "note.md"
+    book.write_text("# 题\n", encoding="utf-8")
+    seen = _patch_script(
+        monkeypatch,
+        [
+            _Msg(tool_calls=[_Tc("s1", "search", {"query": "dqn paper"})]),
+            _Msg(tool_calls=[_Tc("f1", "fetch", {"url": "https://example.com/paper", "offset": 1, "limit": 2})]),
+            _Msg(tool_calls=[_Tc("f2", "fetch", {"url": "https://example.com/paper", "offset": 3, "limit": 2})]),
+            _Msg(content="出处在这里。"),
+        ],
+    )
+    sess = PenSession(session_id="s" * 32, handbook_id="demo")
+    events = list(
+        stream_chat(sess, book, "packet", llm=_cfg(), extra_roots=[tmp_path], allow_env_fallback=False)
+    )
+    tools = [e for e in events if e["type"] == "tool"]
+    assert [(e["name"], e["ok"]) for e in tools] == [("search", True), ("fetch", True), ("fetch", True)]
+    assert tools[0]["detail"] == "dqn paper"
+    results = [m["content"] for m in sess.messages if m.get("role") == "tool"]
+    assert results[0].startswith("搜索「dqn paper」：共 1 条")
+    assert "https://example.com/paper" in results[0]
+    assert results[1] == "1\tPaper\n2\tOne\n（第 1–2 行，页面共 4 行；接着读 offset=3）"
+    assert results[2] == "3\tTwo\n4\tThree\n"
+    assert any(e["type"] == "done" for e in events)
+    assert not any(e["type"] == "approval" for e in events)
+    assert sess.read_ok_paths == [], "搜和取都不给 edit_file 资格"
+    offered = [t["function"]["name"] for t in (seen[0].get("tools") or [])]
+    assert "search" in offered

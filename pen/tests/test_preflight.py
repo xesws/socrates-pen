@@ -319,7 +319,7 @@ def test_the_probe_wears_the_real_shape(picky: str) -> None:
     sent = _Picky.log[0]
     assert sent["stream"] is True
     assert sent["stream_options"] == {"include_usage": True}
-    assert {t["function"]["name"] for t in sent["tools"]} == {"read_file", "edit_file", "fetch"}
+    assert {t["function"]["name"] for t in sent["tools"]} == {"read_file", "edit_file", "fetch", "search"}
 
 
 def test_the_shape_comes_from_the_main_shot_not_a_copy(picky: str) -> None:

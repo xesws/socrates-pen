@@ -1,7 +1,13 @@
-"""fetch：GET 一个公网 http(s) URL，把正文交给模型。
+"""fetch：GET 一个公网 http(s) URL，把正文按段落编号交给模型。
 
-不是搜索。私网 / 本机 / 元数据地址一律拒绝；每一次跳转都再查一遍。
-解析出 IP 之后按这个 IP 去连，避免查的时候是公网、连的时候换成 127.0.0.1。
+不是搜索（搜索在 `pen/agent/search.py`）。私网 / 本机 / 元数据地址一律拒绝；
+每一次跳转都再查一遍。解析出 IP 之后按这个 IP 去连，避免查的时候是公网、
+连的时候换成 127.0.0.1。
+
+v0.27.0 起正文是**一段一行**、带行号（`N\t段落`），offset / limit 和 read_file
+一个用法，切片和尾注走 `readtool.slice_lines`。取回的行按 URL 缓存十分钟：
+模型按尾注的 offset 续读时不再下载、不再走一遍跳转链——它第一次取的时候
+已经过了全套校验。
 """
 
 from __future__ import annotations
@@ -9,7 +15,9 @@ from __future__ import annotations
 import ipaddress
 import re
 import socket
+import threading
 import time
+from collections import OrderedDict
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from typing import Any
@@ -17,45 +25,96 @@ from urllib.parse import urljoin, urlparse, urlunparse
 
 import httpx
 
-from pen.config import MAX_OUTPUT
+from pen.agent.tools_impl import _int_arg
+from pen.config import READ_LIMIT_DEFAULT
+from pen.readtool import slice_lines
 
 FETCH_TIMEOUT_S = 10.0
 FETCH_MAX_BYTES = 200_000
 FETCH_MAX_REDIRECTS = 5
+# 续读同一页不重新下载。不是读者旋钮：十分钟够一轮对话把一页翻完，
+# 16 条够一轮里同时翻的几页；过期就重取。
+FETCH_CACHE_TTL_S = 600.0
+FETCH_CACHE_SIZE = 16
 _SKIP_TAGS = frozenset({"script", "style", "noscript", "template"})
+# 这些标签开始或结束就换一行：一段一行，模型按行号续读时段落不会被切半。
+_BLOCK_TAGS = frozenset(
+    {
+        "p", "div", "br", "li", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "th", "td",
+        "section", "article", "header", "footer", "blockquote", "pre", "table",
+        "ul", "ol", "dt", "dd", "hr", "title", "nav", "aside", "main", "figcaption",
+    }
+)
 _CGNAT = ipaddress.ip_network("100.64.0.0/10")
 _NAT64 = ipaddress.ip_network("64:ff9b::/96")
 _DEC_HOST = re.compile(r"^\d+$")
 _HEX_HOST = re.compile(r"^0x[0-9a-fA-F]+$", re.I)
 
 
-class _HTMLText(HTMLParser):
+class _HTMLLines(HTMLParser):
+    """块级标签断行、行内空白合并、空行丢；script / style 整段跳过。"""
+
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self._chunks: list[str] = []
+        self.lines: list[str] = []
+        self._buf: list[str] = []
         self._skip = 0
+        self._pre = 0
+
+    def _flush(self) -> None:
+        text = "".join(self._buf)
+        self._buf = []
+        if self._pre:
+            for piece in text.split("\n"):
+                piece = piece.rstrip()
+                if piece.strip():
+                    self.lines.append(piece)
+            return
+        line = " ".join(text.split())
+        if line:
+            self.lines.append(line)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag in _SKIP_TAGS:
             self._skip += 1
+            return
+        if tag in _BLOCK_TAGS:
+            self._flush()
+            if tag == "pre":
+                self._pre += 1
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in _SKIP_TAGS and self._skip:
-            self._skip -= 1
+        if tag in _SKIP_TAGS:
+            if self._skip:
+                self._skip -= 1
+            return
+        if tag in _BLOCK_TAGS:
+            self._flush()
+            if tag == "pre" and self._pre:
+                self._pre -= 1
 
     def handle_data(self, data: str) -> None:
         if not self._skip:
-            self._chunks.append(data)
+            self._buf.append(data)
+
+    def done(self) -> list[str]:
+        self._flush()
+        return self.lines
 
 
-def html_to_text(raw: str) -> str:
-    parser = _HTMLText()
+def html_to_lines(raw: str) -> list[str]:
+    """HTML → 一段一行的纯文本行（不带换行符）。解析器炸了就退化成一整行。"""
+    parser = _HTMLLines()
     try:
         parser.feed(raw)
         parser.close()
     except Exception:
-        return " ".join(raw.split())
-    return " ".join("".join(parser._chunks).split())
+        return [" ".join(raw.split())] if raw.strip() else []
+    return parser.done()
+
+
+def html_to_text(raw: str) -> str:
+    return " ".join(html_to_lines(raw))
 
 
 def _fail(text: str, *, url: str, resolved: str = "") -> dict[str, Any]:
@@ -67,10 +126,34 @@ def _fail(text: str, *, url: str, resolved: str = "") -> dict[str, Any]:
     }
 
 
-def _ok(text: str, *, url: str, resolved: str) -> dict[str, Any]:
-    if len(text) > MAX_OUTPUT:
-        text = text[:MAX_OUTPUT] + "\n...(已截断)"
-    return {"ok": True, "text": text, "resolved": resolved, "detail": url}
+_CACHE: OrderedDict[str, tuple[float, list[str], str]] = OrderedDict()
+_CACHE_LOCK = threading.Lock()
+
+
+def _reset_cache() -> None:
+    with _CACHE_LOCK:
+        _CACHE.clear()
+
+
+def _cache_get(url: str) -> tuple[list[str], str] | None:
+    with _CACHE_LOCK:
+        hit = _CACHE.get(url)
+        if hit is None:
+            return None
+        ts, lines, resolved = hit
+        if time.monotonic() - ts > FETCH_CACHE_TTL_S:
+            del _CACHE[url]
+            return None
+        _CACHE.move_to_end(url)
+        return lines, resolved
+
+
+def _cache_put(url: str, lines: list[str], resolved: str) -> None:
+    with _CACHE_LOCK:
+        _CACHE[url] = (time.monotonic(), lines, resolved)
+        _CACHE.move_to_end(url)
+        while len(_CACHE) > FETCH_CACHE_SIZE:
+            _CACHE.popitem(last=False)
 
 
 def _v4_inside(ip: ipaddress.IPv6Address) -> ipaddress.IPv4Address | None:
@@ -198,7 +281,8 @@ def blocked_reason(url: str) -> str | None:
     return got if isinstance(got, str) else None
 
 
-def _decode_body(content: bytes, content_type: str) -> str:
+def _decode_body(content: bytes, content_type: str) -> list[str]:
+    """字节 → 行。HTML 一段一行；别的（JSON、纯文本）按它自己的换行。"""
     charset = "utf-8"
     lower = content_type.lower()
     if "charset=" in lower:
@@ -208,8 +292,8 @@ def _decode_body(content: bytes, content_type: str) -> str:
     except LookupError:
         text = content.decode("utf-8", errors="replace")
     if "html" in lower or text.lstrip()[:15].lower().startswith(("<!doctype html", "<html")):
-        return html_to_text(text)
-    return text
+        return html_to_lines(text)
+    return text.splitlines()
 
 
 def _read_capped(resp: httpx.Response, deadline: float) -> bytes | str:
@@ -235,6 +319,29 @@ def handle_fetch(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
     url = str(args.get("url") or "").strip()
     if not url:
         return _fail("错误：fetch 需要 url。", url="")
+    offset = _int_arg(args, "offset", 1)
+    limit = _int_arg(args, "limit", READ_LIMIT_DEFAULT)
+    if offset is None or limit is None:
+        return _fail(
+            "错误：offset 和 limit 必须是正整数（例如 offset=81, limit=80）。"
+            "offset 是起始段落的行号，limit 是读几行。",
+            url=url,
+        )
+    cached = _cache_get(url)
+    if cached is None:
+        got = _download(url)
+        if isinstance(got, dict):
+            return got
+        lines, resolved = got
+        _cache_put(url, lines, resolved)
+    else:
+        lines, resolved = cached
+    report = slice_lines([line + "\n" for line in lines], offset, limit, unit="页面")
+    return {"ok": True, "resolved": resolved, "detail": url, **report}
+
+
+def _download(url: str) -> tuple[list[str], str] | dict[str, Any]:
+    """走完跳转链、钉 IP、限字节，返回 (行, 最终 URL)；失败返回 `_fail` 的 dict。"""
     current = url
     try:
         with httpx.Client(
@@ -276,8 +383,7 @@ def handle_fetch(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
                         if isinstance(body, str):
                             return _fail(body, url=url, resolved=current)
                         ctype = resp.headers.get("content-type") or ""
-                        text = _decode_body(body, ctype)
-                        return _ok(text, url=url, resolved=target.logical)
+                        return _decode_body(body, ctype), target.logical
                 except httpx.TimeoutException:
                     return _fail("错误：取网页超时。", url=url, resolved=current)
                 except httpx.RequestError as exc:

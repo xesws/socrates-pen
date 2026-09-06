@@ -43,6 +43,11 @@ READ_LIMIT_DEFAULT = 80
 # 不进 RuntimeLimits：0 就是 v0.25 的行为（撞一次这一轮就废），太大等于让
 # 模型对着同一堵墙反复烧 400。三次之后还撞，就如实报给读者。
 OVERFLOW_RETRIES = 3
+# search 一次给几条、最多几条。schema 的 default / maximum、handler 的回落和收窄、
+# 尾注里「limit 不超过多少」都读这两个数。默认 5：一条约 350 字符，五条够挑；
+# 上限 10：再多就是让模型翻第二页，翻页比一次吞 30 条便宜。
+SEARCH_LIMIT_DEFAULT = 5
+SEARCH_LIMIT_MAX = 10
 # 一轮对话里读**当前手册以外**的文件的总字符预算（别的教材、lab/ 对照文件）。
 # 读当前手册不计：写回要先 read_file 看原文、翻本册别的 Level 都是本职，
 # 一次都不该受影响——这是这道闸零回归的关键，别改成按次数或按总量。

@@ -171,7 +171,8 @@ def test_trailing_batch_is_stubbed_with_numbers_and_ranges_but_edits_are_kept() 
     for needle in ("第 1–60 行", "qwen-3.8-27b", "70000", "65536", "offset", "limit", "1/3"):
         assert needle in c1, needle
     c2 = msgs[4]["content"]
-    assert c2.startswith(OVERFLOW_MARK) and "fetch" in c2 and "整页" in c2
+    assert c2.startswith(OVERFLOW_MARK) and "fetch" in c2
+    assert "offset" in c2 and "limit" in c2, "v0.27.0 起 fetch 也能分段取，退回文案要教它"
     assert msgs[5]["content"].startswith("已编辑"), "edit_file 的结果是写回记录，不退"
     assert msgs[2]["tool_calls"], "assistant 那条一个字不动"
 
@@ -253,3 +254,26 @@ def test_replacement_is_judged_in_tokens_not_characters() -> None:
     assert "c2" not in [g["tool_call_id"] for g in got]
     assert msgs[4]["content"] == ascii_body
     assert est_tokens([msgs[4]]) <= before
+
+
+# ── v0.27.0：search 结果也能退，path 记的是 query ──
+
+
+def test_search_results_are_stubbed_with_the_query_as_path() -> None:
+    msgs = [
+        {"role": "system", "content": "sys"},
+        {"role": "user", "content": "packet"},
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [_tc("s1", "search", {"query": "socratic method", "limit": 10})],
+        },
+        {"role": "tool", "tool_call_id": "s1", "content": "搜索「socratic method」：共 30 条\n" + "1. 标题\n   https://x/\n   摘要摘要摘要\n" * 40},
+    ]
+    got = stub_trailing_batch(msgs, model="m", got=70000, limit=65536, lang="zh", nth=1, cap=3)
+    assert [g["path"] for g in got] == ["socratic method"]
+    stub = msgs[3]["content"]
+    assert stub.startswith(OVERFLOW_MARK) and "search" in stub and "limit" in stub
+    msgs[3]["content"] = "x" * 2000
+    stub_trailing_batch(msgs, model="m", got=70000, limit=0, lang="en", nth=2, cap=3)
+    assert msgs[3]["content"].startswith(OVERFLOW_MARK_EN) and "limit" in msgs[3]["content"]

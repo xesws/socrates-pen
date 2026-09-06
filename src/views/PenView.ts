@@ -113,7 +113,9 @@ function toolCaption(m: ChatMessage): { ok: boolean; file: string; kicker: strin
       ? t().kickerEditTool
       : name === "fetch"
         ? t().kickerFetchTool
-        : t().kickerReadTool;
+        : name === "search"
+          ? t().kickerSearchTool
+          : t().kickerReadTool;
   return { ok, file, kicker };
 }
 

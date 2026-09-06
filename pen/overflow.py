@@ -165,7 +165,13 @@ def overflow_stub_text(
                 "the answer needs. What you already read earlier does not need re-reading."
             )
         elif name == "fetch":
-            advice = "Do not fetch the whole page again; use a shorter page or answer from what you already have."
+            advice = (
+                "Read the page in slices instead: call fetch on the same URL with offset and "
+                f"limit, at most {READ_LIMIT_DEFAULT} paragraphs at a time, and only the passages "
+                "the answer needs. What you already read earlier does not need re-reading."
+            )
+        elif name == "search":
+            advice = "Use the results you already have; if you must search again, ask for a smaller limit."
         else:
             advice = "Answer from what you already have."
         return (
@@ -185,7 +191,12 @@ def overflow_stub_text(
             f"{READ_LIMIT_DEFAULT} 行，只读回答要用的那几段；前面已经读到的不必重读。"
         )
     elif name == "fetch":
-        advice = "别再取整页；换一个更短的页面，或用已经读到的内容作答。"
+        advice = (
+            "改成分段取：同一 URL 带 offset 和 limit，一次不超过 "
+            f"{READ_LIMIT_DEFAULT} 行，只取回答要用的那几段；前面已经取到的不必重取。"
+        )
+    elif name == "search":
+        advice = "用已经拿到的结果作答；一定要再搜就把 limit 调小。"
     else:
         advice = "用已经读到的内容作答。"
     return (
@@ -260,7 +271,7 @@ def stub_trailing_batch(
             {
                 "tool_call_id": tid,
                 "name": name,
-                "path": str(args.get("path") or args.get("url") or ""),
+                "path": str(args.get("path") or args.get("url") or args.get("query") or ""),
                 "chars": chars,
                 "span": span,
             }
