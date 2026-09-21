@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from pen import filecoord
 from pen.index import HandbookIndex, Section
 from pen.sandbox import assert_write_target
 
@@ -270,13 +271,12 @@ def describe_plan(plan: InsertPlan) -> str:
 def apply_insert(original_path: Path, plan: InsertPlan) -> str:
     """原地写入原文。返回新全文。"""
     target = assert_write_target(original_path, original_path)
-    old = target.read_text(encoding="utf-8")
-    new = render_new_text(old, plan)
-    if new == old:
-        raise InsertError("插入后文本没有变化")
-    if plan.replace_start is None and len(new) < len(old):
-        raise InsertError("拒绝缩短原文（只增不删）")
-    tmp = target.with_suffix(target.suffix + ".pen-tmp")
-    tmp.write_text(new, encoding="utf-8")
-    tmp.replace(target)
-    return new
+    with filecoord.file_lock(target):
+        old = filecoord.read_text(target)
+        new = render_new_text(old, plan)
+        if new == old:
+            raise InsertError("插入后文本没有变化")
+        if plan.replace_start is None and len(new) < len(old):
+            raise InsertError("拒绝缩短原文（只增不删）")
+        filecoord.atomic_write(target, new)
+        return new

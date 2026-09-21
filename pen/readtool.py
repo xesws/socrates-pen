@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from pen import filecoord
 from pen.config import MAX_OUTPUT, READ_LIMIT_DEFAULT
 from pen.sandbox import SandboxError, assert_readable, resolve_read_target
 
@@ -99,7 +100,8 @@ def read_file_report(
         tried = str(resolve_read_target(original_path, path))
         return {"ok": False, "resolved": tried, "text": f"错误：{exc}"}
     try:
-        lines = resolved.read_text(encoding="utf-8").splitlines(keepends=True)
+        text = filecoord.read_text(resolved)
+        lines = text.splitlines(keepends=True)
     except Exception as exc:
         return {
             "ok": False,
@@ -107,7 +109,7 @@ def read_file_report(
             "text": f"错误：无法读取 {path}：{exc}",
         }
     report = slice_lines(lines, offset, limit, unit="文件", resume_hint=resume_hint)
-    return {"ok": True, "resolved": str(resolved), **report}
+    return {"ok": True, "resolved": str(resolved), "revision": filecoord.revision(text), **report}
 
 
 def read_file_sandboxed(

@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 from typing import Any
 
+from pen import filecoord
 from pen.config import LIBRARIES_DIR, SNAPSHOT_KEEP
 from pen.sandbox import assert_write_target
 
@@ -56,15 +57,20 @@ def status(handbook_id: str) -> dict[str, Any]:
         "can_redo": len(r) > 0,
         "undo_n": len(u),
         "redo_n": len(r),
+        "undo_head": u[-1].name if u else "",
+        "redo_head": r[-1].name if r else "",
+        "latest_source": u[-1].stem.split("-agent-", 1)[-1] if u and "-agent-" in u[-1].stem else "",
+
     }
 
 
 def take_snapshot(handbook_id: str, original_path: Path, reason: str) -> Path:
-    src = assert_write_target(original_path, original_path)
-    dest = _push(snapshot_dir(handbook_id), src, reason)
-    _clear_redo(handbook_id)
-    _prune(handbook_id)
-    return dest
+    with filecoord.file_lock(original_path):
+        src = assert_write_target(original_path, original_path)
+        dest = _push(snapshot_dir(handbook_id), src, reason)
+        _clear_redo(handbook_id)
+        _prune(handbook_id)
+        return dest
 
 
 def latest_snapshot(handbook_id: str) -> Path | None:
@@ -74,36 +80,38 @@ def latest_snapshot(handbook_id: str) -> Path | None:
 
 def undo(handbook_id: str, original_path: Path) -> Path:
     """弹出 undo 最新一份盖回原文；当前篇进 redo。"""
-    target = assert_write_target(original_path, original_path)
-    files = _undo_files(handbook_id)
-    if not files:
-        exc = FileNotFoundError(f"没有可回退的快照：{handbook_id}")
-        exc.i18n_key = "snapshot.none_to_undo"  # type: ignore[attr-defined]
-        exc.i18n_args = {"handbook_id": handbook_id}  # type: ignore[attr-defined]
-        raise exc
-    snap = files[-1]
-    _push(_redo_dir(handbook_id), target, "undone")
-    shutil.copy2(snap, target)
-    snap.unlink(missing_ok=True)
-    _prune(handbook_id)
-    return snap
+    with filecoord.file_lock(original_path):
+        target = assert_write_target(original_path, original_path)
+        files = _undo_files(handbook_id)
+        if not files:
+            exc = FileNotFoundError(f"没有可回退的快照：{handbook_id}")
+            exc.i18n_key = "snapshot.none_to_undo"  # type: ignore[attr-defined]
+            exc.i18n_args = {"handbook_id": handbook_id}  # type: ignore[attr-defined]
+            raise exc
+        snap = files[-1]
+        _push(_redo_dir(handbook_id), target, "undone")
+        filecoord.atomic_write(target, filecoord.read_text(snap))
+        snap.unlink(missing_ok=True)
+        _prune(handbook_id)
+        return snap
 
 
 def redo(handbook_id: str, original_path: Path) -> Path:
     """弹出 redo 最新一份盖回原文；当前篇进 undo。"""
-    target = assert_write_target(original_path, original_path)
-    files = _redo_files(handbook_id)
-    if not files:
-        exc = FileNotFoundError(f"没有可重做的快照：{handbook_id}")
-        exc.i18n_key = "snapshot.none_to_redo"  # type: ignore[attr-defined]
-        exc.i18n_args = {"handbook_id": handbook_id}  # type: ignore[attr-defined]
-        raise exc
-    snap = files[-1]
-    _push(snapshot_dir(handbook_id), target, "pre-redo")
-    shutil.copy2(snap, target)
-    snap.unlink(missing_ok=True)
-    _prune(handbook_id)
-    return snap
+    with filecoord.file_lock(original_path):
+        target = assert_write_target(original_path, original_path)
+        files = _redo_files(handbook_id)
+        if not files:
+            exc = FileNotFoundError(f"没有可重做的快照：{handbook_id}")
+            exc.i18n_key = "snapshot.none_to_redo"  # type: ignore[attr-defined]
+            exc.i18n_args = {"handbook_id": handbook_id}  # type: ignore[attr-defined]
+            raise exc
+        snap = files[-1]
+        _push(snapshot_dir(handbook_id), target, "pre-redo")
+        filecoord.atomic_write(target, filecoord.read_text(snap))
+        snap.unlink(missing_ok=True)
+        _prune(handbook_id)
+        return snap
 
 
 def rollback(handbook_id: str, original_path: Path) -> Path:

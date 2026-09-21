@@ -27,6 +27,7 @@ from pen.compact import CompactPending, allow_paths_for, compact_session
 from pen.compaction import est_tokens, fast_budget, strategy_for
 from pen.overflow import delivered_read_paths, overflow_numbers, stub_trailing_batch
 from pen.index import HandbookIndex, neighborhood
+from pen import filecoord, runs
 from pen.agent.permissions import decide, read_first_block
 from pen.agent.registry import dispatch, schemas
 from pen.agent.tools_impl import limits_of
@@ -672,7 +673,10 @@ def _tool_ctx(
         # 只为把读者原话透到 _finish_text 去做复读过滤，工具链路不读它
         "user_text": "",
         "handbook_id": session.handbook_id,
+        "session_id": session.session_id,
         "read_ok": {Path(p).expanduser().resolve() for p in session.read_ok_paths},
+        "read_versions": session.read_versions,
+        "run": session.active_run,
         # 本次请求认下来的上限。**必须在这里放，不能在两个调用点各拼一遍**
         # ——read_roots() 那段注释讲的就是这个教训。
         # tools_impl.limits_of() 是唯一的取值口。
@@ -681,8 +685,14 @@ def _tool_ctx(
 
 
 def _remember_read(session: PenSession, ctx: dict[str, Any], out: dict[str, Any]) -> None:
-    if not out.get("ok") or not out.get("resolved"):
+    if out.get("code") == "FILE_CHANGED":
+        key = str(out.get("resolved") or "")
+        session.read_versions.pop(key, None)
+        session.read_ok_paths = [p for p in session.read_ok_paths if p != key]
+        ctx.setdefault("read_ok", set()).discard(Path(key))
+    if not out.get("ok") or not out.get("resolved") or not out.get("revision"):
         return
+    session.read_versions[str(out["resolved"])] = str(out["revision"])
     got = Path(str(out["resolved"])).expanduser().resolve()
     ctx.setdefault("read_ok", set()).add(got)
     known = {Path(p).expanduser().resolve() for p in session.read_ok_paths}
@@ -748,6 +758,8 @@ def stream_chat(
     # turn_spend 还落盘，重启 sidecar 也救不回来，只能新开会话。
     session.turn_spend = metermod.blank()
 
+    session.read_versions.clear()
+    session.read_ok_paths = []
     ctx = _tool_ctx(session, original_path, read_roots(extra_roots), limits)
     ctx["user_text"] = user_text
     # 快模型没配好（fast_llm 是 None）就当没开过 Fast Mode。这一格在 app.py
@@ -843,8 +855,14 @@ def _agent_loop(
         think_chars = 0
         think_text: list[str] = []
         try:
+            runs.check(ctx)
+            if ctx.get("run"):
+                ctx["run"].attach(client)
             stream = client.chat.completions.create(**kwargs)
+            if ctx.get("run"):
+                ctx["run"].attach(stream)
             for chunk in stream:
+                runs.check(ctx)
                 if getattr(chunk, "usage", None):
                     got_usage = chunk.usage
                 choices = getattr(chunk, "choices", None) or []
@@ -879,6 +897,7 @@ def _agent_loop(
                     idx = int(getattr(piece, "index", 0) or 0)
                     drafts.setdefault(idx, _ToolCallDraft()).eat(piece)
         except (OpenAIError, OSError, TimeoutError) as exc:
+            runs.check(ctx)
             code = provider_error_code(exc, sent_image=with_pics)
             got = limit = 0
             estimated = False
@@ -903,6 +922,13 @@ def _agent_loop(
                 limit=limit,
                 estimated=estimated,
             ) from exc
+        except Exception:
+            runs.check(ctx)
+            raise
+        finally:
+            if ctx.get("run"):
+                ctx["run"].close_stream()
+        runs.check(ctx)
         # 冲掉尾巴：没有芯片块时上面那个保守切法会压着最后十几个字不吐。
         buf = "".join(parts)
         cut = buf.find(CHIPS_MARKER)
@@ -1050,6 +1076,8 @@ def _agent_loop(
             gone -= {_as_read(raw) for raw in delivered_read_paths(session.messages)}
             if gone:
                 ctx["read_ok"] = {p for p in (ctx.get("read_ok") or set()) if p not in gone}
+                for p in gone:
+                    session.read_versions.pop(str(p), None)
                 session.read_ok_paths = [
                     p for p in session.read_ok_paths if Path(p).expanduser().resolve() not in gone
                 ]
@@ -1091,11 +1119,13 @@ def _agent_loop(
             return False
         # 折叠说明写的就是「旧读不算数」：edit_file 之前得再 read_file 一次。
         ctx["read_ok"] = set()
+        session.read_versions.clear()
         yield {"type": "compacted", "dropped_reads": folded.dropped_reads}
         return True
 
     capped = False
     for _step in range(limits_of(ctx).max_tool_rounds):
+        runs.check(ctx)
         # 进这一枪之前判一次。**这里不留余量，是想清楚的，不是漏了**：
         # 下面那道「执行批次之前」的判用的是同一组输入（工具执行既不改
         # turn_spend 也不改 usage），所以本轮 k 的顶部和上一轮 k-1 的批次前
@@ -1222,6 +1252,10 @@ def _tool_event(name: str, out: dict[str, Any]) -> dict[str, Any]:
         "ok": bool(out.get("ok")),
         "preview": str(out.get("text") or "")[:200],
     }
+    if out.get("code"):
+        ev["code"] = out["code"]
+    if out.get("revision"):
+        ev["revision"] = out["revision"]
     if out.get("line"):
         ev["line"] = int(out["line"])
     return ev
@@ -1235,9 +1269,15 @@ def _run_one(
     args: dict[str, Any],
     tool_call_id: str,
 ) -> dict[str, Any]:
+    runs.check(ctx)
     out = dispatch(name, args, ctx)
-    if name == "read_file":
+    if name == "read_file" or out.get("code") == "FILE_CHANGED":
         _remember_read(session, ctx, out)
+    if name == "edit_file" and out.get("ok"):
+        key = str(out.get("resolved") or "")
+        session.read_versions.pop(key, None)
+        ctx.setdefault("read_ok", set()).discard(Path(key))
+        session.read_ok_paths = [p for p in session.read_ok_paths if p != key]
     session.messages.append(
         {
             "role": "tool",
@@ -1256,7 +1296,9 @@ def _run_tool_batch(
     """执行到第一个需要审批的工具则暂停。yields events；return True 表示已 pause。"""
     paused = False
     read_before = {Path(p).expanduser().resolve() for p in (ctx.get("read_ok") or [])}
+    versions_before = dict(session.read_versions)
     for i, tc in enumerate(calls):
+        runs.check(ctx)
         name = tc.function.name
         try:
             args = json.loads(tc.function.arguments or "{}")
@@ -1302,6 +1344,17 @@ def _run_tool_batch(
                     {"role": "tool", "tool_call_id": tc.id, "content": blocked}
                 )
                 continue
+            basis = versions_before.get(str(tried))
+            try:
+                filecoord.require_revision(filecoord.read_text(tried), basis)
+            except (filecoord.FileChanged, OSError, UnicodeError) as exc:
+                session.read_versions.pop(str(tried), None)
+                ctx["read_ok"].discard(tried)
+                session.read_ok_paths = [p for p in session.read_ok_paths if p != str(tried)]
+                result = f"FILE_CHANGED: {exc}"
+                session.messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
+                yield {"type": "tool", "name": name, "ok": False, "code": "FILE_CHANGED", "preview": result}
+                continue
             rest = []
             for later in calls[i + 1 :]:
                 rest.append(
@@ -1315,6 +1368,7 @@ def _run_tool_batch(
                 "id": uuid.uuid4().hex,
                 "name": name,
                 "args": args,
+                "basis_revision": basis,
                 "tool_call_id": tc.id,
                 "rest": rest,
                 "original_path": str(Path(ctx["original_path"]).expanduser().resolve()),
@@ -1395,11 +1449,17 @@ def resume_chat(
     name = str(pending.get("name") or "")
     args = dict(pending.get("args") or {})
     tcid = str(pending.get("tool_call_id") or "")
+    ctx["expected_revision"] = str(pending.get("basis_revision") or "")
+    # Old approvals without a frozen basis may never borrow a later read.
+    if not ctx["expected_revision"]:
+        ctx["read_versions"] = {}
     run_it = bool(allow) and decide(name) == "ask"
     if run_it:
         yield {"type": "status", "phase": "writing", "text": "在改原文…"}
         try:
             yield _run_one(session, ctx, name=name, args=args, tool_call_id=tcid)
+        except runs.Cancelled:
+            raise
         except Exception as exc:
             result = f"错误：编辑失败：{type(exc).__name__}"
             session.messages.append(
@@ -1430,6 +1490,8 @@ def resume_chat(
             {"role": "tool", "tool_call_id": tcid, "content": result}
         )
     session.pending = None
+    ctx.pop("expected_revision", None)
+    ctx["read_versions"] = session.read_versions
     rest = list(pending.get("rest") or [])
     if rest:
         class _Fn:

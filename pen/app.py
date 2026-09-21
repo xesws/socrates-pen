@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -17,14 +16,15 @@ from typing import Any
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from starlette.background import BackgroundTask
+from pydantic import BaseModel, Field
 
 from pen import __version__
 from pen import gitops
 from pen import library_scan
 from pen import insert as insertmod
 from pen.outline import file_outline
-from pen import libraries, snapshots
+from pen import libraries, snapshots, filecoord, runs
 from pen import diagnose as diagnosemod
 from pen import profile as profilemod
 from pen import proposals as proposalsmod
@@ -161,12 +161,14 @@ class SessionBody(BaseModel):
 
 class ApproveBody(LlmOverrideBody):
     session_id: str
+    run_id: str = Field(default="", max_length=80)
     pending_id: str
     allow: bool
 
 
 class ChatBody(LlmOverrideBody):
     session_id: str
+    run_id: str = Field(default="", max_length=80)
     selected_text: str
     start_line: int
     end_line: int
@@ -220,6 +222,8 @@ class ApplyBody(BaseModel):
 
 class RollbackBody(BaseModel):
     handbook_id: str
+    expected_revision: str | None = None
+    expected_head: str | None = None
 
 
 def req_lang(accept_language: str | None = Header(default=None)) -> str:
@@ -277,7 +281,7 @@ def _try_lock_session(sess, lang: str = "zh"):
 
 
 def _content_fp(path: Path) -> str:
-    return hashlib.sha256(path.read_text(encoding="utf-8").encode("utf-8")).hexdigest()
+    return filecoord.revision(filecoord.read_text(path))
 
 
 def _span(path: Path, start: int, end: int) -> str:
@@ -416,6 +420,7 @@ def health() -> dict[str, Any]:
     return {
         "status": "ok",
         "version": __version__,
+        "capabilities": {"big_bang": True},
         "llm": llm_public_status(),
         # 和 llm 平级而不是嵌在里面：前端的 LlmStatus 是个扁平类型，
         # 嵌进去会让「基座配好没」和「快模型配好没」共用一个 ok 字段。
@@ -904,6 +909,54 @@ def deep_inbox(
     )
 
 
+class CancelBody(BaseModel):
+    run_id: str = Field(default="", max_length=80)
+    pending_id: str = Field(default="", max_length=80)
+
+
+@app.post("/v1/sessions/{session_id}/cancel")
+def cancel_session(session_id: str, body: CancelBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
+    try:
+        sess = STORE.get(session_id)
+    except KeyError as exc:
+        raise _no_session(lang) from exc
+    active = runs.cancel(session_id, body.run_id) if body.run_id else False
+    if body.pending_id:
+        active = runs.cancel_pending(session_id, body.pending_id) or active
+    if body.pending_id and not active:
+        acquired = STORE.try_lock(sess)
+        if acquired:
+            lock, live = acquired
+            try:
+                if live.pending and live.pending.get("id") == body.pending_id:
+                    runs.abandon_tools(live)
+                    STORE.save(live)
+            finally:
+                lock.release()
+        elif sess.active_run and sess.pending and sess.pending.get("id") == body.pending_id:
+            # Approval just started: cancellation must stop that exact proposal's run.
+            sess.active_run.cancel()
+            active = True
+    return {"ok": True, "cancelling": active}
+
+
+def _run_response(iterator: Any, run: runs.Run, sess: Any, lock: Any) -> StreamingResponse:
+    def disconnected() -> None:
+        if run.finished:
+            return
+        run.cancel()
+        try:
+            iterator.close()
+        except ValueError:
+            # A worker is currently inside next(); its cancellation checks settle it.
+            return
+        if not run.started:
+            runs.finish(run)
+            sess.active_run = None
+            lock.release()
+    return StreamingResponse(iterator, media_type="text/event-stream", background=BackgroundTask(disconnected))
+
+
 @app.post("/v1/chat")
 def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
     try:
@@ -1066,10 +1119,18 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
         lock.release()
         raise
 
+    run = runs.begin(sess.session_id, body.run_id)
+    sess.active_run = run
+
     def gen():
+        run.started = True
+        terminal = None
+        partial = ""
+        settled = False
         ok = True
         has_sub = False
         try:
+            run.check()
             if auto_compacted:
                 yield _sse({"type": "compacted", "dropped_reads": auto_dropped})
             # 开关点亮了，这一轮却没能走快模型——**只在「配坏了」这一类上报**。
@@ -1101,6 +1162,9 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                 route=route,
                 fast_llm=fast_cfg,
             ):
+                run.check()
+                if ev.get("type") == "token":
+                    partial += str(ev.get("text") or "")
                 if ev.get("type") == "done":
                     has_sub = bool(ev.get("has_substantive"))
                     # 探索和「伪流式吐字」并行跑，多数情况读者读完回复时结果已就绪。
@@ -1123,7 +1187,15 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
                     }
                 elif ev.get("type") == "error":
                     ok = False
-                yield _sse(ev)
+                yield _sse({**ev, "session_id": sess.session_id, "run_id": run.rid})
+            settled = True
+        except runs.Cancelled:
+            ok = False
+            runs.abandon_tools(sess)
+            stopped = partial + ("\n\n（已停止）" if lang == "zh" else "\n\n(Stopped)")
+            sess.messages.append({"role": "assistant", "content": stopped})
+            sess.last_assistant = stopped
+            terminal = {"type": "cancelled", "session_id": sess.session_id, "run_id": run.rid}
         except ProviderError as exc:
             ok = False
             yield _sse({"type": "error", "message": str(exc)})
@@ -1131,6 +1203,10 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             ok = False
             yield _sse({"type": "error", "message": msg("chat.unexpected", lang)})
         finally:
+            if run.cancelled or not settled:
+                runs.abandon_tools(sess)
+            runs.finish(run)
+            sess.active_run = None
             if sess.last_assistant and sess.last_assistant != prior_assistant:
                 sess.ui_messages.append(
                     {"role": "assistant", "text": sess.last_assistant, "ts": now_iso()}
@@ -1167,8 +1243,10 @@ def chat(body: ChatBody, lang: str = Depends(req_lang)) -> StreamingResponse:
             except Exception:
                 pass
             lock.release()
+        if terminal:
+            yield _sse(terminal)
 
-    return StreamingResponse(gen(), media_type="text/event-stream")
+    return _run_response(gen(), run, sess, lock)
 
 
 @app.post("/v1/chat/approve")
@@ -1190,9 +1268,17 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
         lock.release()
         raise
 
+    run = runs.begin(sess.session_id, body.run_id, body.pending_id)
+    sess.active_run = run
+
     def gen():
+        run.started = True
+        terminal = None
+        partial = ""
+        settled = False
         ok = True
         try:
+            run.check()
             for ev in resume_chat(
                 sess,
                 path,
@@ -1207,13 +1293,24 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
                 # 后半轮变成一场没有上限的对话。
                 limits=body.merged_limits(),
             ):
+                run.check()
+                if ev.get("type") == "token":
+                    partial += str(ev.get("text") or "")
                 if ev.get("type") == "done":
                     # chat 那条带了这个，approve 这条以前没带。文档把 done 称作
                     # 「唯一的自愈通道」——一轮以审批结尾时那条通道是断的。
                     ev = {**ev, "spend": _merged_spend(sess)}
                 elif ev.get("type") == "error":
                     ok = False
-                yield _sse(ev)
+                yield _sse({**ev, "session_id": sess.session_id, "run_id": run.rid})
+            settled = True
+        except runs.Cancelled:
+            ok = False
+            runs.abandon_tools(sess)
+            stopped = partial + ("\n\n（已停止）" if lang == "zh" else "\n\n(Stopped)")
+            sess.messages.append({"role": "assistant", "content": stopped})
+            sess.last_assistant = stopped
+            terminal = {"type": "cancelled", "session_id": sess.session_id, "run_id": run.rid}
         except ProviderError as exc:
             ok = False
             yield _sse({"type": "error", "message": str(exc)})
@@ -1221,6 +1318,10 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
             ok = False
             yield _sse({"type": "error", "message": msg("approve.unexpected", lang)})
         finally:
+            if run.cancelled or not settled:
+                runs.abandon_tools(sess)
+            runs.finish(run)
+            sess.active_run = None
             if sess.last_assistant and sess.last_assistant != prior_assistant:
                 sess.ui_messages.append(
                     {"role": "assistant", "text": sess.last_assistant, "ts": now_iso()}
@@ -1256,8 +1357,10 @@ def chat_approve(body: ApproveBody, lang: str = Depends(req_lang)) -> StreamingR
             except Exception:
                 pass
             lock.release()
+        if terminal:
+            yield _sse(terminal)
 
-    return StreamingResponse(gen(), media_type="text/event-stream")
+    return _run_response(gen(), run, sess, lock)
 
 
 @app.post("/v1/writeback/propose")
@@ -1294,31 +1397,33 @@ def propose(body: ProposeBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
             )
         except RuntimeError as exc:
             raise HTTPException(400, localized(exc, lang)) from exc
-        try:
-            plan = insertmod.plan_insert(
-                idx,
-                path,
-                line=int(sess.last_anchor["start_line"]),
-                fold_md=fold,
-                summary_hint=body.summary_hint,
+        with filecoord.file_lock(path):
+            idx = libraries.load_index(sess.handbook_id)
+            try:
+                plan = insertmod.plan_insert(
+                    idx,
+                    path,
+                    line=int(sess.last_anchor["start_line"]),
+                    fold_md=fold,
+                    summary_hint=body.summary_hint,
+                )
+            except insertmod.InsertError as exc:
+                raise HTTPException(400, localized(exc, lang)) from exc
+            old = filecoord.read_text(path)
+            new = insertmod.render_new_text(old, plan)
+            diff = insertmod.unified_diff(old, new, path.name)
+            pid = uuid.uuid4().hex
+            _proposal_put(
+                pid,
+                {
+                    "handbook_id": sess.handbook_id,
+                    "session_id": sess.session_id,
+                    "plan": plan,
+                    "diff": diff,
+                    "original_path": str(path),
+                    "content_fp": filecoord.revision(old),
+                },
             )
-        except insertmod.InsertError as exc:
-            raise HTTPException(400, localized(exc, lang)) from exc
-        old = path.read_text(encoding="utf-8")
-        new = insertmod.render_new_text(old, plan)
-        diff = insertmod.unified_diff(old, new, path.name)
-        pid = uuid.uuid4().hex
-        _proposal_put(
-            pid,
-            {
-                "handbook_id": sess.handbook_id,
-                "session_id": sess.session_id,
-                "plan": plan,
-                "diff": diff,
-                "original_path": str(path),
-                "content_fp": _content_fp(path),
-            },
-        )
         out = _public_proposal(pid, path, plan, diff)
         # 带上花销：不带的话前端第三格在写回之后纹丝不动，要等下一轮对话的 done
         # 才补——而这个端点恰恰是读者主动花钱的那一刻。
@@ -1353,18 +1458,19 @@ def retarget(body: RetargetBody, lang: str = Depends(req_lang)) -> dict[str, Any
         assert_handbook_path(path, extra_roots=libraries.extra_roots_for(sess.handbook_id))
     except SandboxError as exc:
         raise HTTPException(400, localized(exc, lang)) from exc
-    fold = prop["plan"].fold_md
-    try:
-        plan = _plan_for_target(path, fold, sess, body)
-    except insertmod.InsertError as exc:
-        raise HTTPException(400, localized(exc, lang)) from exc
-    old = path.read_text(encoding="utf-8")
-    new = insertmod.render_new_text(old, plan)
-    diff = insertmod.unified_diff(old, new, path.name)
-    prop["plan"] = plan
-    prop["diff"] = diff
-    prop["content_fp"] = _content_fp(path)
-    _proposal_put(body.proposal_id, prop)
+    with filecoord.file_lock(path):
+        fold = prop["plan"].fold_md
+        try:
+            plan = _plan_for_target(path, fold, sess, body)
+        except insertmod.InsertError as exc:
+            raise HTTPException(400, localized(exc, lang)) from exc
+        old = filecoord.read_text(path)
+        new = insertmod.render_new_text(old, plan)
+        diff = insertmod.unified_diff(old, new, path.name)
+        prop["plan"] = plan
+        prop["diff"] = diff
+        prop["content_fp"] = filecoord.revision(old)
+        _proposal_put(body.proposal_id, prop)
     return _public_proposal(body.proposal_id, path, plan, diff)
 
 
@@ -1384,15 +1490,17 @@ def apply(body: ApplyBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
         assert_handbook_path(path, extra_roots=libraries.extra_roots_for(sess.handbook_id))
     except SandboxError as exc:
         raise HTTPException(400, localized(exc, lang)) from exc
-    expected = prop.get("content_fp")
-    if expected and _content_fp(path) != expected:
-        raise HTTPException(400, msg("writeback.stale", lang))
-    snap = snapshots.take_snapshot(sess.handbook_id, path, "pre-insert")
-    try:
-        insertmod.apply_insert(path, prop["plan"])
-    except insertmod.InsertError as exc:
-        raise HTTPException(400, localized(exc, lang)) from exc
-    libraries.refresh_if_stale(sess.handbook_id)
+    with filecoord.file_lock(path):
+        expected = prop.get("content_fp")
+        if not expected or _content_fp(path) != expected:
+            raise HTTPException(400, msg("writeback.stale", lang))
+        snap = snapshots.take_snapshot(sess.handbook_id, path, "pre-insert")
+        try:
+            insertmod.apply_insert(path, prop["plan"])
+        except insertmod.InsertError as exc:
+            raise HTTPException(400, localized(exc, lang)) from exc
+        libraries.refresh_if_stale(sess.handbook_id)
+        _proposal_del(body.proposal_id)
     commit_out = None
     commit_error: str | None = None
     if body.commit:
@@ -1403,7 +1511,6 @@ def apply(body: ApplyBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
             commit_out = gitops.commit_original(path, commit_msg)
         except gitops.GitError as exc:
             commit_error = str(exc)
-    _proposal_del(body.proposal_id)
     return {
         "ok": True,
         "original_path": str(path),
@@ -1416,8 +1523,10 @@ def apply(body: ApplyBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
 
 @app.get("/v1/handbooks/{handbook_id}/snapshots")
 def snapshot_status(handbook_id: str, lang: str = Depends(req_lang)) -> dict[str, Any]:
-    _meta_or_404(handbook_id, lang)
-    return snapshots.status(handbook_id)
+    meta = _meta_or_404(handbook_id, lang)
+    path = Path(meta.original_path)
+    with filecoord.file_lock(path):
+        return {**snapshots.status(handbook_id), "revision": _content_fp(path)}
 
 
 @app.post("/v1/writeback/rollback")
@@ -1428,12 +1537,18 @@ def rollback(body: RollbackBody, lang: str = Depends(req_lang)) -> dict[str, Any
         assert_handbook_path(path, extra_roots=libraries.extra_roots_for(body.handbook_id))
     except SandboxError as exc:
         raise HTTPException(400, localized(exc, lang)) from exc
-    try:
-        snap = snapshots.undo(body.handbook_id, path)
-    except FileNotFoundError as exc:
-        raise HTTPException(400, localized(exc, lang)) from exc
-    libraries.refresh_if_stale(body.handbook_id)
-    st = snapshots.status(body.handbook_id)
+    with filecoord.file_lock(path):
+        if body.expected_revision is not None and body.expected_revision != _content_fp(path):
+            raise HTTPException(409, {"code": "FILE_CHANGED", "message": msg("writeback.stale", lang)})
+        if body.expected_head is not None and body.expected_head != snapshots.status(body.handbook_id)["undo_head"]:
+            raise HTTPException(409, {"code": "FILE_CHANGED", "message": msg("writeback.stale", lang)})
+        try:
+            snap = snapshots.undo(body.handbook_id, path)
+        except FileNotFoundError as exc:
+            raise HTTPException(400, localized(exc, lang)) from exc
+        libraries.refresh_if_stale(body.handbook_id)
+        st = snapshots.status(body.handbook_id)
+        st["revision"] = _content_fp(path)
     return {
         "ok": True,
         "restored_from": str(snap),
@@ -1450,12 +1565,18 @@ def redo(body: RollbackBody, lang: str = Depends(req_lang)) -> dict[str, Any]:
         assert_handbook_path(path, extra_roots=libraries.extra_roots_for(body.handbook_id))
     except SandboxError as exc:
         raise HTTPException(400, localized(exc, lang)) from exc
-    try:
-        snap = snapshots.redo(body.handbook_id, path)
-    except FileNotFoundError as exc:
-        raise HTTPException(400, localized(exc, lang)) from exc
-    libraries.refresh_if_stale(body.handbook_id)
-    st = snapshots.status(body.handbook_id)
+    with filecoord.file_lock(path):
+        if body.expected_revision is not None and body.expected_revision != _content_fp(path):
+            raise HTTPException(409, {"code": "FILE_CHANGED", "message": msg("writeback.stale", lang)})
+        if body.expected_head is not None and body.expected_head != snapshots.status(body.handbook_id)["redo_head"]:
+            raise HTTPException(409, {"code": "FILE_CHANGED", "message": msg("writeback.stale", lang)})
+        try:
+            snap = snapshots.redo(body.handbook_id, path)
+        except FileNotFoundError as exc:
+            raise HTTPException(400, localized(exc, lang)) from exc
+        libraries.refresh_if_stale(body.handbook_id)
+        st = snapshots.status(body.handbook_id)
+        st["revision"] = _content_fp(path)
     return {
         "ok": True,
         "restored_from": str(snap),

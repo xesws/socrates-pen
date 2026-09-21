@@ -1,5 +1,6 @@
 import {
   ItemView,
+  Component,
   MarkdownRenderer,
   MarkdownView,
   Notice,
@@ -30,6 +31,7 @@ import { configSignature, keyHostGap } from "../settings";
 import { measureMonoAdvance, renderSplash, type SplashLevel } from "./splash";
 import { AVATAR } from "../logo";
 import { reportIconName } from "./ReportView";
+import { computeAgentLayout, type AgentLayout } from "../agentlayout";
 
 export const VIEW_TYPE_PEN = "socrates-pen-view";
 
@@ -131,7 +133,7 @@ function assistantShell(turn: HTMLElement): HTMLElement {
   return turn.createDiv({ cls: "sp-turn-main" });
 }
 
-export class PenView extends ItemView {
+class AgentPane extends Component {
   plugin: SocratesPenPlugin;
   private status = "";
   /** 结构化存放，成文推迟到 setStatus——否则切语言后这一行还是旧语言。 */
@@ -163,6 +165,10 @@ export class PenView extends ItemView {
   private startLine = 1;
   private endLine = 1;
   private undoN = 0;
+  private snapshotRevision?: string;
+  private undoHead?: string;
+  private redoHead?: string;
+  private snapshotSource = "";
   private redoN = 0;
   private pending: PendingEdit | null = null;
   private approving = false;
@@ -196,9 +202,112 @@ export class PenView extends ItemView {
   private thinkChars = 0;
   private els: Els | null = null;
 
-  constructor(leaf: WorkspaceLeaf, plugin: SocratesPenPlugin) {
-    super(leaf);
+  private retired = false;
+  private stopping = false;
+  private controller: AbortController | null = null;
+  private runId = "";
+  private addButton: HTMLButtonElement | null = null;
+  private closeButton: HTMLButtonElement | null = null;
+  private stopButton: HTMLButtonElement | null = null;
+  private nameEl: HTMLElement | null = null;
+
+  constructor(readonly contentEl: HTMLElement, plugin: SocratesPenPlugin,
+              readonly host: PenView, readonly slotId: string) {
+    super();
     this.plugin = plugin;
+  }
+
+  get app() { return this.plugin.app; }
+  get path() { return this.capturedPath; }
+  get session() { return this.sessionId; }
+
+  async seed(source: AgentPane): Promise<void> {
+    // Copy note context, never messages, pending approval or session identity.
+    this.capturedPath = source.capturedPath;
+    this.handbookId = source.handbookId;
+    this.quote = source.quote;
+    this.startLine = source.startLine;
+    this.endLine = source.endLine;
+    this.health = source.health;
+    this.llmOk = source.llmOk;
+    this.sidecarReachable = source.sidecarReachable;
+    this.cfgCode = source.cfgCode;
+    this.cfgMsg = source.cfgMsg;
+    this.cfgSig = source.cfgSig;
+    if (this.handbookId) {
+      const sess = await this.api().createSession(this.handbookId);
+      if (this.retired) return;
+      this.adopt(sess);
+      if (this.capturedPath) await this.bindNote(this.capturedPath, {
+        handbook_id: this.handbookId, session_id: sess.session_id,
+      });
+    }
+  }
+
+  private async bindNote(path: string, binding: { handbook_id: string; session_id: string }): Promise<void> {
+    await this.plugin.bindNote(path, binding, this.slotId);
+  }
+
+  paintChrome(index: number, count: number): void {
+    if (this.addButton) {
+      this.addButton.hidden = count > 1;
+      this.addButton.disabled = this.host.adding;
+      setTooltip(this.addButton, t().bigBangAdd);
+    }
+    if (this.closeButton) {
+      this.closeButton.hidden = count === 1;
+      setTooltip(this.closeButton, t().bigBangClose);
+    }
+    if (this.stopButton) {
+      this.stopButton.hidden = !this.controller && !this.pending;
+      this.stopButton.disabled = this.stopping;
+      setTooltip(this.stopButton, this.stopping ? t().bigBangStopping : t().bigBangStop);
+    }
+    if (this.nameEl) {
+      this.nameEl.textContent = count === 1 ? t().appName : t().bigBangAgent(index + 1);
+      setTooltip(this.nameEl, this.capturedPath || t().appName);
+    }
+  }
+
+  focusInput(): void { this.els?.input.focus(); }
+
+  async stopTask(): Promise<void> {
+    if (this.stopping || !this.sessionId || (!this.controller && !this.pending)) return;
+    this.stopping = true;
+    this.status = t().bigBangStopping;
+    this.paintBar();
+    try {
+      await this.api().cancelRun(this.sessionId, this.runId, this.pending?.pending_id || "");
+      this.pending = null;
+      // Keep consuming the terminal SSE so the server releases its session lock.
+      if (!this.controller) {
+        this.busy = false;
+        this.stopping = false;
+        this.status = t().bigBangStopped;
+      }
+    } catch (e) {
+      this.stopping = false;
+      this.err = e instanceof Error ? e.message : String(e);
+      throw e;
+    } finally { this.paintBar(); }
+  }
+
+  async dispose(): Promise<void> {
+    await this.stopTask();
+    this.retired = true;
+    ++this.retargetGen;
+    this.controller?.abort();
+    await this.onClose();
+  }
+
+  onunload(): void {
+    if (!this.retired) void this.stopTask().catch(() => {});
+    this.retired = true;
+    this.controller?.abort();
+    this.stopDeepPoll();
+    this.unwatchSidecar?.();
+    this.unwatchSidecar = null;
+    this.els = null;
   }
 
   getViewType(): string {
@@ -213,7 +322,7 @@ export class PenView extends ItemView {
     return "highlighter";
   }
 
-  async onOpen(): Promise<void> {
+  async onOpen(initialPath?: string, seeded = false): Promise<void> {
     // 换主题可能换掉等宽字体，字宽比要重测。registerEvent 由 Component 自动注销。
     this.registerEvent(this.app.workspace.on("css-change", () => this.refreshAdvance()));
     // v0.18.4：面板自动跟随活动笔记。0.18.2 只在跑命令时重定向，光切笔记
@@ -224,6 +333,7 @@ export class PenView extends ItemView {
       this.app.workspace.on("file-open", (file) => {
         // 只跟 Markdown：canvas/图片/embed 也会触发 file-open（复审 P1），
         // 跟过去会把面板清成空态。
+        if (this.retired || !this.host.isActive(this)) return;
         if (!file || file.extension !== "md") return;
         if (this.busy || this.pending) return; // 落定后由 followActiveFile 补
         if (file.path === this.capturedPath) return;
@@ -231,7 +341,8 @@ export class PenView extends ItemView {
       }),
     );
     this.renderShell();
-    await this.probeHealth();
+    if (!seeded) await this.probeHealth();
+    if (this.retired) return;
     // 启动窗口期（sidecar 还在 ensure 装起）首探必红，以前之后无人再探，
     // 读者得手动点一次「用当前选区」才变绿（0.18.0 复测）。ensure() ping 通
     // 的那一刻 watch 必触发——正好盖住这个窗口。
@@ -253,7 +364,15 @@ export class PenView extends ItemView {
     onSidecarSnap();
     // 开面板时同步当前文件（复审 P1）：file-open 在面板开着之前就发过了，
     // 不同步的话 ribbon 打开永远是开屏而不是当前笔记的线程。
-    this.followActiveFile();
+    if (initialPath && !seeded) {
+      const file = this.app.vault.getAbstractFileByPath(initialPath);
+      if (file instanceof TFile) await this.retarget(file);
+    } else if (!seeded) {
+      const file = this.app.workspace.getActiveFile();
+      if (file?.extension === "md") await this.retarget(file);
+    }
+    this.paintBar();
+    await this.paintLog();
   }
 
   /** 框架回调：侧栏被拖动，或从折叠状态展开（那时首次测量拿到的是 0）。 */
@@ -320,7 +439,7 @@ export class PenView extends ItemView {
 
     const brand = root.createDiv({ cls: "sp-brand" });
     const dot = brand.createSpan({ cls: "sp-dot" });
-    brand.createSpan({ cls: "sp-brand-name", text: t().appName });
+    this.nameEl = brand.createSpan({ cls: "sp-brand-name", text: t().appName });
     const brandSub = brand.createSpan({ cls: "sp-brand-sub" });
     const tools = brand.createDiv({ cls: "sp-brand-tools" });
     const fresh = tools.createEl("button", { cls: "sp-icon" });
@@ -338,6 +457,19 @@ export class PenView extends ItemView {
     // v0.25.0 学习画像。第六枚，独立面板页：这本书你哪里强、哪里卡。
     const report = tools.createEl("button", { cls: "sp-icon sp-report-btn" });
     setIcon(report, reportIconName());
+
+    this.addButton = tools.createEl("button", { cls: "sp-icon sp-add-agent" });
+    setIcon(this.addButton, "plus");
+    this.addButton.setAttribute("aria-label", t().bigBangAdd);
+    this.addButton.onclick = () => void this.host.addAgent();
+    this.stopButton = tools.createEl("button", { cls: "sp-icon sp-stop-agent" });
+    setIcon(this.stopButton, "square");
+    this.stopButton.setAttribute("aria-label", t().bigBangStop);
+    this.stopButton.onclick = () => void this.stopTask().catch(() => {});
+    this.closeButton = tools.createEl("button", { cls: "sp-icon sp-close-agent" });
+    setIcon(this.closeButton, "x");
+    this.closeButton.setAttribute("aria-label", t().bigBangClose);
+    this.closeButton.onclick = () => void this.host.closeAgent(this);
 
     const alert = root.createDiv({ cls: "sp-alert is-off" });
     const log = root.createDiv({ cls: "sp-log" });
@@ -395,6 +527,8 @@ export class PenView extends ItemView {
 
   /** 扇出壳。既有的 paintBar() 调用点全部保留语义，内部改成只更新各自那一块。 */
   private paintBar(): void {
+    if (this.retired) return;
+    this.host.paintChrome();
     this.paintBrand();
     this.paintAlert();
     this.paintQuote();
@@ -453,7 +587,7 @@ export class PenView extends ItemView {
 
   private sessionTokens(): number {
     const s = this.spend;
-    return PenView.row(s.chat) + PenView.row(s.probe) + PenView.row(s.fold);
+    return AgentPane.row(s.chat) + AgentPane.row(s.probe) + AgentPane.row(s.fold);
   }
 
   /** 悬停明细。只在闲下来时求值——拼字符串的活别挂在 token 事件的频率上。 */
@@ -574,8 +708,8 @@ export class PenView extends ItemView {
     e.redo.disabled = this.busy || this.redoN <= 0;
     // 画像页不按 busy 灰、不按 handbookId 灰：没登记的笔记也能看书架。只看 sidecar 通不通。
     e.report.disabled = !this.sidecarReachable;
-    setTooltip(e.undo, this.undoN > 0 ? t().tipUndo(this.undoN) : t().tipUndoEmpty);
-    setTooltip(e.redo, this.redoN > 0 ? t().tipRedo(this.redoN) : t().tipRedoEmpty);
+    setTooltip(e.undo, this.undoN > 0 ? `${t().bigBangUndo} · ${this.host.sourceLabel(this.snapshotSource)}` : t().tipUndoEmpty);
+    setTooltip(e.redo, this.redoN > 0 ? t().bigBangRedo : t().tipRedoEmpty);
     this.syncChipDisabled();
   }
 
@@ -839,6 +973,7 @@ export class PenView extends ItemView {
     if (!first || this.painting) return; // 在画的循环看到新 gen 会重画到最新
     // 必须在 empty() 之前测——之后 scrollTop / scrollHeight 已经没有意义了。
     const stick = mode === "force" || this.atBottom(first);
+    const scrollTop = first.scrollTop;
     this.painting = true;
     try {
       let g = gen;
@@ -862,6 +997,8 @@ export class PenView extends ItemView {
           // 只在档位变化时播入场动画，否则空态被重画几次就会闪几次
           renderSplash(empty, { level, animate: level !== this.splashLevel });
           this.splashLevel = level;
+          empty.createDiv({ cls: "sp-agent-ready", text: t().bigBangReady });
+          empty.createEl("p", { cls: "sp-big-bang-hint", text: this.quote ? t().bigBangPrompt : t().emptyHint });
           empty.createEl("p", { cls: "sp-hint", text: t().emptyHint });
           return;
         }
@@ -945,6 +1082,7 @@ export class PenView extends ItemView {
         if (g === this.paintGen && done) {
           // forceStick 现读：期间可能有新的 force 请求被上面那个早退吞掉了
           if (stick || this.forceStick) done.scrollTop = done.scrollHeight;
+          else done.scrollTop = scrollTop;
           this.forceStick = false;
           return;
         }
@@ -1285,11 +1423,12 @@ export class PenView extends ItemView {
   private async retarget(file: TFile): Promise<"restored" | "gone" | "nobind" | "error" | "aborted"> {
     if (file.extension !== "md") return "aborted";
     const gen = ++this.retargetGen;
-    const bind = this.plugin.noteBind(file.path);
+    this.host.rememberPath(this, file.path);
+    const bind = this.plugin.noteBind(file.path, this.slotId);
     if (bind?.session_id) {
       try {
         const sess = await this.api().getSession(bind.session_id);
-        if (gen !== this.retargetGen || this.busy || this.pending) return "aborted";
+        if (this.retired || gen !== this.retargetGen || this.busy || this.pending) return "aborted";
         // 跨笔记判定在 await 之后现读现算：期间面板可能已被捕获路径写过。
         // 跨笔记 → 旧引文/行号属于别的笔记，必须清（send 守卫会提示先划
         // 一段）；同笔记（选区自然消失后恢复）→ 引文仍有效，留着继续聊。
@@ -1311,11 +1450,11 @@ export class PenView extends ItemView {
           this.err = e instanceof Error ? e.message : String(e);
           return "error";
         }
-        if (gen !== this.retargetGen || this.busy || this.pending) return "aborted";
+        if (this.retired || gen !== this.retargetGen || this.busy || this.pending) return "aborted";
         // 落到下面的清空
       }
     }
-    if (gen !== this.retargetGen) return "aborted";
+    if (this.retired || gen !== this.retargetGen) return "aborted";
     this.handbookId = null;
     this.capturedPath = file.path;
     this.quote = "";
@@ -1347,6 +1486,7 @@ export class PenView extends ItemView {
    *  「等回复的时候点了另一篇」是最自然的切笔记时机，不补就回到
    *  「光切笔记面板纹丝不动」的老病。 */
   private followActiveFile(): void {
+    if (this.retired || !this.host.isActive(this)) return;
     if (this.busy || this.pending) return;
     const active = this.app.workspace.getActiveFile();
     if (!active || active.extension !== "md") return;
@@ -1360,11 +1500,13 @@ export class PenView extends ItemView {
   }
 
   async captureSelection(pick?: EditorPick | null): Promise<void> {
+    if (this.busy || this.retired) return;
     // 新的捕获使任何在途重定向作废（复审 P1：旧代次的 retarget 后完成时
     // 会拿过期快照覆盖刚捕获的状态）。
-    ++this.retargetGen;
+    const captureGen = ++this.retargetGen;
     const got = pick ?? this.plugin.takePick();
     await this.probeHealth();
+    if (this.retired || captureGen !== this.retargetGen) return;
     if (!this.sidecarReachable) {
       new Notice(t().noticeUnreachable);
       return;
@@ -1414,7 +1556,8 @@ export class PenView extends ItemView {
     try {
       const hid = handbookIdFromPath(got.absPath);
       await this.api().importHandbook(got.absPath, hid, vaultRoot(this.app));
-      const bind = this.plugin.noteBind(got.file.path);
+      if (this.retired || captureGen !== this.retargetGen) return;
+      const bind = this.plugin.noteBind(got.file.path, this.slotId);
       // 换了笔记必然换会话（会话按笔记绑定，写回正确性的地基，不能含糊）。
       // 但以前一声不吭就把面板清空，读者以为前一轮丢了（评测报告 P0）——
       // 说清楚：原对话仍绑在原笔记上，再划它就回来。放分支之外：目标笔记
@@ -1447,6 +1590,7 @@ export class PenView extends ItemView {
       // **B 的选段就被发进 A 的会话**，服务端拿 `sess.handbook_id`（= A）
       // 去取原文，行号是 B 的、书是 A 的，后续写回也会落到 A 的原文上。
       // 一起换，要么全新要么全旧，不留半拉状态。
+      if (this.retired || captureGen !== this.retargetGen) return;
       this.handbookId = hid;
       this.capturedPath = got.file.path;
       this.quote = got.text;
@@ -1454,7 +1598,7 @@ export class PenView extends ItemView {
       this.endLine = got.endLine;
       this.err = "";
       this.adopt(sess);
-      await this.plugin.bindNote(got.file.path, {
+      await this.bindNote(got.file.path, {
         handbook_id: hid,
         session_id: sess.session_id,
       });
@@ -1557,7 +1701,7 @@ export class PenView extends ItemView {
       this.endLine = 1;
       this.plugin.clearPick();
       if (this.capturedPath) {
-        await this.plugin.bindNote(this.capturedPath, {
+        await this.bindNote(this.capturedPath, {
           handbook_id: this.handbookId,
           session_id: sess.session_id,
         });
@@ -1599,7 +1743,7 @@ export class PenView extends ItemView {
       const sess = await this.api().createSession(this.handbookId);
       this.adopt(sess);
       if (this.capturedPath) {
-        await this.plugin.bindNote(this.capturedPath, {
+        await this.bindNote(this.capturedPath, {
           handbook_id: this.handbookId,
           session_id: sess.session_id,
         });
@@ -1622,6 +1766,7 @@ export class PenView extends ItemView {
     revived = false,
     pics: PendingImage[] = this.pendingImages.slice(),
   ): Promise<void> {
+    if (this.retired || (this.busy && !revived)) return;
     if (chip === "search") return;
     if (this.pending) {
       new Notice(t().noticeResolveApproval);
@@ -1673,13 +1818,21 @@ export class PenView extends ItemView {
     this.paintThumbs();
     this.paintBar();
     await this.paintLog("force");
+    if (this.retired) return;
     let acc = "";
     let gone = false;
+    let cancelled = false;
+    const controller = new AbortController();
+    const runId = crypto.randomUUID();
+    this.controller = controller;
+    this.runId = runId;
+    this.host.paintChrome();
     try {
       await streamChat(
         this.plugin.settings.sidecarUrl,
         {
           session_id: this.sessionId,
+          run_id: runId,
           selected_text: this.quote,
           start_line: this.startLine,
           end_line: this.endLine,
@@ -1693,6 +1846,21 @@ export class PenView extends ItemView {
           ...(myChip ? { custom_chip: chipPayload(myChip) } : {}),
         },
         (ev) => {
+          if (this.retired || this.controller !== controller ||
+              (ev.run_id && ev.run_id !== runId) ||
+              (ev.session_id && ev.session_id !== this.sessionId)) return;
+          if (ev.type === "cancelled") {
+            cancelled = true;
+            const last = this.msgs[this.msgs.length - 1];
+            if (last?.role === "assistant") last.text += `\n\n(${t().bigBangStopped})`;
+            this.thinkChars = 0;
+            this.pending = null;
+            this.status = t().bigBangStopped;
+          }
+          if (ev.code === "FILE_CHANGED") {
+            this.pending = null;
+            this.err = t().errBigBangConflict;
+          }
           if (ev.type === "status") {
             this.status = phaseText(String(ev.phase || ""), String(ev.text || ""));
             this.setStatus();
@@ -1738,7 +1906,7 @@ export class PenView extends ItemView {
               ok,
               text: `${name} ${ok ? t().toolOk : t().toolDenied} → ${path}`,
             });
-            if (name === "edit_file" && ok) void this.refreshSnapshots();
+            if (name === "edit_file" && ok) void this.host.refreshSnapshots();
             void this.paintLog();
             this.paintBar();
           } else if (ev.type === "approval") {
@@ -1767,8 +1935,10 @@ export class PenView extends ItemView {
           }
         },
         this.plugin.settings,
+        controller.signal,
       );
     } catch (e) {
+      if (controller.signal.aborted || this.retired) return;
       // 会话过了保留期被清理掉了。**只重来一次**（revived 那个参数），
       // 不然新会话再撞 404 就成了无限套娃。
       if (isGone(e) && !revived) gone = true;
@@ -1778,6 +1948,8 @@ export class PenView extends ItemView {
         this.failBubble(msg);
       }
     } finally {
+      if (this.controller === controller) this.controller = null;
+      this.stopping = false;
       // `gone` 为真时**不**放下 busy：下面还有 reviveSession 的一次往返 +
       // 一次重发。放下的话读者在这个窗口里再按一次回车，第二个 send() 用的
       // 还是**旧的死 sid**（adopt 还没跑）→ 又一个 404 → 又一次 revive：
@@ -1785,7 +1957,7 @@ export class PenView extends ItemView {
       // this.msgs 被两次 adopt 互相清空。
       if (!this.pending && !gone) {
         this.busy = false;
-        this.status = "";
+        this.status = cancelled ? t().bigBangStopped : "";
       }
       this.paintBar();
       await this.paintLog();
@@ -1841,15 +2013,37 @@ export class PenView extends ItemView {
         /* 仍尝试写盘：sidecar 读的是磁盘 */
       }
     }
+    if (this.retired) return;
     let acc = "";
     let gone = false;
+    let cancelled = false;
+    const controller = new AbortController();
+    const runId = crypto.randomUUID();
+    this.controller = controller;
+    this.runId = runId;
+    this.host.paintChrome();
     const last = this.msgs[this.msgs.length - 1];
     if (last?.role === "assistant") acc = last.text;
     try {
       await streamApprove(
         this.plugin.settings.sidecarUrl,
-        { session_id: sid, pending_id: pid, allow },
+        { session_id: sid, run_id: runId, pending_id: pid, allow },
         (ev) => {
+          if (this.retired || this.controller !== controller ||
+              (ev.run_id && ev.run_id !== runId) ||
+              (ev.session_id && ev.session_id !== this.sessionId)) return;
+          if (ev.type === "cancelled") {
+            cancelled = true;
+            const last = this.msgs[this.msgs.length - 1];
+            if (last?.role === "assistant") last.text += `\n\n(${t().bigBangStopped})`;
+            this.thinkChars = 0;
+            this.pending = null;
+            this.status = t().bigBangStopped;
+          }
+          if (ev.code === "FILE_CHANGED") {
+            this.pending = null;
+            this.err = t().errBigBangConflict;
+          }
           if (ev.type === "status") {
             this.status = phaseText(String(ev.phase || ""), String(ev.text || ""));
             this.setStatus();
@@ -1872,9 +2066,9 @@ export class PenView extends ItemView {
               text: `${name} ${ok ? t().toolOk : t().toolDenied} → ${path}`,
             });
             if (name === "edit_file" && ok) {
-              void this.refreshSnapshots();
+              void this.host.refreshSnapshots();
               const line = Number(ev.line) || this.startLine;
-              if (this.capturedPath) void this.revealInsert(this.capturedPath, line);
+              if (this.capturedPath && this.host.paneCount === 1) void this.revealInsert(this.capturedPath, line);
             }
             void this.paintLog();
           } else if (ev.type === "approval") {
@@ -1902,19 +2096,23 @@ export class PenView extends ItemView {
           }
         },
         this.plugin.settings,
+        controller.signal,
       );
     } catch (e) {
+      if (controller.signal.aborted || this.retired) return;
       // 会话过了保留期被清理掉了。这里**不重发**——pending_id 是那场死会话的，
       // 换一场新的也认不出它。原文没被改动（写回发生在服务端那一枪里），
       // 所以把审批状态清掉、开一场新的、把话说明白就是全部该做的事。
       if (isGone(e)) gone = true;
       else this.err = e instanceof Error ? e.message : String(e);
     } finally {
+      if (this.controller === controller) this.controller = null;
+      this.stopping = false;
       if (gone) this.pending = null;
       this.approving = false;
       if (!this.pending) {
         this.busy = false;
-        this.status = "";
+        this.status = cancelled ? t().bigBangStopped : "";
       }
       this.paintBar();
       await this.paintLog("force");
@@ -1972,12 +2170,20 @@ export class PenView extends ItemView {
   private applySnapshotStatus(st: {
     undo_n?: number;
     redo_n?: number;
+    revision?: string;
+    undo_head?: string;
+    redo_head?: string;
+    latest_source?: string;
   }): void {
+    this.snapshotRevision = st.revision;
+    this.undoHead = st.undo_head;
+    this.redoHead = st.redo_head;
+    this.snapshotSource = st.latest_source || "";
     this.undoN = Number(st.undo_n) || 0;
     this.redoN = Number(st.redo_n) || 0;
   }
 
-  private async refreshSnapshots(): Promise<void> {
+  async refreshSnapshots(): Promise<void> {
     if (!this.handbookId) {
       this.undoN = 0;
       this.redoN = 0;
@@ -2008,7 +2214,7 @@ export class PenView extends ItemView {
     if (this.busy || !this.handbookId || this.undoN <= 0) return;
     if (
       !window.confirm(
-        t().confirmRollback,
+        `${t().bigBangUndo}\n${this.capturedPath || ""} · ${this.host.sourceLabel(this.snapshotSource)}\n\n${t().confirmRollback}`,
       )
     ) {
       return;
@@ -2020,8 +2226,9 @@ export class PenView extends ItemView {
     this.paintBar();
     try {
       if (rel) await this.saveOpenNote(rel);
-      const st = await this.api().rollback(this.handbookId);
+      const st = await this.api().rollback(this.handbookId, this.snapshotRevision, this.undoHead);
       this.applySnapshotStatus(st);
+      void this.host.refreshSnapshots();
       this.msgs = [
         ...this.msgs,
         { role: "assistant", text: t().msgRolledBack },
@@ -2047,8 +2254,9 @@ export class PenView extends ItemView {
     this.paintBar();
     try {
       if (rel) await this.saveOpenNote(rel);
-      const st = await this.api().redo(this.handbookId);
+      const st = await this.api().redo(this.handbookId, this.snapshotRevision, this.redoHead);
       this.applySnapshotStatus(st);
+      void this.host.refreshSnapshots();
       this.msgs = [...this.msgs, { role: "assistant", text: t().msgRedone }];
       await this.reloadCapturedNote();
       new Notice(t().noticeRedone);
@@ -2060,5 +2268,197 @@ export class PenView extends ItemView {
       this.paintBar();
       await this.paintLog("force");
     }
+  }
+}
+
+/** Owns geometry and focus; each child owns its complete conversation lifecycle. */
+export class PenView extends ItemView {
+  readonly plugin: SocratesPenPlugin;
+  private panes: { pane: AgentPane; cell: HTMLElement }[] = [];
+  private active: AgentPane | null = null;
+  private grid: HTMLElement | null = null;
+  private toolbar: HTMLElement | null = null;
+  private addButton: HTMLButtonElement | null = null;
+  private layout?: AgentLayout;
+  private observer: ResizeObserver | null = null;
+  private frame: number | null = null;
+  private closed = false;
+  adding = false;
+
+  constructor(leaf: WorkspaceLeaf, plugin: SocratesPenPlugin) {
+    super(leaf);
+    this.plugin = plugin;
+  }
+  getViewType(): string { return VIEW_TYPE_PEN; }
+  getDisplayText(): string { return t().viewTitle; }
+  getIcon(): string { return "highlighter"; }
+  get paneCount(): number { return this.panes.length; }
+  isActive(pane: AgentPane): boolean { return this.active === pane; }
+
+  async onOpen(): Promise<void> {
+    this.closed = false;
+    this.layout = undefined;
+    this.contentEl.empty();
+    this.contentEl.addClass("sp-workspace");
+    this.toolbar = this.contentEl.createDiv({ cls: "sp-big-bang-bar" });
+    this.toolbar.createSpan({ cls: "sp-big-bang-title", text: t().bigBangTitle });
+    this.addButton = this.toolbar.createEl("button", { cls: "sp-add-agent", text: `＋ ${t().bigBangAdd}` });
+    this.addButton.onclick = () => void this.addAgent();
+    this.grid = this.contentEl.createDiv({ cls: "sp-agent-grid" });
+    this.adding = true;
+    try {
+      for (const slot of this.plugin.agentPanels) {
+        if (this.closed) break;
+        const pane = this.createPane(slot.id);
+        await pane.onOpen(this.plugin.agentPanels.length > 1 ? slot.path : undefined);
+      }
+    } finally { this.adding = false; this.paintChrome(); this.onResize(); }
+    if (this.closed || !this.grid) return;
+    this.observer = new ResizeObserver(() => this.onResize());
+    this.observer.observe(this.grid);
+  }
+
+  private createPane(id: string): AgentPane {
+    const cell = this.grid!.createDiv({ cls: "sp-agent-cell" });
+    const content = cell.createDiv({ cls: "sp-agent-content" });
+    const pane = new AgentPane(content, this.plugin, this, id);
+    this.panes.push({ pane, cell });
+    this.addChild(pane);
+    if (!this.active) this.active = pane;
+    const focus = () => { this.active = pane; this.paintChrome(); };
+    cell.addEventListener("focusin", focus);
+    cell.addEventListener("pointerdown", focus);
+    this.paintChrome();
+    this.onResize();
+    return pane;
+  }
+
+  async addAgent(): Promise<void> {
+    if (this.adding || this.closed || this.panes.length >= 4 || !this.active) return;
+    this.adding = true;
+    const source = this.active;
+    this.paintChrome();
+    try {
+      const health = await makeApi(this.plugin.settings.sidecarUrl).health();
+      if (!health.capabilities?.big_bang) throw new Error(t().errBigBangUpgrade);
+    } catch (e) {
+      this.adding = false;
+      this.paintChrome();
+      new Notice(e instanceof Error ? e.message : String(e));
+      return;
+    }
+    if (this.closed) { this.adding = false; return; }
+    const id = crypto.randomUUID();
+    const pane = this.createPane(id);
+    this.plugin.agentPanels.push({ id, ...(source.path ? { path: source.path } : {}) });
+    this.paintChrome();
+    try {
+      await pane.seed(source);
+      if (this.closed) return;
+      await pane.onOpen(undefined, true);
+      await this.plugin.saveSettings();
+      this.active = pane;
+      pane.focusInput();
+    } catch (e) {
+      const entry = this.panes.find(p => p.pane === pane);
+      this.removeChild(pane);
+      entry?.cell.remove();
+      this.panes = this.panes.filter(p => p.pane !== pane);
+      this.plugin.agentPanels = this.plugin.agentPanels.filter(p => p.id !== id);
+      if (this.active === pane) this.active = source;
+      new Notice(e instanceof Error ? e.message : String(e));
+    } finally { this.adding = false; this.paintChrome(); this.onResize(); }
+  }
+
+  async closeAgent(pane: AgentPane): Promise<void> {
+    if (this.adding || this.panes.length <= 1) return;
+    this.adding = true;
+    this.paintChrome();
+    try {
+      await pane.dispose();
+      const entry = this.panes.find(p => p.pane === pane);
+      this.removeChild(pane);
+      entry?.cell.remove();
+      this.panes = this.panes.filter(p => p.pane !== pane);
+      this.plugin.agentPanels = this.plugin.agentPanels.filter(p => p.id !== pane.slotId);
+      if (this.active === pane) {
+        this.active = this.panes[0].pane;
+        this.active.focusInput();
+      }
+      await this.plugin.saveSettings();
+    } catch (e) { new Notice(e instanceof Error ? e.message : String(e)); }
+    finally { this.adding = false; this.paintChrome(); this.onResize(); }
+  }
+
+  sourceLabel(sid: string): string {
+    const index = this.panes.findIndex(p => p.pane.session === sid);
+    return index >= 0 ? t().bigBangAgent(index + 1) : t().bigBangEarlier;
+  }
+
+  rememberPath(pane: AgentPane, path: string): void {
+    const slot = this.plugin.agentPanels.find(p => p.id === pane.slotId);
+    if (slot && slot.path !== path) {
+      slot.path = path;
+      this.plugin.saveSettingsSoon();
+    }
+  }
+
+  paintChrome(): void {
+    if (this.closed) return;
+    const count = this.panes.length;
+    if (this.toolbar) this.toolbar.hidden = count <= 1;
+    this.grid?.classList.toggle("is-multi", count > 1);
+    if (this.addButton) {
+      this.addButton.disabled = this.adding || count >= 4;
+      this.addButton.textContent = `＋ ${t().bigBangAdd} (${count}/4)`;
+      setTooltip(this.addButton, count >= 4 ? t().bigBangLimit : t().bigBangAdd);
+    }
+    this.panes.forEach(({ pane, cell }, i) => {
+      cell.classList.toggle("is-active", pane === this.active);
+      cell.setAttribute("aria-label", t().bigBangAgent(i + 1));
+      pane.paintChrome(i, count);
+    });
+  }
+
+  onResize(): void {
+    if (this.closed || this.frame !== null) return;
+    this.frame = window.requestAnimationFrame(() => {
+      this.frame = null;
+      const grid = this.grid;
+      if (!grid || !grid.clientWidth || !grid.clientHeight || !this.panes.length) return;
+      const next = computeAgentLayout({ count: this.panes.length, width: grid.clientWidth,
+        height: grid.clientHeight, previous: this.layout });
+      this.layout = next;
+      grid.style.gridTemplateColumns = next.columns;
+      grid.style.gridTemplateRows = next.rows;
+      grid.classList.toggle("is-overflowing", next.overflow);
+      grid.dataset.layout = next.kind;
+      this.panes.forEach(({ pane, cell }, i) => {
+        cell.style.gridArea = next.areas[i];
+        pane.onResize();
+      });
+    });
+  }
+
+  onFastModeChanged(): void { this.panes.forEach(p => p.pane.onFastModeChanged()); }
+  onCustomChipsChanged(): void { this.panes.forEach(p => p.pane.onCustomChipsChanged()); }
+  async probeHealth(): Promise<void> { await Promise.all(this.panes.map(p => p.pane.probeHealth())); }
+  async captureSelection(pick?: EditorPick | null): Promise<void> { await this.active?.captureSelection(pick); }
+  async compactSession(): Promise<void> { await this.active?.compactSession(); }
+  async refreshSnapshots(): Promise<void> { await Promise.all(this.panes.map(p => p.pane.refreshSnapshots())); }
+  relocalize(): void {
+    const title = this.toolbar?.querySelector(".sp-big-bang-title");
+    if (title) title.textContent = t().bigBangTitle;
+    this.panes.forEach(p => p.pane.relocalize());
+    this.paintChrome();
+  }
+  async onClose(): Promise<void> {
+    this.closed = true;
+    this.observer?.disconnect();
+    if (this.frame !== null) window.cancelAnimationFrame(this.frame);
+    this.frame = null;
+    for (const { pane } of this.panes) this.removeChild(pane);
+    this.panes = [];
+    this.active = null;
   }
 }

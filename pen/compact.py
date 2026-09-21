@@ -266,6 +266,7 @@ def compact_session(
 
     session.messages = fold.messages
     session.read_ok_paths = []
+    session.read_versions.clear()
     session.compacted = True
     # 折完之后上一枪的 prompt_tokens 不再描述当前窗口。清零让下次
     # should_auto_compact 走 message_chars/2，避免供应商不回 usage 时每轮都折。

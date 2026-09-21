@@ -7,6 +7,7 @@ from typing import Any
 
 import openai
 
+from pen import filecoord
 from pen.agent import READ_FIRST_MSG, TOOLS, decide, dispatch, read_first_block, schemas
 from pen.agent.tools_impl import handle_edit_file
 from pen.config import LLMConfig
@@ -63,7 +64,8 @@ def test_schemas_are_read_edit_fetch_and_search() -> None:
 def test_edit_file_unique_replace(tmp_path: Path) -> None:
     book = tmp_path / "note.md"
     book.write_text("# 题\n\n内容。\n\n尾\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     out = handle_edit_file(
         {"path": str(book), "old_string": "内容。", "new_string": "真内容"},
         ctx,
@@ -77,7 +79,8 @@ def test_edit_file_unique_replace(tmp_path: Path) -> None:
 def test_edit_file_relative_path_same_as_original(tmp_path: Path) -> None:
     book = tmp_path / "note.md"
     book.write_text("# 题\n\n唯一一段\n\n尾\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     out = handle_edit_file(
         {"path": "note.md", "old_string": "唯一一段", "new_string": "换成了"},
         ctx,
@@ -90,7 +93,8 @@ def test_edit_file_relative_path_same_as_original(tmp_path: Path) -> None:
 def test_edit_file_rejects_non_unique_and_missing(tmp_path: Path) -> None:
     book = tmp_path / "note.md"
     book.write_text("aa\naa\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     twice = handle_edit_file({"path": str(book), "old_string": "aa", "new_string": "bb"}, ctx)
     assert twice["ok"] is False
     miss = handle_edit_file({"path": str(book), "old_string": "nope", "new_string": "x"}, ctx)
@@ -110,7 +114,8 @@ def test_edit_file_rejects_non_unique_and_missing(tmp_path: Path) -> None:
 def test_edit_file_rejects_line_number_prefix(tmp_path: Path) -> None:
     book = tmp_path / "note.md"
     book.write_text("# 题\n\n内容。\n\n尾\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     numbered = handle_edit_file(
         {"path": str(book), "old_string": "3\t内容。", "new_string": "真内容"},
         ctx,
@@ -123,7 +128,8 @@ def test_edit_file_rejects_line_number_prefix(tmp_path: Path) -> None:
 def test_edit_file_rejects_overlapping_old_string(tmp_path: Path) -> None:
     book = tmp_path / "note.md"
     book.write_text("# t\n\naaa\n\n尾\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     out = handle_edit_file({"path": str(book), "old_string": "aa", "new_string": "Z"}, ctx)
     assert out["ok"] is False
     assert book.read_text(encoding="utf-8") == "# t\n\naaa\n\n尾\n"
@@ -134,7 +140,8 @@ def test_edit_file_rejects_other_path(tmp_path: Path) -> None:
     other = tmp_path / "other.md"
     book.write_text("a\n", encoding="utf-8")
     other.write_text("b\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": ""}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     out = dispatch(
         "edit_file",
         {"path": str(other), "old_string": "b", "new_string": "c"},
@@ -171,7 +178,8 @@ def test_edit_takes_pre_edit_snapshot(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(snapshots, "LIBRARIES_DIR", lib)
     book = tmp_path / "note.md"
     book.write_text("# t\n\nhello unique\n\n尾\n", encoding="utf-8")
-    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "hid"}
+    ctx = {"original_path": book, "extra_roots": [tmp_path], "handbook_id": "hid",
+           "read_versions": {str(book.resolve()): filecoord.revision(filecoord.read_text(book))}}
     out = handle_edit_file(
         {"path": str(book), "old_string": "hello unique", "new_string": "changed"},
         ctx,
@@ -608,6 +616,10 @@ def test_second_edit_in_rest_asks_again(monkeypatch, tmp_path: Path) -> None:
                     ),
                 ]
             ),
+            # The first approved write invalidates the second call's old basis.
+            _Msg(tool_calls=[_Tc("r2", "read_file", {"path": str(book)})]),
+            _Msg(tool_calls=[_Tc("e2", "edit_file", {"path": str(book),
+                            "old_string": "第二段。", "new_string": "二改。"})]),
         ],
     )
     sess = PenSession(session_id="s" * 32, handbook_id="demo")
@@ -630,6 +642,8 @@ def test_second_edit_in_rest_asks_again(monkeypatch, tmp_path: Path) -> None:
     assert any(e["type"] == "approval" and e["name"] == "edit_file" for e in events)
     assert sess.pending is not None
     assert sess.pending["args"]["old_string"] == "第二段。"
+    assert sess.pending["tool_call_id"] == "e2"
+    assert sess.pending["basis_revision"] == filecoord.revision(filecoord.read_text(book))
     assert not any(e["type"] == "done" for e in events)
 
 

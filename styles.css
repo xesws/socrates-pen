@@ -1312,3 +1312,77 @@
 .sp-set-chips-note.is-off {
   display: none;
 }
+
+/* Big Bang: the workspace owns geometry; every pane keeps its original shell. */
+.sp-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.sp-big-bang-bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.sp-big-bang-bar[hidden], .sp-workspace button[hidden] { display: none; }
+.sp-agent-grid {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.sp-agent-grid.is-multi { gap: 8px; }
+.sp-agent-grid.is-overflowing {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sp-agent-cell {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.sp-agent-grid.is-multi .sp-agent-cell {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+}
+.sp-agent-grid.is-multi .sp-agent-cell.is-active {
+  border-color: var(--interactive-accent);
+}
+.sp-agent-content { height: 100%; min-height: 0; min-width: 0; }
+.sp-agent-grid.is-multi .sp-brand { flex-wrap: wrap; }
+.sp-agent-grid.is-multi .sp-brand-tools { flex-wrap: wrap; margin-left: auto; }
+.sp-workspace button:focus-visible { outline: 2px solid var(--interactive-accent); outline-offset: 2px; }
+
+.sp-agent-ready, .sp-big-bang-hint { display: none; }
+.sp-agent-grid.is-multi .sp-empty .sp-splash,
+.sp-agent-grid.is-multi .sp-empty .sp-hint,
+.sp-agent-grid.is-multi .sp-brand-sub { display: none; }
+.sp-agent-grid.is-multi .sp-agent-ready {
+  display: block;
+  color: var(--text-normal);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+.sp-agent-grid.is-multi .sp-big-bang-hint {
+  display: block;
+  max-width: 28em;
+  margin: 0 auto;
+  padding: 0 16px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.65;
+}
+.sp-agent-grid.is-multi .sp-brand-tools { max-width: calc(100% - 70px); gap: 1px; }
+.sp-agent-grid.is-multi button.sp-icon { width: 24px; height: 24px; }

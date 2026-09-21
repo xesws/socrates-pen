@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +10,7 @@ from pen.meter import over
 from pen.readtool import read_file_report
 from pen import config
 from pen.sandbox import SandboxError, assert_write_target, resolve_read_target
-from pen import libraries, snapshots
+from pen import libraries, snapshots, filecoord
 
 
 def limits_of(ctx: dict[str, Any]) -> config.RuntimeLimits:
@@ -121,6 +122,14 @@ def handle_read_file(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any
         extra_roots=ctx.get("extra_roots") or [],
     )
     text = str(report["text"])
+    versions = ctx.setdefault("read_versions", {})
+    key = str(report["resolved"])
+    if report["ok"] and versions.get(key) and versions[key] != report.get("revision"):
+        versions.pop(key, None)
+        ctx.setdefault("read_ok", set()).discard(Path(key))
+        return {"ok": False, "code": "FILE_CHANGED", "resolved": key, "detail": raw_path,
+                "text": "FILE_CHANGED: 分页期间文件已变化，旧行号已过期。请重新 read_file 定位，不要沿用旧分页坐标。/ File changed; re-read and locate the passage again."}
+
     # 读当前手册以外的东西才计预算（别的教材、lab/ 对照文件）。
     # 读当前手册不计，本职阅读一次都不受影响。
     # 超了不报错、不中断：返回一句让它收敛的话。报错会让模型换个 offset 再试，
@@ -162,7 +171,8 @@ def handle_read_file(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any
         ctx["cross_book_reads"] = reads + 1
     return {
         "ok": bool(report["ok"]),
-        "text": text,
+        "revision": report.get("revision"),
+        "text": (text + f"\n[revision={report['revision']}]") if report.get("revision") else text,
         "resolved": str(report["resolved"]),
         "detail": raw_path,
     }
@@ -185,50 +195,55 @@ def handle_edit_file(args: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any
         target = assert_write_target(original, tried)
     except SandboxError as exc:
         return {"ok": False, "text": f"错误：{exc}", "resolved": tried, "detail": raw_path}
-    try:
-        text = target.read_text(encoding="utf-8")
-    except OSError as exc:
-        return {
-            "ok": False,
-            "text": f"错误：无法读取 {target.name}：{exc}",
-            "resolved": str(target),
-            "detail": raw_path,
-        }
-    if old.strip() == text.strip():
-        return {
-            "ok": False,
-            "text": "错误：禁止把整份原文当 old_string。请只替换需要改的那一小段。",
-            "resolved": str(target),
-            "detail": raw_path,
-        }
-    n = _occurrences(text, old)
-    if n == 0:
-        return {
-            "ok": False,
-            "text": "错误：原文里找不到这段 old_string。请再 read_file，用去掉行号前缀后的纯原文逐字复制（不要带 12\\t）。",
-            "resolved": str(target),
-            "detail": raw_path,
-        }
-    if n > 1:
-        return {
-            "ok": False,
-            "text": f"错误：old_string 在原文里出现了 {n} 次。请加上下文让它只出现一次。",
-            "resolved": str(target),
-            "detail": raw_path,
-        }
-    hid = str(ctx.get("handbook_id") or "")
-    if hid:
-        snapshots.take_snapshot(hid, original, "pre-edit")
-    line = text[: text.index(old)].count("\n") + 1
-    updated = text.replace(old, new, 1)
-    tmp = target.with_suffix(target.suffix + ".pen-tmp")
-    tmp.write_text(updated, encoding="utf-8")
-    tmp.replace(target)
-    if hid:
+    run = ctx.get("run")
+    with filecoord.file_lock(target), (run.commit() if run else nullcontext()):
         try:
-            libraries.refresh_if_stale(hid)
-        except Exception:
-            pass
+            text = filecoord.read_text(target)
+        except OSError as exc:
+            return {
+                "ok": False,
+                "text": f"错误：无法读取 {target.name}：{exc}",
+                "resolved": str(target),
+                "detail": raw_path,
+            }
+        try:
+            filecoord.require_revision(text, ctx.get("expected_revision") or
+                                       (ctx.get("read_versions") or {}).get(str(target)))
+        except filecoord.FileChanged as exc:
+            return {"ok": False, "code": exc.code, "text": str(exc), "resolved": str(target), "detail": raw_path}
+        if old.strip() == text.strip():
+            return {
+                "ok": False,
+                "text": "错误：禁止把整份原文当 old_string。请只替换需要改的那一小段。",
+                "resolved": str(target),
+                "detail": raw_path,
+            }
+        n = _occurrences(text, old)
+        if n == 0:
+            return {
+                "ok": False,
+                "text": "错误：原文里找不到这段 old_string。请再 read_file，用去掉行号前缀后的纯原文逐字复制（不要带 12\\t）。",
+                "resolved": str(target),
+                "detail": raw_path,
+            }
+        if n > 1:
+            return {
+                "ok": False,
+                "text": f"错误：old_string 在原文里出现了 {n} 次。请加上下文让它只出现一次。",
+                "resolved": str(target),
+                "detail": raw_path,
+            }
+        hid = str(ctx.get("handbook_id") or "")
+        if hid:
+            snapshots.take_snapshot(hid, original, f"agent-{ctx['session_id']}" if ctx.get("session_id") else "pre-edit")
+        line = text[: text.index(old)].count("\n") + 1
+        updated = text.replace(old, new, 1)
+        filecoord.atomic_write(target, updated)
+        if hid:
+            try:
+                libraries.refresh_if_stale(hid)
+            except Exception:
+                pass
     return {
         "ok": True,
         "text": f"已编辑 {target.name}（第 {line} 行起替换 1 处，现 {len(updated.splitlines())} 行）",

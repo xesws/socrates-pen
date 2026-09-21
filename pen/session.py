@@ -263,6 +263,8 @@ class PenSession:
     ui_messages: list[dict[str, Any]] = field(default_factory=list)
     pending: dict[str, Any] | None = None
     read_ok_paths: list[str] = field(default_factory=list)
+    read_versions: dict[str, str] = field(default_factory=dict)
+    active_run: Any = field(default=None, repr=False, compare=False)
     # 当前界面语言。建场时写入 messages[0]；中途切换由 apply_session_lang 重写。
     lang: str = "zh"
     # 建会话那一刻的教材书名，注进 messages[0] 的第一句。**故意不落盘**：
@@ -311,6 +313,7 @@ class PenSession:
             "ui_messages": self.ui_messages,
             "pending": self.pending,
             "read_ok_paths": list(self.read_ok_paths),
+            "read_versions": dict(self.read_versions),
             "lang": self.lang,
             "last_chips": list(self.last_chips),
             "turns": self.turns,
@@ -358,6 +361,8 @@ class PenSession:
             read_ok_paths=[str(p) for p in data.get("read_ok_paths") or []]
             if isinstance(data.get("read_ok_paths"), list)
             else [],
+            read_versions={str(k): str(v) for k, v in (data.get("read_versions") or {}).items()}
+            if isinstance(data.get("read_versions"), dict) else {},
             lang=str(data.get("lang") or "zh"),
             last_chips=[c for c in (data.get("last_chips") or []) if isinstance(c, dict)],
             turns=int(data.get("turns") or 0),

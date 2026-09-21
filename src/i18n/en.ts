@@ -81,6 +81,22 @@ const LIMIT_TEXT_EN: Record<string, [string, string]> = {
 };
 
 export const en: Dict = {
+  bigBangEarlier: "Earlier change",
+  errBigBangUpgrade: "Update and start a sidecar that supports Big Bang first.",
+  bigBangReady: "A fresh perspective",
+  bigBangPrompt: "Ask another question about this passage. This conversation runs independently.",
+  bigBangAdd: "Add Agent",
+  bigBangLimit: "Up to 4 agents at once",
+  bigBangTitle: "Big Bang · Experimental",
+  bigBangClose: "Close this agent (stop task, keep history)",
+  bigBangStop: "Stop this task",
+  bigBangStopping: "Stopping…",
+  bigBangStopped: "Stopped",
+  bigBangAgent: (n: number) => `Agent ${n}`,
+  errBigBangConflict: "The note changed. The agent must re-read it and request new approval.",
+  bigBangUndo: "Undo the latest shared-note change (including other agents' edits)",
+  bigBangRedo: "Redo the shared-note change",
+
   appName: "Socrates",
   viewTitle: "Socrates",
 

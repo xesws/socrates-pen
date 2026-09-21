@@ -81,6 +81,10 @@ export async function purgeExpired(baseUrl: string): Promise<void> {
 
 export function makeApi(baseUrl: string) {
   return {
+    cancelRun: (session_id: string, run_id: string, pending_id = "") =>
+      j<{ ok: boolean; cancelling: boolean }>(baseUrl, `/v1/sessions/${encodeURIComponent(session_id)}/cancel`, {
+        method: "POST", body: JSON.stringify({ run_id, pending_id }),
+      }),
     health: (init?: RequestInit) => j<Health>(baseUrl, "/v1/health", init),
     /** 新 sidecar 的优雅退出。旧版 404/405，调用方改杀占用端口的进程。 */
     shutdown: (init?: RequestInit) =>
@@ -139,15 +143,15 @@ export function makeApi(baseUrl: string) {
       j<DeepInbox>(baseUrl, `/v1/sessions/${session_id}/deep?since=${since}`),
     snapshots: (handbook_id: string) =>
       j<SnapshotStatus>(baseUrl, `/v1/handbooks/${handbook_id}/snapshots`),
-    rollback: (handbook_id: string) =>
+    rollback: (handbook_id: string, expected_revision?: string, expected_head?: string) =>
       j<SnapshotStatus & { ok: boolean; restored_from: string; original_path: string }>(baseUrl, "/v1/writeback/rollback", {
         method: "POST",
-        body: JSON.stringify({ handbook_id }),
+        body: JSON.stringify({ handbook_id, expected_revision, expected_head }),
       }),
-    redo: (handbook_id: string) =>
+    redo: (handbook_id: string, expected_revision?: string, expected_head?: string) =>
       j<SnapshotStatus & { ok: boolean; restored_from: string; original_path: string }>(baseUrl, "/v1/writeback/redo", {
         method: "POST",
-        body: JSON.stringify({ handbook_id }),
+        body: JSON.stringify({ handbook_id, expected_revision, expected_head }),
       }),
     /**
      * v0.25.0 学习画像：编下一批轮次。**一律主模型**——body 与 /v1/chat 同源
@@ -188,6 +192,7 @@ export async function streamChat(
   baseUrl: string,
   body: {
     session_id: string;
+    run_id?: string;
     selected_text: string;
     start_line: number;
     end_line: number;
@@ -203,10 +208,12 @@ export async function streamChat(
   },
   onEvent: (ev: Record<string, unknown>) => void,
   settings?: PenSettings,
+  signal?: AbortSignal,
 ): Promise<void> {
   // 算一次存下来，别在下面调两遍。
   const lim = settings ? limitsPayload(settings) : undefined;
   const res = await fetch(joinUrl(baseUrl, "/v1/chat"), {
+    signal,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -232,12 +239,14 @@ export async function streamChat(
 
 export async function streamApprove(
   baseUrl: string,
-  body: { session_id: string; pending_id: string; allow: boolean },
+  body: { session_id: string; run_id?: string; pending_id: string; allow: boolean },
   onEvent: (ev: Record<string, unknown>) => void,
   settings?: PenSettings,
+  signal?: AbortSignal,
 ): Promise<void> {
   const lim = settings ? limitsPayload(settings) : undefined;
   const res = await fetch(joinUrl(baseUrl, "/v1/chat/approve"), {
+    signal,
     method: "POST",
     headers: {
       "Content-Type": "application/json",

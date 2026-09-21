@@ -115,6 +115,10 @@ export type DeepInbox = {
 };
 
 export type SnapshotStatus = {
+  revision?: string;
+  undo_head?: string;
+  redo_head?: string;
+  latest_source?: string;
   can_undo: boolean;
   can_redo: boolean;
   undo_n: number;
@@ -133,6 +137,7 @@ export type LlmStatus = {
 
 /** GET /v1/health。旧 sidecar 没有 version —— 插件据此判定不能干活。 */
 export type Health = {
+  capabilities?: { big_bang?: boolean };
   status: string;
   version?: string;
   llm: LlmStatus;
@@ -156,9 +161,12 @@ export type PreflightReport = {
   fast?: PreflightSlot;
 };
 
+export type AgentPanelState = { id: string; path?: string };
+
 export type NoteBinding = {
   handbook_id: string;
   session_id: string;
+  agents?: Record<string, string>;
 };
 
 // ── 学习画像（v0.25.0）。镜像 pen/profile.py 的 report() / overview()。

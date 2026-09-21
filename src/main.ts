@@ -12,7 +12,7 @@ import {
   type PenSettings,
 } from "./settings";
 import { readLivePick, type EditorPick } from "./selection";
-import type { NoteBinding, LlmStatus } from "./types";
+import type { NoteBinding, AgentPanelState, LlmStatus } from "./types";
 import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
 import { ReportView, VIEW_TYPE_REPORT } from "./views/ReportView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
@@ -26,11 +26,13 @@ type PluginData = Partial<PenSettings> & {
   apiKey?: string;
   settings?: Partial<PenSettings> & { apiKey?: string };
   notes?: Record<string, NoteBinding>;
+  agentPanels?: AgentPanelState[];
 };
 
 export default class SocratesPenPlugin extends Plugin {
   settings: PenSettings = { ...DEFAULT_SETTINGS };
   notes: Record<string, NoteBinding> = {};
+  agentPanels: AgentPanelState[] = [{ id: "primary" }];
   /** 老 data.json 带出来的明文钥匙，等 sidecar 起来就迁走。只活在内存里。 */
   migrateKey = "";
   /** 设置页 PUT 失败后的内存暂存，升完自动写入。绝不进 data.json。 */
@@ -225,12 +227,21 @@ export default class SocratesPenPlugin extends Plugin {
     this.lastPick = null;
   }
 
-  noteBind(path: string): NoteBinding | undefined {
-    return this.notes[path];
+  noteBind(path: string, slot = "primary"): NoteBinding | undefined {
+    const binding = this.notes[path];
+    if (!binding || slot === "primary") return binding;
+    const sid = binding.agents?.[slot];
+    return sid ? { handbook_id: binding.handbook_id, session_id: sid } : undefined;
   }
 
-  async bindNote(path: string, bind: NoteBinding): Promise<void> {
-    this.notes[path] = bind;
+  async bindNote(path: string, bind: NoteBinding, slot = "primary"): Promise<void> {
+    const prior = this.notes[path];
+    const agents = { ...(prior?.agents || {}), [slot]: bind.session_id };
+    this.notes[path] = slot === "primary" ? { ...bind, agents } : {
+      handbook_id: bind.handbook_id, session_id: prior?.session_id || "", agents,
+    };
+    const panel = this.agentPanels.find(p => p.id === slot);
+    if (panel) panel.path = path;
     await this.saveSettings();
   }
 
@@ -289,6 +300,13 @@ export default class SocratesPenPlugin extends Plugin {
     // 同上：读者手改的、或被 Sync 合坏的自定义泡泡表。绝不抛，脏的就地夹紧。
     this.settings.customChips = coerceCustomChips(this.settings.customChips);
     this.notes = raw.notes || {};
+    if (Array.isArray(raw.agentPanels)) {
+      const seen = new Set<string>();
+      const panels = raw.agentPanels.filter(p => p && typeof p.id === "string" &&
+        /^[a-zA-Z0-9-]{1,80}$/.test(p.id) && !seen.has(p.id) && Boolean(seen.add(p.id)))
+        .slice(0, 4).map(p => ({ id: p.id, ...(typeof p.path === "string" ? { path: p.path } : {}) }));
+      if (panels.length) this.agentPanels = panels;
+    }
   }
 
   sidecarSnap() {
@@ -459,7 +477,7 @@ export default class SocratesPenPlugin extends Plugin {
 
   async saveSettings(): Promise<void> {
     const run = this.saveChain.then(() =>
-      this.saveData({ settings: persistableSettings(this.settings, this.migrateKey), notes: this.notes }),
+      this.saveData({ settings: persistableSettings(this.settings, this.migrateKey), notes: this.notes, agentPanels: this.agentPanels }),
     );
     // 链只吞这次 saveData 的错，别让一次失败掐死后面所有保存。
     this.saveChain = run.catch(() => {});

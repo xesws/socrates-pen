@@ -100,6 +100,22 @@ const LIMIT_TEXT_ZH: Record<string, [string, string]> = {
 };
 
 export const zh = {
+  bigBangEarlier: "之前的修改",
+  errBigBangUpgrade: "请先更新并启动支持 Big Bang 的 sidecar。",
+  bigBangReady: "一个新的思考方向",
+  bigBangPrompt: "围绕这段笔记提一个新问题。这场对话会独立进行。",
+  bigBangAdd: "增加 Agent",
+  bigBangLimit: "最多同时打开 4 个 Agent",
+  bigBangTitle: "Big Bang · 实验功能",
+  bigBangClose: "关闭此 Agent（停止任务，保留历史）",
+  bigBangStop: "停止此任务",
+  bigBangStopping: "正在停止…",
+  bigBangStopped: "已停止",
+  bigBangAgent: (n: number) => `Agent ${n}`,
+  errBigBangConflict: "笔记已变化，Agent 需要重读后重新申请审批。",
+  bigBangUndo: "撤销共享笔记的最近一次修改（包括其他 Agent 的修改）",
+  bigBangRedo: "重做共享笔记的修改",
+
   // ── 品牌 / 视图元数据 ──
   appName: "苏格拉底",
   viewTitle: "苏格拉底",
