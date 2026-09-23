@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U3Q5-paraphrase-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U3Q5",
+  "sample_id": "U3Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U3Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案通过“按到达次序处理”和“A 比 B 先进入，因此先处理 A”准确表达了先进先出的含义，即先进入的元素先被处理，符合等价改述。",
+        "evidence_quote": "按到达次序处理，A 比 B 先进入，因此先处理 A。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U3Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确指出先处理 A，即本例中先取出 A，准确表达了该要点。",
+        "evidence_quote": "因此先处理 A。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 132,
+      "prompt_tokens": 391,
+      "total_tokens": 523,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 391
+    }
+  },
+  "score": 1.0
+}

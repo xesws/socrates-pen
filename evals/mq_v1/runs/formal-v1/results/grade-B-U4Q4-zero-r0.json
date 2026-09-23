@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q4-zero-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_2204fef8ec109730c328",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及候选规模变化，也未说明规模约减半。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_34cd7e43f6bf3c33518b",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及比较次数增长方式，也未给出log2(n)或对数增长。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 92,
+      "prompt_tokens": 441,
+      "total_tokens": 533,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 441
+    }
+  },
+  "score": 0.0
+}

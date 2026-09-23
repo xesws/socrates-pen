@@ -1,0 +1,13 @@
+{
+  "requests": 189,
+  "tokens": 1923816,
+  "failed_calls": [
+    [
+      "rubric-RL06Q09",
+      "LLM response was not valid JSON"
+    ]
+  ],
+  "key_scan": "passed",
+  "reused_rubrics": 79,
+  "reused_grades": 12
+}

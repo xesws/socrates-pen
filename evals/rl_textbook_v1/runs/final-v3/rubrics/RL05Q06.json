@@ -1,0 +1,113 @@
+{
+  "id": "RL05Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_a31e9e8c4c171f5e811c",
+        "name": "SARSA一步目标",
+        "definition": "按 SARSA 使用实际下一动作价值计算一步目标：r + γ·Q(S',A') = 0 + 0.9×5 = 4.5",
+        "source_mq_ids": [
+          "q_0593b41d8ffd61dda29e"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_0593b41d8ffd61dda29e",
+        "version": "667048526186838d737e2669e276c3dfc6e1c70be080f3249f05b322883845ca",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_0593b41d8ffd61dda29e",
+        "title": "RL05Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "SARSA 中 r=0、γ=0.9、Q(S',A')=5，则一步目标为 {{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"4.5\"],\"numeric_value\":4.5,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "SARSA 目标使用实际下一动作价值：0+0.9×5=4.5。",
+        "raw_markdown": "### RL05Q06\n#### 题型\nfill_blank\n#### 题干\nSARSA 中 r=0、γ=0.9、Q(S',A')=5，则一步目标为 {{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"4.5\"],\"numeric_value\":4.5,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\nSARSA 目标使用实际下一动作价值：0+0.9×5=4.5。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_a31e9e8c4c171f5e811c"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_a31e9e8c4c171f5e811c",
+            "max_score": 1.0,
+            "description": "填入 SARSA 一步目标值 4.5",
+            "partial_credit": "精确填空，仅正确数值得分；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 4.5（数值等价，允许 1e-06 容差）"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 1010,
+          "end_line": 1020
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1012,
+            "end_line": 1012
+          },
+          "题干": {
+            "start_line": 1014,
+            "end_line": 1014
+          },
+          "答案": {
+            "start_line": 1016,
+            "end_line": 1018
+          },
+          "解答": {
+            "start_line": 1020,
+            "end_line": 1020
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "4.5"
+            ],
+            "numeric_value": 4.5,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "7e7438c4263371338079b75742c1d7b45a0f302ef7ba04e47595b66c1253c978"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 176,
+      "prompt_tokens": 19191,
+      "total_tokens": 19367,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 375
+    }
+  }
+}

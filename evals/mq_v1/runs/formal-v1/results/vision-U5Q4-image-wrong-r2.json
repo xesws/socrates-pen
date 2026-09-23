@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q4-image-wrong-r2",
+  "kind": "vision_grade",
+  "case_id": "U5Q4",
+  "split": "test",
+  "repeat": 2,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0.5,
+    "reason": "图中A的数值为2，B的数值为7，学生将A、B读反，读值部分错误；B−A=7−2=5，学生计算为9，计算部分错误。根据评分标准，两个要求均未准确完成，得0分。",
+    "usage": {
+      "completion_tokens": 76,
+      "prompt_tokens": 375,
+      "total_tokens": 451,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 247
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0.5
+}

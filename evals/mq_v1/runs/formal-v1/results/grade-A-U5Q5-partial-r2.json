@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U5Q5-partial-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U5Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生答案明确写出“A=7，B=2”，准确表达了A=7且B=2这一要点。",
+        "evidence_quote": "A=7，B=2。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U5Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生答案未给出B−A的计算结果，没有表达B−A=-5这一要点。",
+        "evidence_quote": "A=7，B=2。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 107,
+      "prompt_tokens": 561,
+      "total_tokens": 668,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 561
+    }
+  },
+  "score": 0.5
+}

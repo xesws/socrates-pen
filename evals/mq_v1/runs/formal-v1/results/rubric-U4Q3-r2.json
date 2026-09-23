@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U4Q3-r2",
+  "kind": "rubric",
+  "case_id": "U4Q3",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_f51aab96eb42d8a849cd",
+      "name": "副作用定义",
+      "definition": "函数副作用指函数除了返回值以外，还改变外部可观察状态",
+      "source_mq_ids": [
+        "q_bdd4322d966e99ca1efb"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_f51aab96eb42d8a849cd",
+      "max_score": 1.0,
+      "description": "在b1处填入函数副作用的含义：函数除了返回值以外，还改变外部可观察状态（如修改全局变量、参数对象、I/O等）。",
+      "partial_credit": "完整表达“除返回值外还改变外部可观察状态”得1分；仅提到改变外部状态但未体现“除返回值以外”或表述不完整得0分；答成仅返回计算结果、无副作用或无关内容得0分。",
+      "blank_id": "b1"
+    }
+  ]
+}

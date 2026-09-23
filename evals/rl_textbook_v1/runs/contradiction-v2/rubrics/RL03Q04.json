@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_a13e1d1f912df42e201c",
+        "name": "正确选项",
+        "definition": "选择 B：γ 接近 1 时压缩因子接近 1，误差衰减更慢，远期影响传播更久，因此价值迭代通常更慢。",
+        "source_mq_ids": [
+          "q_53505c57bbb03b37f522"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_53505c57bbb03b37f522",
+        "version": "939baf75c21d2abc4d37d512d12f569195e7dab8a13dfe7e624fa3bf36cfa892",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_53505c57bbb03b37f522",
+        "title": "RL03Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "γ 接近 1 时，价值迭代通常更慢的原因是什么？",
+        "reference_answer": "B",
+        "solution_markdown": "压缩因子接近 1 时，每次迭代削弱误差的幅度较小。",
+        "raw_markdown": "### RL03Q04\n#### 题型\nsingle_choice\n#### 题干\nγ 接近 1 时，价值迭代通常更慢的原因是什么？\n#### 选项\n##### A\n状态空间自动变成连续空间。\n##### B\n未来误差衰减更慢，远期影响传播更久。\n##### C\n奖励函数会消失。\n##### D\n所有动作都变成非法动作。\n#### 答案\nB\n#### 解答\n压缩因子接近 1 时，每次迭代削弱误差的幅度较小。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_a13e1d1f912df42e201c"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_a13e1d1f912df42e201c",
+            "max_score": 1.0,
+            "description": "选择 B：γ 接近 1 时压缩因子接近 1，误差衰减更慢，远期影响传播更久，因此价值迭代通常更慢。",
+            "partial_credit": "单选题，选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 B，或选择 A/C/D 等错误选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 552,
+          "end_line": 569
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 554,
+            "end_line": 554
+          },
+          "题干": {
+            "start_line": 556,
+            "end_line": 556
+          },
+          "选项": {
+            "start_line": 558,
+            "end_line": 565
+          },
+          "答案": {
+            "start_line": 567,
+            "end_line": 567
+          },
+          "解答": {
+            "start_line": 569,
+            "end_line": 569
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "状态空间自动变成连续空间。"
+          },
+          {
+            "id": "B",
+            "text": "未来误差衰减更慢，远期影响传播更久。"
+          },
+          {
+            "id": "C",
+            "text": "奖励函数会消失。"
+          },
+          {
+            "id": "D",
+            "text": "所有动作都变成非法动作。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "da6a00f8625c35cdbdadcb03682b03a65bd8ff5d0c058a39c7f3ce7e808ee18a"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 174,
+      "prompt_tokens": 19148,
+      "total_tokens": 19322,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 332
+    }
+  }
+}

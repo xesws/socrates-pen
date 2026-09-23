@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q5-image-wrong-r2",
+  "kind": "vision_grade",
+  "case_id": "U5Q5",
+  "split": "test",
+  "repeat": 2,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0.5,
+    "reason": "图中 A 对应数值为 7，B 对应数值为 2，学生读值错误（A=2，B=7），读值部分不得分；但 B−A 的计算结果 9 与正确读值下的 2−7=−5 不符，计算部分也不得分。综合得 0.5 分。",
+    "usage": {
+      "completion_tokens": 90,
+      "prompt_tokens": 375,
+      "total_tokens": 465,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 247
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0.5
+}

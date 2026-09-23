@@ -1,0 +1,112 @@
+{
+  "id": "RL08Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_51e0eef54f666c130119",
+        "name": "区间下界",
+        "definition": "计算 10-1.96×2 得到近似 95% 区间的下界 6.08",
+        "source_mq_ids": [
+          "q_af3c4a79aaa8ce73d6b6"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_af3c4a79aaa8ce73d6b6",
+        "version": "6c48d3fdb77626071ac407ca7fcb2bd651a597e3dbbd7d20b80ff3dacb0249c4",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_af3c4a79aaa8ce73d6b6",
+        "title": "RL08Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "均值 10、标准误 2 的近似 95% 区间下界为 10-1.96×2={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"6.08\"],\"numeric_value\":6.08,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "下界为 10-3.92=6.08，上界会是 13.92。",
+        "raw_markdown": "### RL08Q07\n#### 题型\nfill_blank\n#### 题干\n均值 10、标准误 2 的近似 95% 区间下界为 10-1.96×2={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"6.08\"],\"numeric_value\":6.08,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n下界为 10-3.92=6.08，上界会是 13.92。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_51e0eef54f666c130119"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_51e0eef54f666c130119",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入 10-1.96×2 的计算结果 6.08",
+            "partial_credit": "精确数值填空，按数值容差判定；等于 6.08 得满分，否则 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或与 6.08 不符"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 6.08（在给定数值容差内）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1671,
+          "end_line": 1681
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1673,
+            "end_line": 1673
+          },
+          "题干": {
+            "start_line": 1675,
+            "end_line": 1675
+          },
+          "答案": {
+            "start_line": 1677,
+            "end_line": 1679
+          },
+          "解答": {
+            "start_line": 1681,
+            "end_line": 1681
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "6.08"
+            ],
+            "numeric_value": 6.08,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "154ab9d718ae7e8f830766803bc83363b24abcf2a0d1dccca135ef2f603ce06e"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 171,
+      "prompt_tokens": 19192,
+      "total_tokens": 19363,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 376
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U6Q5-partial-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U6Q5",
+  "sample_id": "U6Q5-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c99cbc2a76b171cce90b",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生答案给出了平均数6，符合评分标准中“平均数正确为6得0.5分”的要求。",
+        "evidence_quote": "平均数为 6。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_e0fca6e4bf70f32c5b66",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生答案未指出A列高于平均数，缺少比较说明，根据评分标准“未指出、指出错误列或同时声称两列均高于平均数得0分”，得0分。",
+        "evidence_quote": "平均数为 6。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 120,
+      "prompt_tokens": 612,
+      "total_tokens": 732,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 612
+    }
+  },
+  "score": 0.5
+}

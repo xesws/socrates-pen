@@ -1,0 +1,348 @@
+{
+  "id": "RL04Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_d7ec98238a541eb3501c",
+        "name": "初始化",
+        "definition": "初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_537e270fef133a840d52",
+        "name": "采样",
+        "definition": "用当前 epsilon-greedy 策略生成完整 episode",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_af45f9ed7cc6f28258b1",
+        "name": "回报",
+        "definition": "从 episode 末尾向前计算每个时刻的折扣回报 G_t",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_97f4abc74c36f9d0c17d",
+        "name": "访问规则",
+        "definition": "选择 first-visit 或 every-visit，并在算法说明中保持一致",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_9af9557202fd4c911109",
+        "name": "更新",
+        "definition": "用样本均值或增量平均更新被访问状态动作对的 Q",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_494be1dfcd925c876b11",
+        "name": "探索",
+        "definition": "epsilon-greedy 确保非贪心动作仍有非零探索概率",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_4fd1ef89778b5ee72b56",
+        "name": "改进",
+        "definition": "根据更新后的 Q 把策略改进为新的 epsilon-greedy",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b38e9480ed09fa5ecccf",
+        "name": "停止",
+        "definition": "用 episode 数、性能稳定性或 epsilon 调度作为停止条件",
+        "source_mq_ids": [
+          "q_bab03f5a103c5c8b7f73"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_bab03f5a103c5c8b7f73",
+        "version": "5b799bda3e8f5d46abde77ff0e671a82d7fef25e9b55bbeccef1a5d7249a7942",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_bab03f5a103c5c8b7f73",
+        "title": "RL04Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "设计一个 on-policy MC 控制算法。请按8个方面回答：初始化、采样、回报、访问规则、更新、探索、改进、停止。",
+        "reference_answer": "1. 初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略。\n2. 用当前 epsilon-greedy 策略生成完整 episode。\n3. 从 episode 末尾向前计算每个时刻的折扣回报 G_t。\n4. 选择 first-visit 或 every-visit，并在算法说明中保持一致。\n5. 用样本均值或增量平均更新被访问状态动作对的 Q。\n6. epsilon-greedy 确保非贪心动作仍有非零探索概率。\n7. 根据更新后的 Q 把策略改进为新的 epsilon-greedy。\n8. 用 episode 数、性能稳定性或 epsilon 调度作为停止条件。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL04Q08\n#### 题型\nshort_answer\n#### 题干\n设计一个 on-policy MC 控制算法。请按8个方面回答：初始化、采样、回报、访问规则、更新、探索、改进、停止。\n#### 答案\n1. 初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略。\n2. 用当前 epsilon-greedy 策略生成完整 episode。\n3. 从 episode 末尾向前计算每个时刻的折扣回报 G_t。\n4. 选择 first-visit 或 every-visit，并在算法说明中保持一致。\n5. 用样本均值或增量平均更新被访问状态动作对的 Q。\n6. epsilon-greedy 确保非贪心动作仍有非零探索概率。\n7. 根据更新后的 Q 把策略改进为新的 epsilon-greedy。\n8. 用 episode 数、性能稳定性或 epsilon 调度作为停止条件。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_d7ec98238a541eb3501c",
+          "pt_537e270fef133a840d52",
+          "pt_af45f9ed7cc6f28258b1",
+          "pt_97f4abc74c36f9d0c17d",
+          "pt_9af9557202fd4c911109",
+          "pt_494be1dfcd925c876b11",
+          "pt_4fd1ef89778b5ee72b56",
+          "pt_b38e9480ed09fa5ecccf"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_d7ec98238a541eb3501c",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_537e270fef133a840d52",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "用当前 epsilon-greedy 策略生成完整 episode",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "用当前 epsilon-greedy 策略生成完整 episode"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_af45f9ed7cc6f28258b1",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "从 episode 末尾向前计算每个时刻的折扣回报 G_t",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "从 episode 末尾向前计算每个时刻的折扣回报 G_t"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_97f4abc74c36f9d0c17d",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "选择 first-visit 或 every-visit，并在算法说明中保持一致",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "选择 first-visit 或 every-visit，并在算法说明中保持一致"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_9af9557202fd4c911109",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "用样本均值或增量平均更新被访问状态动作对的 Q",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "用样本均值或增量平均更新被访问状态动作对的 Q"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_494be1dfcd925c876b11",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "epsilon-greedy 确保非贪心动作仍有非零探索概率",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "epsilon-greedy 确保非贪心动作仍有非零探索概率"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_4fd1ef89778b5ee72b56",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "根据更新后的 Q 把策略改进为新的 epsilon-greedy",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "根据更新后的 Q 把策略改进为新的 epsilon-greedy"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_b38e9480ed09fa5ecccf",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "用 episode 数、性能稳定性或 epsilon 调度作为停止条件",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "用 episode 数、性能稳定性或 epsilon 调度作为停止条件"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 819,
+          "end_line": 834
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 821,
+            "end_line": 821
+          },
+          "题干": {
+            "start_line": 823,
+            "end_line": 823
+          },
+          "答案": {
+            "start_line": 825,
+            "end_line": 832
+          },
+          "解答": {
+            "start_line": 834,
+            "end_line": 834
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "7375b201356e96e441ce0bae5366a7e5e5c01e81159aea11208789d738f542b8"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1260,
+      "prompt_tokens": 19279,
+      "total_tokens": 20539,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 463
+    }
+  }
+}

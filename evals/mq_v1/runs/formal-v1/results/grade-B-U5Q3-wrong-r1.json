@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U5Q3-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q3",
+  "sample_id": "U5Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_48d2f7e283ea1b5d703f",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者回答“不可达，因为所有边都从 C 指向 A”，与图中 A→B→C 的有向路径矛盾，且未给出正确依据，按评分标准得0分。",
+        "evidence_quote": "不可达，因为所有边都从 C 指向 A。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 82,
+      "prompt_tokens": 459,
+      "total_tokens": 541,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 203
+    }
+  },
+  "score": 0.0
+}

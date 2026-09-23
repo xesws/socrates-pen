@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q08-full",
+  "case_id": "RL08Q08",
+  "kind": "full",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f4a565ca5e0588f85b29",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求训练和评估环境、随机种子或关卡切分清楚隔离。",
+        "evidence_quote": "训练和评估环境、随机种子或关卡切分应清楚隔离。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_1ab1ad66fed7e3b9e6e0",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求评估时固定策略模式，并举例关闭探索或指定 epsilon。",
+        "evidence_quote": "评估时固定策略模式，例如关闭探索或指定 epsilon。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_a72f596c7a6e531f5183",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求使用多个随机种子报告均值和波动，而非单次最好结果。",
+        "evidence_quote": "使用多个随机种子报告均值和波动，而非单次最好结果。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8606db132e04757aa193",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指标包含回报、成功率、长度、约束违反和资源消耗。",
+        "evidence_quote": "指标应包含回报、成功率、长度、约束违反和资源消耗。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_11e030085f54f0aeaea0",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "给出标准误、置信区间或 bootstrap 区间。",
+        "evidence_quote": "给出标准误、置信区间或 bootstrap 区间。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1e1f4f646b8af74afd7c",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "要求与合理基线比较，并列举随机、启发式、已有算法或无学习版本。",
+        "evidence_quote": "与合理基线比较，如随机、启发式、已有算法或无学习版本。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a27a38711f1657393148",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求做关键组件消融，确认改进来自声称机制。",
+        "evidence_quote": "做关键组件消融，确认改进来自声称的机制。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b382d6b4f31c32f63db9",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求记录失败案例、异常轨迹和分布外场景表现。",
+        "evidence_quote": "记录失败案例、异常轨迹和分布外场景表现。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 599,
+      "prompt_tokens": 2438,
+      "total_tokens": 3037,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2054
+    }
+  },
+  "score": 1.0
+}

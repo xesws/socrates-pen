@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U1Q5-full-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U1Q5",
+  "sample_id": "U1Q5-full",
+  "sample_kind": "full",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U1Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案明确说明“and 左侧为假时短路”，准确表达了 and 左边为假时不再计算右边的要点，符合满分标准。",
+        "evidence_quote": "and 左侧为假时短路"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U1Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案明确说明“or 左侧为真时短路”，准确表达了 or 左边为真时不再计算右边的要点，符合满分标准。",
+        "evidence_quote": "or 左侧为真时短路"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 124,
+      "prompt_tokens": 391,
+      "total_tokens": 515,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 391
+    }
+  },
+  "score": 1.0
+}

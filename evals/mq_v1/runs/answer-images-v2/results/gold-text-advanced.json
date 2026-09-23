@@ -1,0 +1,112 @@
+{
+  "id": "gold-text-advanced",
+  "kind": "grade",
+  "arm": "gold",
+  "mode": "text",
+  "expected": 0.5,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明每次变更分配唯一版本ID。",
+        "evidence_quote": "Each change gets a unique version ID.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "p2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明每个版本配置不可变并持久保存。",
+        "evidence_quote": "The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "p3",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "发布前验证schema和业务约束，拒绝非法配置。",
+        "evidence_quote": "Validate the schema and business constraints before publishing; reject invalid configurations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "p4",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "先小范围canary再逐步扩大。",
+        "evidence_quote": "Start with a small canary group, then expand gradually.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "p5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及监控错误率/延迟或阈值停止扩大。",
+        "evidence_quote": "Start with a small canary group, then expand gradually.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "p6",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及回滚到已知良好版本。",
+        "evidence_quote": "The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "p7",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及记录实例实际确认的配置版本。",
+        "evidence_quote": "Each change gets a unique version ID.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "p8",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及操作者、时间、版本和结果的审计记录。",
+        "evidence_quote": "Each change gets a unique version ID.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "advanced",
+      "label": "进阶"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 388,
+      "prompt_tokens": 1940,
+      "total_tokens": 2328,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 1684
+    }
+  },
+  "score": 0.5
+}

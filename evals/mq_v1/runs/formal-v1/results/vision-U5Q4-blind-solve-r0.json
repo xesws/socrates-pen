@@ -1,0 +1,27 @@
+{
+  "id": "vision-U5Q4-blind-solve-r0",
+  "kind": "vision_solve",
+  "case_id": "U5Q4",
+  "split": "test",
+  "repeat": 0,
+  "with_image": false,
+  "answer_kind": null,
+  "ok": true,
+  "response": {
+    "status": "insufficient_evidence",
+    "usage": {
+      "completion_tokens": 8,
+      "prompt_tokens": 105,
+      "total_tokens": 113,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 105
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": true,
+  "correct": false
+}

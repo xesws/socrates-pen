@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_9e1dcb337ea8e202bc75",
+        "name": "正确选项",
+        "definition": "策略评价不应做的事：对动作取 max 来寻找最优动作（选项 A）",
+        "source_mq_ids": [
+          "q_100a45d8150149ec693e"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_100a45d8150149ec693e",
+        "version": "d695968d6e75f71780b4441d62964805ccd90922c9b5e98f9338bf5dbc9c100d",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_100a45d8150149ec693e",
+        "title": "RL03Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "策略评价步骤不应该做什么？",
+        "reference_answer": "A",
+        "solution_markdown": "对动作取 max 是控制或最优备份的成分，不是固定策略评价。",
+        "raw_markdown": "### RL03Q02\n#### 题型\nsingle_choice\n#### 题干\n策略评价步骤不应该做什么？\n#### 选项\n##### A\n对动作取 max 来寻找最优动作。\n##### B\n按固定策略概率加权动作。\n##### C\n使用 Bellman 期望备份。\n##### D\n迭代更新状态价值。\n#### 答案\nA\n#### 解答\n对动作取 max 是控制或最优备份的成分，不是固定策略评价。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_9e1dcb337ea8e202bc75"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_9e1dcb337ea8e202bc75",
+            "max_score": 1.0,
+            "description": "选择 A：对动作取 max 是控制/最优备份的成分，不属于固定策略评价",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 A 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 516,
+          "end_line": 533
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 518,
+            "end_line": 518
+          },
+          "题干": {
+            "start_line": 520,
+            "end_line": 520
+          },
+          "选项": {
+            "start_line": 522,
+            "end_line": 529
+          },
+          "答案": {
+            "start_line": 531,
+            "end_line": 531
+          },
+          "解答": {
+            "start_line": 533,
+            "end_line": 533
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "对动作取 max 来寻找最优动作。"
+          },
+          {
+            "id": "B",
+            "text": "按固定策略概率加权动作。"
+          },
+          {
+            "id": "C",
+            "text": "使用 Bellman 期望备份。"
+          },
+          {
+            "id": "D",
+            "text": "迭代更新状态价值。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "9dca657713c704c1109bbfb66497d995203ee46916679aaa87840e904ef62f2b"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 133,
+      "prompt_tokens": 19137,
+      "total_tokens": 19270,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 321
+    }
+  }
+}

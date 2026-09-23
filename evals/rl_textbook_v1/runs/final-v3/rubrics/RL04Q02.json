@@ -1,0 +1,123 @@
+{
+  "id": "RL04Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_e97e0deee382e973d681",
+        "name": "正确选项",
+        "definition": "Monte Carlo 预测需要从访问时刻到终局的实际完整回报，因此要等 episode 结束",
+        "source_mq_ids": [
+          "q_f389b5fa2e1089dc8aa5"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_f389b5fa2e1089dc8aa5",
+        "version": "46e9ef42da7836bb13413a2ea63b201ea90218891585fb505c625204be65c24f",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_f389b5fa2e1089dc8aa5",
+        "title": "RL04Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Monte Carlo 预测通常要等到 episode 结束，是因为它需要什么？",
+        "reference_answer": "C",
+        "solution_markdown": "MC 目标是实际 G_t，只有观察后续奖励直到终局后才能完整计算。",
+        "raw_markdown": "### RL04Q02\n#### 题型\nsingle_choice\n#### 题干\nMonte Carlo 预测通常要等到 episode 结束，是因为它需要什么？\n#### 选项\n##### A\nBellman 最优方程的精确转移矩阵。\n##### B\n目标网络的参数副本。\n##### C\n从访问时刻到终局的实际完整回报。\n##### D\n每个状态的解析梯度。\n#### 答案\nC\n#### 解答\nMC 目标是实际 G_t，只有观察后续奖励直到终局后才能完整计算。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_e97e0deee382e973d681"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_e97e0deee382e973d681",
+            "max_score": 1.0,
+            "description": "选择 C：从访问时刻到终局的实际完整回报",
+            "partial_credit": "单选：选 C 得满分，其他选项为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B 或 D，或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C：从访问时刻到终局的实际完整回报"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 729,
+          "end_line": 746
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 731,
+            "end_line": 731
+          },
+          "题干": {
+            "start_line": 733,
+            "end_line": 733
+          },
+          "选项": {
+            "start_line": 735,
+            "end_line": 742
+          },
+          "答案": {
+            "start_line": 744,
+            "end_line": 744
+          },
+          "解答": {
+            "start_line": 746,
+            "end_line": 746
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "Bellman 最优方程的精确转移矩阵。"
+          },
+          {
+            "id": "B",
+            "text": "目标网络的参数副本。"
+          },
+          {
+            "id": "C",
+            "text": "从访问时刻到终局的实际完整回报。"
+          },
+          {
+            "id": "D",
+            "text": "每个状态的解析梯度。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "6d0de1cd13512e07bc1192d1a626c5dd274f8c4e2b09e4850a3f7387385329c6"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 19149,
+      "total_tokens": 19295,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 333
+    }
+  }
+}

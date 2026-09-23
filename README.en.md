@@ -840,7 +840,7 @@ write your book in this format and the deep-dive has somewhere to drop anchors, 
 | Part | Size |
 | --- | --- |
 | Python (sidecar, excluding tests) | 32 modules, 9,719 lines |
-| Python tests | **1138 passed** |
+| Python tests | **1224 passed** |
 | TypeScript (plugin) | 18 files, 6,137 lines |
 | HTTP routes | 23 |
 | Config knobs | 18 |
@@ -883,7 +883,7 @@ and it isn't worth pulling one in for this:
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`. All three must pass before `main.js` exists.
 
-Backend: `python -m pytest pen/tests -q` → **1138 passed**, on any clean checkout
+Backend: `python -m pytest pen/tests -q` → **1224 passed**, on any clean checkout
 (which was not true before v0.15.1 — see
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)).
 
@@ -1041,7 +1041,7 @@ into a vault by accident.
 Backend:
 
 ```bash
-python -m pytest pen/tests -q       # 1138 passed
+python -m pytest pen/tests -q       # 1224 passed
 python -m pen.index --check your-note.md
 ```
 
@@ -1076,6 +1076,10 @@ not been tried one by one.
 ---
 
 ## 8 · Recent releases
+
+In development: [fixed MQ schema](docs/mq-schema-v1.md), [uploaded-answer image evaluation](evals/answer_images_v2/REPORT.md), and an [80-question RL textbook evaluation](evals/rl_textbook_v1/REPORT.md). All source questions imported intact; all rubrics passed review after one retry; one of 96 grades awarded 10 extra points.
+
+**In development, unreleased · Practice system (experimental, off by default).** Import existing multiple-choice, fill-in and short-answer Meta Questions, then derive knowledge points and scoring rubrics. Preserve attempts and score answers against rubrics. Separate local Analysis and Scheduling processes provide graded-attempt reports, trainable personalized models and recommendations requested by the learner. Enable experimental practice in settings, then open the practice command. [Usage and verification](docs/v0.29.0-练习系统.md)
 
 Every minor version has a design note in [`docs/`](docs/) (Chinese): what the reader saw, the root
 cause, what changed, which gate guards it. Only the minors since 0.19 are listed here, with patch

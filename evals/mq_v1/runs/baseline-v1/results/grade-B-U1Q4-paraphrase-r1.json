@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U1Q4-paraphrase-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U1Q4",
+  "sample_id": "U1Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_134e0776382462078574",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者指出“前者判断数值或内容的相等性”，正确说明 == 比较值/内容相等，符合满分标准。",
+        "evidence_quote": "前者判断数值或内容的相等性"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_219b30b01f262f8fa71c",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者指出“后者判断两个引用是否指向同一个对象”，正确说明 is 比较对象身份/同一对象，符合满分标准。",
+        "evidence_quote": "后者判断两个引用是否指向同一个对象"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 117,
+      "prompt_tokens": 430,
+      "total_tokens": 547,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 430
+    }
+  },
+  "score": 1.0
+}

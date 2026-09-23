@@ -1,0 +1,123 @@
+{
+  "id": "RL01Q02",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "call_run": "baseline-v1",
+  "part": {
+    "points": [
+      {
+        "id": "pt_0fdf6fcd1b7c3f65e519",
+        "name": "折扣回报作用",
+        "definition": "折扣回报 G_t 汇总未来奖励，γ 控制远期奖励的权重，形成当前决策的长期目标",
+        "source_mq_ids": [
+          "q_7889f5f24c0e0ba8b291"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_7889f5f24c0e0ba8b291",
+        "version": "16cfa49c6d4ad65c593d014c3d5bdf2eb0932591f75bd981846d03913760d3c6",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_7889f5f24c0e0ba8b291",
+        "title": "RL01Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "折扣回报 G_t 的主要作用是什么？",
+        "reference_answer": "B",
+        "solution_markdown": "G_t 汇总未来奖励，γ 控制远期奖励的权重。",
+        "raw_markdown": "### RL01Q02\n#### 题型\nsingle_choice\n#### 题干\n折扣回报 G_t 的主要作用是什么？\n#### 选项\n##### A\n保证每一步奖励都非负。\n##### B\n把未来奖励按时间距离加权，形成当前决策的长期目标。\n##### C\n删除所有随机性，使轨迹确定。\n##### D\n把策略变成环境转移概率。\n#### 答案\nB\n#### 解答\nG_t 汇总未来奖励，γ 控制远期奖励的权重。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_0fdf6fcd1b7c3f65e519"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_0fdf6fcd1b7c3f65e519",
+            "max_score": 1.0,
+            "description": "选择 B：把未来奖励按时间距离加权，形成当前决策的长期目标",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 B 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 79,
+          "end_line": 96
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 81,
+            "end_line": 81
+          },
+          "题干": {
+            "start_line": 83,
+            "end_line": 83
+          },
+          "选项": {
+            "start_line": 85,
+            "end_line": 92
+          },
+          "答案": {
+            "start_line": 94,
+            "end_line": 94
+          },
+          "解答": {
+            "start_line": 96,
+            "end_line": 96
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "保证每一步奖励都非负。"
+          },
+          {
+            "id": "B",
+            "text": "把未来奖励按时间距离加权，形成当前决策的长期目标。"
+          },
+          {
+            "id": "C",
+            "text": "删除所有随机性，使轨迹确定。"
+          },
+          {
+            "id": "D",
+            "text": "把策略变成环境转移概率。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "931af563a3f90800c5a9e3a3b6fcf4e37fe1816b08e067ac41210c85c1e62f18"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 137,
+      "prompt_tokens": 19147,
+      "total_tokens": 19284,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 331
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q3-paraphrase-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f51aab96eb42d8a849cd",
+        "score": 1.0,
+        "max_score": 1.0,
+        "reason": "答案完整表达了“除返回值外还改变外部可观察状态”的含义：用“不只产生结果”对应“除返回值以外”，用“修改外界能够观察到的状态”对应“改变外部可观察状态”，符合满分标准。",
+        "evidence_quote": "它不只产生结果，还修改外界能够观察到的状态。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 89,
+      "prompt_tokens": 405,
+      "total_tokens": 494,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 405
+    }
+  },
+  "score": 1.0
+}

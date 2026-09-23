@@ -1,0 +1,61 @@
+{
+  "id": "grade-B-U5Q4-partial-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q4",
+  "sample_id": "U5Q4-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b429d3e3f43effcc5488",
+        "score": 0.25,
+        "max_score": 0.25,
+        "reason": "学习者答案中明确写出“A=2”，正确识别了A柱上方标注的数值。",
+        "evidence_quote": "A=2"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_26195fbd1fc3ba7632d6",
+        "score": 0.25,
+        "max_score": 0.25,
+        "reason": "学习者答案中明确写出“B=7”，正确识别了B柱上方标注的数值。",
+        "evidence_quote": "B=7"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_5c027cea27943cce0d7b",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者未计算或给出B−A的结果，仅列出A和B的值，不符合得分要求。",
+        "evidence_quote": "A=2，B=7。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 144,
+      "prompt_tokens": 654,
+      "total_tokens": 798,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 654
+    }
+  },
+  "score": 0.5
+}

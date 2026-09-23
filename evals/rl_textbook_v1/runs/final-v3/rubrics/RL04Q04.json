@@ -1,0 +1,123 @@
+{
+  "id": "RL04Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_c676dc2813a77367c19b",
+        "name": "正确选项",
+        "definition": "普通重要性采样在长轨迹上的常见问题：比率乘积可能导致很高方差。",
+        "source_mq_ids": [
+          "q_31fc76c50bb2d5ee13b0"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_31fc76c50bb2d5ee13b0",
+        "version": "f8e60c1bfc1ddaa2282c4942f4eae51e5e4f05480172a8764a83f65b07e36843",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_31fc76c50bb2d5ee13b0",
+        "title": "RL04Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "普通重要性采样在长轨迹上常见的问题是什么？",
+        "reference_answer": "A",
+        "solution_markdown": "逐步概率比率相乘会放大随机波动，特别是长轨迹。",
+        "raw_markdown": "### RL04Q04\n#### 题型\nsingle_choice\n#### 题干\n普通重要性采样在长轨迹上常见的问题是什么？\n#### 选项\n##### A\n比率乘积可能导致很高方差。\n##### B\n它要求目标策略等于行为策略。\n##### C\n它不能用于任何随机策略。\n##### D\n它总是低估价值且无例外。\n#### 答案\nA\n#### 解答\n逐步概率比率相乘会放大随机波动，特别是长轨迹。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_c676dc2813a77367c19b"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_c676dc2813a77367c19b",
+            "max_score": 1.0,
+            "description": "选择 A：比率乘积可能导致很高方差。",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 A 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 765,
+          "end_line": 782
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 767,
+            "end_line": 767
+          },
+          "题干": {
+            "start_line": 769,
+            "end_line": 769
+          },
+          "选项": {
+            "start_line": 771,
+            "end_line": 778
+          },
+          "答案": {
+            "start_line": 780,
+            "end_line": 780
+          },
+          "解答": {
+            "start_line": 782,
+            "end_line": 782
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "比率乘积可能导致很高方差。"
+          },
+          {
+            "id": "B",
+            "text": "它要求目标策略等于行为策略。"
+          },
+          {
+            "id": "C",
+            "text": "它不能用于任何随机策略。"
+          },
+          {
+            "id": "D",
+            "text": "它总是低估价值且无例外。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "6ef4755702870cce4b6eed974d2b7d32e7fd6c279efd28e2a20413c640b9f1ab"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 121,
+      "prompt_tokens": 19138,
+      "total_tokens": 19259,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 322
+    }
+  }
+}

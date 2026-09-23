@@ -1,0 +1,27 @@
+{
+  "id": "vision-U6Q2-blind-solve-r0",
+  "kind": "vision_solve",
+  "case_id": "U6Q2",
+  "split": "test",
+  "repeat": 0,
+  "with_image": false,
+  "answer_kind": null,
+  "ok": true,
+  "response": {
+    "answer": "A",
+    "usage": {
+      "completion_tokens": 5,
+      "prompt_tokens": 122,
+      "total_tokens": 127,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 122
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "correct": false
+}

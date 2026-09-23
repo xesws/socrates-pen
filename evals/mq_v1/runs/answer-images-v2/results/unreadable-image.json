@@ -1,0 +1,10 @@
+{
+  "id": "unreadable-image",
+  "kind": "grade",
+  "arm": "gold",
+  "mode": "unreadable",
+  "expected": null,
+  "ok": false,
+  "error": "Answer needs review: 上传的作答图片为无意义的噪点图，无法辨认任何文字或图示，无法据此评分。",
+  "error_code": "insufficient_evidence"
+}

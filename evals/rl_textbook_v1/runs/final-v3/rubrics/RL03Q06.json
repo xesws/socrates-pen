@@ -1,0 +1,113 @@
+{
+  "id": "RL03Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_37038457627ee77bf3f2",
+        "name": "策略改进定理",
+        "definition": "该结论由策略改进定理（policy improvement theorem）保证",
+        "source_mq_ids": [
+          "q_c95e28ffbd4cc49464f1"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_c95e28ffbd4cc49464f1",
+        "version": "3d3d00acea7445a16b2de1043f245f1ccf9fbbe903f37e027b0b82afd65c51e2",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_c95e28ffbd4cc49464f1",
+        "title": "RL03Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "若对所有状态都有 Q_pi(s,π'(s)) ≥ V_pi(s)，则 π' 相对 π 由策略{{b1}}定理保证不更差。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"改进\",\"improvement\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "策略改进定理说明逐状态选择不低于旧策略价值的动作会得到不更差策略。",
+        "raw_markdown": "### RL03Q06\n#### 题型\nfill_blank\n#### 题干\n若对所有状态都有 Q_pi(s,π'(s)) ≥ V_pi(s)，则 π' 相对 π 由策略{{b1}}定理保证不更差。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"改进\",\"improvement\"],\"case_sensitive\":false}}\n```\n#### 解答\n策略改进定理说明逐状态选择不低于旧策略价值的动作会得到不更差策略。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_37038457627ee77bf3f2"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_37038457627ee77bf3f2",
+            "max_score": 1.0,
+            "description": "填入“改进”或等价的 improvement，指策略改进定理",
+            "blank_id": "b1",
+            "partial_credit": "本空独立给分；语义等价即可；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与策略改进定理无关的内容"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入“改进”或“improvement”（大小写不敏感），即策略改进定理"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 581,
+          "end_line": 591
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 583,
+            "end_line": 583
+          },
+          "题干": {
+            "start_line": 585,
+            "end_line": 585
+          },
+          "答案": {
+            "start_line": 587,
+            "end_line": 589
+          },
+          "解答": {
+            "start_line": 591,
+            "end_line": 591
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "改进",
+              "improvement"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "09f7a7a4c2f4f35aac076a7c9942ae3aa0fb5e4529b3a9f02c402eb66e1efd5a"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 158,
+      "prompt_tokens": 19175,
+      "total_tokens": 19333,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 359
+    }
+  }
+}

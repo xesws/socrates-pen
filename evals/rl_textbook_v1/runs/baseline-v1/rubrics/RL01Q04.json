@@ -1,0 +1,122 @@
+{
+  "id": "RL01Q04",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_17da540e704d37b67941",
+        "name": "正确选项",
+        "definition": "选择 episodic 任务（D）",
+        "source_mq_ids": [
+          "q_b24524c86c98b16f8a01"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_b24524c86c98b16f8a01",
+        "version": "6558e9e4ff260d9e5b6d13c0622861a238c5dd5e929910b96bfc334a10544684",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_b24524c86c98b16f8a01",
+        "title": "RL01Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "一个棋局自然结束并给出胜负奖励，这类任务通常先建模为哪一类？",
+        "reference_answer": "D",
+        "solution_markdown": "有自然终局和一条条完整对局时，episodic 建模最直接。",
+        "raw_markdown": "### RL01Q04\n#### 题型\nsingle_choice\n#### 题干\n一个棋局自然结束并给出胜负奖励，这类任务通常先建模为哪一类？\n#### 选项\n##### A\n无状态 bandit 任务。\n##### B\ncontinuing 平均奖励任务。\n##### C\n纯监督分类任务。\n##### D\nepisodic 任务。\n#### 答案\nD\n#### 解答\n有自然终局和一条条完整对局时，episodic 建模最直接。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_17da540e704d37b67941"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_17da540e704d37b67941",
+            "max_score": 1.0,
+            "description": "选择 D：episodic 任务",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 D 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D（episodic 任务）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 115,
+          "end_line": 132
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 117,
+            "end_line": 117
+          },
+          "题干": {
+            "start_line": 119,
+            "end_line": 119
+          },
+          "选项": {
+            "start_line": 121,
+            "end_line": 128
+          },
+          "答案": {
+            "start_line": 130,
+            "end_line": 130
+          },
+          "解答": {
+            "start_line": 132,
+            "end_line": 132
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "无状态 bandit 任务。"
+          },
+          {
+            "id": "B",
+            "text": "continuing 平均奖励任务。"
+          },
+          {
+            "id": "C",
+            "text": "纯监督分类任务。"
+          },
+          {
+            "id": "D",
+            "text": "episodic 任务。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "7c3d1d81a5aaf9c4bc77c8ef5b4625372ac7c3af10b66f1b54e997f992590168"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 118,
+      "prompt_tokens": 19149,
+      "total_tokens": 19267,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 333
+    }
+  }
+}

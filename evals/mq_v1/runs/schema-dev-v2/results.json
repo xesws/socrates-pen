@@ -1,0 +1,107 @@
+[
+  {
+    "case": "U1Q1",
+    "repeat": 0,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_15af870424891d1532cc",
+        "max_score": 1.0,
+        "description": "选择题干的正确选项：表达式3*2+1按先乘后加计算得7，对应选项A",
+        "partial_credit": "选择A得1分；选择B、C或其他错误选项得0分"
+      }
+    ]
+  },
+  {
+    "case": "U1Q1",
+    "repeat": 1,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_15af870424891d1532cc",
+        "max_score": 1.0,
+        "description": "选择题干的正确选项：表达式3*2+1按先乘后加计算得7，对应选项A",
+        "partial_credit": "选择A得1分；选择B、C或其他错误选项得0分"
+      }
+    ]
+  },
+  {
+    "case": "U1Q1",
+    "repeat": 2,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_2403fa440d0127f4a757",
+        "max_score": 1.0,
+        "description": "选择正确选项A（值为7）",
+        "partial_credit": "选择A得1分；选择B、C或未选择得0分"
+      }
+    ]
+  },
+  {
+    "case": "U1Q5",
+    "repeat": 0,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_5712993ff20c7ce880c8",
+        "max_score": 0.5,
+        "description": "说明and在左侧为假（False）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明and左侧为假时短路得0.5分；仅说and会短路但未说明条件、或条件错误（如说左侧为真时短路）得0分"
+      },
+      {
+        "id": "c2",
+        "point_id": "pt_fae24cffc96cb27f3235",
+        "max_score": 0.5,
+        "description": "说明or在左侧为真（True）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明or左侧为真时短路得0.5分；仅说or会短路但未说明条件、或条件错误（如说左侧为假时短路）得0分"
+      }
+    ]
+  },
+  {
+    "case": "U1Q5",
+    "repeat": 1,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_5712993ff20c7ce880c8",
+        "max_score": 0.5,
+        "description": "说明and在左侧为假（False）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明and左侧为假时短路得0.5分；仅说and会短路但未说明条件、或条件错误（如说左侧为真时短路）得0分"
+      },
+      {
+        "id": "c2",
+        "point_id": "pt_fae24cffc96cb27f3235",
+        "max_score": 0.5,
+        "description": "说明or在左侧为真（True）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明or左侧为真时短路得0.5分；仅说or会短路但未说明条件、或条件错误（如说左侧为假时短路）得0分"
+      }
+    ]
+  },
+  {
+    "case": "U1Q5",
+    "repeat": 2,
+    "ok": true,
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_5712993ff20c7ce880c8",
+        "max_score": 0.5,
+        "description": "说明and在左侧为假（False）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明and左侧为假时短路得0.5分；仅说and会短路但未说明条件、或条件错误（如说左侧为真时短路）得0分"
+      },
+      {
+        "id": "c2",
+        "point_id": "pt_fae24cffc96cb27f3235",
+        "max_score": 0.5,
+        "description": "说明or在左侧为真（True）时短路，即不再计算右侧表达式",
+        "partial_credit": "正确说明or左侧为真时短路得0.5分；仅说or会短路但未说明条件、或条件错误（如说左侧为假时短路）得0分"
+      }
+    ]
+  }
+]

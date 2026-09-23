@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U1Q5-paraphrase-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U1Q5",
+  "sample_id": "U1Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U1Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中“合取遇到假值停止”准确表达了 and 左边为假时不再计算右边这一要点，符合满分标准。",
+        "evidence_quote": "合取遇到假值停止"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U1Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中“析取遇到真值停止”准确表达了 or 左边为真时不再计算右边这一要点，符合满分标准。",
+        "evidence_quote": "析取遇到真值停止"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 120,
+      "prompt_tokens": 399,
+      "total_tokens": 519,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 143
+    }
+  },
+  "score": 1.0
+}

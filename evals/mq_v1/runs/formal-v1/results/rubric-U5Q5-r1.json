@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U5Q5-r1",
+  "kind": "rubric",
+  "case_id": "U5Q5",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_1e89828c7bb83244f9be",
+      "name": "读取柱状图数值",
+      "definition": "根据图中柱子上方标注的数字，确定 A 和 B 分别对应的数值",
+      "source_mq_ids": [
+        "q_44b60cee631eb3bfb029"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_f84ab61235c00f1a38fc",
+      "name": "计算差值",
+      "definition": "用 B 的数值减去 A 的数值，得到 B−A 的结果",
+      "source_mq_ids": [
+        "q_44b60cee631eb3bfb029"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_1e89828c7bb83244f9be",
+      "max_score": 0.5,
+      "description": "正确读出 A=7 且 B=2（或等价表述，如 A 为 7、B 为 2）",
+      "partial_credit": "A 和 B 均正确得 0.5 分；仅一个正确得 0.25 分；均错误或未作答得 0 分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_f84ab61235c00f1a38fc",
+      "max_score": 0.5,
+      "description": "正确计算 B−A=-5（或等价表述，如 2−7=-5）",
+      "partial_credit": "结果正确得 0.5 分；结果错误或未作答得 0 分"
+    }
+  ]
+}

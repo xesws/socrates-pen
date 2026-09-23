@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q5-zero-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q5",
+  "sample_id": "U4Q5-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b7d0cd841ba8a4fb7466",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答仅罗列题干关键词，未指出测试只能覆盖有限或选定样例，也未说明不能穷尽所有输入。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_adc81d9e1fc89121c932",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及未测试输入仍可能触发错误，也未说明不能证明程序对所有输入都正确。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 120,
+      "prompt_tokens": 449,
+      "total_tokens": 569,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 449
+    }
+  },
+  "score": 0.0
+}

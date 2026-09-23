@@ -1,0 +1,349 @@
+{
+  "id": "RL06Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_c0e15b27e2a19e1c44c3",
+        "name": "输入缩放",
+        "definition": "对输入做合理缩放或归一化，避免优化尺度失衡",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a71e954c2da7e197ab3e",
+        "name": "经验回放",
+        "definition": "使用经验回放并随机抽取小批量，降低样本相关性",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8a9d708cd4641f99f190",
+        "name": "目标网络",
+        "definition": "使用目标网络，并按固定步数或软更新同步",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ed0e935353f06e4cea6b",
+        "name": "损失函数",
+        "definition": "采用 Huber 或裁剪后的 TD 误差以减小异常样本影响",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_9d145b0a7b1356bb73d2",
+        "name": "探索策略",
+        "definition": "用 epsilon-greedy 并设定清晰的探索退火计划",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1a5b857a09879e7d99fc",
+        "name": "终止与截断",
+        "definition": "对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_10fc2eba81e41702cb2d",
+        "name": "监控指标",
+        "definition": "监控回报、损失、TD 误差、Q 值范围和动作分布",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_29fc89c2d8347fb05ea3",
+        "name": "可复现性",
+        "definition": "用多个随机种子、固定评估协议和保存配置保证可复现",
+        "source_mq_ids": [
+          "q_3b85acd555986e654bfd"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_3b85acd555986e654bfd",
+        "version": "d4fabc2ca207ab21d281a6aa05bacc271d3a55e49e4a547c3176fe8c16a1dd8b",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_3b85acd555986e654bfd",
+        "title": "RL06Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "提出稳定训练 DQN 的方案。请按8个方面回答：输入、回放、目标网络、损失、探索、终止/截断、监控、复现。",
+        "reference_answer": "1. 对输入做合理缩放或归一化，避免优化尺度失衡。\n2. 使用经验回放并随机抽取小批量，降低样本相关性。\n3. 使用目标网络，并按固定步数或软更新同步。\n4. 采用 Huber 或裁剪后的 TD 误差以减小异常样本影响。\n5. 用 epsilon-greedy 并设定清晰的探索退火计划。\n6. 对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止。\n7. 监控回报、损失、TD 误差、Q 值范围和动作分布。\n8. 用多个随机种子、固定评估协议和保存配置保证可复现。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。 终止与时间限制截断的区分应给明确信用。",
+        "raw_markdown": "### RL06Q08\n#### 题型\nshort_answer\n#### 题干\n提出稳定训练 DQN 的方案。请按8个方面回答：输入、回放、目标网络、损失、探索、终止/截断、监控、复现。\n#### 答案\n1. 对输入做合理缩放或归一化，避免优化尺度失衡。\n2. 使用经验回放并随机抽取小批量，降低样本相关性。\n3. 使用目标网络，并按固定步数或软更新同步。\n4. 采用 Huber 或裁剪后的 TD 误差以减小异常样本影响。\n5. 用 epsilon-greedy 并设定清晰的探索退火计划。\n6. 对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止。\n7. 监控回报、损失、TD 误差、Q 值范围和动作分布。\n8. 用多个随机种子、固定评估协议和保存配置保证可复现。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。 终止与时间限制截断的区分应给明确信用。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_c0e15b27e2a19e1c44c3",
+          "pt_a71e954c2da7e197ab3e",
+          "pt_8a9d708cd4641f99f190",
+          "pt_ed0e935353f06e4cea6b",
+          "pt_9d145b0a7b1356bb73d2",
+          "pt_1a5b857a09879e7d99fc",
+          "pt_10fc2eba81e41702cb2d",
+          "pt_29fc89c2d8347fb05ea3"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_c0e15b27e2a19e1c44c3",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "对输入做合理缩放或归一化，避免优化尺度失衡",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "对输入做合理缩放或归一化，避免优化尺度失衡"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_a71e954c2da7e197ab3e",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "使用经验回放并随机抽取小批量，降低样本相关性",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "使用经验回放并随机抽取小批量，降低样本相关性"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_8a9d708cd4641f99f190",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "使用目标网络，并按固定步数或软更新同步",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "使用目标网络，并按固定步数或软更新同步"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_ed0e935353f06e4cea6b",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "采用 Huber 或裁剪后的 TD 误差以减小异常样本影响",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "采用 Huber 或裁剪后的 TD 误差以减小异常样本影响"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_9d145b0a7b1356bb73d2",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "用 epsilon-greedy 并设定清晰的探索退火计划",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "用 epsilon-greedy 并设定清晰的探索退火计划"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_1a5b857a09879e7d99fc",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_10fc2eba81e41702cb2d",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "监控回报、损失、TD 误差、Q 值范围和动作分布",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "监控回报、损失、TD 误差、Q 值范围和动作分布"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_29fc89c2d8347fb05ea3",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "用多个随机种子、固定评估协议和保存配置保证可复现",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "用多个随机种子、固定评估协议和保存配置保证可复现"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1251,
+          "end_line": 1266
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1253,
+            "end_line": 1253
+          },
+          "题干": {
+            "start_line": 1255,
+            "end_line": 1255
+          },
+          "答案": {
+            "start_line": 1257,
+            "end_line": 1264
+          },
+          "解答": {
+            "start_line": 1266,
+            "end_line": 1266
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "75388045292a35fe4aff88832018b1ac9d1891518bf3e3eb084d5ee239ae1577"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1863,
+      "prompt_tokens": 19310,
+      "total_tokens": 21173,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 494
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "id": "RL07Q08-wrong",
+  "case_id": "RL07Q08",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_bf66ece6b5a437e2e1da",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确说REINFORCE不需要随机参数策略，与初始化随机策略矛盾。",
+        "evidence_quote": "REINFORCE 不需要随机参数策略",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8953218b37dfe272f081",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确说无需采样轨迹，与用当前策略采样完整episode矛盾。",
+        "evidence_quote": "也无需采样轨迹和回报",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_aacab06f60dd6cdd64b8",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案否认需要回报，未计算未折扣回报G_t。",
+        "evidence_quote": "也无需采样轨迹和回报",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_dbe8536260e0d162ab96",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案未给出G_t∇θlogπ_θ(A_t|S_t)形式的策略梯度估计，且否认回报。",
+        "evidence_quote": "直接对不可导环境动作求导",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c89f1232684f4d53dffe",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称baseline任意依赖当前动作仍无偏，与baseline不依赖动作矛盾。",
+        "evidence_quote": "baseline 任意依赖当前动作仍永远无偏",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_91aae9b670a0b3dd30d9",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案说按梯度下降减小目标回报，与梯度上升提高高优势动作概率矛盾。",
+        "evidence_quote": "按梯度下降减小目标回报",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_32576a03a4965dc43c29",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案未提及回报样本噪声大或轨迹长时方差高。",
+        "evidence_quote": "只看一次训练loss就能评价",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_4c209d1dc3b1ec9f4460",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案说只看一次训练loss就能评价，与用独立评估episode、平均回报和置信区间判断矛盾。",
+        "evidence_quote": "只看一次训练loss就能评价",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 579,
+      "prompt_tokens": 2340,
+      "total_tokens": 2919,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1956
+    }
+  },
+  "score": 0.0
+}

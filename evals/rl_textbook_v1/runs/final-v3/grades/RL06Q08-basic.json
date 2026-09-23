@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q08-basic",
+  "case_id": "RL06Q08",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c0e15b27e2a19e1c44c3",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确提到对输入做缩放或归一化，并说明避免优化尺度失衡。",
+        "evidence_quote": "对输入做合理缩放或归一化，避免优化尺度失衡。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_a71e954c2da7e197ab3e",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确提到经验回放、随机抽取小批量，并说明降低样本相关性。",
+        "evidence_quote": "使用经验回放并随机抽取小批量，降低样本相关性。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8a9d708cd4641f99f190",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及目标网络或同步方式。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_ed0e935353f06e4cea6b",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 Huber 损失或裁剪 TD 误差。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9d145b0a7b1356bb73d2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 epsilon-greedy 或探索退火计划。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1a5b857a09879e7d99fc",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及终止/截断处理。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_10fc2eba81e41702cb2d",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及监控回报、损失、TD 误差、Q 值范围或动作分布。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_29fc89c2d8347fb05ea3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及随机种子、固定评估协议或保存配置。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 497,
+      "prompt_tokens": 2324,
+      "total_tokens": 2821,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1940
+    }
+  },
+  "score": 0.2
+}

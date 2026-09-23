@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U5Q3-full-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U5Q3",
+  "sample_id": "U5Q3-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U5Q3-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确表达了从 A 可达 C 的结论，符合要点。",
+        "evidence_quote": "可以，因为存在 A→B→C 的有向路径"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U5Q3-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确指出了路径 A→B→C，符合要点。",
+        "evidence_quote": "可以，因为存在 A→B→C 的有向路径"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 138,
+      "prompt_tokens": 464,
+      "total_tokens": 602,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 464
+    }
+  },
+  "score": 1.0
+}

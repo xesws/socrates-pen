@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U4Q5-r1",
+  "kind": "rubric",
+  "case_id": "U4Q5",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_59fea0ef35f623d583bf",
+      "name": "测试覆盖的有限性",
+      "definition": "测试只能覆盖选定的有限样例，无法穷尽所有输入。",
+      "source_mq_ids": [
+        "q_c72f5c303272d9d5f7c4"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_5db90e20fca20063d5cc",
+      "name": "未测试输入仍可能出错",
+      "definition": "未被测试覆盖的输入仍可能触发程序错误，因此不能证明对所有输入都正确。",
+      "source_mq_ids": [
+        "q_c72f5c303272d9d5f7c4"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_59fea0ef35f623d583bf",
+      "max_score": 0.5,
+      "description": "指出测试只覆盖选定的有限样例，无法穷尽所有输入。",
+      "partial_credit": "明确说明测试覆盖有限或样例有限得0.5分；仅笼统说测试不充分但未提有限性得0分；错误或无关内容得0分。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_5db90e20fca20063d5cc",
+      "max_score": 0.5,
+      "description": "指出未测试的输入仍可能触发错误，因此不能证明程序对所有输入都正确。",
+      "partial_credit": "明确说明未测试输入仍可能出错得0.5分；仅说不能证明正确但未提未测试输入可能出错得0分；错误或无关内容得0分。"
+    }
+  ]
+}

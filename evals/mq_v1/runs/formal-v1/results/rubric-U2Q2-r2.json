@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U2Q2-r2",
+  "kind": "rubric",
+  "case_id": "U2Q2",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_519aa9d044c9ddb9cde0",
+      "name": "循环累加结果",
+      "definition": "执行 for 循环将列表 [1, 2, 3] 中的元素依次累加到变量 s，最终输出 s 的值",
+      "source_mq_ids": [
+        "q_497c9a5553d96460a818"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_519aa9d044c9ddb9cde0",
+      "max_score": 1.0,
+      "description": "在 b1 处填写代码运行后的输出结果，即 6",
+      "partial_credit": "填写 6 得 1 分；填写其他值或留空得 0 分",
+      "blank_id": "b1"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "U6Q4-False-wrong-r0",
+  "case_id": "U6Q4",
+  "with_image": false,
+  "answer_kind": "wrong",
+  "repeat": 0,
+  "expected": 0,
+  "ok": false,
+  "error": "semantic grader returned no criteria array",
+  "abstained": true
+}

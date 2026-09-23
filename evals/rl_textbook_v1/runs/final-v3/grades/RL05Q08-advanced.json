@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q08-advanced",
+  "case_id": "RL05Q08",
+  "kind": "advanced",
+  "split": "test",
+  "expected": 0.5,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c7d83dcb17c2597a6e89",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出 SARSA 目标为 R+γQ(S',A')。",
+        "evidence_quote": "SARSA 目标是 R+γQ(S',A')。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2f473220fb835c01426f",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出 Q-learning 目标为 R+γmax_a Q(S',a)。",
+        "evidence_quote": "Q-learning 目标是 R+γmax_a Q(S',a)。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d65a8fd6415a6b91f651",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 SARSA 使用实际行为策略选出的下一动作。",
+        "evidence_quote": "SARSA 使用实际行为策略选出的下一动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_da2eb2942bd06b4c1a24",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 Q-learning 学习贪心目标策略，即使行为策略在探索。",
+        "evidence_quote": "Q-learning 学习贪心目标策略，即使行为策略在探索。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_04b55c897c9f98d5b267",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 SARSA 将探索风险计入价值或更保守。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_486a5a25537d43b6652d",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及表格收敛条件。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_5b189aabeaad5ac074c7",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及函数近似下的不稳定性或 off-policy 自举风险。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c468a4eb1266238afefc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及适用场景。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "advanced",
+      "label": "进阶"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 523,
+      "prompt_tokens": 2375,
+      "total_tokens": 2898,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1991
+    }
+  },
+  "score": 0.5
+}

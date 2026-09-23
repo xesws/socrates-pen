@@ -1,0 +1,97 @@
+{
+  "id": "preflight-text",
+  "attempt": 0,
+  "signature": "b2fca908b6dccf2b352737cd5ee6418866c0bfa792e022acf006a20e99b519ab",
+  "started_at": "2026-09-23T00:59:02.190037+00:00",
+  "requested_model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com",
+  "ok": true,
+  "retryable": false,
+  "parsed": {
+    "answer": 7,
+    "usage": {
+      "completion_tokens": 5,
+      "prompt_tokens": 46,
+      "total_tokens": 51,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 46
+    },
+    "model": "deepseek-flash"
+  },
+  "elapsed_seconds": 1.576,
+  "request": {
+    "model": "deepseek-flash",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return JSON only: {\"answer\":number}.\n\nInterface language: zh.\nReturn exactly one JSON object. Do not call tools."
+      },
+      {
+        "role": "user",
+        "content": "{\"payload\": {\"question\": \"Compute 3*2+1.\"}}"
+      }
+    ],
+    "stream": false,
+    "extra_body": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "max_tokens": 2048,
+    "temperature": 0
+  },
+  "response": {
+    "id": "5dc095de-8b22-456f-9da5-2f2701fb72d9",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "{\"answer\":7}",
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": null
+        }
+      }
+    ],
+    "created": 1790125143,
+    "model": "deepseek-flash",
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+    "usage": {
+      "completion_tokens": 5,
+      "prompt_tokens": 46,
+      "total_tokens": 51,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 46
+    }
+  },
+  "usage": {
+    "calls": 1,
+    "completion_tokens": 5,
+    "prompt_tokens": 46,
+    "total_tokens": 51,
+    "prompt_tokens_details": {
+      "calls": 1,
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 46
+  },
+  "charged_tokens": 51,
+  "usage_known": true
+}

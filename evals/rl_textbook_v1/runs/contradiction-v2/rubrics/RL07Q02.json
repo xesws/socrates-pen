@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_71d961b1de5a897cd255",
+        "name": "正确选项",
+        "definition": "baseline 不改变策略梯度期望的关键条件：baseline 不依赖当前采样动作。",
+        "source_mq_ids": [
+          "q_44f1ba9ef43f98084b84"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_44f1ba9ef43f98084b84",
+        "version": "1e750776d34002e4ffde3c53cce9cfd3e4e71e1ca8094b6d960adfd21f7c7931",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_44f1ba9ef43f98084b84",
+        "title": "RL07Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "baseline 不改变策略梯度期望的关键条件是什么？",
+        "reference_answer": "D",
+        "solution_markdown": "只依赖状态的 baseline 在对动作分布求期望时项为零，因此不引入偏差。",
+        "raw_markdown": "### RL07Q02\n#### 题型\nsingle_choice\n#### 题干\nbaseline 不改变策略梯度期望的关键条件是什么？\n#### 选项\n##### A\nbaseline 必须等于 0。\n##### B\nbaseline 必须比所有回报都大。\n##### C\nbaseline 只能用于离散动作。\n##### D\nbaseline 不依赖当前采样动作。\n#### 答案\nD\n#### 解答\n只依赖状态的 baseline 在对动作分布求期望时项为零，因此不引入偏差。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_71d961b1de5a897cd255"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_71d961b1de5a897cd255",
+            "max_score": 1.0,
+            "description": "选择 D：baseline 不依赖当前采样动作。",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 D 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1380,
+          "end_line": 1397
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1382,
+            "end_line": 1382
+          },
+          "题干": {
+            "start_line": 1384,
+            "end_line": 1384
+          },
+          "选项": {
+            "start_line": 1386,
+            "end_line": 1393
+          },
+          "答案": {
+            "start_line": 1395,
+            "end_line": 1395
+          },
+          "解答": {
+            "start_line": 1397,
+            "end_line": 1397
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "baseline 必须等于 0。"
+          },
+          {
+            "id": "B",
+            "text": "baseline 必须比所有回报都大。"
+          },
+          {
+            "id": "C",
+            "text": "baseline 只能用于离散动作。"
+          },
+          {
+            "id": "D",
+            "text": "baseline 不依赖当前采样动作。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "d304f1e2be54277f0ca6f0b4a6eed428051821f9692838820a59ac1a07d16502"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 19151,
+      "total_tokens": 19279,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 335
+    }
+  }
+}

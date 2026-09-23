@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q5-full-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q5",
+  "sample_id": "U2Q5-full",
+  "sample_kind": "full",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者明确表达了“应明确拒绝空列表或抛出异常”，与要点完全一致。",
+        "evidence_quote": "应明确拒绝空列表或抛出异常"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者说明了“长度为零，直接求平均会除以零”，准确表达了长度为零导致除以零的原因。",
+        "evidence_quote": "因为长度为零，直接求平均会除以零"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 108,
+      "prompt_tokens": 397,
+      "total_tokens": 505,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 397
+    }
+  },
+  "score": 1.0
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U5Q5-zero-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U5Q5-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生回答未提及A=7或B=2，未表达该要点。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U5Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生回答未提及B−A=-5，未表达该要点。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 126,
+      "prompt_tokens": 559,
+      "total_tokens": 685,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 559
+    }
+  },
+  "score": 0.0
+}

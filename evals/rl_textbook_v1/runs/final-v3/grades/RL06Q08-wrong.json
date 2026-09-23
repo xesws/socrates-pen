@@ -1,0 +1,119 @@
+{
+  "id": "RL06Q08-wrong",
+  "case_id": "RL06Q08",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c0e15b27e2a19e1c44c3",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案主张输入数值越失衡越好，与合理缩放/归一化避免尺度失衡相反。",
+        "evidence_quote": "输入数值越失衡越好",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_a71e954c2da7e197ab3e",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案要求只用强相关连续样本，与经验回放随机抽取小批量降低相关性相反。",
+        "evidence_quote": "只用强相关连续样本",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8a9d708cd4641f99f190",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确不要目标网络，与使用目标网络相反。",
+        "evidence_quote": "不要目标网络",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_ed0e935353f06e4cea6b",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案主张损失鼓励误差爆炸，与采用 Huber 或裁剪 TD 误差减小异常样本影响相反。",
+        "evidence_quote": "损失鼓励误差爆炸",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9d145b0a7b1356bb73d2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案要求停止一切探索，与 epsilon-greedy 及探索退火相反。",
+        "evidence_quote": "停止一切探索",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1a5b857a09879e7d99fc",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案要求真正终止后也保留无限未来价值，与真实 terminated 样本未来价值置零相反。",
+        "evidence_quote": "真正终止后也必须保留无限未来价值",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_10fc2eba81e41702cb2d",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确不看任何监控，与监控回报、损失、TD 误差、Q 值范围和动作分布相反。",
+        "evidence_quote": "不看任何监控",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_29fc89c2d8347fb05ea3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确不看随机种子，与用多个随机种子、固定评估协议和保存配置保证可复现相反。",
+        "evidence_quote": "不看任何监控或随机种子",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 568,
+      "prompt_tokens": 2346,
+      "total_tokens": 2914,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1962
+    }
+  },
+  "score": 0.0
+}

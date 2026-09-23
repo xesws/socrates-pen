@@ -1,0 +1,119 @@
+{
+  "id": "RL07Q10-contradiction",
+  "case_id": "RL07Q10",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_20f194b7d4629df11d04",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先给出正确说法，但随后明确坚持相反说法，构成自相矛盾，本项不得分。",
+        "evidence_quote": "我同时坚持以下相反说法：仅依赖状态的 baseline 不应当用于降低回报的共同波动。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0c072a16233acb0c0862",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明用 advantage 替代原始回报，并突出动作相对好坏。",
+        "evidence_quote": "用 advantage 替代原始回报，突出动作相对好坏。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_3faabc88bae112c34e86",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明增大 batch 或并行采样可降低估计噪声。",
+        "evidence_quote": "增大 batch 或并行采样可降低估计噪声。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_6ac86eee8c05a1140bbc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明 n-step 或 GAE 在偏差和方差之间折中。",
+        "evidence_quote": "n-step 或 GAE 在偏差和方差之间折中。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_63ee48334ba7c35bad2e",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明对 advantage 做标准化常能改善优化尺度。",
+        "evidence_quote": "对 advantage 做标准化常能改善优化尺度。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f8b581d9dd0c3a3ef5e2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明熵正则保持探索，避免少量噪声让策略过早确定。",
+        "evidence_quote": "熵正则保持探索，避免少量噪声让策略过早确定。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a56d0aa8db2a6ddf72a9",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明梯度裁剪或策略变化约束可防止单次更新过大。",
+        "evidence_quote": "梯度裁剪或策略变化约束可防止单次更新过大。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_e19fbe9dfd3045985071",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明报告应包含回报、熵、价值误差、KL 或策略变化等指标。",
+        "evidence_quote": "报告应包含回报、熵、价值误差、KL 或策略变化等指标。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 614,
+      "prompt_tokens": 2442,
+      "total_tokens": 3056,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 1930
+    }
+  },
+  "score": 0.9
+}

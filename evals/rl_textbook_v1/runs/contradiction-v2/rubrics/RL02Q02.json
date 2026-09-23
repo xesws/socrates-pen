@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_8ae6c02960b5827e4d0e",
+        "name": "正确选项",
+        "definition": "选择 D：V 从状态开始评价，Q 从状态和先行动作开始评价。",
+        "source_mq_ids": [
+          "q_0e8a5840030a863fc817"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_0e8a5840030a863fc817",
+        "version": "702526241e64b4bbf3c96ce13f1b062afa9ff5920b4538c1819289fc415236d1",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_0e8a5840030a863fc817",
+        "title": "RL02Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "V_pi(s) 与 Q_pi(s,a) 的关键差别是什么？",
+        "reference_answer": "D",
+        "solution_markdown": "Q 固定第一步动作，V 已经把当前策略下的动作选择平均进去。",
+        "raw_markdown": "### RL02Q02\n#### 题型\nsingle_choice\n#### 题干\nV_pi(s) 与 Q_pi(s,a) 的关键差别是什么？\n#### 选项\n##### A\nV 只能用于连续状态，Q 只能用于离散状态。\n##### B\nV 是奖励函数，Q 是转移函数。\n##### C\nV 不含期望，Q 不含折扣。\n##### D\nV 从状态开始评价，Q 从状态和先行动作开始评价。\n#### 答案\nD\n#### 解答\nQ 固定第一步动作，V 已经把当前策略下的动作选择平均进去。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_8ae6c02960b5827e4d0e"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_8ae6c02960b5827e4d0e",
+            "max_score": 1.0,
+            "description": "选择 D：V 从状态开始评价，Q 从状态和先行动作开始评价。",
+            "partial_credit": "单选：选 D 得满分，其他选项或未作答得 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、C 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 297,
+          "end_line": 314
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 299,
+            "end_line": 299
+          },
+          "题干": {
+            "start_line": 301,
+            "end_line": 301
+          },
+          "选项": {
+            "start_line": 303,
+            "end_line": 310
+          },
+          "答案": {
+            "start_line": 312,
+            "end_line": 312
+          },
+          "解答": {
+            "start_line": 314,
+            "end_line": 314
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "V 只能用于连续状态，Q 只能用于离散状态。"
+          },
+          {
+            "id": "B",
+            "text": "V 是奖励函数，Q 是转移函数。"
+          },
+          {
+            "id": "C",
+            "text": "V 不含期望，Q 不含折扣。"
+          },
+          {
+            "id": "D",
+            "text": "V 从状态开始评价，Q 从状态和先行动作开始评价。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "8e057d51cf861f97c2743fbd3040fa5974a79932ac8786a5f540e787647c5819"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 148,
+      "prompt_tokens": 19174,
+      "total_tokens": 19322,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 358
+    }
+  }
+}

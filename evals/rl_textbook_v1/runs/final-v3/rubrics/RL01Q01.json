@@ -1,0 +1,123 @@
+{
+  "id": "RL01Q01",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "call_run": "baseline-v1",
+  "part": {
+    "points": [
+      {
+        "id": "pt_ef925ee3e7b88e1f1d42",
+        "name": "动作与奖励的区分",
+        "definition": "动作是智能体可选择的控制，奖励是环境随后给出的标量反馈",
+        "source_mq_ids": [
+          "q_361111bdf4e0a21b28d0"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_361111bdf4e0a21b28d0",
+        "version": "ace3bca06e198fad836283bd51a41fcd73b1a32527eb1a59108bf1a0a72bcd0c",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_361111bdf4e0a21b28d0",
+        "title": "RL01Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在强化学习任务中，哪一项最准确地区分了“动作”和“奖励”？",
+        "reference_answer": "A",
+        "solution_markdown": "动作属于智能体的选择，奖励属于环境对选择后结果的反馈；二者的因果位置不同。",
+        "raw_markdown": "### RL01Q01\n#### 题型\nsingle_choice\n#### 题干\n在强化学习任务中，哪一项最准确地区分了“动作”和“奖励”？\n#### 选项\n##### A\n动作是智能体能选择的控制，奖励是环境随后给出的标量反馈。\n##### B\n动作总是连续值，奖励总是离散值。\n##### C\n动作只能由环境产生，奖励只能由智能体产生。\n##### D\n动作和奖励都是训练前固定的数据标签。\n#### 答案\nA\n#### 解答\n动作属于智能体的选择，奖励属于环境对选择后结果的反馈；二者的因果位置不同。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_ef925ee3e7b88e1f1d42"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_ef925ee3e7b88e1f1d42",
+            "max_score": 1.0,
+            "description": "选择 A：动作是智能体可选择的控制，奖励是环境随后给出的标量反馈",
+            "partial_credit": "单选：选 A 得满分，其他选项为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 B、C、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 61,
+          "end_line": 78
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 63,
+            "end_line": 63
+          },
+          "题干": {
+            "start_line": 65,
+            "end_line": 65
+          },
+          "选项": {
+            "start_line": 67,
+            "end_line": 74
+          },
+          "答案": {
+            "start_line": 76,
+            "end_line": 76
+          },
+          "解答": {
+            "start_line": 78,
+            "end_line": 78
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "动作是智能体能选择的控制，奖励是环境随后给出的标量反馈。"
+          },
+          {
+            "id": "B",
+            "text": "动作总是连续值，奖励总是离散值。"
+          },
+          {
+            "id": "C",
+            "text": "动作只能由环境产生，奖励只能由智能体产生。"
+          },
+          {
+            "id": "D",
+            "text": "动作和奖励都是训练前固定的数据标签。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "0e2f934c21d7e4f3b8fcb190f215b131ae5b9b91c3bceb6dc12f8cf60538602f"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 139,
+      "prompt_tokens": 19173,
+      "total_tokens": 19312,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 357
+    }
+  }
+}

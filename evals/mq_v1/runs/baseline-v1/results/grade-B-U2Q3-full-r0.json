@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U2Q3-full-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q3",
+  "sample_id": "U2Q3-full",
+  "sample_kind": "full",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_65f417b2473914febaf3",
+        "score": 1.0,
+        "max_score": 1.0,
+        "reason": "学习者答案完整包含两个要点：循环开始前成立、每次迭代都保持成立，与标准答案语义一致，无矛盾内容。",
+        "evidence_quote": "循环开始前成立，并且每次迭代都保持成立"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 67,
+      "prompt_tokens": 406,
+      "total_tokens": 473,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 406
+    }
+  },
+  "score": 1.0
+}

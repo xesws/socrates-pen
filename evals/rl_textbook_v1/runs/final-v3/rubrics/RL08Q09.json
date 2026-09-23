@@ -1,0 +1,349 @@
+{
+  "id": "RL08Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_99b07e9a5aa9694e0c8e",
+        "name": "要点1",
+        "definition": "先写清人类真正关心的任务目标",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_7b1c49b20898be606ed9",
+        "name": "要点2",
+        "definition": "列出奖励中的代理指标以及它们没有覆盖的目标部分",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_55ebe882e5121f553fb7",
+        "name": "要点3",
+        "definition": "寻找智能体只最大化奖励时可利用的漏洞",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a268cf1b943c94c9cd34",
+        "name": "要点4",
+        "definition": "把碰撞、违法、隐私泄露等不可接受行为设置为约束或终止条件",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_cd2584c7e7c557e900de",
+        "name": "要点5",
+        "definition": "检查奖励塑形是否诱导拖延、刷分、干扰环境等副作用",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_e7df8e0c52f12f9452ce",
+        "name": "要点6",
+        "definition": "监控指标要覆盖真实目标、安全事件和异常行为",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_697dcb49e98467c052ba",
+        "name": "要点7",
+        "definition": "用红队场景或极端初始状态测试奖励漏洞",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1d3689228f5b0eae110a",
+        "name": "要点8",
+        "definition": "根据失败案例迭代奖励、约束和评估，而不是只调高训练分数",
+        "source_mq_ids": [
+          "q_3d0c594c8b891b38eb40"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_3d0c594c8b891b38eb40",
+        "version": "b0e73b7164d0f8ad0584db769bf4a35ccbb9934af59dd610658545f7f94c7ec1",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_3d0c594c8b891b38eb40",
+        "title": "RL08Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "审查一个奖励函数的安全性。请按8个方面回答：真实目标、代理指标、漏洞、约束、副作用、监控、红队、迭代。",
+        "reference_answer": "1. 先写清人类真正关心的任务目标。\n2. 列出奖励中的代理指标以及它们没有覆盖的目标部分。\n3. 寻找智能体只最大化奖励时可利用的漏洞。\n4. 把碰撞、违法、隐私泄露等不可接受行为设置为约束或终止条件。\n5. 检查奖励塑形是否诱导拖延、刷分、干扰环境等副作用。\n6. 监控指标要覆盖真实目标、安全事件和异常行为。\n7. 用红队场景或极端初始状态测试奖励漏洞。\n8. 根据失败案例迭代奖励、约束和评估，而不是只调高训练分数。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL08Q09\n#### 题型\nshort_answer\n#### 题干\n审查一个奖励函数的安全性。请按8个方面回答：真实目标、代理指标、漏洞、约束、副作用、监控、红队、迭代。\n#### 答案\n1. 先写清人类真正关心的任务目标。\n2. 列出奖励中的代理指标以及它们没有覆盖的目标部分。\n3. 寻找智能体只最大化奖励时可利用的漏洞。\n4. 把碰撞、违法、隐私泄露等不可接受行为设置为约束或终止条件。\n5. 检查奖励塑形是否诱导拖延、刷分、干扰环境等副作用。\n6. 监控指标要覆盖真实目标、安全事件和异常行为。\n7. 用红队场景或极端初始状态测试奖励漏洞。\n8. 根据失败案例迭代奖励、约束和评估，而不是只调高训练分数。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_99b07e9a5aa9694e0c8e",
+          "pt_7b1c49b20898be606ed9",
+          "pt_55ebe882e5121f553fb7",
+          "pt_a268cf1b943c94c9cd34",
+          "pt_cd2584c7e7c557e900de",
+          "pt_e7df8e0c52f12f9452ce",
+          "pt_697dcb49e98467c052ba",
+          "pt_1d3689228f5b0eae110a"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_99b07e9a5aa9694e0c8e",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "先写清人类真正关心的任务目标",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "先写清人类真正关心的任务目标"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_7b1c49b20898be606ed9",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "列出奖励中的代理指标以及它们没有覆盖的目标部分",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "列出奖励中的代理指标以及它们没有覆盖的目标部分"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_55ebe882e5121f553fb7",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "寻找智能体只最大化奖励时可利用的漏洞",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "寻找智能体只最大化奖励时可利用的漏洞"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_a268cf1b943c94c9cd34",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "把碰撞、违法、隐私泄露等不可接受行为设置为约束或终止条件",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "把碰撞、违法、隐私泄露等不可接受行为设置为约束或终止条件"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_cd2584c7e7c557e900de",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "检查奖励塑形是否诱导拖延、刷分、干扰环境等副作用",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "检查奖励塑形是否诱导拖延、刷分、干扰环境等副作用"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_e7df8e0c52f12f9452ce",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "监控指标要覆盖真实目标、安全事件和异常行为",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "监控指标要覆盖真实目标、安全事件和异常行为"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_697dcb49e98467c052ba",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "用红队场景或极端初始状态测试奖励漏洞",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "用红队场景或极端初始状态测试奖励漏洞"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_1d3689228f5b0eae110a",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "根据失败案例迭代奖励、约束和评估，而不是只调高训练分数",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "根据失败案例迭代奖励、约束和评估，而不是只调高训练分数"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1698,
+          "end_line": 1713
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1700,
+            "end_line": 1700
+          },
+          "题干": {
+            "start_line": 1702,
+            "end_line": 1702
+          },
+          "答案": {
+            "start_line": 1704,
+            "end_line": 1711
+          },
+          "解答": {
+            "start_line": 1713,
+            "end_line": 1713
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "9b55c321607b3adb94cfc104ca7ac409260b90002e6068d1e572aa64427d41f4"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1237,
+      "prompt_tokens": 19268,
+      "total_tokens": 20505,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 452
+    }
+  }
+}

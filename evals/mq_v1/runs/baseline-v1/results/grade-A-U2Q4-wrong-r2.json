@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q4-wrong-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q4-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案明确否定初始化检查的必要性（“初始化与保持都不必要”），未表达“初始化保证首次迭代前成立”这一要点，且与要点相矛盾。",
+        "evidence_quote": "初始化与保持都不必要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q4-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案明确否定保持检查的必要性（“初始化与保持都不必要”），未表达“保持保证每次迭代后仍成立”这一要点，且与要点相矛盾。",
+        "evidence_quote": "初始化与保持都不必要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 129,
+      "prompt_tokens": 371,
+      "total_tokens": 500,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 243
+    }
+  },
+  "score": 0.0
+}

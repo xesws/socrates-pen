@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q10-paraphrase",
+  "case_id": "RL08Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_72e19f1ccb93519a32f8",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 epsilon-greedy 通过固定或调度概率随机选动作。",
+        "evidence_quote": "Epsilon-greedy explores via a fixed or scheduled random-action probability.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_b5a4ca3721c94b379ba5",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 UCB 加入基于计数或不确定性的 bonus。",
+        "evidence_quote": "UCB adds a count- or uncertainty-based bonus.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_fbc09cdb053845c43538",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明内在奖励为新奇、预测误差或信息增益提供额外信号。",
+        "evidence_quote": "Intrinsic reward supplies extra signal for novelty, prediction error or information gain.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_3b25f3bb77db9a38fbac",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 epsilon-greedy 简单但不优先探索不确定动作，等价于不区分哪些动作更需要探索。",
+        "evidence_quote": "Epsilon-greedy is simple but does not prioritize uncertain actions.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_181fb499e231458538fb",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 UCB 有方向性但需要可靠计数或不确定性估计。",
+        "evidence_quote": "UCB directs exploration but needs credible counts or uncertainty estimates.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_4aeba8f5725b6bf069ee",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明内在动机帮助发现稀疏外部奖励，但可能追逐新奇而偏离任务。",
+        "evidence_quote": "Intrinsic motivation helps discover sparse external rewards but can keep chasing novelty rather than the task.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_56ca235033b46b1a8eca",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明安全敏感场景中三者都需要动作约束和风险过滤。",
+        "evidence_quote": "All three require action constraints and risk filtering in safety-sensitive settings.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c1d1f719447f0c70de03",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明应分开报告探索收益、最终策略质量和安全违规。",
+        "evidence_quote": "Separately report gains during exploration, final policy quality and safety violations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 597,
+      "prompt_tokens": 2442,
+      "total_tokens": 3039,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2058
+    }
+  },
+  "score": 1.0
+}

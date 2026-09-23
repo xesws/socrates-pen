@@ -1,0 +1,409 @@
+{
+  "ok": true,
+  "lines": 1729,
+  "chapters": 8,
+  "questions": 80,
+  "issues": [],
+  "comparisons": [
+    {
+      "id": "RL01Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL01Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL02Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL03Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL04Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL05Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL06Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL07Q10",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q01",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q02",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q03",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q04",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q05",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q06",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q07",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q08",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q09",
+      "ok": true,
+      "mismatches": []
+    },
+    {
+      "id": "RL08Q10",
+      "ok": true,
+      "mismatches": []
+    }
+  ]
+}

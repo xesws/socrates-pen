@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U6Q1-r0",
+  "kind": "rubric",
+  "case_id": "U6Q1",
+  "split": "test",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_f279c517cb0174aebcce",
+      "name": "比例计算",
+      "definition": "根据图中A与B的数值计算A占A+B总量的百分比",
+      "source_mq_ids": [
+        "q_3ea45613d975ce28fc15"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_f279c517cb0174aebcce",
+      "max_score": 1.0,
+      "description": "选择正确选项A（60%），即由6/(6+4)=60%得出",
+      "partial_credit": "选择A得1分；选择B或其他选项得0分"
+    }
+  ]
+}

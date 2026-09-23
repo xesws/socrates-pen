@@ -1,0 +1,9 @@
+{
+  "id": "rubric-U1Q5-r1",
+  "kind": "rubric",
+  "case_id": "U1Q5",
+  "split": "dev",
+  "repeat": 1,
+  "ok": false,
+  "error": "Invalid or duplicate knowledge point"
+}

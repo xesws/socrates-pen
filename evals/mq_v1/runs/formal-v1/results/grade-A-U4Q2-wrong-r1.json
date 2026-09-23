@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q2-wrong-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q2-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案未提及数组已排序，反而暗示随机数组也可行，与要点矛盾。",
+        "evidence_quote": "随机数组也能任意丢掉一半，因为中点总是目标。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q2-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案未表达被排除的一半不可能包含目标，且其表述与二分查找原理矛盾。",
+        "evidence_quote": "随机数组也能任意丢掉一半，因为中点总是目标。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 143,
+      "prompt_tokens": 428,
+      "total_tokens": 571,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 428
+    }
+  },
+  "score": 0.0
+}

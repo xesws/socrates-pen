@@ -1,0 +1,119 @@
+{
+  "id": "RL07Q08-contradiction",
+  "case_id": "RL07Q08",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_bf66ece6b5a437e2e1da",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先正确写出初始化，但随后明确坚持相反说法“REINFORCE 不应该初始化参数化随机策略 π_θ(a|s)”，构成自相矛盾，本项不得分。",
+        "evidence_quote": "我同时坚持以下相反说法：REINFORCE 不应该初始化参数化随机策略 π_θ(a|s)。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8953218b37dfe272f081",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确写出用当前策略采样完整有限期 episode，且无相反矛盾。",
+        "evidence_quote": "用当前策略采样一条或多条完整有限期 episode。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_aacab06f60dd6cdd64b8",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案明确写出在 γ=1 下为每个时间步计算从该步到终局的未折扣回报 G_t。",
+        "evidence_quote": "在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_dbe8536260e0d162ab96",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案明确写出用 G_t∇θlogπ_θ(A_t|S_t) 构造有限期目标下的策略梯度估计。",
+        "evidence_quote": "用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c89f1232684f4d53dffe",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确写出可减去不依赖动作的 baseline 来降低方差。",
+        "evidence_quote": "可减去不依赖动作的 baseline 来降低方差。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_91aae9b670a0b3dd30d9",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确写出按梯度上升更新 θ，提高高优势动作概率。",
+        "evidence_quote": "按梯度上升更新 θ，提高高优势动作概率。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_32576a03a4965dc43c29",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案明确写出回报样本噪声大，轨迹长时方差尤其高。",
+        "evidence_quote": "回报样本噪声大，轨迹长时方差尤其高。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_4c209d1dc3b1ec9f4460",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案明确写出用独立评估 episode、平均回报和置信区间判断学习效果。",
+        "evidence_quote": "用独立评估 episode、平均回报和置信区间判断学习效果。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 683,
+      "prompt_tokens": 2568,
+      "total_tokens": 3251,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 2056
+    }
+  },
+  "score": 0.9
+}

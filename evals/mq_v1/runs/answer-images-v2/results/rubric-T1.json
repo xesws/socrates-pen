@@ -1,0 +1,256 @@
+{
+  "kind": "rubric",
+  "case_id": "T1",
+  "ok": true,
+  "question": {
+    "id": "q_68ded081ed80aeb329e6",
+    "version": "f1dc92563a986ea68ca5b4d1be71b2342b7e3b3bd00965f4876fe80889e4a524",
+    "source_unit_id": "unit_ae4044b8b96b258f",
+    "source_mq_id": "q_68ded081ed80aeb329e6",
+    "title": "T1",
+    "type": "short_answer",
+    "purpose": "practice",
+    "exam_form": null,
+    "prompt": "面试：设计多实例配置发布服务。请说明配置身份与存储、发布前验证、小流量发布、监控停止条件、回滚、实例确认和审计。",
+    "reference_answer": "每次配置变更分配唯一版本标识；每个版本的配置内容不可变并持久化保存；发布前验证格式和业务约束，非法配置拒绝发布；先在少量实例灰度验证，再逐步扩大范围；监控错误率和延迟，并在预设阈值触发时停止扩大发布；回滚重新指向保留的已知良好版本，而不是修改历史版本；记录各实例实际确认的配置版本，发现未更新或失败实例；保留操作者、时间、版本和结果的审计记录",
+    "solution_markdown": "按上述独立要点累计给分；允许语义等价表达。",
+    "raw_markdown": "### T1\n\n#### 题型\nshort_answer\n\n#### 题干\n面试：设计多实例配置发布服务。请说明配置身份与存储、发布前验证、小流量发布、监控停止条件、回滚、实例确认和审计。\n\n#### 答案\n每次配置变更分配唯一版本标识；每个版本的配置内容不可变并持久化保存；发布前验证格式和业务约束，非法配置拒绝发布；先在少量实例灰度验证，再逐步扩大范围；监控错误率和延迟，并在预设阈值触发时停止扩大发布；回滚重新指向保留的已知良好版本，而不是修改历史版本；记录各实例实际确认的配置版本，发现未更新或失败实例；保留操作者、时间、版本和结果的审计记录\n\n#### 解答\n按上述独立要点累计给分；允许语义等价表达。",
+    "status": "accepted",
+    "point_ids": [
+      "pt_1a018144daf9b9386917",
+      "pt_f4415936bb3dc56aaada",
+      "pt_8cb21c3e8b73209b9ea0",
+      "pt_3f872eb9f714908a544e",
+      "pt_025fec6de01710dd6e6c",
+      "pt_f483e6333f0fe95b7cd8",
+      "pt_7b0db01f6c5e48b7fd9e",
+      "pt_a66b81b0f2d3fde3a1a3"
+    ],
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_1a018144daf9b9386917",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每次配置变更分配唯一版本标识",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每次配置变更分配唯一版本标识"
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "point_id": "pt_f4415936bb3dc56aaada",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每个版本的配置内容不可变并持久化保存",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每个版本的配置内容不可变并持久化保存"
+          }
+        ]
+      },
+      {
+        "id": "c3",
+        "point_id": "pt_8cb21c3e8b73209b9ea0",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "发布前验证格式和业务约束，非法配置拒绝发布",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "发布前验证格式和业务约束，非法配置拒绝发布"
+          }
+        ]
+      },
+      {
+        "id": "c4",
+        "point_id": "pt_3f872eb9f714908a544e",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "先在少量实例灰度验证，再逐步扩大范围",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "先在少量实例灰度验证，再逐步扩大范围"
+          }
+        ]
+      },
+      {
+        "id": "c5",
+        "point_id": "pt_025fec6de01710dd6e6c",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "监控错误率和延迟，并在预设阈值触发时停止扩大发布",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "监控错误率和延迟，并在预设阈值触发时停止扩大发布"
+          }
+        ]
+      },
+      {
+        "id": "c6",
+        "point_id": "pt_f483e6333f0fe95b7cd8",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "回滚重新指向保留的已知良好版本，而不是修改历史版本",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "回滚重新指向保留的已知良好版本，而不是修改历史版本"
+          }
+        ]
+      },
+      {
+        "id": "c7",
+        "point_id": "pt_7b0db01f6c5e48b7fd9e",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "记录各实例实际确认的配置版本，发现未更新或失败实例",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "记录各实例实际确认的配置版本，发现未更新或失败实例"
+          }
+        ]
+      },
+      {
+        "id": "c8",
+        "point_id": "pt_a66b81b0f2d3fde3a1a3",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "保留操作者、时间、版本和结果的审计记录",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "保留操作者、时间、版本和结果的审计记录"
+          }
+        ]
+      }
+    ],
+    "source": {
+      "start_line": 31,
+      "end_line": 43
+    },
+    "field_spans": {
+      "题型": {
+        "start_line": 34,
+        "end_line": 35
+      },
+      "题干": {
+        "start_line": 37,
+        "end_line": 38
+      },
+      "答案": {
+        "start_line": 40,
+        "end_line": 41
+      },
+      "解答": {
+        "start_line": 43,
+        "end_line": 43
+      }
+    },
+    "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/answer_images_v2",
+    "assets": [],
+    "estimated_seconds": 180,
+    "rubric_schema": "tiered-v1",
+    "rubric_levels": [
+      {
+        "id": "basic",
+        "label": "基础",
+        "requires": [
+          "c1",
+          "c2"
+        ],
+        "min_score": 0.2
+      },
+      {
+        "id": "advanced",
+        "label": "进阶",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "min_score": 0.5
+      },
+      {
+        "id": "complete",
+        "label": "完整",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ],
+        "min_score": 1
+      }
+    ],
+    "rubric_version": "9eecae3621d4c4f2cb08d730ebfb7a44969ff4beebcacb57ac2a5b271890ffed"
+  }
+}

@@ -117,9 +117,10 @@ def _anchor_id(level: str, beat: str | None, seq: int) -> str:
     return f"{slug_level}-{seq}"
 
 
-def build_index(original_path: str | Path) -> HandbookIndex:
+def build_index(original_path: str | Path, *, text: str | None = None) -> HandbookIndex:
     path = Path(original_path).expanduser().resolve()
-    text = path.read_text(encoding="utf-8")
+    if text is None:
+        text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
     n = len(lines)
 

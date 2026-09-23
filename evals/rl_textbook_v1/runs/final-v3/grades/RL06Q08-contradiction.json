@@ -1,0 +1,119 @@
+{
+  "id": "RL06Q08-contradiction",
+  "case_id": "RL06Q08",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c0e15b27e2a19e1c44c3",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先给出正确做法，但随后明确坚持相反说法，构成自相矛盾，本项不得分。",
+        "evidence_quote": "我同时坚持以下相反说法：输入不应做任何合理缩放或归一化，优化尺度失衡也无需处理。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_a71e954c2da7e197ab3e",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确提到经验回放并随机抽取小批量以降低样本相关性。",
+        "evidence_quote": "使用经验回放并随机抽取小批量，降低样本相关性。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8a9d708cd4641f99f190",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确提到目标网络及固定步数或软更新同步。",
+        "evidence_quote": "使用目标网络，并按固定步数或软更新同步。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_ed0e935353f06e4cea6b",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确提到 Huber 或裁剪 TD 误差以减小异常样本影响。",
+        "evidence_quote": "采用 Huber 或裁剪后的 TD 误差以减小异常样本影响。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9d145b0a7b1356bb73d2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确提到 epsilon-greedy 和探索退火计划。",
+        "evidence_quote": "用 epsilon-greedy 并设定清晰的探索退火计划。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1a5b857a09879e7d99fc",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确区分真实终止与时间限制截断，并说明截断不应简单当作终止。",
+        "evidence_quote": "对真实 terminated 样本把未来价值项置零；时间限制 truncation 若任务实际继续，不应简单当作终止。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_10fc2eba81e41702cb2d",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确列出监控回报、损失、TD 误差、Q 值范围和动作分布。",
+        "evidence_quote": "监控回报、损失、TD 误差、Q 值范围和动作分布。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_29fc89c2d8347fb05ea3",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确提到多个随机种子、固定评估协议和保存配置以保证可复现。",
+        "evidence_quote": "用多个随机种子、固定评估协议和保存配置保证可复现。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 642,
+      "prompt_tokens": 2602,
+      "total_tokens": 3244,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 2090
+    }
+  },
+  "score": 0.9
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q3-wrong-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q3",
+  "sample_id": "U2Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q3-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案只说明循环结束后成立、执行途中可以不成立，未表达“循环开始前成立”这一要点，且与要点相矛盾。",
+        "evidence_quote": "只需要循环结束后成立，执行途中可以不成立。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q3-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案明确表示执行途中可以不成立，未表达“每次迭代保持成立”，且与要点相矛盾。",
+        "evidence_quote": "只需要循环结束后成立，执行途中可以不成立。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 117,
+      "prompt_tokens": 421,
+      "total_tokens": 538,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 165
+    }
+  },
+  "score": 0.0
+}

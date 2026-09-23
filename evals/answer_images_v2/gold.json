@@ -1,0 +1,490 @@
+{
+  "D1": {
+    "rubric_schema": "tiered-v1",
+    "rubric_levels": [
+      {
+        "id": "basic",
+        "label": "基础",
+        "requires": [
+          "c1",
+          "c2"
+        ],
+        "min_score": 0.2
+      },
+      {
+        "id": "advanced",
+        "label": "进阶",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "min_score": 0.5
+      },
+      {
+        "id": "complete",
+        "label": "完整",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ],
+        "min_score": 1
+      }
+    ],
+    "points": [
+      {
+        "id": "p1",
+        "name": "要点1",
+        "definition": "每个逻辑事件有稳定事件ID，重试不换ID"
+      },
+      {
+        "id": "p2",
+        "name": "要点2",
+        "definition": "待发送事件持久化，进程重启后可恢复"
+      },
+      {
+        "id": "p3",
+        "name": "要点3",
+        "definition": "仅在约定成功响应后标记完成，超时保留待确认状态"
+      },
+      {
+        "id": "p4",
+        "name": "要点4",
+        "definition": "临时错误指数退避加抖动并限制次数和期限"
+      },
+      {
+        "id": "p5",
+        "name": "要点5",
+        "definition": "发送内容签名并包含时间信息，接收方验证签名和时效"
+      },
+      {
+        "id": "p6",
+        "name": "要点6",
+        "definition": "接收方按稳定事件ID幂等处理，避免重复副作用"
+      },
+      {
+        "id": "p7",
+        "name": "要点7",
+        "definition": "永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列"
+      },
+      {
+        "id": "p8",
+        "name": "要点8",
+        "definition": "监控投递延迟、错误和积压，保留每次尝试的审计记录"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "p1",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每个逻辑事件有稳定事件ID，重试不换ID",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每个逻辑事件有稳定事件ID，重试不换ID"
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "point_id": "p2",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "待发送事件持久化，进程重启后可恢复",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "待发送事件持久化，进程重启后可恢复"
+          }
+        ]
+      },
+      {
+        "id": "c3",
+        "point_id": "p3",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "仅在约定成功响应后标记完成，超时保留待确认状态",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "仅在约定成功响应后标记完成，超时保留待确认状态"
+          }
+        ]
+      },
+      {
+        "id": "c4",
+        "point_id": "p4",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "临时错误指数退避加抖动并限制次数和期限",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "临时错误指数退避加抖动并限制次数和期限"
+          }
+        ]
+      },
+      {
+        "id": "c5",
+        "point_id": "p5",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "发送内容签名并包含时间信息，接收方验证签名和时效",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "发送内容签名并包含时间信息，接收方验证签名和时效"
+          }
+        ]
+      },
+      {
+        "id": "c6",
+        "point_id": "p6",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "接收方按稳定事件ID幂等处理，避免重复副作用",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "接收方按稳定事件ID幂等处理，避免重复副作用"
+          }
+        ]
+      },
+      {
+        "id": "c7",
+        "point_id": "p7",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列"
+          }
+        ]
+      },
+      {
+        "id": "c8",
+        "point_id": "p8",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "监控投递延迟、错误和积压，保留每次尝试的审计记录",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "监控投递延迟、错误和积压，保留每次尝试的审计记录"
+          }
+        ]
+      }
+    ]
+  },
+  "T1": {
+    "rubric_schema": "tiered-v1",
+    "rubric_levels": [
+      {
+        "id": "basic",
+        "label": "基础",
+        "requires": [
+          "c1",
+          "c2"
+        ],
+        "min_score": 0.2
+      },
+      {
+        "id": "advanced",
+        "label": "进阶",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "min_score": 0.5
+      },
+      {
+        "id": "complete",
+        "label": "完整",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ],
+        "min_score": 1
+      }
+    ],
+    "points": [
+      {
+        "id": "p1",
+        "name": "要点1",
+        "definition": "每次配置变更分配唯一版本标识"
+      },
+      {
+        "id": "p2",
+        "name": "要点2",
+        "definition": "每个版本的配置内容不可变并持久化保存"
+      },
+      {
+        "id": "p3",
+        "name": "要点3",
+        "definition": "发布前验证格式和业务约束，非法配置拒绝发布"
+      },
+      {
+        "id": "p4",
+        "name": "要点4",
+        "definition": "先在少量实例灰度验证，再逐步扩大范围"
+      },
+      {
+        "id": "p5",
+        "name": "要点5",
+        "definition": "监控错误率和延迟，并在预设阈值触发时停止扩大发布"
+      },
+      {
+        "id": "p6",
+        "name": "要点6",
+        "definition": "回滚重新指向保留的已知良好版本，而不是修改历史版本"
+      },
+      {
+        "id": "p7",
+        "name": "要点7",
+        "definition": "记录各实例实际确认的配置版本，发现未更新或失败实例"
+      },
+      {
+        "id": "p8",
+        "name": "要点8",
+        "definition": "保留操作者、时间、版本和结果的审计记录"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "p1",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每次配置变更分配唯一版本标识",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每次配置变更分配唯一版本标识"
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "point_id": "p2",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每个版本的配置内容不可变并持久化保存",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每个版本的配置内容不可变并持久化保存"
+          }
+        ]
+      },
+      {
+        "id": "c3",
+        "point_id": "p3",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "发布前验证格式和业务约束，非法配置拒绝发布",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "发布前验证格式和业务约束，非法配置拒绝发布"
+          }
+        ]
+      },
+      {
+        "id": "c4",
+        "point_id": "p4",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "先在少量实例灰度验证，再逐步扩大范围",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "先在少量实例灰度验证，再逐步扩大范围"
+          }
+        ]
+      },
+      {
+        "id": "c5",
+        "point_id": "p5",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "监控错误率和延迟，并在预设阈值触发时停止扩大发布",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "监控错误率和延迟，并在预设阈值触发时停止扩大发布"
+          }
+        ]
+      },
+      {
+        "id": "c6",
+        "point_id": "p6",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "回滚重新指向保留的已知良好版本，而不是修改历史版本",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "回滚重新指向保留的已知良好版本，而不是修改历史版本"
+          }
+        ]
+      },
+      {
+        "id": "c7",
+        "point_id": "p7",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "记录各实例实际确认的配置版本，发现未更新或失败实例",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "记录各实例实际确认的配置版本，发现未更新或失败实例"
+          }
+        ]
+      },
+      {
+        "id": "c8",
+        "point_id": "p8",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "保留操作者、时间、版本和结果的审计记录",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "保留操作者、时间、版本和结果的审计记录"
+          }
+        ]
+      }
+    ]
+  }
+}

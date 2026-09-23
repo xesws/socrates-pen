@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U5Q4-r0",
+  "kind": "rubric",
+  "case_id": "U5Q4",
+  "split": "test",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_8662679ddfa84caae807",
+      "name": "读取柱状图数值",
+      "definition": "根据图中柱子上方标注的数字，确定A柱对应数值为2、B柱对应数值为7",
+      "source_mq_ids": [
+        "q_3e5d5245f4b5cf46abc6"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_262a710547fc3ceddca0",
+      "name": "计算差值",
+      "definition": "用B的数值减去A的数值，即7−2，得到结果5",
+      "source_mq_ids": [
+        "q_3e5d5245f4b5cf46abc6"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_8662679ddfa84caae807",
+      "max_score": 0.5,
+      "description": "正确读出A=2且B=7；两个数值均正确才符合预期",
+      "partial_credit": "A和B均正确得0.5分；仅一个正确得0.25分；均错误或未作答得0分；若给出与图中标注矛盾的数值（如A≠2或B≠7）则对应部分不得分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_262a710547fc3ceddca0",
+      "max_score": 0.5,
+      "description": "正确计算B−A=7−2=5",
+      "partial_credit": "结果为5得0.5分；结果错误或未作答得0分；若计算过程与自身给出的A、B值一致但结果因读数错误而不同，仅按结果是否等于5判定"
+    }
+  ]
+}

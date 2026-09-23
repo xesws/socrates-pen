@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U1Q1-r1",
+  "kind": "rubric",
+  "case_id": "U1Q1",
+  "split": "dev",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_56a9c83eddbbf6ab31d9",
+      "name": "运算结果",
+      "definition": "正确计算 Python 表达式 3 * 2 + 1 的值",
+      "source_mq_ids": [
+        "q_ad35613c63e8b0123744"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_56a9c83eddbbf6ab31d9",
+      "max_score": 1.0,
+      "description": "选择选项 A（值为 7）。若选择 A 得满分；选择 B 或 C 得 0 分。",
+      "partial_credit": "选择 A 得 1 分；选择 B 或 C 得 0 分；未作答或选择其他内容得 0 分。",
+      "blank_id": ""
+    }
+  ]
+}

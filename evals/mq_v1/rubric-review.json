@@ -1,0 +1,493 @@
+{
+  "review_type": "assistant semantic review against pre-authored gold; not external human double annotation",
+  "not_target_model_self_judging": true,
+  "rubrics": [
+    {
+      "id": "rubric-U2Q1-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U2Q1-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U2Q1-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U2Q2-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U2Q2-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U2Q2-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q1-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q1-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q1-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q2-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q2-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q2-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q3-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q3-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q3-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q4-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "将只答出共享或复制之一判0分，未按冻结标准给予部分分。"
+    },
+    {
+      "id": "rubric-U3Q4-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q4-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q5-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q5-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U3Q5-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q1-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q1-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q1-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q2-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只说数组有序被判0分；冻结标准对此给0.5分。"
+    },
+    {
+      "id": "rubric-U4Q2-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只说数组有序被判0分；冻结标准对此给0.5分。"
+    },
+    {
+      "id": "rubric-U4Q2-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只说数组有序被判0分；冻结标准对此给0.5分。"
+    },
+    {
+      "id": "rubric-U4Q3-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只表达定义中的一个要点被判0分；冻结标准要求部分分。"
+    },
+    {
+      "id": "rubric-U4Q3-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只表达定义中的一个要点被判0分；冻结标准要求部分分。"
+    },
+    {
+      "id": "rubric-U4Q3-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只表达定义中的一个要点被判0分；冻结标准要求部分分。"
+    },
+    {
+      "id": "rubric-U4Q4-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q4-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q4-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q5-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q5-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U4Q5-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U5Q3-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只答出可达被判0分；冻结标准对结论本身给0.5分。"
+    },
+    {
+      "id": "rubric-U5Q3-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只答出可达被判0分；冻结标准对结论本身给0.5分。"
+    },
+    {
+      "id": "rubric-U5Q3-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "只答出可达被判0分；冻结标准对结论本身给0.5分。"
+    },
+    {
+      "id": "rubric-U5Q4-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U5Q4-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": false,
+      "review_note": "列出算式未给结果时仅写“部分分”，没有明确数值。"
+    },
+    {
+      "id": "rubric-U5Q4-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U5Q5-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U5Q5-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U5Q5-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q1-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q1-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q1-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q2-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q2-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q2-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q3-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q3-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q3-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q4-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q4-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q4-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q5-r0",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q5-r1",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    },
+    {
+      "id": "rubric-U6Q5-r2",
+      "structural_valid": true,
+      "source_facts_covered": true,
+      "substantive_fact_error_found": false,
+      "partial_credit_policy_ready": true,
+      "review_note": "对照题干、原解答及冻结标准：要点覆盖且计分条件可判读。"
+    }
+  ],
+  "summary": {
+    "reviewed": 60,
+    "source_fact_coverage": 1.0,
+    "partial_credit_policy_ready": 49,
+    "policy_issues": 11,
+    "passed": false
+  }
+}

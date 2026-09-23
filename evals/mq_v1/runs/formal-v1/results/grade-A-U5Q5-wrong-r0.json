@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U5Q5-wrong-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U5Q5-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生给出 A=2、B=7，与标准答案 A=7 且 B=2 相反，未准确表达该要点。",
+        "evidence_quote": "A=2，B=7"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U5Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生计算 B−A=9，而标准答案为 B−A=-5，计算错误，未准确表达该要点。",
+        "evidence_quote": "B−A=9"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 114,
+      "prompt_tokens": 573,
+      "total_tokens": 687,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 573
+    }
+  },
+  "score": 0.0
+}

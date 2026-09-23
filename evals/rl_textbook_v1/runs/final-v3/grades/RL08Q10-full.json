@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q10-full",
+  "case_id": "RL08Q10",
+  "kind": "full",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_72e19f1ccb93519a32f8",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 epsilon-greedy 以固定或调度概率随机选动作。",
+        "evidence_quote": "epsilon-greedy 用固定或调度概率随机选动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_b5a4ca3721c94b379ba5",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 UCB 使用访问次数或不确定性信息加 bonus。",
+        "evidence_quote": "UCB 使用访问次数或不确定性信息给动作加 bonus。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_fbc09cdb053845c43538",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明内在奖励基于新奇、预测误差或信息增益额外给分。",
+        "evidence_quote": "内在奖励为新奇、预测误差或信息增益额外给分。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_3b25f3bb77db9a38fbac",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指出 epsilon-greedy 简单稳健，且不区分哪些动作更需要探索。",
+        "evidence_quote": "epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_181fb499e231458538fb",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出 UCB 更有方向性，但依赖可靠不确定性或计数。",
+        "evidence_quote": "UCB 更有方向性，但需要可靠不确定性或计数。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_4aeba8f5725b6bf069ee",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。",
+        "evidence_quote": "内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_56ca235033b46b1a8eca",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明安全场景中三者都应受动作约束和风险过滤限制。",
+        "evidence_quote": "安全场景中三者都应受动作约束和风险过滤限制。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c1d1f719447f0c70de03",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明评估应分开报告训练探索收益、最终策略表现和安全违规率。",
+        "evidence_quote": "评估应分开报告训练探索收益、最终策略表现和安全违规率。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 457,
+      "prompt_tokens": 2477,
+      "total_tokens": 2934,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2093
+    }
+  },
+  "score": 1.0
+}

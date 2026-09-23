@@ -1,0 +1,119 @@
+{
+  "id": "RL02Q10-wrong",
+  "case_id": "RL02Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_679c38bd802ba25c1d02",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未列出任何当前可见观测字段，且声称不用查看字段。",
+        "evidence_quote": "不用查看字段、隐藏变量或历史",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_10a74ee82a60ec017b81",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未检查隐藏变量，反而明确说不用查看隐藏变量。",
+        "evidence_quote": "不用查看字段、隐藏变量或历史",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_092c6bc38c76263d79d3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未判断下一观测分布是否依赖更早历史，反而断言下一观测不能依赖历史。",
+        "evidence_quote": "下一观测和奖励无论如何都不能依赖历史",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8a205c9e8501621dc0c4",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未判断奖励分布是否依赖更早历史，反而断言奖励不能依赖历史。",
+        "evidence_quote": "下一观测和奖励无论如何都不能依赖历史",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_d59205017bc477ddfb8f",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明需要过去点击串或累计疲劳度时当前字段不是马尔可夫状态，反而否认历史依赖。",
+        "evidence_quote": "任何当前日志天然满足马尔可夫性",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_9f179517dc594d737a89",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提出补充历史摘要、时间特征或信念状态，反而说不要补充状态。",
+        "evidence_quote": "不要补充状态或验证",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_11120f508c48c888faf0",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提出比较含历史模型与无历史模型的验证，反而说不要验证。",
+        "evidence_quote": "不要补充状态或验证",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_d34e2e61f8a476dccd05",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明状态不充分的后果，反而声称信息缺失永远不影响学习。",
+        "evidence_quote": "信息缺失永远不影响学习",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 563,
+      "prompt_tokens": 2353,
+      "total_tokens": 2916,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1969
+    }
+  },
+  "score": 0.0
+}

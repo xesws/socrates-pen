@@ -1,0 +1,349 @@
+{
+  "id": "RL03Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_e1332d2b4a0bb5293614",
+        "name": "核心循环",
+        "definition": "策略迭代循环是策略评价后再做策略改进",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_26d61be937cb5d674ff0",
+        "name": "评价深度",
+        "definition": "价值迭代通常只做一次或少量最优备份就继续下一轮",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b2b96020aeff031aee7d",
+        "name": "评价求解",
+        "definition": "策略评价可通过反复 Bellman 期望备份或解线性方程求到足够精度",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0ed31dde24e9c66294e3",
+        "name": "计算成本",
+        "definition": "价值迭代把改进嵌入每次 max 备份，单轮可能更便宜",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_12b52b6c5bd142312306",
+        "name": "收敛",
+        "definition": "两者在有限折扣 MDP 中都可收敛到最优策略",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_088e9bfe1fec263f6cf2",
+        "name": "适用场景",
+        "definition": "策略迭代适合状态较少且评价可较精确完成的任务",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_5de213d463ef53e65f00",
+        "name": "输出策略",
+        "definition": "价值迭代通常最后再从 V 中提取贪心策略",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_5b130c7c22a040a549ce",
+        "name": "风险",
+        "definition": "风险包括停止过早、模型错误和非法动作处理不当",
+        "source_mq_ids": [
+          "q_913a5bca8be45a0ad31b"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_913a5bca8be45a0ad31b",
+        "version": "c1d0d1e3869a41f76940e5a46b083c41c772201cac6c1aad78dd29c66fd95281",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_913a5bca8be45a0ad31b",
+        "title": "RL03Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "比较策略迭代与价值迭代。请按8个方面回答：核心循环、评价深度、评价求解、计算成本、收敛、适用场景、输出策略、风险。",
+        "reference_answer": "1. 策略迭代循环是策略评价后再做策略改进。\n2. 价值迭代通常只做一次或少量最优备份就继续下一轮。\n3. 策略评价可通过反复 Bellman 期望备份或解线性方程求到足够精度。\n4. 价值迭代把改进嵌入每次 max 备份，单轮可能更便宜。\n5. 两者在有限折扣 MDP 中都可收敛到最优策略。\n6. 策略迭代适合状态较少且评价可较精确完成的任务。\n7. 价值迭代通常最后再从 V 中提取贪心策略。\n8. 风险包括停止过早、模型错误和非法动作处理不当。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL03Q09\n#### 题型\nshort_answer\n#### 题干\n比较策略迭代与价值迭代。请按8个方面回答：核心循环、评价深度、评价求解、计算成本、收敛、适用场景、输出策略、风险。\n#### 答案\n1. 策略迭代循环是策略评价后再做策略改进。\n2. 价值迭代通常只做一次或少量最优备份就继续下一轮。\n3. 策略评价可通过反复 Bellman 期望备份或解线性方程求到足够精度。\n4. 价值迭代把改进嵌入每次 max 备份，单轮可能更便宜。\n5. 两者在有限折扣 MDP 中都可收敛到最优策略。\n6. 策略迭代适合状态较少且评价可较精确完成的任务。\n7. 价值迭代通常最后再从 V 中提取贪心策略。\n8. 风险包括停止过早、模型错误和非法动作处理不当。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_e1332d2b4a0bb5293614",
+          "pt_26d61be937cb5d674ff0",
+          "pt_b2b96020aeff031aee7d",
+          "pt_0ed31dde24e9c66294e3",
+          "pt_12b52b6c5bd142312306",
+          "pt_088e9bfe1fec263f6cf2",
+          "pt_5de213d463ef53e65f00",
+          "pt_5b130c7c22a040a549ce"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_e1332d2b4a0bb5293614",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "策略迭代循环是策略评价后再做策略改进",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "策略迭代循环是策略评价后再做策略改进"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_26d61be937cb5d674ff0",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "价值迭代通常只做一次或少量最优备份就继续下一轮",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "价值迭代通常只做一次或少量最优备份就继续下一轮"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_b2b96020aeff031aee7d",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "策略评价可通过反复 Bellman 期望备份或解线性方程求到足够精度",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "策略评价可通过反复 Bellman 期望备份或解线性方程求到足够精度"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_0ed31dde24e9c66294e3",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "价值迭代把改进嵌入每次 max 备份，单轮可能更便宜",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "价值迭代把改进嵌入每次 max 备份，单轮可能更便宜"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_12b52b6c5bd142312306",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "两者在有限折扣 MDP 中都可收敛到最优策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "两者在有限折扣 MDP 中都可收敛到最优策略"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_088e9bfe1fec263f6cf2",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "策略迭代适合状态较少且评价可较精确完成的任务",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "策略迭代适合状态较少且评价可较精确完成的任务"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_5de213d463ef53e65f00",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "价值迭代通常最后再从 V 中提取贪心策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "价值迭代通常最后再从 V 中提取贪心策略"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_5b130c7c22a040a549ce",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "风险包括停止过早、模型错误和非法动作处理不当",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "风险包括停止过早、模型错误和非法动作处理不当"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 619,
+          "end_line": 634
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 621,
+            "end_line": 621
+          },
+          "题干": {
+            "start_line": 623,
+            "end_line": 623
+          },
+          "答案": {
+            "start_line": 625,
+            "end_line": 632
+          },
+          "解答": {
+            "start_line": 634,
+            "end_line": 634
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "9195369ec3ed5ac04379cdc4c44414df5c064c872ae03f9156d15e85374ebf3c"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1253,
+      "prompt_tokens": 19278,
+      "total_tokens": 20531,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 462
+    }
+  }
+}

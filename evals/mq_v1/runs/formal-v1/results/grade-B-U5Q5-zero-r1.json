@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q5-zero-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1e89828c7bb83244f9be",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未读出A=7且B=2，仅提到喜欢咖啡，未提供任何数值信息。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_f84ab61235c00f1a38fc",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未计算B−A，未提供任何计算结果。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 94,
+      "prompt_tokens": 609,
+      "total_tokens": 703,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 609
+    }
+  },
+  "score": 0.0
+}

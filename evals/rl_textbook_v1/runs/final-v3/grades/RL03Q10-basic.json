@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q10-basic",
+  "case_id": "RL03Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1501079a3aa546101689",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确指出 Bellman 方程把目标价值定义为算子的固定点。",
+        "evidence_quote": "Bellman 方程把目标价值定义为算子的固定点。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_9ec80cc48c9102c9e8b2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明折扣 Bellman 算子在 γ<1 时缩小价值函数之间的最大差异。",
+        "evidence_quote": "折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d2047fa3436cae8cc50e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 γ 越小压缩越强或 γ 接近 1 时收敛更慢。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8d3d6ddea2bab60095c5",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及经典保证通常针对有限状态动作空间。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_eefda56ec86984b3e8a9",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及异步更新需要足够覆盖相关状态动作。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_6b3cf4b9a9d234329ec6",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及模型错误时收敛到错误模型下的解。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e766ddaa8a3ab1f56c70",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及函数近似或截断评价引入额外近似误差。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_ecfc145603040d770661",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 373,
+      "prompt_tokens": 2254,
+      "total_tokens": 2627,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1870
+    }
+  },
+  "score": 0.2
+}

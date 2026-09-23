@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q3-zero-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q3",
+  "sample_id": "U2Q3-zero",
+  "sample_kind": "zero",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q3-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案仅说明题干关键词出现，未表达“循环开始前成立”这一要点，属于没有表达。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q3-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案未表达“每次迭代保持成立”这一要点，属于没有表达。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 112,
+      "prompt_tokens": 429,
+      "total_tokens": 541,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 173
+    }
+  },
+  "score": 0.0
+}

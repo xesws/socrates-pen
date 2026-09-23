@@ -68,7 +68,11 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     # 起进程就扫一遍过期会话。uvicorn 那边 reload=False，所以这里只跑一次。
     # purge 保证不抛——目录不存在、文件被并发删都不该让 sidecar 起不来。
     retention.purge_expired_sessions()
-    yield
+    try:
+        yield
+    finally:
+        from pen.practice.runtime import supervisor
+        supervisor.stop()
 
 
 # 版本号**从 `pen/__init__.py` 读**，不在这儿抄一份字面量。抄的那份会漂：
@@ -89,6 +93,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from pen.practice.api import router as practice_router
+app.include_router(practice_router)
 
 _proposals: dict[str, dict[str, Any]] = {}
 
@@ -417,10 +424,12 @@ def request_exit() -> None:
 
 @app.get("/v1/health")
 def health() -> dict[str, Any]:
+    from pen.practice.runtime import supervisor
     return {
         "status": "ok",
         "version": __version__,
-        "capabilities": {"big_bang": True},
+        "capabilities": {"big_bang": True, "practice": True},
+        "practice_services": supervisor.status(),
         "llm": llm_public_status(),
         # 和 llm 平级而不是嵌在里面：前端的 LlmStatus 是个扁平类型，
         # 嵌进去会让「基座配好没」和「快模型配好没」共用一个 ok 字段。

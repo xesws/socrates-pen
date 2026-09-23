@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q2-paraphrase-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 1,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q2-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案只提到“排序保证被舍弃区域不含要找的值”，没有表达“数组已排序”这一要点；虽然“排序”一词出现，但未说明数组已排序，且整体表述侧重排除区域，不符合该要点。",
+        "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q2-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案准确表达了“被排除的一半不可能包含目标”这一要点，即被舍弃区域不含要找的值，属于等价改述。",
+        "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 143,
+      "prompt_tokens": 422,
+      "total_tokens": 565,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 422
+    }
+  },
+  "score": 0.5
+}

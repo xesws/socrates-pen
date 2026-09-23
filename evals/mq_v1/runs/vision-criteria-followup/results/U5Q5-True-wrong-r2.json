@@ -1,0 +1,45 @@
+{
+  "id": "U5Q5-True-wrong-r2",
+  "case_id": "U5Q5",
+  "with_image": true,
+  "answer_kind": "wrong",
+  "repeat": 2,
+  "expected": 0,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "图中A的标注值为7，B的标注值为2；学生写出A=2、B=7，与图中标注值相反，未同时正确。",
+        "evidence_quote": "A=2，B=7；B−A=9。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "图中真实B−A应为2−7=−5，学生写出的B−A=9错误。",
+        "evidence_quote": "A=2，B=7；B−A=9。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 127,
+      "prompt_tokens": 596,
+      "total_tokens": 723,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 212
+    }
+  },
+  "score": 0.0
+}

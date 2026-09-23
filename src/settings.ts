@@ -83,6 +83,8 @@ export interface PenSettings {
   limits: PenLimits;
   /** 读者自己定的泡泡。类型与归一化在 src/customchips.ts。 */
   customChips: CustomChip[];
+  /** 实验练习系统，默认关；设置页开关会同步 /v1/practice/enable，但不会生成题。 */
+  practiceExperiment: boolean;
 }
 
 /**
@@ -202,6 +204,7 @@ export const DEFAULT_SETTINGS: PenSettings = {
   deepQuestions: true,
   limits: coerceLimits({}),
   customChips: [],
+  practiceExperiment: false,
 };
 
 const THINKING: ThinkingLevel[] = ["off", "low", "medium", "high"];
@@ -410,6 +413,7 @@ type PenHost = {
   ensureSidecar: () => Promise<EnsureKind>;
   stopSidecar: () => Promise<StopResult>;
   refreshPenViews: () => void;
+  setPracticeExperiment: (on: boolean) => Promise<void>;
   /** 设置页改完自定义泡泡后叫醒侧栏那排按钮。 */
   refreshChips: () => void;
   /** 顶栏那枚 Fast Mode 开关的同步口。**不复用 refreshPenViews**——
@@ -1017,6 +1021,15 @@ export class PenSettingTab extends PluginSettingTab {
             this.display(); // 原地重画，设置页自己也要跟着变
           });
       });
+
+    new Setting(containerEl)
+      .setName(s.setPracticeExperimentName)
+      .setDesc(s.setPracticeExperimentDesc)
+      .addToggle((c) =>
+        c.setValue(this.plugin.settings.practiceExperiment === true).onChange((v) => {
+          void this.plugin.setPracticeExperiment(v);
+        }),
+      );
 
     // v0.18.0：钥匙只写不读。输入即 PUT 给 sidecar（落在它家目录的 llm.json，
     // 0600），本地任何文件——包括这份 data.json——都不存。

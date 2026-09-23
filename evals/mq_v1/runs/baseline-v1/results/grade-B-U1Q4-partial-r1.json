@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U1Q4-partial-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U1Q4",
+  "sample_id": "U1Q4-partial",
+  "sample_kind": "partial",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_134e0776382462078574",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者正确指出 == 比较值是否相等，符合满分标准。",
+        "evidence_quote": "== 比较值是否相等。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_219b30b01f262f8fa71c",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者未提及 is 的比较内容，未提及或表述错误不得分。",
+        "evidence_quote": ""
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 86,
+      "prompt_tokens": 410,
+      "total_tokens": 496,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 410
+    }
+  },
+  "score": 0.5
+}

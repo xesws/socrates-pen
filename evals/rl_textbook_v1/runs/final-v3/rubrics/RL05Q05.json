@@ -1,0 +1,113 @@
+{
+  "id": "RL05Q05",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_528f62c7b4adf05a7781",
+        "name": "TD误差计算",
+        "definition": "按 δ=r+γV(S')−V(S) 计算得到 1.6",
+        "source_mq_ids": [
+          "q_94b4ff6a0d3243849ad7"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_94b4ff6a0d3243849ad7",
+        "version": "fb03c326815f2d0759c71fa527494ffa3845b8017d94b285aa3fdbf7a9c0e7b1",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_94b4ff6a0d3243849ad7",
+        "title": "RL05Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "若 r=1、γ=0.9、V(S')=4、V(S)=3，则 TD 误差 δ=1+0.9×4-3={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"1.6\"],\"numeric_value\":1.6,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "TD 目标是 4.6，减去当前估计 3，误差为 1.6。",
+        "raw_markdown": "### RL05Q05\n#### 题型\nfill_blank\n#### 题干\n若 r=1、γ=0.9、V(S')=4、V(S)=3，则 TD 误差 δ=1+0.9×4-3={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"1.6\"],\"numeric_value\":1.6,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\nTD 目标是 4.6，减去当前估计 3，误差为 1.6。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_528f62c7b4adf05a7781"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_528f62c7b4adf05a7781",
+            "max_score": 1.0,
+            "description": "填入 1.6（允许数值容差）",
+            "partial_credit": "仅一个空，精确数值匹配得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或与1.6不符"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入1.6（在数值容差内）"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 999,
+          "end_line": 1009
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1001,
+            "end_line": 1001
+          },
+          "题干": {
+            "start_line": 1003,
+            "end_line": 1003
+          },
+          "答案": {
+            "start_line": 1005,
+            "end_line": 1007
+          },
+          "解答": {
+            "start_line": 1009,
+            "end_line": 1009
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "1.6"
+            ],
+            "numeric_value": 1.6,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "d12bb9c35f4dffd5bcaa9c594c14c9ec271684268179fa77bd9e7bc9863a928d"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 19201,
+      "total_tokens": 19347,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 385
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U1Q4-r2",
+  "kind": "rubric",
+  "case_id": "U1Q4",
+  "split": "dev",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_07ac9c61ab0544b443d0",
+      "name": "== 比较值",
+      "definition": "说明 == 比较的是值是否相等。",
+      "source_mq_ids": [
+        "q_687869f91ff0754f0308"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_bbbea150a9943b06b22f",
+      "name": "is 比较身份",
+      "definition": "说明 is 比较的是对象身份（是否为同一对象）。",
+      "source_mq_ids": [
+        "q_687869f91ff0754f0308"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_07ac9c61ab0544b443d0",
+      "max_score": 0.5,
+      "description": "指出 == 比较值是否相等（或等价表述，如比较两个对象的值是否相同）。",
+      "partial_credit": "答出 == 比较值/内容即得满分；若称 == 比较对象身份或与 is 含义相同，则得 0 分；未提及 == 得 0 分。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_bbbea150a9943b06b22f",
+      "max_score": 0.5,
+      "description": "指出 is 比较对象身份（或等价表述，如比较是否为同一对象、是否指向同一内存地址）。",
+      "partial_credit": "答出 is 比较对象身份/是否为同一对象即得满分；若称 is 比较值是否相等或与 == 含义相同，则得 0 分；未提及 is 得 0 分。"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q2-full-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_381d7c708955c0850311",
+        "score": 1.0,
+        "max_score": 1.0,
+        "reason": "学习者答案完整表达了数组已排序，因此目标不可能出现在被排除的那一半，建立了有序性与排除半区之间的因果联系，符合满分标准。",
+        "evidence_quote": "数组已排序，目标不可能出现在被排除的那一半"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 70,
+      "prompt_tokens": 391,
+      "total_tokens": 461,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 391
+    }
+  },
+  "score": 1.0
+}

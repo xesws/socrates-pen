@@ -1,0 +1,112 @@
+{
+  "id": "RL01Q06",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_92091612fc253a1e4692",
+        "name": "状态",
+        "definition": "填入“状态”或等价英文 state，表示当前状态已足以预测下一状态与奖励。",
+        "source_mq_ids": [
+          "q_76d2bb69a1a29b176b36"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_76d2bb69a1a29b176b36",
+        "version": "2a3de1ca920eb848b95b886f2e7ede9c6f111dd479d3414596041fcdd1857d5f",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_76d2bb69a1a29b176b36",
+        "title": "RL01Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "如果给定当前 {{b1}} 和动作后，完整历史不再改善对下一状态与奖励的预测，则该信息摘要满足马尔可夫性。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"状态\",\"state\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "马尔可夫条件讨论的是状态是否足以屏蔽历史。",
+        "raw_markdown": "### RL01Q06\n#### 题型\nfill_blank\n#### 题干\n如果给定当前 {{b1}} 和动作后，完整历史不再改善对下一状态与奖励的预测，则该信息摘要满足马尔可夫性。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"状态\",\"state\"],\"case_sensitive\":false}}\n```\n#### 解答\n马尔可夫条件讨论的是状态是否足以屏蔽历史。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_92091612fc253a1e4692"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_92091612fc253a1e4692",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入“状态”或 state，表示当前状态已足以预测下一状态与奖励。",
+            "partial_credit": "本空独立给分；大小写不敏感；语义等价即可；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与“状态/state”矛盾的内容"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入“状态”或 state（大小写不敏感）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 144,
+          "end_line": 154
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 146,
+            "end_line": 146
+          },
+          "题干": {
+            "start_line": 148,
+            "end_line": 148
+          },
+          "答案": {
+            "start_line": 150,
+            "end_line": 152
+          },
+          "解答": {
+            "start_line": 154,
+            "end_line": 154
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "状态",
+              "state"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "ca66a7a52ca02fc2a59222055b0a89ab5dffcdbc2fbf94e5979b04ea2988b06e"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 170,
+      "prompt_tokens": 19161,
+      "total_tokens": 19331,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 345
+    }
+  }
+}

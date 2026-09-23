@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U1Q5-wrong-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U1Q5",
+  "sample_id": "U1Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U1Q5-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答“and 左侧为真才短路”与正确规则相反，未表达“and 左边为假时不再计算右边”，属于表达错误。",
+        "evidence_quote": "and 左侧为真才短路"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U1Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答“or 左侧为假才短路”与正确规则相反，未表达“or 左边为真时不再计算右边”，属于表达错误。",
+        "evidence_quote": "or 左侧为假才短路"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 126,
+      "prompt_tokens": 391,
+      "total_tokens": 517,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 391
+    }
+  },
+  "score": 0.0
+}

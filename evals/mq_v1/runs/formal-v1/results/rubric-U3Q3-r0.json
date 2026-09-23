@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U3Q3-r0",
+  "kind": "rubric",
+  "case_id": "U3Q3",
+  "split": "test",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_db43faa205f7fa0696fd",
+      "name": "集合去重后元素个数",
+      "definition": "集合中重复元素只保留一次，len 返回去重后集合的元素个数",
+      "source_mq_ids": [
+        "q_3f9d6e8bbb1a2f9286d1"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_db43faa205f7fa0696fd",
+      "max_score": 1.0,
+      "description": "在 b1 处填入 2，即集合 {1, 1, 2} 去重后为 {1, 2}，元素个数为 2",
+      "partial_credit": "填入 2 得 1 分；填入其他数值、空白或无关内容得 0 分",
+      "blank_id": "b1"
+    }
+  ]
+}

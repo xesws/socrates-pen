@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U6Q5-r1",
+  "kind": "rubric",
+  "case_id": "U6Q5",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_c99cbc2a76b171cce90b",
+      "name": "计算平均数",
+      "definition": "根据图中两列数值求算术平均数",
+      "source_mq_ids": [
+        "q_2b1647f7d7516f3cff07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_e0fca6e4bf70f32c5b66",
+      "name": "判断高于平均数的列",
+      "definition": "比较各列数值与平均数，指出高于平均数的列",
+      "source_mq_ids": [
+        "q_2b1647f7d7516f3cff07"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_c99cbc2a76b171cce90b",
+      "max_score": 0.5,
+      "description": "正确读出图中A列数值为9、B列数值为3，并计算算术平均数(9+3)/2=6，答案应包含平均数6。",
+      "partial_credit": "平均数正确为6得0.5分；未给出或错误得0分；若同时给出错误平均数与正确平均数，以错误处理得0分。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_e0fca6e4bf70f32c5b66",
+      "max_score": 0.5,
+      "description": "比较两列数值与平均数6，指出A列（9）高于平均数。",
+      "partial_credit": "正确指出A高于平均数得0.5分；未指出、指出错误列或同时声称两列均高于平均数得0分。"
+    }
+  ]
+}

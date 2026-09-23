@@ -1,0 +1,123 @@
+{
+  "id": "RL05Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_6b0c2f46df68487a83c6",
+        "name": "终止状态后的下一状态价值",
+        "definition": "终止状态之后没有未来回报，TD 目标中下一状态价值按约定取 0。",
+        "source_mq_ids": [
+          "q_69311b633aff529850aa"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_69311b633aff529850aa",
+        "version": "4911ea097cbd586f1fa2d8aeb516b1e4e871cbaffff3f0e53532c7c8ba2c11cf",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_69311b633aff529850aa",
+        "title": "RL05Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在终止状态之后，TD 目标中的下一状态价值通常怎样处理？",
+        "reference_answer": "B",
+        "solution_markdown": "终止后没有未来回报，下一状态价值按约定为 0。",
+        "raw_markdown": "### RL05Q04\n#### 题型\nsingle_choice\n#### 题干\n在终止状态之后，TD 目标中的下一状态价值通常怎样处理？\n#### 选项\n##### A\n设为无穷大。\n##### B\n设为 0，只保留最后一步奖励。\n##### C\n复制初始状态价值。\n##### D\n取所有动作价值的乘积。\n#### 答案\nB\n#### 解答\n终止后没有未来回报，下一状态价值按约定为 0。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_6b0c2f46df68487a83c6"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_6b0c2f46df68487a83c6",
+            "max_score": 1.0,
+            "description": "选择 B：终止状态之后下一状态价值设为 0，只保留最后一步奖励。",
+            "partial_credit": "单选：正确选项得满分，其他选项为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、C 或 D，或未作答。"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 981,
+          "end_line": 998
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 983,
+            "end_line": 983
+          },
+          "题干": {
+            "start_line": 985,
+            "end_line": 985
+          },
+          "选项": {
+            "start_line": 987,
+            "end_line": 994
+          },
+          "答案": {
+            "start_line": 996,
+            "end_line": 996
+          },
+          "解答": {
+            "start_line": 998,
+            "end_line": 998
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "设为无穷大。"
+          },
+          {
+            "id": "B",
+            "text": "设为 0，只保留最后一步奖励。"
+          },
+          {
+            "id": "C",
+            "text": "复制初始状态价值。"
+          },
+          {
+            "id": "D",
+            "text": "取所有动作价值的乘积。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "89d6a9b447ee5a0d3f73a06ba36f96b9224fc216bd55d3f1024d5b0d093304b6"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 144,
+      "prompt_tokens": 19141,
+      "total_tokens": 19285,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 325
+    }
+  }
+}

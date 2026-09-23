@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q5-partial-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q5",
+  "sample_id": "U2Q5-partial",
+  "sample_kind": "partial",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者回答“应抛出异常拒绝空列表”明确表达了拒绝空列表或抛出异常这一要点，符合评分标准。",
+        "evidence_quote": "应抛出异常拒绝空列表。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及长度为零导致除以零的原因，缺少该要点。",
+        "evidence_quote": "应抛出异常拒绝空列表。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 102,
+      "prompt_tokens": 371,
+      "total_tokens": 473,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 371
+    }
+  },
+  "score": 0.5
+}

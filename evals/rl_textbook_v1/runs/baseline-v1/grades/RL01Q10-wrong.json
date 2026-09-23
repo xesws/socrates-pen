@@ -1,0 +1,119 @@
+{
+  "id": "RL01Q10-wrong",
+  "case_id": "RL01Q10",
+  "kind": "wrong",
+  "split": "dev",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f4022ea19fa3b29de749",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "学生称 episodic 永远没有终点，与 episodic 由有终点的 episode 构成相矛盾。",
+        "evidence_quote": "episodic 永远没有终点",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_b0118295d5b921fafdce",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "学生称 continuing 必须每一步结束，与 continuing 没有自然终点、可无限持续相矛盾。",
+        "evidence_quote": "continuing 必须每一步结束",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_ebaa975c2bacfbc66e31",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 episodic 最大化每 episode 总回报或折扣回报。",
+        "evidence_quote": "两者目标都是让奖励消失",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_1e8fe9ce3f1e9f4e31f1",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 continuing 使用折扣回报或长期平均奖励。",
+        "evidence_quote": "两者目标都是让奖励消失",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_01479fa903d15b5fcb77",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "虽提到棋局，但称棋局没有结束，与棋局通常是 episodic 相矛盾。",
+        "evidence_quote": "棋局没有结束",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_a2850963dbbabf663c96",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及恒温控制、服务器调度或持续推荐属于 continuing。",
+        "evidence_quote": "持续控温只能有一局",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_0d413312b9d8081f1c10",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "学生称不需指标，未提及 episodic 看每局回报、成功率、长度或 continuing 看稳态平均表现。",
+        "evidence_quote": "不需指标",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_cf0e380b4ea46bd53857",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "学生称任意改时间结构不会影响策略，与建模选择应跟任务时间结构一致、否则扭曲策略偏好相矛盾。",
+        "evidence_quote": "任意改时间结构不会影响策略",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 569,
+      "prompt_tokens": 2165,
+      "total_tokens": 2734,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 1909
+    }
+  },
+  "score": 0.0
+}

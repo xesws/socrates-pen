@@ -1,0 +1,109 @@
+{
+  "id": "generated-text-wrong",
+  "kind": "grade",
+  "arm": "generated",
+  "mode": "text",
+  "expected": 0,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1a018144daf9b9386917",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案主张复用同一个版本ID并原地覆盖旧配置，与“每次配置变更分配唯一版本标识”直接矛盾。",
+        "evidence_quote": "Reuse one version ID and overwrite the old configuration in place.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_f4415936bb3dc56aaada",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案要求原地覆盖旧配置，与“每个版本的配置内容不可变并持久化保存”直接矛盾。",
+        "evidence_quote": "Reuse one version ID and overwrite the old configuration in place.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8cb21c3e8b73209b9ea0",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确要求跳过验证，与“发布前验证格式和业务约束，非法配置拒绝发布”直接矛盾。",
+        "evidence_quote": "Skip validation and publish to every instance at once.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_3f872eb9f714908a544e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案要求一次性发布到所有实例，与“先在少量实例灰度验证，再逐步扩大范围”直接矛盾。",
+        "evidence_quote": "Skip validation and publish to every instance at once.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_025fec6de01710dd6e6c",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确要求不监控，与“监控错误率和延迟，并在预设阈值触发时停止扩大发布”直接矛盾。",
+        "evidence_quote": "Do not monitor, roll back, collect acknowledgements or keep audit records.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f483e6333f0fe95b7cd8",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确要求不回滚，与“回滚重新指向保留的已知良好版本，而不是修改历史版本”直接矛盾。",
+        "evidence_quote": "Do not monitor, roll back, collect acknowledgements or keep audit records.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_7b0db01f6c5e48b7fd9e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确要求不收集确认，与“记录各实例实际确认的配置版本，发现未更新或失败实例”直接矛盾。",
+        "evidence_quote": "Do not monitor, roll back, collect acknowledgements or keep audit records.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_a66b81b0f2d3fde3a1a3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确要求不保留审计记录，与“保留操作者、时间、版本和结果的审计记录”直接矛盾。",
+        "evidence_quote": "Do not monitor, roll back, collect acknowledgements or keep audit records.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 674,
+      "prompt_tokens": 2051,
+      "total_tokens": 2725,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 1539
+    }
+  },
+  "score": 0.0
+}

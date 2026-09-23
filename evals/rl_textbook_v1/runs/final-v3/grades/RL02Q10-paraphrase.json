@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q10-paraphrase",
+  "case_id": "RL02Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_679c38bd802ba25c1d02",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求清点决策时刻可观测的字段。",
+        "evidence_quote": "Inventory the fields observable at the decision time.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_10a74ee82a60ec017b81",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "列举了库存、潜在用户意图、设备延迟等未记录隐藏变量。",
+        "evidence_quote": "Look for omitted drivers such as stock availability, latent user intent or device delays.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_092c6bc38c76263d79d3",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求在给定当前字段和动作后检验更早历史是否仍能预测下一观测。",
+        "evidence_quote": "Conditional on those fields and the action, test whether older history still predicts the next observation.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8a205c9e8501621dc0c4",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求对奖励做同样的条件依赖检验。",
+        "evidence_quote": "Test the same conditional dependence for rewards.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_d59205017bc477ddfb8f",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出若点击序列或累计疲劳增加预测信息，则当前记录不是充分马尔可夫状态。",
+        "evidence_quote": "If click sequences or accumulated fatigue add predictive information, the current record is not a sufficient Markov state.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_9f179517dc594d737a89",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "提出可加入历史摘要、时间特征或信念表示。",
+        "evidence_quote": "Add the relevant history summary, time features or a belief representation.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_11120f508c48c888faf0",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求比较含历史与无历史预测器及策略表现。",
+        "evidence_quote": "Compare history-aware and memoryless predictors and resulting policy performance.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_d34e2e61f8a476dccd05",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指出别名可能使Bellman学习有偏并损害部署稳定性，而非保证失败。",
+        "evidence_quote": "Aliasing can bias Bellman-based learning and harm deployment stability, rather than guaranteeing failure in every case.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 598,
+      "prompt_tokens": 2504,
+      "total_tokens": 3102,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2120
+    }
+  },
+  "score": 1.0
+}

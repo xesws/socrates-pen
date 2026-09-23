@@ -1,0 +1,349 @@
+{
+  "id": "RL04Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_cee48667578d214ad2bc",
+        "name": "任务类型",
+        "definition": "MC 更适合有自然终局的 episodic 任务。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ae90d3dd17d952bf3e3b",
+        "name": "模型",
+        "definition": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c7713950baffd0722d20",
+        "name": "终局",
+        "definition": "当 episode 长度可控且能等到终局时，MC 目标容易定义。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_f414afbc03df15116581",
+        "name": "偏差",
+        "definition": "在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_99b8d880dce8fa4d38c2",
+        "name": "自举",
+        "definition": "MC 不从估计的下一状态价值自举，因此不会把早期 V 估计直接放进目标。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ca756bb1abe1e65b51d5",
+        "name": "方差",
+        "definition": "MC 方差可能较高，需要足够 episode 平均。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c50c546881eb39863d54",
+        "name": "稀疏奖励",
+        "definition": "稀疏终局奖励中，MC 能直接把最终结果分配给整条轨迹上的访问。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_da752f3ad56f86ae4bec",
+        "name": "实现",
+        "definition": "实现上 MC 简单，但在线更新和 continuing 任务中 TD 往往更方便。",
+        "source_mq_ids": [
+          "q_68be3175310242c8c36b"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_68be3175310242c8c36b",
+        "version": "0fa772a82494d556d44ede3a2a264e4f59b094e2fd18cf54de6b45d2637784c9",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_68be3175310242c8c36b",
+        "title": "RL04Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "说明什么时候 MC 比 TD 更合适。请按8个方面回答：任务类型、模型、终局、偏差、自举、方差、稀疏奖励、实现。",
+        "reference_answer": "1. MC 更适合有自然终局的 episodic 任务。\n2. MC 不需要已知环境模型，只需要采样完整轨迹。\n3. 当 episode 长度可控且能等到终局时，MC 目标容易定义。\n4. 在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。\n5. MC 不从估计的下一状态价值自举，因此不会把早期 V 估计直接放进目标。\n6. MC 方差可能较高，需要足够 episode 平均。\n7. 稀疏终局奖励中，MC 能直接把最终结果分配给整条轨迹上的访问。\n8. 实现上 MC 简单，但在线更新和 continuing 任务中 TD 往往更方便。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL04Q10\n#### 题型\nshort_answer\n#### 题干\n说明什么时候 MC 比 TD 更合适。请按8个方面回答：任务类型、模型、终局、偏差、自举、方差、稀疏奖励、实现。\n#### 答案\n1. MC 更适合有自然终局的 episodic 任务。\n2. MC 不需要已知环境模型，只需要采样完整轨迹。\n3. 当 episode 长度可控且能等到终局时，MC 目标容易定义。\n4. 在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。\n5. MC 不从估计的下一状态价值自举，因此不会把早期 V 估计直接放进目标。\n6. MC 方差可能较高，需要足够 episode 平均。\n7. 稀疏终局奖励中，MC 能直接把最终结果分配给整条轨迹上的访问。\n8. 实现上 MC 简单，但在线更新和 continuing 任务中 TD 往往更方便。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_cee48667578d214ad2bc",
+          "pt_ae90d3dd17d952bf3e3b",
+          "pt_c7713950baffd0722d20",
+          "pt_f414afbc03df15116581",
+          "pt_99b8d880dce8fa4d38c2",
+          "pt_ca756bb1abe1e65b51d5",
+          "pt_c50c546881eb39863d54",
+          "pt_da752f3ad56f86ae4bec"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_cee48667578d214ad2bc",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "MC 更适合有自然终局的 episodic 任务。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "MC 更适合有自然终局的 episodic 任务。"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_ae90d3dd17d952bf3e3b",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "MC 不需要已知环境模型，只需要采样完整轨迹。"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_c7713950baffd0722d20",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "当 episode 长度可控且能等到终局时，MC 目标容易定义。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "当 episode 长度可控且能等到终局时，MC 目标容易定义。"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_f414afbc03df15116581",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_99b8d880dce8fa4d38c2",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "MC 不从估计的下一状态价值自举，因此不会把早期 V 估计直接放进目标。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "MC 不从估计的下一状态价值自举，因此不会把早期 V 估计直接放进目标。"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_ca756bb1abe1e65b51d5",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "MC 方差可能较高，需要足够 episode 平均。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "MC 方差可能较高，需要足够 episode 平均。"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_c50c546881eb39863d54",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "稀疏终局奖励中，MC 能直接把最终结果分配给整条轨迹上的访问。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "稀疏终局奖励中，MC 能直接把最终结果分配给整条轨迹上的访问。"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_da752f3ad56f86ae4bec",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "实现上 MC 简单，但在线更新和 continuing 任务中 TD 往往更方便。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "实现上 MC 简单，但在线更新和 continuing 任务中 TD 往往更方便。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 851,
+          "end_line": 866
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 853,
+            "end_line": 853
+          },
+          "题干": {
+            "start_line": 855,
+            "end_line": 855
+          },
+          "答案": {
+            "start_line": 857,
+            "end_line": 864
+          },
+          "解答": {
+            "start_line": 866,
+            "end_line": 866
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "77bdf81451b7c7efea99bf346e2bc92b8c79b4eca66c114ad7c5c8cbdd6cf577"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1902,
+      "prompt_tokens": 19299,
+      "total_tokens": 21201,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 483
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q5-image-wrong-r0",
+  "kind": "vision_grade",
+  "case_id": "U5Q5",
+  "split": "test",
+  "repeat": 0,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0.5,
+    "reason": "读值部分错误：图中A=7，B=2，学生写成A=2，B=7，不得分；计算部分B−A=2−7=−5，学生写成9，错误，不得分。因此总分为0。",
+    "usage": {
+      "completion_tokens": 69,
+      "prompt_tokens": 375,
+      "total_tokens": 444,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 375
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0.5
+}

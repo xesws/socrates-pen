@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U2Q4-paraphrase-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_dc7794b847f40f9fd12d",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确提到“先证明初始状态满足条件”，等价于说明初始化检查保证循环不变量在首次迭代前成立，符合完全正确说明的要求。",
+        "evidence_quote": "先证明初始状态满足条件"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_5dc6a6bf4c60b9b432a9",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确提到“再证明迭代不会破坏条件”，等价于说明保持检查保证若某次迭代前循环不变量成立，则下一次迭代前仍成立，符合完全正确说明的要求。",
+        "evidence_quote": "再证明迭代不会破坏条件"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 134,
+      "prompt_tokens": 527,
+      "total_tokens": 661,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 527
+    }
+  },
+  "score": 1.0
+}

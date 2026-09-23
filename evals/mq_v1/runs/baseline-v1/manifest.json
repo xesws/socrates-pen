@@ -1,0 +1,18 @@
+{
+  "dataset_hash": "c9844fd63763965ffee630db8a28a42bf1fbe6367ffaf1c397312d1b323c7600",
+  "model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com",
+  "thinking": "off",
+  "temperature": 0,
+  "max_output_tokens": 2048,
+  "repetitions": 3,
+  "max_calls": 800,
+  "max_total_tokens": 4000000,
+  "code_hashes": {
+    "pen/practice/importer.py": "70192f93cabba9caea4ebbe4943f32bea00a08f991268d35e61a7cc8660e008c",
+    "pen/practice/grading.py": "bd0ca7be6f645b3d67cb7798dd81aba17e3e8d9ac2d86e0aabb4a379e91a7e82",
+    "pen/practice/llm.py": "ed19a636a4b25c6bd724dfba5b0afabba2bf504c3a3e46881e55218ed91cfa54",
+    "pen/practice/evaluation.py": "bdfbced8c07c65f422d1e7a8bdbc6fcf5ea1fb89494386d75b258417af64dd23",
+    "scripts/evaluate-practice.py": "0ff92a369f9614f36359ffa2630a9a22fded138b7941b2a6951897c289de7328"
+  }
+}

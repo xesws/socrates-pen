@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q01",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_70aa4b6b72ff8bad2446",
+        "name": "正确选项",
+        "definition": "TD(0) 的一步自举目标为 R_{t+1}+γV(S_{t+1})。",
+        "source_mq_ids": [
+          "q_d116b0b376e045cc79d4"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_d116b0b376e045cc79d4",
+        "version": "9bead1c8ceaa3b37385099aef3ed998e5bf977cc9279b9db14a8b2f1e804564b",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_d116b0b376e045cc79d4",
+        "title": "RL05Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "TD(0) 的一步目标通常写成什么？",
+        "reference_answer": "A",
+        "solution_markdown": "TD(0) 用一步奖励和下一状态当前价值估计构造自举目标。",
+        "raw_markdown": "### RL05Q01\n#### 题型\nsingle_choice\n#### 题干\nTD(0) 的一步目标通常写成什么？\n#### 选项\n##### A\nR_{t+1}+γV(S_{t+1})。\n##### B\n整条 episode 的未折扣总奖励且不能更新到终局前。\n##### C\nmax_s P(s)。\n##### D\n监督标签 y 的交叉熵。\n#### 答案\nA\n#### 解答\nTD(0) 用一步奖励和下一状态当前价值估计构造自举目标。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_70aa4b6b72ff8bad2446"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_70aa4b6b72ff8bad2446",
+            "max_score": 1.0,
+            "description": "选择 A：R_{t+1}+γV(S_{t+1})。",
+            "partial_credit": "单选，选对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 A 或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A：R_{t+1}+γV(S_{t+1})"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 927,
+          "end_line": 944
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 929,
+            "end_line": 929
+          },
+          "题干": {
+            "start_line": 931,
+            "end_line": 931
+          },
+          "选项": {
+            "start_line": 933,
+            "end_line": 940
+          },
+          "答案": {
+            "start_line": 942,
+            "end_line": 942
+          },
+          "解答": {
+            "start_line": 944,
+            "end_line": 944
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "R_{t+1}+γV(S_{t+1})。"
+          },
+          {
+            "id": "B",
+            "text": "整条 episode 的未折扣总奖励且不能更新到终局前。"
+          },
+          {
+            "id": "C",
+            "text": "max_s P(s)。"
+          },
+          {
+            "id": "D",
+            "text": "监督标签 y 的交叉熵。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "b9dd93544433412e3c3ad14a32956ba8831bede41751ae9111ad5d629cfd9871"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 155,
+      "prompt_tokens": 19161,
+      "total_tokens": 19316,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 345
+    }
+  }
+}

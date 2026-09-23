@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U2Q5-wrong-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q5",
+  "sample_id": "U2Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_127736a2da302be05e8a",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "回答未指出输入空列表时应明确拒绝或抛出异常，反而错误地声称空列表的长度是1，属于其他处理方式，不得分。",
+        "evidence_quote": "空列表的长度是 1。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0cc779d056b4ab5aca3f",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "回答未说明原因是空列表长度为零导致除以零，反而错误地声称空列表长度为1，原因错误，不得分。",
+        "evidence_quote": "空列表的长度是 1。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 116,
+      "prompt_tokens": 482,
+      "total_tokens": 598,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 482
+    }
+  },
+  "score": 0.0
+}

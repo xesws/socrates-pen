@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q5-full-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q5",
+  "sample_id": "U4Q5-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确表达了“边界测试只能覆盖选定的有限样例”，准确对应“测试只覆盖选定样例”这一要点。",
+        "evidence_quote": "边界测试只能覆盖选定的有限样例"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确表达了“未测试的输入仍可能触发错误”，准确对应“未测试输入仍可能出错”这一要点。",
+        "evidence_quote": "未测试的输入仍可能触发错误"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 117,
+      "prompt_tokens": 381,
+      "total_tokens": 498,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 381
+    }
+  },
+  "score": 1.0
+}

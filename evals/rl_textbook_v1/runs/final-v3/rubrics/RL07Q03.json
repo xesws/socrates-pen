@@ -1,0 +1,123 @@
+{
+  "id": "RL07Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_fadec528cf77f72bf7d5",
+        "name": "正确选项",
+        "definition": "Advantage A(s,a) 最准确的解释是动作 a 相对状态 s 下平均动作选择的额外价值，即选项 B。",
+        "source_mq_ids": [
+          "q_241dcd8108855ea4ac9c"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_241dcd8108855ea4ac9c",
+        "version": "6731f4e445ddd647338280a360eeb582848c294f1f5d3fe53fa77c13f4e90831",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_241dcd8108855ea4ac9c",
+        "title": "RL07Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Advantage A(s,a) 最准确的解释是哪项？",
+        "reference_answer": "B",
+        "solution_markdown": "Advantage 通常为 Q(s,a)-V(s)，衡量相对基线的好坏。",
+        "raw_markdown": "### RL07Q03\n#### 题型\nsingle_choice\n#### 题干\nAdvantage A(s,a) 最准确的解释是哪项？\n#### 选项\n##### A\n环境转移概率的倒数。\n##### B\n动作 a 相对状态 s 下平均动作选择的额外价值。\n##### C\n奖励函数的最大可能值。\n##### D\n神经网络参数的范数。\n#### 答案\nB\n#### 解答\nAdvantage 通常为 Q(s,a)-V(s)，衡量相对基线的好坏。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_fadec528cf77f72bf7d5"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_fadec528cf77f72bf7d5",
+            "max_score": 1.0,
+            "description": "选择 B：动作 a 相对状态 s 下平均动作选择的额外价值。",
+            "partial_credit": "单选题，选对得满分，选错或未选得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 B，或选择 A/C/D 等其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1398,
+          "end_line": 1415
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1400,
+            "end_line": 1400
+          },
+          "题干": {
+            "start_line": 1402,
+            "end_line": 1402
+          },
+          "选项": {
+            "start_line": 1404,
+            "end_line": 1411
+          },
+          "答案": {
+            "start_line": 1413,
+            "end_line": 1413
+          },
+          "解答": {
+            "start_line": 1415,
+            "end_line": 1415
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "环境转移概率的倒数。"
+          },
+          {
+            "id": "B",
+            "text": "动作 a 相对状态 s 下平均动作选择的额外价值。"
+          },
+          {
+            "id": "C",
+            "text": "奖励函数的最大可能值。"
+          },
+          {
+            "id": "D",
+            "text": "神经网络参数的范数。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "6fed271e0ac63fdc3e7236b62f54015d9de6f4e1e76cba0bc7ab0c92c6f19de9"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 151,
+      "prompt_tokens": 19146,
+      "total_tokens": 19297,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 330
+    }
+  }
+}

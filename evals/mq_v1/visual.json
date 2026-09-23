@@ -1,0 +1,58 @@
+[
+  {
+    "case_id": "U5Q1",
+    "family": "v1",
+    "expected_answer": "A",
+    "wrong_answer": "B",
+    "blind_rubric": "根据实际图片判断正确选项；选项完全正确得1分，否则0分。"
+  },
+  {
+    "case_id": "U5Q2",
+    "family": "v1",
+    "expected_answer": "B",
+    "wrong_answer": "A",
+    "blind_rubric": "根据实际图片判断正确选项；选项完全正确得1分，否则0分。"
+  },
+  {
+    "case_id": "U5Q4",
+    "family": "v2",
+    "expected_answer": "A=2，B=7；B−A=5。",
+    "wrong_answer": "A=7，B=2；B−A=9。",
+    "blind_rubric": "根据实际图片核对作答中的两个要求（读值与计算或计算与比较），每个准确完成得0.5分，错误或缺失不得分。"
+  },
+  {
+    "case_id": "U5Q5",
+    "family": "v2",
+    "expected_answer": "A=7，B=2；B−A=-5。",
+    "wrong_answer": "A=2，B=7；B−A=9。",
+    "blind_rubric": "根据实际图片核对作答中的两个要求（读值与计算或计算与比较），每个准确完成得0.5分，错误或缺失不得分。"
+  },
+  {
+    "case_id": "U6Q1",
+    "family": "v3",
+    "expected_answer": "A",
+    "wrong_answer": "B",
+    "blind_rubric": "根据实际图片判断正确选项；选项完全正确得1分，否则0分。"
+  },
+  {
+    "case_id": "U6Q2",
+    "family": "v3",
+    "expected_answer": "B",
+    "wrong_answer": "A",
+    "blind_rubric": "根据实际图片判断正确选项；选项完全正确得1分，否则0分。"
+  },
+  {
+    "case_id": "U6Q4",
+    "family": "v4",
+    "expected_answer": "平均数为 6；B 高于平均数。",
+    "wrong_answer": "平均数为 12；A 高于平均数。",
+    "blind_rubric": "根据实际图片核对作答中的两个要求（读值与计算或计算与比较），每个准确完成得0.5分，错误或缺失不得分。"
+  },
+  {
+    "case_id": "U6Q5",
+    "family": "v4",
+    "expected_answer": "平均数为 6；A 高于平均数。",
+    "wrong_answer": "平均数为 12；B 高于平均数。",
+    "blind_rubric": "根据实际图片核对作答中的两个要求（读值与计算或计算与比较），每个准确完成得0.5分，错误或缺失不得分。"
+  }
+]

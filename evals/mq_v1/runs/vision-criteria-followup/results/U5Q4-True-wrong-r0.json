@@ -1,0 +1,45 @@
+{
+  "id": "U5Q4-True-wrong-r0",
+  "case_id": "U5Q4",
+  "with_image": true,
+  "answer_kind": "wrong",
+  "repeat": 0,
+  "expected": 0,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "图中标注 A=2、B=7，学生写出的 A=7、B=2 与图中真实值相反，未同时等于标注值。",
+        "evidence_quote": "A=7，B=2"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "图中真实 B−A=7−2=5，学生写出的 B−A=9 错误。",
+        "evidence_quote": "B−A=9"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 118,
+      "prompt_tokens": 599,
+      "total_tokens": 717,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 599
+    }
+  },
+  "score": 0.0
+}

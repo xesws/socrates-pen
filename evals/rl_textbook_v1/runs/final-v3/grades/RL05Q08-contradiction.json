@@ -1,0 +1,119 @@
+{
+  "id": "RL05Q08-contradiction",
+  "case_id": "RL05Q08",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c7d83dcb17c2597a6e89",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先给出正确目标，但随后明确否认该目标，构成自相矛盾。",
+        "evidence_quote": "我同时坚持以下相反说法：SARSA 的目标不是 R+γQ(S',A')。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2f473220fb835c01426f",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "正确给出 Q-learning 目标为 R+γmax_a Q(S',a)，无矛盾。",
+        "evidence_quote": "Q-learning 目标是 R+γmax_a Q(S',a)。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d65a8fd6415a6b91f651",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 SARSA 使用实际行为策略选出的下一动作，语义等价。",
+        "evidence_quote": "SARSA 使用实际行为策略选出的下一动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_da2eb2942bd06b4c1a24",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 Q-learning 学习贪心目标策略，即使行为策略在探索，语义等价。",
+        "evidence_quote": "Q-learning 学习贪心目标策略，即使行为策略在探索。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_04b55c897c9f98d5b267",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 SARSA 会把探索风险计入价值且常更保守，语义等价。",
+        "evidence_quote": "SARSA 会把探索造成的风险计入价值，常更保守。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_486a5a25537d43b6652d",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "列出表格收敛需要充分访问、合适步长和有限折扣等条件，语义等价。",
+        "evidence_quote": "表格收敛需要充分访问、合适步长和有限折扣等条件。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_5b189aabeaad5ac074c7",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明函数近似下两者都可能不稳定，且 Q-learning 的 off-policy 自举风险更突出，语义等价。",
+        "evidence_quote": "函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c468a4eb1266238afefc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明安全敏感且探索风险重要时 SARSA 更自然，追求贪心最优控制时 Q-learning 常用，语义等价。",
+        "evidence_quote": "安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 670,
+      "prompt_tokens": 2587,
+      "total_tokens": 3257,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 2075
+    }
+  },
+  "score": 0.9
+}

@@ -1,0 +1,58 @@
+{
+  "calls": 19,
+  "tokens": 79076,
+  "groups": {
+    "gold-text": {
+      "n": 5,
+      "valid": 5,
+      "mae": 0.0,
+      "scores": {
+        "fill-text": 1.0,
+        "gold-text-advanced": 0.5,
+        "gold-text-basic": 0.2,
+        "gold-text-complete": 1.0,
+        "gold-text-wrong": 0.0
+      }
+    },
+    "generated-text": {
+      "n": 4,
+      "valid": 4,
+      "mae": 0.0,
+      "scores": {
+        "generated-text-advanced": 0.5,
+        "generated-text-basic": 0.2,
+        "generated-text-complete": 1.0,
+        "generated-text-wrong": 0.0
+      }
+    },
+    "gold-image": {
+      "n": 5,
+      "valid": 5,
+      "mae": 0.0,
+      "scores": {
+        "fill-image": 1.0,
+        "gold-image-advanced": 0.5,
+        "gold-image-basic": 0.2,
+        "gold-image-complete": 1.0,
+        "gold-image-wrong": 0.0
+      }
+    },
+    "gold-repeat": {
+      "n": 2,
+      "valid": 2,
+      "mae": 0.0,
+      "scores": {
+        "gold-repeat-advanced": 0.5,
+        "gold-repeat-basic": 0.2
+      }
+    }
+  },
+  "unreadable_abstained": true,
+  "rubrics_valid": 2,
+  "paired_image_text_differences": {
+    "basic": 0.0,
+    "advanced": 0.0,
+    "complete": 0.0,
+    "wrong": 0.0
+  }
+}

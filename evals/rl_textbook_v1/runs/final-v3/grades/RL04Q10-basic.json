@@ -1,0 +1,122 @@
+{
+  "id": "RL04Q10-basic",
+  "case_id": "RL04Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_cee48667578d214ad2bc",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明MC更适合有自然终局的episodic任务。",
+        "evidence_quote": "MC 更适合有自然终局的 episodic 任务。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_ae90d3dd17d952bf3e3b",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明MC不需要已知环境模型，只需采样完整轨迹。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_c7713950baffd0722d20",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及episode长度可控或能等到终局时MC目标容易定义。",
+        "evidence_quote": "MC 更适合有自然终局的 episodic 任务。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_f414afbc03df15116581",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及固定策略、给定起始状态、独立采样下样本回报均值是无偏估计。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_99b8d880dce8fa4d38c2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及MC不自举或不会把早期V估计放进目标。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_ca756bb1abe1e65b51d5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及MC方差高或需要足够episode平均。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_c50c546881eb39863d54",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及稀疏终局奖励中MC把最终结果分配给整条轨迹上的访问。",
+        "evidence_quote": "MC 更适合有自然终局的 episodic 任务。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_da752f3ad56f86ae4bec",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及MC实现简单或TD在在线更新/continuing任务中更方便。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 434,
+      "prompt_tokens": 2321,
+      "total_tokens": 2755,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1937
+    }
+  },
+  "score": 0.2
+}

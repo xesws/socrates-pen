@@ -1,0 +1,468 @@
+[
+  {
+    "id": "rubric-U5Q1-r2",
+    "kind": "rubric",
+    "case_id": "U5Q1",
+    "split": "dev",
+    "repeat": 2,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "grade-B-U1Q5-full-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-full",
+    "sample_kind": "full",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 0)"
+  },
+  {
+    "id": "grade-B-U1Q5-zero-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-zero",
+    "sample_kind": "zero",
+    "split": "dev",
+    "repeat": 2,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 2)"
+  },
+  {
+    "id": "grade-B-U1Q5-partial-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-partial",
+    "sample_kind": "partial",
+    "split": "dev",
+    "repeat": 2,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 2)"
+  },
+  {
+    "id": "grade-B-U1Q5-full-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-full",
+    "sample_kind": "full",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 1)"
+  },
+  {
+    "id": "grade-B-U1Q5-wrong-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-wrong",
+    "sample_kind": "wrong",
+    "split": "dev",
+    "repeat": 2,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 2)"
+  },
+  {
+    "id": "grade-B-U1Q5-paraphrase-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 1)"
+  },
+  {
+    "id": "rubric-U5Q2-r2",
+    "kind": "rubric",
+    "case_id": "U5Q2",
+    "split": "dev",
+    "repeat": 2,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "rubric-U1Q5-r2",
+    "kind": "rubric",
+    "case_id": "U1Q5",
+    "split": "dev",
+    "repeat": 2,
+    "ok": false,
+    "error": "Invalid or duplicate knowledge point"
+  },
+  {
+    "id": "grade-B-U1Q5-paraphrase-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 0)"
+  },
+  {
+    "id": "grade-B-U1Q5-wrong-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-wrong",
+    "sample_kind": "wrong",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 0)"
+  },
+  {
+    "id": "grade-B-U2Q5-paraphrase-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U2Q5",
+    "sample_id": "U2Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_127736a2da302be05e8a",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "回答中的“先报输入错误”可理解为明确拒绝或抛出异常，符合满分标准。",
+          "evidence_quote": "先报输入错误"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "pt_0cc779d056b4ab5aca3f",
+          "score": 0.25,
+          "max_score": 0.5,
+          "reason": "回答仅说明“避免分母为零”，即提及除以零，但未说明空列表长度为零，因此得0.25分。",
+          "evidence_quote": "避免分母为零"
+        }
+      ],
+      "score": 0.75,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 105,
+        "prompt_tokens": 470,
+        "total_tokens": 575,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 470
+      }
+    },
+    "score": 0.75
+  },
+  {
+    "id": "rubric-U5Q2-r0",
+    "kind": "rubric",
+    "case_id": "U5Q2",
+    "split": "dev",
+    "repeat": 0,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "rubric-U1Q5-r1",
+    "kind": "rubric",
+    "case_id": "U1Q5",
+    "split": "dev",
+    "repeat": 1,
+    "ok": false,
+    "error": "Invalid or duplicate knowledge point"
+  },
+  {
+    "id": "rubric-U5Q2-r1",
+    "kind": "rubric",
+    "case_id": "U5Q2",
+    "split": "dev",
+    "repeat": 1,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "rubric-U1Q5-r0",
+    "kind": "rubric",
+    "case_id": "U1Q5",
+    "split": "dev",
+    "repeat": 0,
+    "ok": false,
+    "error": "Invalid or duplicate knowledge point"
+  },
+  {
+    "id": "rubric-U1Q1-r2",
+    "kind": "rubric",
+    "case_id": "U1Q1",
+    "split": "dev",
+    "repeat": 2,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "grade-B-U2Q5-paraphrase-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U2Q5",
+    "sample_id": "U2Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_127736a2da302be05e8a",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "回答中的“先报输入错误”可理解为明确拒绝或抛出异常，符合满分标准。",
+          "evidence_quote": "先报输入错误"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "pt_0cc779d056b4ab5aca3f",
+          "score": 0.25,
+          "max_score": 0.5,
+          "reason": "回答仅说明“避免分母为零”，即提及除以零，但未说明空列表长度为零，因此得0.25分。",
+          "evidence_quote": "避免分母为零"
+        }
+      ],
+      "score": 0.75,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 105,
+        "prompt_tokens": 470,
+        "total_tokens": 575,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 470
+      }
+    },
+    "score": 0.75
+  },
+  {
+    "id": "grade-B-U1Q5-wrong-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-wrong",
+    "sample_kind": "wrong",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 1)"
+  },
+  {
+    "id": "grade-B-U1Q5-paraphrase-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "dev",
+    "repeat": 2,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 2)"
+  },
+  {
+    "id": "rubric-U5Q1-r0",
+    "kind": "rubric",
+    "case_id": "U5Q1",
+    "split": "dev",
+    "repeat": 0,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  },
+  {
+    "id": "grade-B-U1Q5-partial-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-partial",
+    "sample_kind": "partial",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 1)"
+  },
+  {
+    "id": "grade-B-U1Q5-zero-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-zero",
+    "sample_kind": "zero",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 0)"
+  },
+  {
+    "id": "grade-B-U1Q5-full-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-full",
+    "sample_kind": "full",
+    "split": "dev",
+    "repeat": 2,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 2)"
+  },
+  {
+    "id": "grade-B-U1Q5-zero-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-zero",
+    "sample_kind": "zero",
+    "split": "dev",
+    "repeat": 1,
+    "expected": 0,
+    "expected_criteria": {
+      "c1": 0,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 1)"
+  },
+  {
+    "id": "grade-B-U1Q5-partial-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U1Q5",
+    "sample_id": "U1Q5-partial",
+    "sample_kind": "partial",
+    "split": "dev",
+    "repeat": 0,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": false,
+    "error": "('U1Q5', 0)"
+  },
+  {
+    "id": "rubric-U5Q1-r1",
+    "kind": "rubric",
+    "case_id": "U5Q1",
+    "split": "dev",
+    "repeat": 1,
+    "ok": false,
+    "error": "blank_id is only valid for fill_blank criteria"
+  }
+]

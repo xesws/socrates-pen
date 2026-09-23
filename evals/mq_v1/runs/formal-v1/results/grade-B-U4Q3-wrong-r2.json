@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q3-wrong-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f51aab96eb42d8a849cd",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案“只要函数返回一个数字就一定存在副作用”将“返回数字”错误等同于“存在副作用”，既未表达“除返回值以外还改变外部可观察状态”的核心含义，也未提及修改全局变量、参数对象、I/O等外部状态，属于无关/错误内容，按评分标准得0分。",
+        "evidence_quote": "只要函数返回一个数字就一定存在副作用。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 104,
+      "prompt_tokens": 397,
+      "total_tokens": 501,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 397
+    }
+  },
+  "score": 0.0
+}

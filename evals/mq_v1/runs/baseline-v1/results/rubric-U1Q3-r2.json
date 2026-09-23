@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U1Q3-r2",
+  "kind": "rubric",
+  "case_id": "U1Q3",
+  "split": "dev",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_16da28398661f2e9960c",
+      "name": "字符串长度",
+      "definition": "计算字符串 \"abc\" 的字符个数。",
+      "source_mq_ids": [
+        "q_a1a7d866da8acebde45e"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_16da28398661f2e9960c",
+      "max_score": 1.0,
+      "description": "在 b1 处填写 3（或等价的正确表述），表示 len(\"abc\") 的结果。",
+      "partial_credit": "填写 3 得满分；填写其他数值、非数值或矛盾内容得 0 分。",
+      "blank_id": "b1"
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "id": "RL01Q09",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "call_run": "baseline-v1",
+  "part": {
+    "points": [
+      {
+        "id": "pt_26c84fac22bb3bcf883c",
+        "name": "目标",
+        "definition": "真实目标是清洁覆盖率高、效率合理且不损坏环境",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_3ef65d2073d5a2635754",
+        "name": "现有奖励",
+        "definition": "现有奖励可能只惩罚碰撞或能耗，却没有充分奖励清洁进展",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_db5593124d2b0a5ec8b2",
+        "name": "漏洞",
+        "definition": "停在原地规避惩罚，是奖励漏洞而不是任务成功",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_4b3cb845342941e290d5",
+        "name": "短期收益",
+        "definition": "短期看停留能避免负奖励，所以策略估计会偏向不行动",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ea80411aaa3e08c18767",
+        "name": "长期损失",
+        "definition": "长期看覆盖率低、用户目标失败，训练奖励与真实指标脱节",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_6f3c61c0b43ab53588b0",
+        "name": "修正",
+        "definition": "修正可加入覆盖增量、任务完成奖励、超时惩罚和安全约束",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a106ffdd8b0a12581719",
+        "name": "验证",
+        "definition": "验证应比较覆盖率、碰撞率、能耗和不同房间布局下的策略",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_996f3b47b8483b50ce51",
+        "name": "安全边界",
+        "definition": "安全边界应限制危险动作，并把不可接受行为作为硬约束或终止事件",
+        "source_mq_ids": [
+          "q_cbbca8b5e2301af4738f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_cbbca8b5e2301af4738f",
+        "version": "2271a1f7835fd52d7f6e06168c378137bf6083442fe63586430339cab016dff5",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_cbbca8b5e2301af4738f",
+        "title": "RL01Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "诊断“清洁机器人为了少扣分而停在原地”的奖励问题。请按8个方面回答：目标、现有奖励、漏洞、短期收益、长期损失、修正、验证、安全边界。",
+        "reference_answer": "1. 真实目标是清洁覆盖率高、效率合理且不损坏环境。\n2. 现有奖励可能只惩罚碰撞或能耗，却没有充分奖励清洁进展。\n3. 停在原地规避惩罚，是奖励漏洞而不是任务成功。\n4. 短期看停留能避免负奖励，所以策略估计会偏向不行动。\n5. 长期看覆盖率低、用户目标失败，训练奖励与真实指标脱节。\n6. 修正可加入覆盖增量、任务完成奖励、超时惩罚和安全约束。\n7. 验证应比较覆盖率、碰撞率、能耗和不同房间布局下的策略。\n8. 安全边界应限制危险动作，并把不可接受行为作为硬约束或终止事件。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL01Q09\n#### 题型\nshort_answer\n#### 题干\n诊断“清洁机器人为了少扣分而停在原地”的奖励问题。请按8个方面回答：目标、现有奖励、漏洞、短期收益、长期损失、修正、验证、安全边界。\n#### 答案\n1. 真实目标是清洁覆盖率高、效率合理且不损坏环境。\n2. 现有奖励可能只惩罚碰撞或能耗，却没有充分奖励清洁进展。\n3. 停在原地规避惩罚，是奖励漏洞而不是任务成功。\n4. 短期看停留能避免负奖励，所以策略估计会偏向不行动。\n5. 长期看覆盖率低、用户目标失败，训练奖励与真实指标脱节。\n6. 修正可加入覆盖增量、任务完成奖励、超时惩罚和安全约束。\n7. 验证应比较覆盖率、碰撞率、能耗和不同房间布局下的策略。\n8. 安全边界应限制危险动作，并把不可接受行为作为硬约束或终止事件。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_26c84fac22bb3bcf883c",
+          "pt_3ef65d2073d5a2635754",
+          "pt_db5593124d2b0a5ec8b2",
+          "pt_4b3cb845342941e290d5",
+          "pt_ea80411aaa3e08c18767",
+          "pt_6f3c61c0b43ab53588b0",
+          "pt_a106ffdd8b0a12581719",
+          "pt_996f3b47b8483b50ce51"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_26c84fac22bb3bcf883c",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "真实目标是清洁覆盖率高、效率合理且不损坏环境",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "真实目标是清洁覆盖率高、效率合理且不损坏环境"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_3ef65d2073d5a2635754",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "现有奖励可能只惩罚碰撞或能耗，却没有充分奖励清洁进展",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "现有奖励可能只惩罚碰撞或能耗，却没有充分奖励清洁进展"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_db5593124d2b0a5ec8b2",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "停在原地规避惩罚，是奖励漏洞而不是任务成功",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "停在原地规避惩罚，是奖励漏洞而不是任务成功"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_4b3cb845342941e290d5",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "短期看停留能避免负奖励，所以策略估计会偏向不行动",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "短期看停留能避免负奖励，所以策略估计会偏向不行动"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_ea80411aaa3e08c18767",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "长期看覆盖率低、用户目标失败，训练奖励与真实指标脱节",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "长期看覆盖率低、用户目标失败，训练奖励与真实指标脱节"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_6f3c61c0b43ab53588b0",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "修正可加入覆盖增量、任务完成奖励、超时惩罚和安全约束",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "修正可加入覆盖增量、任务完成奖励、超时惩罚和安全约束"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_a106ffdd8b0a12581719",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "验证应比较覆盖率、碰撞率、能耗和不同房间布局下的策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "验证应比较覆盖率、碰撞率、能耗和不同房间布局下的策略"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_996f3b47b8483b50ce51",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "安全边界应限制危险动作，并把不可接受行为作为硬约束或终止事件",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "安全边界应限制危险动作，并把不可接受行为作为硬约束或终止事件"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 187,
+          "end_line": 202
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 189,
+            "end_line": 189
+          },
+          "题干": {
+            "start_line": 191,
+            "end_line": 191
+          },
+          "答案": {
+            "start_line": 193,
+            "end_line": 200
+          },
+          "解答": {
+            "start_line": 202,
+            "end_line": 202
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "e3ddeb58d73844dbb1daa86ff68d313ee41e771ae4617d73f83d892049f3a78d"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1281,
+      "prompt_tokens": 19295,
+      "total_tokens": 20576,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 479
+    }
+  }
+}

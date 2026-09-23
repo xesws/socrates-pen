@@ -1,5 +1,6 @@
 import { MarkdownView, Notice, Plugin, setTooltip, type Command, type WorkspaceLeaf } from "obsidian";
 import { makeApi, purgeExpired } from "./api";
+import { makePracticeApi } from "./practice";
 import { coerceCustomChips } from "./customchips";
 import { ApiError } from "./apierror";
 import {
@@ -11,10 +12,11 @@ import {
   persistableSettings,
   type PenSettings,
 } from "./settings";
-import { readLivePick, type EditorPick } from "./selection";
+import { readLivePick, vaultRoot, type EditorPick } from "./selection";
 import type { NoteBinding, AgentPanelState, LlmStatus } from "./types";
 import { PenView, VIEW_TYPE_PEN } from "./views/PenView";
 import { ReportView, VIEW_TYPE_REPORT } from "./views/ReportView";
+import { PracticeView, VIEW_TYPE_PRACTICE } from "./views/PracticeView";
 import { coerceLangPref, resolveLang, setLang, t } from "./i18n";
 import { SidecarManager, type EnsureKind, type StopResult } from "./sidecar";
 
@@ -51,6 +53,7 @@ export default class SocratesPenPlugin extends Plugin {
   private cmdOpen: Command | null = null;
   private cmdCompact: Command | null = null;
   private cmdReport: Command | null = null;
+  private cmdPractice: Command | null = null;
   readonly sidecar = new SidecarManager();
 
   async onload(): Promise<void> {
@@ -71,6 +74,7 @@ export default class SocratesPenPlugin extends Plugin {
     if (this.migrateKey) void this.migrateKeyOut();
     this.registerView(VIEW_TYPE_PEN, (leaf) => new PenView(leaf, this));
     this.registerView(VIEW_TYPE_REPORT, (leaf) => new ReportView(leaf, this));
+    this.registerView(VIEW_TYPE_PRACTICE, (leaf) => new PracticeView(leaf, this));
     this.addSettingTab(new PenSettingTab(this.app, this));
     this.registerDomEvent(document, "selectionchange", () => this.cachePick());
     this.registerDomEvent(document, "mouseup", () => this.cachePick());
@@ -112,6 +116,13 @@ export default class SocratesPenPlugin extends Plugin {
         void this.activateReport();
       },
     });
+    this.cmdPractice = this.addCommand({
+      id: "socrates-pen-practice",
+      name: t().cmdOpenPractice,
+      callback: () => {
+        void this.activatePractice();
+      },
+    });
   }
 
   onunload(): void {
@@ -142,13 +153,15 @@ export default class SocratesPenPlugin extends Plugin {
     if (this.cmdOpen) this.cmdOpen.name = prefix + s.cmdOpenPanel;
     if (this.cmdCompact) this.cmdCompact.name = prefix + s.cmdCompactSession;
     if (this.cmdReport) this.cmdReport.name = prefix + s.cmdOpenReport;
+    if (this.cmdPractice) this.cmdPractice.name = prefix + s.cmdOpenPractice;
     const leaves = [
       ...this.app.workspace.getLeavesOfType(VIEW_TYPE_PEN),
       ...this.app.workspace.getLeavesOfType(VIEW_TYPE_REPORT),
+      ...this.app.workspace.getLeavesOfType(VIEW_TYPE_PRACTICE),
     ];
     for (const leaf of leaves) {
       const view = leaf.view;
-      if (view instanceof PenView || view instanceof ReportView) view.relocalize();
+      if (view instanceof PenView || view instanceof ReportView || view instanceof PracticeView) view.relocalize();
       // updateHeader 未进 .d.ts，但它是刷新 tab 标题的直接办法；
       // 兜底走公开 API：type 相同且非 deferred 时 setViewState 不会重建 view，
       // 且 getViewState() 不含 active，不会抢焦点。
@@ -193,6 +206,17 @@ export default class SocratesPenPlugin extends Plugin {
     const leaf = await this.revealSide(VIEW_TYPE_REPORT);
     const view = leaf.view;
     if (!(view instanceof ReportView)) throw new Error(t().errViewNotMounted);
+    return view;
+  }
+
+  /** 练习页占主工作区：题干、作答框和评分证据比右侧栏需要更多横向空间。 */
+  async activatePractice(): Promise<PracticeView> {
+    const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_PRACTICE)[0];
+    const leaf = existing ?? this.app.workspace.getLeaf("tab");
+    await leaf.setViewState({ type: VIEW_TYPE_PRACTICE, active: true });
+    this.app.workspace.setActiveLeaf(leaf, { focus: true });
+    const view = leaf.view;
+    if (!(view instanceof PracticeView)) throw new Error(t().errViewNotMounted);
     return view;
   }
 
@@ -275,6 +299,7 @@ export default class SocratesPenPlugin extends Plugin {
     this.settings.provider = coerceProvider(this.settings.provider);
     this.settings.fastProvider = coerceProvider(this.settings.fastProvider);
     this.settings.vision = this.settings.vision === true;
+    this.settings.practiceExperiment = this.settings.practiceExperiment === true;
     // 三格快模型配置。**开关默认关**：没配钥匙时开着也只是不生效，
     // 但默认打开等于替读者做了一个「这一轮由小模型执笔」的决定。
     this.settings.fastMode = this.settings.fastMode === true;
@@ -473,6 +498,33 @@ export default class SocratesPenPlugin extends Plugin {
       const view = leaf.view;
       if (view instanceof PenView) void view.probeHealth();
     }
+  }
+
+  refreshPracticeViews(syncError = ""): void {
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_PRACTICE)) {
+      const view = leaf.view;
+      if (view instanceof PracticeView) view.onPracticeExperimentChanged(syncError);
+    }
+  }
+
+  private static msg(e: unknown): string {
+    return e instanceof Error ? e.message : String(e);
+  }
+
+  /** 本地设置页的单一练习总闸：持久化偏好，并同步 sidecar 的 per-vault enable。
+   *  这一路不带 LLM payload；开关本身绝不会生成题或触发语义评分。 */
+  async setPracticeExperiment(on: boolean): Promise<void> {
+    this.settings.practiceExperiment = on;
+    await this.saveSettings();
+    if (!on) this.refreshPracticeViews();
+    let syncError = "";
+    try {
+      await makePracticeApi(this.settings.sidecarUrl).enable(vaultRoot(this.app), on);
+    } catch (e) {
+      syncError = t().errPracticeSync(SocratesPenPlugin.msg(e));
+      new Notice(syncError);
+    }
+    this.refreshPracticeViews(syncError);
   }
 
   async saveSettings(): Promise<void> {

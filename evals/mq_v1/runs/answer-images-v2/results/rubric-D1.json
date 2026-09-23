@@ -1,0 +1,256 @@
+{
+  "kind": "rubric",
+  "case_id": "D1",
+  "ok": true,
+  "question": {
+    "id": "q_d761c5168675710223e7",
+    "version": "211e3b1e28cc3506837e2eee9c238da5a68d3afbb01e9c51da77317e1872f379",
+    "source_unit_id": "unit_73c26fc2672a5513",
+    "source_mq_id": "q_d761c5168675710223e7",
+    "title": "D1",
+    "type": "short_answer",
+    "purpose": "practice",
+    "exam_form": null,
+    "prompt": "面试：设计可靠的 webhook 投递服务，覆盖事件身份、持久化、确认、重试、认证、去重、隔离和监控。",
+    "reference_answer": "每个逻辑事件有稳定事件ID，重试不换ID；待发送事件持久化，进程重启后可恢复；仅在约定成功响应后标记完成，超时保留待确认状态；临时错误指数退避加抖动并限制次数和期限；发送内容签名并包含时间信息，接收方验证签名和时效；接收方按稳定事件ID幂等处理，避免重复副作用；永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列；监控投递延迟、错误和积压，保留每次尝试的审计记录",
+    "solution_markdown": "按上述独立要点累计给分；允许语义等价表达。",
+    "raw_markdown": "### D1\n\n#### 题型\nshort_answer\n\n#### 题干\n面试：设计可靠的 webhook 投递服务，覆盖事件身份、持久化、确认、重试、认证、去重、隔离和监控。\n\n#### 答案\n每个逻辑事件有稳定事件ID，重试不换ID；待发送事件持久化，进程重启后可恢复；仅在约定成功响应后标记完成，超时保留待确认状态；临时错误指数退避加抖动并限制次数和期限；发送内容签名并包含时间信息，接收方验证签名和时效；接收方按稳定事件ID幂等处理，避免重复副作用；永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列；监控投递延迟、错误和积压，保留每次尝试的审计记录\n\n#### 解答\n按上述独立要点累计给分；允许语义等价表达。",
+    "status": "accepted",
+    "point_ids": [
+      "pt_9a4aa530f4924f19c84b",
+      "pt_3f1c4e6ef5757e41068e",
+      "pt_58409353987327daacbe",
+      "pt_a1073288c503312c8835",
+      "pt_a1d30c5999eeb97a1188",
+      "pt_40ad10f67af77ac62222",
+      "pt_cea7890a981b322feb68",
+      "pt_33f693eb6b302c643a1c"
+    ],
+    "criteria": [
+      {
+        "id": "c1",
+        "point_id": "pt_9a4aa530f4924f19c84b",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "每个逻辑事件有稳定事件ID，重试不换ID",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "每个逻辑事件有稳定事件ID，重试不换ID"
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "point_id": "pt_3f1c4e6ef5757e41068e",
+        "max_score": 0.1,
+        "tier": "basic",
+        "description": "待发送事件持久化，进程重启后可恢复",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "待发送事件持久化，进程重启后可恢复"
+          }
+        ]
+      },
+      {
+        "id": "c3",
+        "point_id": "pt_58409353987327daacbe",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "仅在约定成功响应后标记完成，超时保留待确认状态",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "仅在约定成功响应后标记完成，超时保留待确认状态"
+          }
+        ]
+      },
+      {
+        "id": "c4",
+        "point_id": "pt_a1073288c503312c8835",
+        "max_score": 0.15,
+        "tier": "advanced",
+        "description": "临时错误指数退避加抖动并限制次数和期限",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "临时错误指数退避加抖动并限制次数和期限"
+          }
+        ]
+      },
+      {
+        "id": "c5",
+        "point_id": "pt_a1d30c5999eeb97a1188",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "发送内容签名并包含时间信息，接收方验证签名和时效",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "发送内容签名并包含时间信息，接收方验证签名和时效"
+          }
+        ]
+      },
+      {
+        "id": "c6",
+        "point_id": "pt_40ad10f67af77ac62222",
+        "max_score": 0.1,
+        "tier": "complete",
+        "description": "接收方按稳定事件ID幂等处理，避免重复副作用",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.1,
+            "condition": "接收方按稳定事件ID幂等处理，避免重复副作用"
+          }
+        ]
+      },
+      {
+        "id": "c7",
+        "point_id": "pt_cea7890a981b322feb68",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "永久错误或耗尽重试的事件进入可检查和受控重放的隔离队列"
+          }
+        ]
+      },
+      {
+        "id": "c8",
+        "point_id": "pt_33f693eb6b302c643a1c",
+        "max_score": 0.15,
+        "tier": "complete",
+        "description": "监控投递延迟、错误和积压，保留每次尝试的审计记录",
+        "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+        "levels": [
+          {
+            "id": "missing",
+            "score": 0,
+            "condition": "缺失、错误或自相矛盾"
+          },
+          {
+            "id": "met",
+            "score": 0.15,
+            "condition": "监控投递延迟、错误和积压，保留每次尝试的审计记录"
+          }
+        ]
+      }
+    ],
+    "source": {
+      "start_line": 9,
+      "end_line": 22
+    },
+    "field_spans": {
+      "题型": {
+        "start_line": 12,
+        "end_line": 13
+      },
+      "题干": {
+        "start_line": 15,
+        "end_line": 16
+      },
+      "答案": {
+        "start_line": 18,
+        "end_line": 19
+      },
+      "解答": {
+        "start_line": 21,
+        "end_line": 22
+      }
+    },
+    "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/answer_images_v2",
+    "assets": [],
+    "estimated_seconds": 180,
+    "rubric_schema": "tiered-v1",
+    "rubric_levels": [
+      {
+        "id": "basic",
+        "label": "基础",
+        "requires": [
+          "c1",
+          "c2"
+        ],
+        "min_score": 0.2
+      },
+      {
+        "id": "advanced",
+        "label": "进阶",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "min_score": 0.5
+      },
+      {
+        "id": "complete",
+        "label": "完整",
+        "requires": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ],
+        "min_score": 1
+      }
+    ],
+    "rubric_version": "5d0b75cbf239ff60a8b9e90f98db4f2819c4884e359466b8168381d4092cf28a"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q4-paraphrase-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_2204fef8ec109730c328",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确指出搜索空间不断除以二，等价于每次比较将剩余候选规模约减半，符合满分标准。",
+        "evidence_quote": "搜索空间不断除以二"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_34cd7e43f6bf3c33518b",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案指出除到一个元素大约需要以二为底的对数次，明确给出了 log2(n) 次比较，符合满分标准。",
+        "evidence_quote": "除到一个元素大约需要以二为底的对数次"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 118,
+      "prompt_tokens": 463,
+      "total_tokens": 581,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 463
+    }
+  },
+  "score": 1.0
+}

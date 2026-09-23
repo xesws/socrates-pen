@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q3-partial-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f51aab96eb42d8a849cd",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案“这种变化不只是返回计算结果。”仅否定“只返回计算结果”，未说明函数还改变外部可观察状态（如修改全局变量、参数对象、I/O等），未完整表达“除返回值外还改变外部可观察状态”的含义，按评分标准得0分。",
+        "evidence_quote": "这种变化不只是返回计算结果。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 94,
+      "prompt_tokens": 391,
+      "total_tokens": 485,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 391
+    }
+  },
+  "score": 0.0
+}

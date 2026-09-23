@@ -1,0 +1,349 @@
+{
+  "id": "RL05Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_063dac195254f5f59848",
+        "name": "更新时机",
+        "definition": "TD 可在每一步后更新，MC 通常等 episode 结束。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c2dff7995f3ba4b389f4",
+        "name": "episode 长度",
+        "definition": "episode 很长或没有自然终局时，TD 更实用。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ad6652b9976f2269accc",
+        "name": "偏差",
+        "definition": "MC 目标使用实际完整回报，自举偏差较少。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8eb5faf0f165216fd535",
+        "name": "方差",
+        "definition": "TD 目标通常方差较低，但依赖当前估计。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2cfd7f382b25cc8845a3",
+        "name": "在线性",
+        "definition": "在线系统需要边交互边学习时，TD 更合适。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_edb511df859a37eb8d11",
+        "name": "继续任务",
+        "definition": "continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_e2712ff45dd301e1a64e",
+        "name": "奖励延迟",
+        "definition": "奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_dbee00061d865ce58ec2",
+        "name": "资源",
+        "definition": "计算和存储受限时，TD 不必保存整条轨迹。",
+        "source_mq_ids": [
+          "q_4e130ac8f8c3a49b658e"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_4e130ac8f8c3a49b658e",
+        "version": "4f9c453ce41f44d6cfcc2f44ee288253628b6a3cb8625ad34d321462d6b13f29",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_4e130ac8f8c3a49b658e",
+        "title": "RL05Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "选择 MC 或 TD 解决一个在线控制任务。请按8个方面回答：更新时机、episode 长度、偏差、方差、在线性、继续任务、奖励延迟、资源。",
+        "reference_answer": "1. TD 可在每一步后更新，MC 通常等 episode 结束。\n2. episode 很长或没有自然终局时，TD 更实用。\n3. MC 目标使用实际完整回报，自举偏差较少。\n4. TD 目标通常方差较低，但依赖当前估计。\n5. 在线系统需要边交互边学习时，TD 更合适。\n6. continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。\n7. 奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。\n8. 计算和存储受限时，TD 不必保存整条轨迹。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL05Q10\n#### 题型\nshort_answer\n#### 题干\n选择 MC 或 TD 解决一个在线控制任务。请按8个方面回答：更新时机、episode 长度、偏差、方差、在线性、继续任务、奖励延迟、资源。\n#### 答案\n1. TD 可在每一步后更新，MC 通常等 episode 结束。\n2. episode 很长或没有自然终局时，TD 更实用。\n3. MC 目标使用实际完整回报，自举偏差较少。\n4. TD 目标通常方差较低，但依赖当前估计。\n5. 在线系统需要边交互边学习时，TD 更合适。\n6. continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。\n7. 奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。\n8. 计算和存储受限时，TD 不必保存整条轨迹。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_063dac195254f5f59848",
+          "pt_c2dff7995f3ba4b389f4",
+          "pt_ad6652b9976f2269accc",
+          "pt_8eb5faf0f165216fd535",
+          "pt_2cfd7f382b25cc8845a3",
+          "pt_edb511df859a37eb8d11",
+          "pt_e2712ff45dd301e1a64e",
+          "pt_dbee00061d865ce58ec2"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_063dac195254f5f59848",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "TD 可在每一步后更新，MC 通常等 episode 结束。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "TD 可在每一步后更新，MC 通常等 episode 结束。"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_c2dff7995f3ba4b389f4",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "episode 很长或没有自然终局时，TD 更实用。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "episode 很长或没有自然终局时，TD 更实用。"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_ad6652b9976f2269accc",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "MC 目标使用实际完整回报，自举偏差较少。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "MC 目标使用实际完整回报，自举偏差较少。"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_8eb5faf0f165216fd535",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "TD 目标通常方差较低，但依赖当前估计。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "TD 目标通常方差较低，但依赖当前估计。"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_2cfd7f382b25cc8845a3",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "在线系统需要边交互边学习时，TD 更合适。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "在线系统需要边交互边学习时，TD 更合适。"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_edb511df859a37eb8d11",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_e2712ff45dd301e1a64e",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_dbee00061d865ce58ec2",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "计算和存储受限时，TD 不必保存整条轨迹。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "计算和存储受限时，TD 不必保存整条轨迹。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1064,
+          "end_line": 1079
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1066,
+            "end_line": 1066
+          },
+          "题干": {
+            "start_line": 1068,
+            "end_line": 1068
+          },
+          "答案": {
+            "start_line": 1070,
+            "end_line": 1077
+          },
+          "解答": {
+            "start_line": 1079,
+            "end_line": 1079
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "d30b41707bfb01b0215d07421f02a74f64d72656779e05caf69ee4628cea5656"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1860,
+      "prompt_tokens": 19286,
+      "total_tokens": 21146,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 470
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U3Q2-r2",
+  "kind": "rubric",
+  "case_id": "U3Q2",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_6774e2a12f8b31bd211f",
+      "name": "栈的取出顺序",
+      "definition": "栈遵循后进先出（LIFO）原则，即最后压入的元素最先被取出",
+      "source_mq_ids": [
+        "q_a38901d7fa11b33c738d"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_6774e2a12f8b31bd211f",
+      "max_score": 1.0,
+      "description": "选择题干的正确选项：后进先出（B）",
+      "partial_credit": "选择B得1分；选择A或其他错误选项得0分"
+    }
+  ]
+}

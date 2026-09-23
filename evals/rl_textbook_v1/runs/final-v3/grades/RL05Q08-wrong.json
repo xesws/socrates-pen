@@ -1,0 +1,119 @@
+{
+  "id": "RL05Q08-wrong",
+  "case_id": "RL05Q08",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c7d83dcb17c2597a6e89",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称SARSA目标必须用max，与SARSA目标R+γQ(S',A')矛盾。",
+        "evidence_quote": "SARSA 的目标必须用 max",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2f473220fb835c01426f",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称Q-learning必须用实际下一动作，与Q-learning目标R+γmax_a Q(S',a)矛盾。",
+        "evidence_quote": "Q-learning 必须用实际下一动作",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d65a8fd6415a6b91f651",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案未说明SARSA使用实际行为策略选出的下一动作，且称SARSA目标用max，与之矛盾。",
+        "evidence_quote": "SARSA 的目标必须用 max",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_da2eb2942bd06b4c1a24",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案未说明Q-learning学习贪心目标策略，且称Q-learning用实际下一动作，与之矛盾。",
+        "evidence_quote": "Q-learning 必须用实际下一动作",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_04b55c897c9f98d5b267",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案未提及SARSA将探索风险计入价值或更保守，且称SARSA完全不考虑探索，与之矛盾。",
+        "evidence_quote": "SARSA 是完全不考虑探索的离策略方法",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_486a5a25537d43b6652d",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称任何步长和数据覆盖都保证神经网络收敛，与表格收敛需要充分访问、合适步长和有限折扣等条件矛盾。",
+        "evidence_quote": "任何步长和数据覆盖都保证神经网络收敛",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_5b189aabeaad5ac074c7",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案未提及函数近似下两者可能不稳定或Q-learning的off-policy自举风险，且称任何步长和数据覆盖都保证神经网络收敛，与之矛盾。",
+        "evidence_quote": "任何步长和数据覆盖都保证神经网络收敛",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c468a4eb1266238afefc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称二者适用范围没有任何差别，与安全敏感时SARSA更自然、追求贪心最优控制时Q-learning常用矛盾。",
+        "evidence_quote": "二者适用范围没有任何差别",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 645,
+      "prompt_tokens": 2341,
+      "total_tokens": 2986,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1957
+    }
+  },
+  "score": 0.0
+}

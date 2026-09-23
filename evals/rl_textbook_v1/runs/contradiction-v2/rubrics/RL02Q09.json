@@ -1,0 +1,348 @@
+{
+  "id": "RL02Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_7932280346d5d5f94a03",
+        "name": "要点1",
+        "definition": "V_pi(s) 表示从状态 s 按策略 π 开始的期望回报",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2113cbdae9253ce0794e",
+        "name": "要点2",
+        "definition": "Q_pi(s,a) 表示在状态 s 先执行动作 a 后再按 π 的期望回报",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2ef23130351595685e1c",
+        "name": "要点3",
+        "definition": "Advantage A_pi(s,a)=Q_pi(s,a)-V_pi(s) 表示动作相对该状态平均水平的增益",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b0550fc067b4bf3f50a6",
+        "name": "要点4",
+        "definition": "V 可由 Q 按 π(a|s) 加权得到",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_47eff475f5ae091cee9c",
+        "name": "要点5",
+        "definition": "Advantage 把状态本身容易或困难的基线扣除，便于比较动作",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8c96012ba2c72372b308",
+        "name": "要点6",
+        "definition": "若有 Q_*，对每个状态选 argmax_a Q_*(s,a) 可得贪心最优策略",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_aa05c4559802cd683c51",
+        "name": "要点7",
+        "definition": "Q 的动作维度更高，连续动作下直接最大化会更难",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_3cb246236150eb2b2841",
+        "name": "要点8",
+        "definition": "V 常用于评价和 critic，Q 常用于动作选择，advantage 常用于策略梯度",
+        "source_mq_ids": [
+          "q_551d2c424cd4ae5c06cc"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_551d2c424cd4ae5c06cc",
+        "version": "6ce367cfa7392094766e279f324f28878b586571d394bdd05d3034fb1b76a90c",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_551d2c424cd4ae5c06cc",
+        "title": "RL02Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "比较 V、Q 与 advantage。请按8个方面回答：定义、条件变量、动作选择、互相转换、基线意义、最优策略、估计难点、使用场景。",
+        "reference_answer": "1. V_pi(s) 表示从状态 s 按策略 π 开始的期望回报。\n2. Q_pi(s,a) 表示在状态 s 先执行动作 a 后再按 π 的期望回报。\n3. Advantage A_pi(s,a)=Q_pi(s,a)-V_pi(s) 表示动作相对该状态平均水平的增益。\n4. V 可由 Q 按 π(a|s) 加权得到。\n5. Advantage 把状态本身容易或困难的基线扣除，便于比较动作。\n6. 若有 Q_*，对每个状态选 argmax_a Q_*(s,a) 可得贪心最优策略。\n7. Q 的动作维度更高，连续动作下直接最大化会更难。\n8. V 常用于评价和 critic，Q 常用于动作选择，advantage 常用于策略梯度。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL02Q09\n#### 题型\nshort_answer\n#### 题干\n比较 V、Q 与 advantage。请按8个方面回答：定义、条件变量、动作选择、互相转换、基线意义、最优策略、估计难点、使用场景。\n#### 答案\n1. V_pi(s) 表示从状态 s 按策略 π 开始的期望回报。\n2. Q_pi(s,a) 表示在状态 s 先执行动作 a 后再按 π 的期望回报。\n3. Advantage A_pi(s,a)=Q_pi(s,a)-V_pi(s) 表示动作相对该状态平均水平的增益。\n4. V 可由 Q 按 π(a|s) 加权得到。\n5. Advantage 把状态本身容易或困难的基线扣除，便于比较动作。\n6. 若有 Q_*，对每个状态选 argmax_a Q_*(s,a) 可得贪心最优策略。\n7. Q 的动作维度更高，连续动作下直接最大化会更难。\n8. V 常用于评价和 critic，Q 常用于动作选择，advantage 常用于策略梯度。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_7932280346d5d5f94a03",
+          "pt_2113cbdae9253ce0794e",
+          "pt_2ef23130351595685e1c",
+          "pt_b0550fc067b4bf3f50a6",
+          "pt_47eff475f5ae091cee9c",
+          "pt_8c96012ba2c72372b308",
+          "pt_aa05c4559802cd683c51",
+          "pt_3cb246236150eb2b2841"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_7932280346d5d5f94a03",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "V_pi(s) 表示从状态 s 按策略 π 开始的期望回报",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "V_pi(s) 表示从状态 s 按策略 π 开始的期望回报"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_2113cbdae9253ce0794e",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "Q_pi(s,a) 表示在状态 s 先执行动作 a 后再按 π 的期望回报",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Q_pi(s,a) 表示在状态 s 先执行动作 a 后再按 π 的期望回报"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_2ef23130351595685e1c",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "Advantage A_pi(s,a)=Q_pi(s,a)-V_pi(s) 表示动作相对该状态平均水平的增益",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "Advantage A_pi(s,a)=Q_pi(s,a)-V_pi(s) 表示动作相对该状态平均水平的增益"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_b0550fc067b4bf3f50a6",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "V 可由 Q 按 π(a|s) 加权得到",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "V 可由 Q 按 π(a|s) 加权得到"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_47eff475f5ae091cee9c",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "Advantage 把状态本身容易或困难的基线扣除，便于比较动作",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Advantage 把状态本身容易或困难的基线扣除，便于比较动作"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_8c96012ba2c72372b308",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "若有 Q_*，对每个状态选 argmax_a Q_*(s,a) 可得贪心最优策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "若有 Q_*，对每个状态选 argmax_a Q_*(s,a) 可得贪心最优策略"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_aa05c4559802cd683c51",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "Q 的动作维度更高，连续动作下直接最大化会更难",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "Q 的动作维度更高，连续动作下直接最大化会更难"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_3cb246236150eb2b2841",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "V 常用于评价和 critic，Q 常用于动作选择，advantage 常用于策略梯度",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "V 常用于评价和 critic，Q 常用于动作选择，advantage 常用于策略梯度"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 405,
+          "end_line": 420
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 407,
+            "end_line": 407
+          },
+          "题干": {
+            "start_line": 409,
+            "end_line": 409
+          },
+          "答案": {
+            "start_line": 411,
+            "end_line": 418
+          },
+          "解答": {
+            "start_line": 420,
+            "end_line": 420
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "bb997c55150ca4697dcde4d14ccd03abc2093372996e728d6721f4f2b919cf46"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1405,
+      "prompt_tokens": 19321,
+      "total_tokens": 20726,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 505
+    }
+  }
+}

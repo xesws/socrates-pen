@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U5Q3-paraphrase-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q3",
+  "sample_id": "U5Q3-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_48d2f7e283ea1b5d703f",
+        "score": 1.0,
+        "max_score": 1.0,
+        "reason": "回答明确给出“能到”（即从 A 到 C 可达），并说明依据是沿 A 到 B 再到 C 的箭头，等价于存在 A→B→C 的有向路径，符合满分标准。",
+        "evidence_quote": "能到，沿 A 到 B 再到 C 的箭头即可。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 112,
+      "prompt_tokens": 465,
+      "total_tokens": 577,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 465
+    }
+  },
+  "score": 1.0
+}

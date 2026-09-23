@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U3Q4-zero-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U3Q4",
+  "sample_id": "U3Q4-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_039df3c5e4a59864cbbd",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者回答未提及 b=a 或 b=a.copy() 的任何行为，也未说明共享或新建顶层列表对象，内容与题目无关。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 64,
+      "prompt_tokens": 349,
+      "total_tokens": 413,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 349
+    }
+  },
+  "score": 0.0
+}

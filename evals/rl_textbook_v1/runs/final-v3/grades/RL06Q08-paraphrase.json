@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q08-paraphrase",
+  "case_id": "RL06Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c0e15b27e2a19e1c44c3",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确提到对输入特征做缩放或归一化。",
+        "evidence_quote": "Scale or normalize input features sensibly.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_a71e954c2da7e197ab3e",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "提到从经验缓冲区随机抽取小批量以降低时间相关性。",
+        "evidence_quote": "Randomize minibatches from an experience buffer to reduce temporal correlation.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8a9d708cd4641f99f190",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "提到使用延迟网络计算目标，并周期性或软更新。",
+        "evidence_quote": "Compute targets with a delayed network updated periodically or softly.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_ed0e935353f06e4cea6b",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "提到 Huber 目标或有界影响来减小大 TD 误差的异常影响。",
+        "evidence_quote": "A Huber objective or bounded influence from large TD errors reduces outlier effects.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9d145b0a7b1356bb73d2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "提到定义 epsilon-greedy 探索退火计划。",
+        "evidence_quote": "Define an epsilon-greedy exploration annealing schedule.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1a5b857a09879e7d99fc",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "区分真实终止与时间限制截断，并说明真实终止移除自举、继续任务的时间限制截断不必移除。",
+        "evidence_quote": "Remove bootstrapping at genuine terminal transitions; a mere time-limit truncation of a continuing task need not remove it.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_10fc2eba81e41702cb2d",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "列出监控回报、损失、TD 残差、Q 幅度和动作分布。",
+        "evidence_quote": "Track return, loss, TD residuals, Q magnitudes and the action distribution.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_29fc89c2d8347fb05ea3",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "提到多个种子、固定评估协议和保存配置。",
+        "evidence_quote": "Evaluate across several seeds with a fixed protocol and saved configurations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 592,
+      "prompt_tokens": 2481,
+      "total_tokens": 3073,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2097
+    }
+  },
+  "score": 1.0
+}

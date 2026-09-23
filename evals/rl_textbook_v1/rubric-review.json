@@ -1,0 +1,1166 @@
+{
+  "questions": [
+    {
+      "id": "RL01Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL01Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL01Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL01Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL02Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL02Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL02Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL02Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL03Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL03Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL03Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL03Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL04Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL04Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL04Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL04Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL05Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL05Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL05Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL05Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL06Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL06Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL06Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL06Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL07Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL07Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL07Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL07Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL08Q01",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q02",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q03",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q04",
+      "status": "approved",
+      "type": "single_choice",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q05",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q06",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q07",
+      "status": "approved",
+      "type": "fill_blank",
+      "criteria": 1,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "Primary reviewer checked answer key/aliases and generated conditions; runtime uses source keys and tolerances deterministically."
+    },
+    {
+      "id": "RL08Q08",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL08Q09",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    },
+    {
+      "id": "RL08Q10",
+      "status": "approved",
+      "type": "short_answer",
+      "criteria": 8,
+      "criteria_max_sum": 1.0,
+      "issues": [],
+      "reviewer": "primary assistant: compared complete generated criteria, positive/zero levels and point definitions against reviewed source",
+      "coverage": "All eight descriptions and full-credit conditions match the authored source facts; c1 of RL02Q10 drops only the nonessential 先.",
+      "criterion_fact_mapping": {
+        "c1": "fact1",
+        "c2": "fact2",
+        "c3": "fact3",
+        "c4": "fact4",
+        "c5": "fact5",
+        "c6": "fact6",
+        "c7": "fact7",
+        "c8": "fact8"
+      },
+      "bands": [
+        "basic",
+        "advanced",
+        "complete"
+      ]
+    }
+  ],
+  "substantive_issues": [],
+  "limitation": "知识点定义对齐原题，但部分名称仍为要点N/正确选项。命名质量并非本轮评分通过的证明。审核是主agent复核，不是外部专家双标。"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "rubric-U5Q2-r1",
+  "kind": "rubric",
+  "case_id": "U5Q2",
+  "split": "dev",
+  "repeat": 1,
+  "ok": false,
+  "error": "blank_id is only valid for fill_blank criteria"
+}

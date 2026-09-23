@@ -1,0 +1,119 @@
+{
+  "id": "RL03Q10-wrong",
+  "case_id": "RL03Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1501079a3aa546101689",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确否认 Bellman 方程存在固定点，与“目标价值是算子的固定点”矛盾。",
+        "evidence_quote": "Bellman 方程不存在固定点。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_9ec80cc48c9102c9e8b2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明折扣 Bellman 算子在 γ<1 时缩小价值函数之间的最大差异。",
+        "evidence_quote": "Bellman 方程不存在固定点。折扣越大压缩必然越强；只更新一个无关状态即可保证所有连续非平稳任务精确收敛。模型错误、函数近似和未折扣无限任务都无需条件。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d2047fa3436cae8cc50e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "只断言“折扣越大压缩必然越强”，未表达 γ 越小压缩越强、γ 接近 1 收敛更慢。",
+        "evidence_quote": "折扣越大压缩必然越强",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8d3d6ddea2bab60095c5",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及经典保证通常针对有限状态动作空间。",
+        "evidence_quote": "Bellman 方程不存在固定点。折扣越大压缩必然越强；只更新一个无关状态即可保证所有连续非平稳任务精确收敛。模型错误、函数近似和未折扣无限任务都无需条件。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_eefda56ec86984b3e8a9",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称只更新一个无关状态即可保证收敛，与异步更新需要足够覆盖相关状态动作相矛盾。",
+        "evidence_quote": "只更新一个无关状态即可保证所有连续非平稳任务精确收敛",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_6b3cf4b9a9d234329ec6",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明模型错误时算法收敛到错误模型下的解。",
+        "evidence_quote": "模型错误、函数近似和未折扣无限任务都无需条件。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e766ddaa8a3ab1f56c70",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明函数近似或截断评价会引入额外近似误差。",
+        "evidence_quote": "模型错误、函数近似和未折扣无限任务都无需条件。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_ecfc145603040d770661",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称未折扣无限任务无需条件，与“未折扣继续任务等不能直接套用保证”相矛盾。",
+        "evidence_quote": "未折扣无限任务都无需条件",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 679,
+      "prompt_tokens": 2276,
+      "total_tokens": 2955,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1892
+    }
+  },
+  "score": 0.0
+}

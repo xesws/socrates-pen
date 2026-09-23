@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_b936bc2a39d7ca3212de",
+        "name": "正确选项",
+        "definition": "Q-learning 的控制目标与行为策略的关系：可用探索行为采样，同时学习贪心目标策略的动作价值。",
+        "source_mq_ids": [
+          "q_8eaa482f00ea49a77948"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_8eaa482f00ea49a77948",
+        "version": "fea8ea66881bd152717c6d5cc810f4c05fc027f799398e7332a3c9187c98f2df",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_8eaa482f00ea49a77948",
+        "title": "RL05Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Q-learning 的控制目标与行为策略的关系最准确的是哪项？",
+        "reference_answer": "C",
+        "solution_markdown": "Q-learning 用 max 构造贪心目标，因此是 off-policy 控制。",
+        "raw_markdown": "### RL05Q03\n#### 题型\nsingle_choice\n#### 题干\nQ-learning 的控制目标与行为策略的关系最准确的是哪项？\n#### 选项\n##### A\n行为策略和目标策略必须完全相同。\n##### B\n目标中必须使用实际下一动作 A'。\n##### C\n可用探索行为采样，同时学习贪心目标策略的动作价值。\n##### D\n不能处理随机奖励。\n#### 答案\nC\n#### 解答\nQ-learning 用 max 构造贪心目标，因此是 off-policy 控制。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_b936bc2a39d7ca3212de"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_b936bc2a39d7ca3212de",
+            "max_score": 1.0,
+            "description": "选择 C：可用探索行为采样，同时学习贪心目标策略的动作价值。",
+            "partial_credit": "单选，选对得满分，选错或未选得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 C，或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 963,
+          "end_line": 980
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 965,
+            "end_line": 965
+          },
+          "题干": {
+            "start_line": 967,
+            "end_line": 967
+          },
+          "选项": {
+            "start_line": 969,
+            "end_line": 976
+          },
+          "答案": {
+            "start_line": 978,
+            "end_line": 978
+          },
+          "解答": {
+            "start_line": 980,
+            "end_line": 980
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "行为策略和目标策略必须完全相同。"
+          },
+          {
+            "id": "B",
+            "text": "目标中必须使用实际下一动作 A'。"
+          },
+          {
+            "id": "C",
+            "text": "可用探索行为采样，同时学习贪心目标策略的动作价值。"
+          },
+          {
+            "id": "D",
+            "text": "不能处理随机奖励。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "9dc55c42e882bf950828f7e7b8265a2ab755648c02eacad4a33dbbb137146729"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 142,
+      "prompt_tokens": 19155,
+      "total_tokens": 19297,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 339
+    }
+  }
+}

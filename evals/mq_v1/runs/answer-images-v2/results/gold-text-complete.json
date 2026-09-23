@@ -1,0 +1,112 @@
+{
+  "id": "gold-text-complete",
+  "kind": "grade",
+  "arm": "gold",
+  "mode": "text",
+  "expected": 1,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明每次变更分配唯一版本ID。",
+        "evidence_quote": "Each change gets a unique version ID.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "p2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明每个版本配置不可变并持久保存。",
+        "evidence_quote": "The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "p3",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "发布前验证schema和业务约束，拒绝非法配置。",
+        "evidence_quote": "Validate the schema and business constraints before publishing; reject invalid configurations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "p4",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "先小规模canary再逐步扩大。",
+        "evidence_quote": "Start with a small canary group, then expand gradually.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "p5",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "监控错误率和延迟，阈值触发时停止扩大。",
+        "evidence_quote": "Monitor error rate and latency; stop expansion when preset thresholds are crossed.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "p6",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "回滚指向保留的已知良好版本且不修改历史。",
+        "evidence_quote": "Roll back by pointing to a retained known-good version, without editing history.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "p7",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "跟踪各实例确认版本并检测失败或陈旧实例。",
+        "evidence_quote": "Track the actual version acknowledged by every instance and detect failed or stale instances.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "p8",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "审计操作者、时间、版本和结果。",
+        "evidence_quote": "Audit the operator, time, version and outcome.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 405,
+      "prompt_tokens": 2048,
+      "total_tokens": 2453,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 1792
+    }
+  },
+  "score": 1.0
+}

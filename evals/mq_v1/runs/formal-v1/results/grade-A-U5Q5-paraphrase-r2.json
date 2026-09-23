@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U5Q5-paraphrase-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U5Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确写出“A 柱为七、B 柱为二”，准确表达了 A=7 且 B=2 这一要点。",
+        "evidence_quote": "A 柱为七、B 柱为二"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U5Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案写出“后者减去前者为负五”，即 B−A=-5，准确表达了该要点。",
+        "evidence_quote": "后者减去前者为负五"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 119,
+      "prompt_tokens": 583,
+      "total_tokens": 702,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 583
+    }
+  },
+  "score": 1.0
+}

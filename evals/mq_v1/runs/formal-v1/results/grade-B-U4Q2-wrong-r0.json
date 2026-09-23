@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q2-wrong-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_381d7c708955c0850311",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者回答称“随机数组也能任意丢掉一半，因为中点总是目标”，这与题目要求说明数组已排序从而排除不可能包含目标的一半完全矛盾，且未建立有序性与排除半区的因果联系，属于表述矛盾或无关，得0分。",
+        "evidence_quote": "随机数组也能任意丢掉一半，因为中点总是目标。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 92,
+      "prompt_tokens": 392,
+      "total_tokens": 484,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 392
+    }
+  },
+  "score": 0.0
+}

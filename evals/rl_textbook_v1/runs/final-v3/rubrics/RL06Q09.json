@@ -1,0 +1,348 @@
+{
+  "id": "RL06Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_fddaa63f5b5784af2058",
+        "name": "遗漏变量",
+        "definition": "遗漏关键变量会使近似器无法区分价值不同的状态",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_92705e5aa45d33bc2e98",
+        "name": "混淆状态",
+        "definition": "把不同后果的状态映射到相同特征会产生混叠",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_6df664af291248ad5c32",
+        "name": "尺度",
+        "definition": "特征尺度差异过大会让梯度更新偏向某些维度",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_19e818345fad833c0b2c",
+        "name": "泄漏",
+        "definition": "使用未来信息或评估标签会造成数据泄漏",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_258696751f0a1c780542",
+        "name": "泛化",
+        "definition": "过强泛化会把局部错误扩散到未访问区域",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a18243f3ae42878c2d7f",
+        "name": "分布漂移",
+        "definition": "策略改变后访问分布漂移，旧特征表现可能退化",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0b63bb4f838843421d20",
+        "name": "诊断",
+        "definition": "诊断可看分组误差、Q 值热图、特征敏感性和离线验证",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_eb9c903dc9bd80b92a96",
+        "name": "修正",
+        "definition": "修正可加入必要历史摘要、归一化、正则化或改用更合适表示",
+        "source_mq_ids": [
+          "q_de3f9e1f388d331891e2"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_de3f9e1f388d331891e2",
+        "version": "7709be8d6cb3b45b4b8d86b74788d8dde0b3cde6156bcb6bfd8c4917e5a40397",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_de3f9e1f388d331891e2",
+        "title": "RL06Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "分析特征设计不当会怎样伤害价值学习。请按8个方面回答：遗漏变量、混淆状态、尺度、泄漏、泛化、分布漂移、诊断、修正。",
+        "reference_answer": "1. 遗漏关键变量会使近似器无法区分价值不同的状态。\n2. 把不同后果的状态映射到相同特征会产生混叠。\n3. 特征尺度差异过大会让梯度更新偏向某些维度。\n4. 使用未来信息或评估标签会造成数据泄漏。\n5. 过强泛化会把局部错误扩散到未访问区域。\n6. 策略改变后访问分布漂移，旧特征表现可能退化。\n7. 诊断可看分组误差、Q 值热图、特征敏感性和离线验证。\n8. 修正可加入必要历史摘要、归一化、正则化或改用更合适表示。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL06Q09\n#### 题型\nshort_answer\n#### 题干\n分析特征设计不当会怎样伤害价值学习。请按8个方面回答：遗漏变量、混淆状态、尺度、泄漏、泛化、分布漂移、诊断、修正。\n#### 答案\n1. 遗漏关键变量会使近似器无法区分价值不同的状态。\n2. 把不同后果的状态映射到相同特征会产生混叠。\n3. 特征尺度差异过大会让梯度更新偏向某些维度。\n4. 使用未来信息或评估标签会造成数据泄漏。\n5. 过强泛化会把局部错误扩散到未访问区域。\n6. 策略改变后访问分布漂移，旧特征表现可能退化。\n7. 诊断可看分组误差、Q 值热图、特征敏感性和离线验证。\n8. 修正可加入必要历史摘要、归一化、正则化或改用更合适表示。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_fddaa63f5b5784af2058",
+          "pt_92705e5aa45d33bc2e98",
+          "pt_6df664af291248ad5c32",
+          "pt_19e818345fad833c0b2c",
+          "pt_258696751f0a1c780542",
+          "pt_a18243f3ae42878c2d7f",
+          "pt_0b63bb4f838843421d20",
+          "pt_eb9c903dc9bd80b92a96"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_fddaa63f5b5784af2058",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "遗漏关键变量会使近似器无法区分价值不同的状态",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "遗漏关键变量会使近似器无法区分价值不同的状态"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_92705e5aa45d33bc2e98",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "把不同后果的状态映射到相同特征会产生混叠",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "把不同后果的状态映射到相同特征会产生混叠"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_6df664af291248ad5c32",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "特征尺度差异过大会让梯度更新偏向某些维度",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "特征尺度差异过大会让梯度更新偏向某些维度"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_19e818345fad833c0b2c",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "使用未来信息或评估标签会造成数据泄漏",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "使用未来信息或评估标签会造成数据泄漏"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_258696751f0a1c780542",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "过强泛化会把局部错误扩散到未访问区域",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "过强泛化会把局部错误扩散到未访问区域"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_a18243f3ae42878c2d7f",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "策略改变后访问分布漂移，旧特征表现可能退化",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "策略改变后访问分布漂移，旧特征表现可能退化"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_0b63bb4f838843421d20",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "诊断可看分组误差、Q 值热图、特征敏感性和离线验证",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "诊断可看分组误差、Q 值热图、特征敏感性和离线验证"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_eb9c903dc9bd80b92a96",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "修正可加入必要历史摘要、归一化、正则化或改用更合适表示",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "修正可加入必要历史摘要、归一化、正则化或改用更合适表示"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1267,
+          "end_line": 1282
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1269,
+            "end_line": 1269
+          },
+          "题干": {
+            "start_line": 1271,
+            "end_line": 1271
+          },
+          "答案": {
+            "start_line": 1273,
+            "end_line": 1280
+          },
+          "解答": {
+            "start_line": 1282,
+            "end_line": 1282
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "ec66825eeb71c7b233129abc23b123e43a222721f2a1b438499a8c65a863d8eb"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1240,
+      "prompt_tokens": 19276,
+      "total_tokens": 20516,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 19072
+      },
+      "prompt_cache_hit_tokens": 19072,
+      "prompt_cache_miss_tokens": 204
+    }
+  }
+}

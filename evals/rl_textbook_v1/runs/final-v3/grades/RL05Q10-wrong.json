@@ -1,0 +1,119 @@
+{
+  "id": "RL05Q10-wrong",
+  "case_id": "RL05Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_063dac195254f5f59848",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称TD必须等终局，与TD可在每一步后更新的事实矛盾。",
+        "evidence_quote": "TD 必须等终局",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c2dff7995f3ba4b389f4",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称任务越长MC越适合即时更新，与长episode时TD更实用的事实矛盾。",
+        "evidence_quote": "任务越长MC越适合即时更新",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_ad6652b9976f2269accc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及MC使用实际完整回报或自举偏差较少，且称MC只能自举，与事实矛盾。",
+        "evidence_quote": "MC只能自举",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8eb5faf0f165216fd535",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及TD目标方差较低但依赖当前估计，且称TD永不依赖估值，与事实矛盾。",
+        "evidence_quote": "TD永不依赖估值",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_2cfd7f382b25cc8845a3",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及在线系统需要边交互边学习时TD更合适。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_edb511df859a37eb8d11",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称continuing任务完全不能用TD，与continuing任务TD可直接使用折扣或平均奖励框架的事实矛盾。",
+        "evidence_quote": "continuing任务完全不能用TD",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e2712ff45dd301e1a64e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及奖励极度延迟且episode可完成时MC能直接利用终局回报。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_dbee00061d865ce58ec2",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称TD必须存下全部无限轨迹，与TD不必保存整条轨迹的事实矛盾。",
+        "evidence_quote": "TD必须存下全部无限轨迹",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 563,
+      "prompt_tokens": 2332,
+      "total_tokens": 2895,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1948
+    }
+  },
+  "score": 0.0
+}

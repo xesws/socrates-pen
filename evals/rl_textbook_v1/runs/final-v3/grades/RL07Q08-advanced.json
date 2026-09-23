@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q08-advanced",
+  "case_id": "RL07Q08",
+  "kind": "advanced",
+  "split": "test",
+  "expected": 0.5,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_bf66ece6b5a437e2e1da",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确写出初始化参数化随机策略 π_θ(a|s)。",
+        "evidence_quote": "初始化参数化随机策略 π_θ(a|s)。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8953218b37dfe272f081",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "写出用当前策略采样一条或多条完整有限期 episode。",
+        "evidence_quote": "用当前策略采样一条或多条完整有限期 episode。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_aacab06f60dd6cdd64b8",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "写出 γ=1 下为每个时间步计算从该步到终局的未折扣回报 G_t。",
+        "evidence_quote": "在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_dbe8536260e0d162ab96",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "写出用 G_t∇θlogπ_θ(A_t|S_t) 构造策略梯度估计。",
+        "evidence_quote": "用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c89f1232684f4d53dffe",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 baseline 或减去不依赖动作的基线。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_91aae9b670a0b3dd30d9",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及按梯度上升更新 θ 或提高高优势动作概率。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_32576a03a4965dc43c29",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及回报样本噪声大或轨迹长时方差高。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_4c209d1dc3b1ec9f4460",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及用独立评估 episode、平均回报和置信区间判断学习效果。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "advanced",
+      "label": "进阶"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 569,
+      "prompt_tokens": 2398,
+      "total_tokens": 2967,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2014
+    }
+  },
+  "score": 0.5
+}

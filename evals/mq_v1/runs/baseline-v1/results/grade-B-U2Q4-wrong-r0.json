@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U2Q4-wrong-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_dc7794b847f40f9fd12d",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "答案未提及初始化检查，反而说初始化不必要，与要求完全相反。",
+        "evidence_quote": "初始化与保持都不必要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_5dc6a6bf4c60b9b432a9",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "答案未提及保持检查，反而说保持不必要，与要求完全相反。",
+        "evidence_quote": "初始化与保持都不必要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 90,
+      "prompt_tokens": 523,
+      "total_tokens": 613,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 523
+    }
+  },
+  "score": 0.0
+}

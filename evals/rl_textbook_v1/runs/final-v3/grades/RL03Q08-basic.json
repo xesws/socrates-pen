@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q08-basic",
+  "case_id": "RL03Q08",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_022ae8cd6bfb5ff315c7",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确将状态定义为网格位置，并提到必要时包含终止格。",
+        "evidence_quote": "状态可定义为网格位置，必要时包含终止格。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0aa78dd0961df9cfd5ce",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确动作定义为上下左右，并处理撞墙后留在原地。",
+        "evidence_quote": "动作可定义为上、下、左、右，并处理撞墙后留在原地。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_1674054d4af47d41dc61",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及状态动作到下一格的概率或滑动/随机转移。",
+        "evidence_quote": "状态可定义为网格位置，必要时包含终止格。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_49dbee35f09ad9c7b8a2",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及奖励设置。",
+        "evidence_quote": "动作可定义为上、下、左、右，并处理撞墙后留在原地。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c2d4e1bd7490e6afb638",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及策略评价或价值更新。",
+        "evidence_quote": "状态可定义为网格位置，必要时包含终止格。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_b23adfdd62865432a623",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及策略改进。",
+        "evidence_quote": "动作可定义为上、下、左、右，并处理撞墙后留在原地。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_6b8e850a05fc61e0db1c",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及停止准则。",
+        "evidence_quote": "状态可定义为网格位置，必要时包含终止格。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c91a39aec2154d615e31",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及输出内容。",
+        "evidence_quote": "动作可定义为上、下、左、右，并处理撞墙后留在原地。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 409,
+      "prompt_tokens": 2294,
+      "total_tokens": 2703,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1910
+    }
+  },
+  "score": 0.2
+}

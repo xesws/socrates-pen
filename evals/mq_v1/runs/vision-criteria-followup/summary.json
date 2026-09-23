@@ -1,0 +1,18 @@
+{
+  "image": {
+    "n": 36,
+    "valid_grades": 25,
+    "abstentions": 11,
+    "mae": 0.12,
+    "exact": 22,
+    "over_credit": 0
+  },
+  "no_image": {
+    "n": 36,
+    "valid_grades": 0,
+    "abstentions": 36,
+    "mae": null,
+    "exact": 0,
+    "over_credit": 0
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "id": "generated-text-basic",
+  "kind": "grade",
+  "arm": "generated",
+  "mode": "text",
+  "expected": 0.2,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1a018144daf9b9386917",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确说明每次变更获得唯一版本ID，符合唯一版本标识要求。",
+        "evidence_quote": "Each change gets a unique version ID.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_f4415936bb3dc56aaada",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明每个版本的配置不可变并持久保存，符合要求。",
+        "evidence_quote": "The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_8cb21c3e8b73209b9ea0",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及发布前验证格式和业务约束或拒绝非法配置。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_3f872eb9f714908a544e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及小流量灰度验证或逐步扩大范围。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_025fec6de01710dd6e6c",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及监控错误率、延迟或阈值停止发布。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f483e6333f0fe95b7cd8",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及回滚到已知良好版本或避免修改历史版本。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_7b0db01f6c5e48b7fd9e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及记录各实例确认的配置版本或发现未更新/失败实例。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_a66b81b0f2d3fde3a1a3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及操作者、时间、版本和结果的审计记录。",
+        "evidence_quote": "Each change gets a unique version ID. The configuration for each version is immutable and saved durably.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 470,
+      "prompt_tokens": 1991,
+      "total_tokens": 2461,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1607
+    }
+  },
+  "score": 0.2
+}

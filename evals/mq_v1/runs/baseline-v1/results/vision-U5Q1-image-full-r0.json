@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q1-image-full-r0",
+  "kind": "vision_grade",
+  "case_id": "U5Q1",
+  "split": "dev",
+  "repeat": 0,
+  "with_image": true,
+  "answer_kind": "full",
+  "ok": true,
+  "expected": 1,
+  "response": {
+    "assessable": true,
+    "score": 1,
+    "reason": "图中A列数值为8，B列数值为3，A列更高，学生选择A正确。",
+    "usage": {
+      "completion_tokens": 36,
+      "prompt_tokens": 371,
+      "total_tokens": 407,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 371
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 1
+}

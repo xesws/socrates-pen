@@ -1,0 +1,113 @@
+{
+  "id": "RL02Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_90fa996895be14c761ab",
+        "name": "Bellman 算子符号",
+        "definition": "残差表达式中对当前价值做一次 Bellman 备份的算子记作 T。",
+        "source_mq_ids": [
+          "q_69b15180dea8fcff9223"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_69b15180dea8fcff9223",
+        "version": "fde2061034af6f6db477df9a32a9902d4ea40f6788f9e5ffcdd46b5319495f45",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_69b15180dea8fcff9223",
+        "title": "RL02Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Bellman 残差常写作 ||{{b1}}V - V||，其中算子把当前价值做一次 Bellman 备份。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"T\",\"t\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "T 表示 Bellman 算子；残差度量当前估计离固定点还有多远。",
+        "raw_markdown": "### RL02Q07\n#### 题型\nfill_blank\n#### 题干\nBellman 残差常写作 ||{{b1}}V - V||，其中算子把当前价值做一次 Bellman 备份。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"T\",\"t\"],\"case_sensitive\":false}}\n```\n#### 解答\nT 表示 Bellman 算子；残差度量当前估计离固定点还有多远。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_90fa996895be14c761ab"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_90fa996895be14c761ab",
+            "max_score": 1.0,
+            "blank_id": "b1",
+            "description": "填入 Bellman 算子符号 T（大小写不敏感）。",
+            "partial_credit": "仅一个空，填对得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "空白、填错或填入与 T 矛盾的符号"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 T 或 t（大小写不敏感）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 378,
+          "end_line": 388
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 380,
+            "end_line": 380
+          },
+          "题干": {
+            "start_line": 382,
+            "end_line": 382
+          },
+          "答案": {
+            "start_line": 384,
+            "end_line": 386
+          },
+          "解答": {
+            "start_line": 388,
+            "end_line": 388
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "T",
+              "t"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "51b5124cdc29580e24f69440229d66ddfc7432cc91f1e2e1dced95eb879fa0ce"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 151,
+      "prompt_tokens": 19164,
+      "total_tokens": 19315,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 348
+    }
+  }
+}

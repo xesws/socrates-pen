@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_43bedf9b26409c1e7fcf",
+        "name": "正确选项",
+        "definition": "选择 A：目标策略可能选择的动作，在行为策略数据中也要有非零概率。",
+        "source_mq_ids": [
+          "q_c5a9e350dbbb468ead3e"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_c5a9e350dbbb468ead3e",
+        "version": "447a00e13e91ef29e78c5cc7c1b06e90b33ffc723567ba5859fb6011350514a7",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_c5a9e350dbbb468ead3e",
+        "title": "RL08Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "离策略评估中“覆盖性”最直接指什么？",
+        "reference_answer": "A",
+        "solution_markdown": "没有覆盖时，日志无法告诉我们目标策略动作的后果。",
+        "raw_markdown": "### RL08Q03\n#### 题型\nsingle_choice\n#### 题干\n离策略评估中“覆盖性”最直接指什么？\n#### 选项\n##### A\n目标策略可能选择的动作，在行为策略数据中也要有非零概率。\n##### B\n评估集必须和训练集完全相同。\n##### C\n所有奖励必须是二值。\n##### D\n状态空间必须只有一个状态。\n#### 答案\nA\n#### 解答\n没有覆盖时，日志无法告诉我们目标策略动作的后果。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_43bedf9b26409c1e7fcf"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_43bedf9b26409c1e7fcf",
+            "max_score": 1.0,
+            "description": "选择 A：目标策略可能选择的动作，在行为策略数据中也要有非零概率。",
+            "partial_credit": "单选，选对得满分，选错或未选得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 B、C、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1613,
+          "end_line": 1630
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1615,
+            "end_line": 1615
+          },
+          "题干": {
+            "start_line": 1617,
+            "end_line": 1617
+          },
+          "选项": {
+            "start_line": 1619,
+            "end_line": 1626
+          },
+          "答案": {
+            "start_line": 1628,
+            "end_line": 1628
+          },
+          "解答": {
+            "start_line": 1630,
+            "end_line": 1630
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "目标策略可能选择的动作，在行为策略数据中也要有非零概率。"
+          },
+          {
+            "id": "B",
+            "text": "评估集必须和训练集完全相同。"
+          },
+          {
+            "id": "C",
+            "text": "所有奖励必须是二值。"
+          },
+          {
+            "id": "D",
+            "text": "状态空间必须只有一个状态。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "d6e61cb27869d8582f86343e4e28c79036ffe586cb4aa11bc4ae78fed6f585cd"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 143,
+      "prompt_tokens": 19148,
+      "total_tokens": 19291,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 332
+    }
+  }
+}

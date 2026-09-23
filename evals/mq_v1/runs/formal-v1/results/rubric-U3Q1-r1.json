@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U3Q1-r1",
+  "kind": "rubric",
+  "case_id": "U3Q1",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_970ba6df289388e67f84",
+      "name": "列表引用与原地修改",
+      "definition": "理解变量赋值使 a 与 b 引用同一列表对象，对 b 的原地追加操作会同时改变 a 所引用的列表内容",
+      "source_mq_ids": [
+        "q_031be7de1cb0d55e1f70"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_970ba6df289388e67f84",
+      "max_score": 1.0,
+      "description": "选择正确选项 B（[1,2]），即 a 与 b 引用同一列表，b.append(2) 原地修改后 a 也变为 [1,2]",
+      "partial_credit": "选择 B 得 1 分；选择 A 或其他选项、未作答得 0 分"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U3Q5-r1",
+  "kind": "rubric",
+  "case_id": "U3Q5",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_b616e2bbaf8e9fa3a0f4",
+      "name": "FIFO含义",
+      "definition": "队列的FIFO指先进先出，即最先进入队列的元素最先离开队列",
+      "source_mq_ids": [
+        "q_5bfcfc3b51083a9e73c9"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_4252561ecd97b997a20d",
+      "name": "取出顺序",
+      "definition": "在A先入队、B后入队的情况下，先取出的是A",
+      "source_mq_ids": [
+        "q_5bfcfc3b51083a9e73c9"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_b616e2bbaf8e9fa3a0f4",
+      "max_score": 0.5,
+      "description": "说明FIFO是先进先出，即最先放入的元素最先取出",
+      "partial_credit": "完整说明先进先出得0.5分；仅提到FIFO但未解释含义或解释错误得0分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_4252561ecd97b997a20d",
+      "max_score": 0.5,
+      "description": "指出先放入A、再放入B时，先取出的是A",
+      "partial_credit": "正确指出先取出A得0.5分；指出先取出B或其他错误答案得0分"
+    }
+  ]
+}

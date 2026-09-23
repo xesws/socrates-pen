@@ -1,0 +1,37 @@
+{
+  "id": "U6Q1-True-full-r2",
+  "case_id": "U6Q1",
+  "with_image": true,
+  "answer_kind": "full",
+  "repeat": 2,
+  "expected": 1,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "图中 A 的值为 6，B 的值为 4，A 占 A+B 总量的比例应为 6/(6+4)=60%。学生答案“A”未给出比例数值，属于缺失/错误，不能得分。",
+        "evidence_quote": "A"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 80,
+      "prompt_tokens": 476,
+      "total_tokens": 556,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 220
+    }
+  },
+  "score": 0.0
+}

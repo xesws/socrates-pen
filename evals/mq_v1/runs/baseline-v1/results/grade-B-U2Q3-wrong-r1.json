@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U2Q3-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q3",
+  "sample_id": "U2Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_65f417b2473914febaf3",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案声称循环不变量“只需要循环结束后成立，执行途中可以不成立”，这与标准定义完全相反，且未提及循环开始前成立或每次迭代保持成立，属于表述错误，因此得0分。",
+        "evidence_quote": "只需要循环结束后成立，执行途中可以不成立。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 82,
+      "prompt_tokens": 403,
+      "total_tokens": 485,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 403
+    }
+  },
+  "score": 0.0
+}

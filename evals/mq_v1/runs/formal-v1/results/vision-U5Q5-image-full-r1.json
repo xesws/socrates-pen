@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q5-image-full-r1",
+  "kind": "vision_grade",
+  "case_id": "U5Q5",
+  "split": "test",
+  "repeat": 1,
+  "with_image": true,
+  "answer_kind": "full",
+  "ok": true,
+  "expected": 1,
+  "response": {
+    "assessable": true,
+    "score": 1,
+    "reason": "图中A柱标注数值为7，B柱标注数值为2，学生读取A=7、B=2正确；计算B−A=2−7=−5也正确。两个要求均准确完成，得满分。",
+    "usage": {
+      "completion_tokens": 62,
+      "prompt_tokens": 375,
+      "total_tokens": 437,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 375
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 1
+}

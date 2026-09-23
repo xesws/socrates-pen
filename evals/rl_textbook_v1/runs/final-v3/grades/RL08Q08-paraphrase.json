@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q08-paraphrase",
+  "case_id": "RL08Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f4a565ca5e0588f85b29",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求通过环境、关卡和随机种子隔离训练与评估。",
+        "evidence_quote": "Separate training and evaluation through clearly defined environments, levels and random seeds.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_1ab1ad66fed7e3b9e6e0",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求冻结评估策略模式，包括探索 epsilon。",
+        "evidence_quote": "Freeze the evaluation policy mode, including any exploration epsilon.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_a72f596c7a6e531f5183",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求使用多个种子并报告均值和波动，而非最佳单次结果。",
+        "evidence_quote": "Use multiple seeds and report their mean and variability, not the best run.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8606db132e04757aa193",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指标包含回报、成功率、回合长度、约束违反和资源使用。",
+        "evidence_quote": "Include return, success, episode length, constraint violations and resource use.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_11e030085f54f0aeaea0",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "要求用标准误或置信/bootstrap 区间量化不确定性。",
+        "evidence_quote": "Quantify uncertainty using standard errors or confidence/bootstrap intervals.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1e1f4f646b8af74afd7c",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "要求与随机、启发式、已有和无学习基线比较。",
+        "evidence_quote": "Compare against suitable random, heuristic, established and no-learning baselines.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a27a38711f1657393148",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求消融所提组件以检验改进的声称原因。",
+        "evidence_quote": "Ablate the proposed components to test the claimed cause of improvement.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b382d6b4f31c32f63db9",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求记录失败、异常轨迹和分布外行为。",
+        "evidence_quote": "Document failures, unusual trajectories and behavior outside the training distribution.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 574,
+      "prompt_tokens": 2399,
+      "total_tokens": 2973,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2015
+    }
+  },
+  "score": 1.0
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q4-wrong-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q4",
+  "sample_id": "U5Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_8662679ddfa84caae807",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者给出A=7、B=2，与图中标注A=2、B=7矛盾，两个数值均错误，按评分标准对应部分不得分。",
+        "evidence_quote": "A=7，B=2；B−A=9。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_262a710547fc3ceddca0",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者计算B−A=9，结果不等于5，按评分标准结果错误得0分。",
+        "evidence_quote": "B−A=9。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 120,
+      "prompt_tokens": 641,
+      "total_tokens": 761,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 641
+    }
+  },
+  "score": 0.0
+}

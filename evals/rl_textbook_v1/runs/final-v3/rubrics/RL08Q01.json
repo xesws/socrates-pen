@@ -1,0 +1,123 @@
+{
+  "id": "RL08Q01",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_109ed05609275d46c1a5",
+        "name": "正确选项",
+        "definition": "epsilon-greedy 的核心机制：以大概率选择当前贪心动作，以小概率随机探索。",
+        "source_mq_ids": [
+          "q_ecaa2e904db7c941737d"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_ecaa2e904db7c941737d",
+        "version": "ff896b970bfb0c22d399ccf2035e6cd23981c2096474967abd7db180cd8590a0",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_ecaa2e904db7c941737d",
+        "title": "RL08Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "epsilon-greedy 探索的核心机制是什么？",
+        "reference_answer": "D",
+        "solution_markdown": "epsilon-greedy 在利用当前价值的同时保留均匀随机探索。",
+        "raw_markdown": "### RL08Q01\n#### 题型\nsingle_choice\n#### 题干\nepsilon-greedy 探索的核心机制是什么？\n#### 选项\n##### A\n永远选择访问次数最少的动作。\n##### B\n只根据人类标签更新策略。\n##### C\n完全禁止非贪心动作。\n##### D\n大概率选当前贪心动作，小概率随机探索。\n#### 答案\nD\n#### 解答\nepsilon-greedy 在利用当前价值的同时保留均匀随机探索。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_109ed05609275d46c1a5"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_109ed05609275d46c1a5",
+            "max_score": 1.0,
+            "description": "选择 D：大概率选当前贪心动作，小概率随机探索。",
+            "partial_credit": "单选，无部分分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、C 或未作答/错误选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1577,
+          "end_line": 1594
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1579,
+            "end_line": 1579
+          },
+          "题干": {
+            "start_line": 1581,
+            "end_line": 1581
+          },
+          "选项": {
+            "start_line": 1583,
+            "end_line": 1590
+          },
+          "答案": {
+            "start_line": 1592,
+            "end_line": 1592
+          },
+          "解答": {
+            "start_line": 1594,
+            "end_line": 1594
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "永远选择访问次数最少的动作。"
+          },
+          {
+            "id": "B",
+            "text": "只根据人类标签更新策略。"
+          },
+          {
+            "id": "C",
+            "text": "完全禁止非贪心动作。"
+          },
+          {
+            "id": "D",
+            "text": "大概率选当前贪心动作，小概率随机探索。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "44e38e93e2dfa587d59e2fbc1f19ed20a4238bbfe50d64876dbf88184b4f6860"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 132,
+      "prompt_tokens": 19144,
+      "total_tokens": 19276,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 328
+    }
+  }
+}

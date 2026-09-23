@@ -1,0 +1,348 @@
+{
+  "id": "RL07Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_bf66ece6b5a437e2e1da",
+        "name": "策略",
+        "definition": "初始化参数化随机策略 π_θ(a|s)",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8953218b37dfe272f081",
+        "name": "采样",
+        "definition": "用当前策略采样一条或多条完整有限期 episode",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_aacab06f60dd6cdd64b8",
+        "name": "回报",
+        "definition": "在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_dbe8536260e0d162ab96",
+        "name": "梯度",
+        "definition": "用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c89f1232684f4d53dffe",
+        "name": "baseline",
+        "definition": "可减去不依赖动作的 baseline 来降低方差",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_91aae9b670a0b3dd30d9",
+        "name": "更新",
+        "definition": "按梯度上升更新 θ，提高高优势动作概率",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_32576a03a4965dc43c29",
+        "name": "方差",
+        "definition": "回报样本噪声大，轨迹长时方差尤其高",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_4c209d1dc3b1ec9f4460",
+        "name": "评估",
+        "definition": "用独立评估 episode、平均回报和置信区间判断学习效果",
+        "source_mq_ids": [
+          "q_960212588b5c105cf983"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_960212588b5c105cf983",
+        "version": "8afbbb892f75f8ed37d60fdfc002d8efe179a7875fc7132ac4287100487531ca",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_960212588b5c105cf983",
+        "title": "RL07Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在有限期且 γ=1 的设定下描述 REINFORCE 算法流程。请按8个方面回答：策略、采样、回报、梯度、baseline、更新、方差、评估。",
+        "reference_answer": "1. 初始化参数化随机策略 π_θ(a|s)。\n2. 用当前策略采样一条或多条完整有限期 episode。\n3. 在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t。\n4. 用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计。\n5. 可减去不依赖动作的 baseline 来降低方差。\n6. 按梯度上升更新 θ，提高高优势动作概率。\n7. 回报样本噪声大，轨迹长时方差尤其高。\n8. 用独立评估 episode、平均回报和置信区间判断学习效果。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL07Q08\n#### 题型\nshort_answer\n#### 题干\n在有限期且 γ=1 的设定下描述 REINFORCE 算法流程。请按8个方面回答：策略、采样、回报、梯度、baseline、更新、方差、评估。\n#### 答案\n1. 初始化参数化随机策略 π_θ(a|s)。\n2. 用当前策略采样一条或多条完整有限期 episode。\n3. 在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t。\n4. 用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计。\n5. 可减去不依赖动作的 baseline 来降低方差。\n6. 按梯度上升更新 θ，提高高优势动作概率。\n7. 回报样本噪声大，轨迹长时方差尤其高。\n8. 用独立评估 episode、平均回报和置信区间判断学习效果。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_bf66ece6b5a437e2e1da",
+          "pt_8953218b37dfe272f081",
+          "pt_aacab06f60dd6cdd64b8",
+          "pt_dbe8536260e0d162ab96",
+          "pt_c89f1232684f4d53dffe",
+          "pt_91aae9b670a0b3dd30d9",
+          "pt_32576a03a4965dc43c29",
+          "pt_4c209d1dc3b1ec9f4460"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_bf66ece6b5a437e2e1da",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "初始化参数化随机策略 π_θ(a|s)",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "初始化参数化随机策略 π_θ(a|s)"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_8953218b37dfe272f081",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "用当前策略采样一条或多条完整有限期 episode",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "用当前策略采样一条或多条完整有限期 episode"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_aacab06f60dd6cdd64b8",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "在 γ=1 设定下，为每个时间步计算从该步到终局的未折扣回报 G_t"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_dbe8536260e0d162ab96",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "用 G_t∇θlogπ_θ(A_t|S_t) 构造该有限期目标下的策略梯度估计"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_c89f1232684f4d53dffe",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "可减去不依赖动作的 baseline 来降低方差",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "可减去不依赖动作的 baseline 来降低方差"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_91aae9b670a0b3dd30d9",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "按梯度上升更新 θ，提高高优势动作概率",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "按梯度上升更新 θ，提高高优势动作概率"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_32576a03a4965dc43c29",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "回报样本噪声大，轨迹长时方差尤其高",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "回报样本噪声大，轨迹长时方差尤其高"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_4c209d1dc3b1ec9f4460",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "用独立评估 episode、平均回报和置信区间判断学习效果",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "用独立评估 episode、平均回报和置信区间判断学习效果"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1467,
+          "end_line": 1482
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1469,
+            "end_line": 1469
+          },
+          "题干": {
+            "start_line": 1471,
+            "end_line": 1471
+          },
+          "答案": {
+            "start_line": 1473,
+            "end_line": 1480
+          },
+          "解答": {
+            "start_line": 1482,
+            "end_line": 1482
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "54e16243dea1ccf136b45e9696c4e82752515956ef615e197528189da5a4a8e5"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1285,
+      "prompt_tokens": 19298,
+      "total_tokens": 20583,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 482
+    }
+  }
+}

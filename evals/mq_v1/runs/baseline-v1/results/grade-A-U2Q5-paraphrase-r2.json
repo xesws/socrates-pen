@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q5-paraphrase-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q5",
+  "sample_id": "U2Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案说“先报输入错误”，等价于明确拒绝空列表或抛出异常，准确表达了该要点。",
+        "evidence_quote": "先报输入错误，避免分母为零。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案说“避免分母为零”，等价于说明长度为零导致除以零，准确表达了该要点。",
+        "evidence_quote": "先报输入错误，避免分母为零。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 110,
+      "prompt_tokens": 375,
+      "total_tokens": 485,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 375
+    }
+  },
+  "score": 1.0
+}

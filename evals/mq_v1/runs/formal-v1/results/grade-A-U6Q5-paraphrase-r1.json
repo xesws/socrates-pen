@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U6Q5-paraphrase-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U6Q5",
+  "sample_id": "U6Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 1,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U6Q5-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者明确给出“九与三的均值是六”，准确表达了平均数为6的要点。",
+        "evidence_quote": "九与三的均值是六"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U6Q5-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者指出“高于它的是 A 柱”，准确表达了A高于平均数的要点。",
+        "evidence_quote": "高于它的是 A 柱"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 101,
+      "prompt_tokens": 564,
+      "total_tokens": 665,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 564
+    }
+  },
+  "score": 1.0
+}

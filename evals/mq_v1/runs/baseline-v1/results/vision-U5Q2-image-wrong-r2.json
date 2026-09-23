@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q2-image-wrong-r2",
+  "kind": "vision_grade",
+  "case_id": "U5Q2",
+  "split": "dev",
+  "repeat": 2,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0,
+    "reason": "图中显示 A 列数值为 3，B 列数值为 8，因此 B 列更高。学生选择 A，与图片不符，应得 0 分。",
+    "usage": {
+      "completion_tokens": 57,
+      "prompt_tokens": 371,
+      "total_tokens": 428,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 243
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0
+}

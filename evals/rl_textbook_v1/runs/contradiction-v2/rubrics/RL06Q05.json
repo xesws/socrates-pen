@@ -1,0 +1,113 @@
+{
+  "id": "RL06Q05",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_2df8945a97de0534fd26",
+        "name": "点积计算",
+        "definition": "计算 w 与 x 的点积 1×3+2×4=11",
+        "source_mq_ids": [
+          "q_f3efa10f9b4ce25c44a3"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_f3efa10f9b4ce25c44a3",
+        "version": "69f490cfebcc772ba9bc4846abd6721384a529d384bb938825b116d07e86dbf0",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_f3efa10f9b4ce25c44a3",
+        "title": "RL06Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "线性近似 Q=w^T x，若 w=(1,2)、x=(3,4)，则 Q={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"11\",\"11.0\"],\"numeric_value\":11.0,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "点积为 1×3+2×4=11。",
+        "raw_markdown": "### RL06Q05\n#### 题型\nfill_blank\n#### 题干\n线性近似 Q=w^T x，若 w=(1,2)、x=(3,4)，则 Q={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"11\",\"11.0\"],\"numeric_value\":11.0,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n点积为 1×3+2×4=11。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_2df8945a97de0534fd26"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_2df8945a97de0534fd26",
+            "max_score": 1.0,
+            "description": "填入 11（或等值 11.0）",
+            "partial_credit": "本项独立给分；数值等于 11 即得分，否则为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 11 或 11.0"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 1218,
+          "end_line": 1228
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1220,
+            "end_line": 1220
+          },
+          "题干": {
+            "start_line": 1222,
+            "end_line": 1222
+          },
+          "答案": {
+            "start_line": 1224,
+            "end_line": 1226
+          },
+          "解答": {
+            "start_line": 1228,
+            "end_line": 1228
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "11",
+              "11.0"
+            ],
+            "numeric_value": 11.0,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "fe927b3c7c7cd2e8acc714a9ded55a9670bc5945b8f31868b3ac30ce626dcf2b"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 147,
+      "prompt_tokens": 19187,
+      "total_tokens": 19334,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 371
+    }
+  }
+}

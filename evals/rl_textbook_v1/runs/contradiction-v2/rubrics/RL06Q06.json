@@ -1,0 +1,112 @@
+{
+  "id": "RL06Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_25303bb1867e3834a515",
+        "name": "目标值计算",
+        "definition": "按非终止样本的 DQN 目标公式 y = r + γ·max_a Q_target(s',a) 计算，得到 8.92",
+        "source_mq_ids": [
+          "q_61d559c1c8e761e9d6df"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_61d559c1c8e761e9d6df",
+        "version": "434f0708f89088180cfed0eed7ac1dbeb25d08e997a5923e80538b31b908843c",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_61d559c1c8e761e9d6df",
+        "title": "RL06Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "DQN 非终止样本中，r=1、γ=0.99、max_a Q_target(s',a)=8，则目标 y={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"8.92\"],\"numeric_value\":8.92,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "目标为 1+0.99×8=8.92。",
+        "raw_markdown": "### RL06Q06\n#### 题型\nfill_blank\n#### 题干\nDQN 非终止样本中，r=1、γ=0.99、max_a Q_target(s',a)=8，则目标 y={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"8.92\"],\"numeric_value\":8.92,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n目标为 1+0.99×8=8.92。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_25303bb1867e3834a515"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_25303bb1867e3834a515",
+            "max_score": 1.0,
+            "description": "填入 8.92（即 1+0.99×8）",
+            "partial_credit": "精确填空，仅正确数值得分；数值容差 1e-06。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾（非 8.92）"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 8.92（在容差 1e-06 内）"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 1229,
+          "end_line": 1239
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1231,
+            "end_line": 1231
+          },
+          "题干": {
+            "start_line": 1233,
+            "end_line": 1233
+          },
+          "答案": {
+            "start_line": 1235,
+            "end_line": 1237
+          },
+          "解答": {
+            "start_line": 1239,
+            "end_line": 1239
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "8.92"
+            ],
+            "numeric_value": 8.92,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "b76f7fdab85f293c3ea1893fa3175a480eb02f41fe78a44b0e252c77dc036900"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 180,
+      "prompt_tokens": 19189,
+      "total_tokens": 19369,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 373
+    }
+  }
+}

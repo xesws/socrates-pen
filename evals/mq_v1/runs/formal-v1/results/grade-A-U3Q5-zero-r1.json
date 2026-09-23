@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U3Q5-zero-r1",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U3Q5",
+  "sample_id": "U3Q5-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U3Q5-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答仅提到题干关键词，未表达“FIFO 是先进先出”这一要点。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U3Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未说明本例中先取出 A。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 104,
+      "prompt_tokens": 383,
+      "total_tokens": 487,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 383
+    }
+  },
+  "score": 0.0
+}

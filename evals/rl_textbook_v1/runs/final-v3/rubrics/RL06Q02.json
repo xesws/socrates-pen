@@ -1,0 +1,123 @@
+{
+  "id": "RL06Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_105326c6759f39a85667",
+        "name": "正确选项",
+        "definition": "deadly triad 指函数近似、自举与 off-policy 学习三者的危险组合",
+        "source_mq_ids": [
+          "q_102fab11ae206e975377"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_102fab11ae206e975377",
+        "version": "53ae4b82f88e45e0e77eb7bad8b7bd7eb6be6736a26fb0feed721cf1138d4e91",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_102fab11ae206e975377",
+        "title": "RL06Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "deadly triad 指哪三个因素的危险组合？",
+        "reference_answer": "A",
+        "solution_markdown": "这三者同时出现时，价值学习稳定性风险显著增加。",
+        "raw_markdown": "### RL06Q02\n#### 题型\nsingle_choice\n#### 题干\ndeadly triad 指哪三个因素的危险组合？\n#### 选项\n##### A\n函数近似、自举、off-policy 学习。\n##### B\n监督学习、交叉熵、批归一化。\n##### C\n奖励、状态、动作。\n##### D\n探索、终止、可视化。\n#### 答案\nA\n#### 解答\n这三者同时出现时，价值学习稳定性风险显著增加。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_105326c6759f39a85667"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_105326c6759f39a85667",
+            "max_score": 1.0,
+            "description": "选择 A：函数近似、自举、off-policy 学习",
+            "partial_credit": "单选：选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 A，或选择 B/C/D 等错误选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A（函数近似、自举、off-policy 学习）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1164,
+          "end_line": 1181
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1166,
+            "end_line": 1166
+          },
+          "题干": {
+            "start_line": 1168,
+            "end_line": 1168
+          },
+          "选项": {
+            "start_line": 1170,
+            "end_line": 1177
+          },
+          "答案": {
+            "start_line": 1179,
+            "end_line": 1179
+          },
+          "解答": {
+            "start_line": 1181,
+            "end_line": 1181
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "函数近似、自举、off-policy 学习。"
+          },
+          {
+            "id": "B",
+            "text": "监督学习、交叉熵、批归一化。"
+          },
+          {
+            "id": "C",
+            "text": "奖励、状态、动作。"
+          },
+          {
+            "id": "D",
+            "text": "探索、终止、可视化。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "9aa9bc45dec89e9655ea84c76b589ef3e640e37e2210b398f7cbaa025ecdb229"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 153,
+      "prompt_tokens": 19143,
+      "total_tokens": 19296,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 327
+    }
+  }
+}

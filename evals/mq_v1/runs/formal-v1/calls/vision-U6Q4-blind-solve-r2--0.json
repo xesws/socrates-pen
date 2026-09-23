@@ -1,0 +1,97 @@
+{
+  "id": "vision-U6Q4-blind-solve-r2",
+  "attempt": 0,
+  "signature": "0b0120e99a610fb22928b73ece61020259d2b803cd182b9a943847cea65632e8",
+  "started_at": "2026-09-23T01:07:30.959355+00:00",
+  "requested_model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com",
+  "ok": true,
+  "retryable": false,
+  "parsed": {
+    "status": "insufficient_evidence",
+    "usage": {
+      "completion_tokens": 8,
+      "prompt_tokens": 104,
+      "total_tokens": 112,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 104
+    },
+    "model": "deepseek-flash"
+  },
+  "elapsed_seconds": 0.903,
+  "request": {
+    "model": "deepseek-flash",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Solve the question using the actual attached image. If the image is unavailable, do not guess; return {\"status\":\"insufficient_evidence\"}. Otherwise return JSON {\"mean\":number,\"above\":\"A or B\"}.\n\nInterface language: zh.\nReturn exactly one JSON object. Do not call tools."
+      },
+      {
+        "role": "user",
+        "content": "{\"payload\": {\"choices\": [], \"question\": \"读图计算两列的算术平均数，并说明哪一列高于平均数。\\n\\n![[assets/v07.png]]\"}}"
+      }
+    ],
+    "stream": false,
+    "extra_body": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "max_tokens": 2048,
+    "temperature": 0
+  },
+  "response": {
+    "id": "c07504f3-e716-4181-a2bc-6e1622dacaaf",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "{\"status\":\"insufficient_evidence\"}",
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": null
+        }
+      }
+    ],
+    "created": 1790125651,
+    "model": "deepseek-flash",
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+    "usage": {
+      "completion_tokens": 8,
+      "prompt_tokens": 104,
+      "total_tokens": 112,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 104
+    }
+  },
+  "usage": {
+    "calls": 1,
+    "completion_tokens": 8,
+    "prompt_tokens": 104,
+    "total_tokens": 112,
+    "prompt_tokens_details": {
+      "calls": 1,
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 104
+  },
+  "charged_tokens": 112,
+  "usage_known": true
+}

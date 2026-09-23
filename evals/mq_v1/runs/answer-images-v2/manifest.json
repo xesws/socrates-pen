@@ -1,0 +1,14 @@
+{
+  "fixture": "0b69f2fcdb794072bf89c77aa1c72eda08666b8630758ec0ac8b254f16327622",
+  "code": {
+    "pen/practice/grading.py": "8bfe7489afaa72d124136aa1ceb3d998d177787b6807114b0e3e207c692d8c2c",
+    "pen/practice/importer.py": "2cd9aef5eeb562d743a07341a834ee0277edee9d5fbde2f99f9cf194da11e27c",
+    "pen/practice/rubric.py": "594cc393bf701d13f3fa0d1e0520ec495fa833626b9a887befaba6f9acd1db05",
+    "pen/practice/rubric_examples.py": "0d85f883464d8306ad88d1ad4633e9ba1d529e568878cdbecd984cad1beb2e2e",
+    "pen/practice/llm.py": "ed19a636a4b25c6bd724dfba5b0afabba2bf504c3a3e46881e55218ed91cfa54",
+    "pen/practice/evaluation.py": "c1bf8dc6beca74bf6c40f7ddde396305d896b0dcaa15d0935081036aba34b4d1",
+    "scripts/evaluate-answer-images.py": "6260ddc58c0ce3d10ac7d2658b90d0ad6885b2a8ae8a48a02967f739a30487e2"
+  },
+  "model": "deepseek-flash",
+  "max_output_tokens": 4096
+}

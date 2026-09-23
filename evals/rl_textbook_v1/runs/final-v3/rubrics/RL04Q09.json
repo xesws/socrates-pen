@@ -1,0 +1,349 @@
+{
+  "id": "RL04Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_fd8c6edff91f2690bb9b",
+        "name": "目标策略",
+        "definition": "目标策略 π 是想要评价或改进的策略",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_5c1b010680044a100da3",
+        "name": "行为策略",
+        "definition": "行为策略 μ 是实际产生数据的策略",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ee7850823965fa5acf71",
+        "name": "覆盖",
+        "definition": "覆盖要求 π 会选择的动作在 μ 下也有非零概率",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_730c8cdbcba214fadde4",
+        "name": "比率",
+        "definition": "重要性比率用 π(a|s)/μ(a|s) 修正轨迹分布差异",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_82bc05df691ac8bece1b",
+        "name": "方差",
+        "definition": "长轨迹比率乘积会导致估计方差很高",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_f28113ca6f07ebc28216",
+        "name": "偏差",
+        "definition": "加权或截断方法可降低方差但可能引入有限样本偏差",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_367de6c14a2978fdb341",
+        "name": "缓解",
+        "definition": "缓解可用加权 IS、截断、分步 IS 或 doubly robust 估计",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_205e0359bd7784e94a80",
+        "name": "报告",
+        "definition": "报告时应给出有效样本量、置信区间和覆盖性限制",
+        "source_mq_ids": [
+          "q_2ac6bd34304e7cee3822"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_2ac6bd34304e7cee3822",
+        "version": "41a3fa6bf6f76970a4fdbfef1fd4fec073ae148fd48cd5a9478cef90a2484ce6",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_2ac6bd34304e7cee3822",
+        "title": "RL04Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "分析离策略 MC 重要性采样的风险。请按8个方面回答：目标策略、行为策略、覆盖、比率、方差、偏差、缓解、报告。",
+        "reference_answer": "1. 目标策略 π 是想要评价或改进的策略。\n2. 行为策略 μ 是实际产生数据的策略。\n3. 覆盖要求 π 会选择的动作在 μ 下也有非零概率。\n4. 重要性比率用 π(a|s)/μ(a|s) 修正轨迹分布差异。\n5. 长轨迹比率乘积会导致估计方差很高。\n6. 加权或截断方法可降低方差但可能引入有限样本偏差。\n7. 缓解可用加权 IS、截断、分步 IS 或 doubly robust 估计。\n8. 报告时应给出有效样本量、置信区间和覆盖性限制。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL04Q09\n#### 题型\nshort_answer\n#### 题干\n分析离策略 MC 重要性采样的风险。请按8个方面回答：目标策略、行为策略、覆盖、比率、方差、偏差、缓解、报告。\n#### 答案\n1. 目标策略 π 是想要评价或改进的策略。\n2. 行为策略 μ 是实际产生数据的策略。\n3. 覆盖要求 π 会选择的动作在 μ 下也有非零概率。\n4. 重要性比率用 π(a|s)/μ(a|s) 修正轨迹分布差异。\n5. 长轨迹比率乘积会导致估计方差很高。\n6. 加权或截断方法可降低方差但可能引入有限样本偏差。\n7. 缓解可用加权 IS、截断、分步 IS 或 doubly robust 估计。\n8. 报告时应给出有效样本量、置信区间和覆盖性限制。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_fd8c6edff91f2690bb9b",
+          "pt_5c1b010680044a100da3",
+          "pt_ee7850823965fa5acf71",
+          "pt_730c8cdbcba214fadde4",
+          "pt_82bc05df691ac8bece1b",
+          "pt_f28113ca6f07ebc28216",
+          "pt_367de6c14a2978fdb341",
+          "pt_205e0359bd7784e94a80"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_fd8c6edff91f2690bb9b",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "目标策略 π 是想要评价或改进的策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "目标策略 π 是想要评价或改进的策略"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_5c1b010680044a100da3",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "行为策略 μ 是实际产生数据的策略",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "行为策略 μ 是实际产生数据的策略"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_ee7850823965fa5acf71",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "覆盖要求 π 会选择的动作在 μ 下也有非零概率",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "覆盖要求 π 会选择的动作在 μ 下也有非零概率"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_730c8cdbcba214fadde4",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "重要性比率用 π(a|s)/μ(a|s) 修正轨迹分布差异",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "重要性比率用 π(a|s)/μ(a|s) 修正轨迹分布差异"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_82bc05df691ac8bece1b",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "长轨迹比率乘积会导致估计方差很高",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "长轨迹比率乘积会导致估计方差很高"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_f28113ca6f07ebc28216",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "加权或截断方法可降低方差但可能引入有限样本偏差",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "加权或截断方法可降低方差但可能引入有限样本偏差"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_367de6c14a2978fdb341",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "缓解可用加权 IS、截断、分步 IS 或 doubly robust 估计",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "缓解可用加权 IS、截断、分步 IS 或 doubly robust 估计"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_205e0359bd7784e94a80",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "报告时应给出有效样本量、置信区间和覆盖性限制",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "报告时应给出有效样本量、置信区间和覆盖性限制"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 835,
+          "end_line": 850
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 837,
+            "end_line": 837
+          },
+          "题干": {
+            "start_line": 839,
+            "end_line": 839
+          },
+          "答案": {
+            "start_line": 841,
+            "end_line": 848
+          },
+          "解答": {
+            "start_line": 850,
+            "end_line": 850
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "66f804a30c62020d6362ae909d3100487c6e3b9f4a40d92b8231610d3d2e04ea"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1246,
+      "prompt_tokens": 19276,
+      "total_tokens": 20522,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 460
+    }
+  }
+}

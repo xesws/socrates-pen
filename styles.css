@@ -1222,6 +1222,324 @@
   white-space: nowrap;
 }
 
+/* ── 实验练习页 ── */
+.socrates-pen .sp-practice-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--size-4-2) var(--size-4-3) var(--size-4-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.socrates-pen.sp-practice .sp-alert {
+  flex: 0 0 auto;
+  max-height: none;
+  border-bottom: none;
+  padding: 4px 0;
+}
+
+.socrates-pen .sp-practice-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding-bottom: 6px;
+}
+
+.socrates-pen .sp-practice-tabs button {
+  border-radius: var(--radius-s);
+}
+
+.socrates-pen .sp-practice-tabs button.is-active {
+  color: var(--text-on-accent);
+  background: var(--interactive-accent);
+}
+
+.socrates-pen .sp-practice-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.socrates-pen .sp-practice-box {
+  padding: var(--size-4-2);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+}
+
+.socrates-pen .sp-practice-box > .sp-report-h3:first-child {
+  margin-top: 0;
+}
+
+.socrates-pen .sp-practice-kv {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.socrates-pen .sp-practice-kv span:nth-child(odd) {
+  color: var(--text-faint);
+}
+
+.socrates-pen .sp-practice-controls,
+.socrates-pen .sp-practice-actions,
+.socrates-pen .sp-practice-session-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.socrates-pen .sp-practice-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.socrates-pen .sp-practice-num input {
+  width: 7.5em;
+}
+
+.socrates-pen .sp-practice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.socrates-pen .sp-practice-form .sp-practice-num {
+  justify-content: space-between;
+  max-width: 34em;
+}
+
+.socrates-pen .sp-practice-weights {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 18em;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.socrates-pen .sp-practice-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 12em;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.socrates-pen .sp-practice-scope label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.socrates-pen .sp-practice-points,
+.socrates-pen .sp-practice-criteria {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.socrates-pen .sp-practice-edges,
+.socrates-pen .sp-practice-issues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.socrates-pen .sp-practice-edges span,
+.socrates-pen .sp-practice-issues li {
+  list-style: none;
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.socrates-pen .sp-practice-rec {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 8px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.socrates-pen .sp-practice-question-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text-faint);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.socrates-pen .sp-practice-prompt {
+  margin: 8px 0;
+  font-size: var(--font-ui-medium);
+  line-height: 1.55;
+  color: var(--text-normal);
+  overflow-wrap: anywhere;
+}
+
+.socrates-pen .sp-practice-choices,
+.socrates-pen .sp-practice-fill {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.socrates-pen .sp-practice-choices label,
+.socrates-pen .sp-practice-fill label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--text-normal);
+}
+
+.socrates-pen .sp-practice-fill label {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.socrates-pen .sp-practice-fill input {
+  min-width: 12em;
+  max-width: 22em;
+}
+
+.socrates-pen textarea.sp-practice-text {
+  width: 100%;
+  min-height: 9em;
+  resize: vertical;
+  font-family: var(--font-text);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.socrates-pen .sp-practice-grade {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.socrates-pen .sp-practice-result {
+  white-space: pre-line;
+  padding: 7px 9px;
+  margin: 8px 0;
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: 0 4px 4px 0;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.socrates-pen .sp-practice-criterion {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+  gap: 6px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-size: 12px;
+}
+
+.socrates-pen .sp-practice-criterion .sp-ev-quote {
+  grid-column: 2;
+}
+
+.socrates-pen .sp-practice-history {
+  margin-top: 12px;
+  color: var(--text-muted);
+}
+
+.socrates-pen .sp-practice-history > summary {
+  cursor: pointer;
+}
+
+.socrates-pen .sp-practice-history-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 8px;
+  padding: 3px 0;
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.socrates-pen .sp-practice-exam-history {
+  margin-top: 8px;
+}
+
+
+/* Practice analysis needs wider score columns than the report radar table. */
+.socrates-pen.sp-practice .sp-axes-head,
+.socrates-pen.sp-practice .sp-axis-sum {
+  grid-template-columns: minmax(12rem, 1fr) minmax(80px, 0.35fr) minmax(96px, 0.4fr) minmax(80px, 0.25fr);
+  gap: 12px;
+}
+
+.socrates-pen.sp-practice .sp-axes-head > span,
+.socrates-pen.sp-practice .sp-axis-sum > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.socrates-pen.sp-practice .sp-axis-name {
+  white-space: normal;
+}
+
+.socrates-pen.sp-practice .sp-axis-mastery,
+.socrates-pen.sp-practice .sp-axis-n {
+  text-align: right;
+}
+
+.socrates-pen .sp-practice-choice-text {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.socrates-pen .sp-practice-choice-text > :first-child,
+.socrates-pen .sp-practice-prompt > :first-child,
+.socrates-pen .sp-ev-quote > :first-child {
+  margin-top: 0;
+}
+
+.socrates-pen .sp-practice-choice-text > :last-child,
+.socrates-pen .sp-practice-prompt > :last-child,
+.socrates-pen .sp-ev-quote > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .socrates-pen.sp-practice .sp-axes-head,
+  .socrates-pen.sp-practice .sp-axis-sum {
+    grid-template-columns: 1fr;
+  }
+
+  .socrates-pen.sp-practice .sp-score,
+  .socrates-pen.sp-practice .sp-axis-mastery,
+  .socrates-pen.sp-practice .sp-axis-n {
+    text-align: left;
+  }
+}
+
 /* 放在最后。双类名提一级特异性，压过上面那些 display:flex，不用 !important。 */
 .socrates-pen .is-off.is-off {
   display: none;
@@ -1386,3 +1704,6 @@
 }
 .sp-agent-grid.is-multi .sp-brand-tools { max-width: calc(100% - 70px); gap: 1px; }
 .sp-agent-grid.is-multi button.sp-icon { width: 24px; height: 24px; }
+.sp-practice-answer-images { display: grid; gap: 8px; margin-block: 12px; }
+.sp-practice-answer-image { display: flex; align-items: start; gap: 8px; }
+.sp-practice-answer-image img { max-width: min(100%, 360px); max-height: 240px; object-fit: contain; }

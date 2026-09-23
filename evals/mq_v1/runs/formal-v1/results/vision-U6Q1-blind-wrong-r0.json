@@ -1,0 +1,28 @@
+{
+  "id": "vision-U6Q1-blind-wrong-r0",
+  "kind": "vision_grade",
+  "case_id": "U6Q1",
+  "split": "test",
+  "repeat": 0,
+  "with_image": false,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": false,
+    "usage": {
+      "completion_tokens": 7,
+      "prompt_tokens": 182,
+      "total_tokens": 189,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 182
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": true,
+  "score": null
+}

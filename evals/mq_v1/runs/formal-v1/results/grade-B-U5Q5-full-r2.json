@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q5-full-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_41efcab8170e21e636ef",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生正确读出 A=7 且 B=2，完全符合评分标准。",
+        "evidence_quote": "A=7，B=2"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_cf84010992ed10f27d0e",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生正确计算 B−A=-5，完全符合评分标准。",
+        "evidence_quote": "B−A=-5"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 93,
+      "prompt_tokens": 581,
+      "total_tokens": 674,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 581
+    }
+  },
+  "score": 1.0
+}

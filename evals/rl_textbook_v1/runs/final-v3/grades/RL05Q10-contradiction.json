@@ -1,0 +1,119 @@
+{
+  "id": "RL05Q10-contradiction",
+  "case_id": "RL05Q10",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_063dac195254f5f59848",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先给出正确说法，但随后明确坚持相反说法“TD 无法逐步更新，而 MC 的完整回报无需等待 episode 结束”，与本项事实矛盾。",
+        "evidence_quote": "我同时坚持以下相反说法：TD 无法逐步更新，而 MC 的完整回报无需等待 episode 结束。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c2dff7995f3ba4b389f4",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明 episode 很长或没有自然终局时 TD 更实用，且后文相反说法未否定该点。",
+        "evidence_quote": "episode 很长或没有自然终局时，TD 更实用。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_ad6652b9976f2269accc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案说明 MC 目标使用实际完整回报，自举偏差较少，且后文相反说法未否定该点。",
+        "evidence_quote": "MC 目标使用实际完整回报，自举偏差较少。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8eb5faf0f165216fd535",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案说明 TD 目标通常方差较低，但依赖当前估计，且后文相反说法未否定该点。",
+        "evidence_quote": "TD 目标通常方差较低，但依赖当前估计。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_2cfd7f382b25cc8845a3",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明在线系统需要边交互边学习时 TD 更合适，且后文相反说法未否定该点。",
+        "evidence_quote": "在线系统需要边交互边学习时，TD 更合适。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_edb511df859a37eb8d11",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明 continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架，且后文相反说法未否定该点。",
+        "evidence_quote": "continuing 任务没有清晰终局，TD 可直接使用折扣或平均奖励框架。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e2712ff45dd301e1a64e",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案说明奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报，且后文相反说法未否定该点。",
+        "evidence_quote": "奖励极度延迟且 episode 可完成时，MC 能直接利用终局回报。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_dbee00061d865ce58ec2",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "答案说明计算和存储受限时，TD 不必保存整条轨迹，且后文相反说法未否定该点。",
+        "evidence_quote": "计算和存储受限时，TD 不必保存整条轨迹。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 725,
+      "prompt_tokens": 2558,
+      "total_tokens": 3283,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 2046
+    }
+  },
+  "score": 0.9
+}

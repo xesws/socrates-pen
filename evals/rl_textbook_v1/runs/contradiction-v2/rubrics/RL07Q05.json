@@ -1,0 +1,114 @@
+{
+  "id": "RL07Q05",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_3ed5df483fc9cca7d994",
+        "name": "第二个动作概率",
+        "definition": "由 logits 0 与 ln3 计算 softmax 后第二个动作的概率，即 3/(1+3)=0.75",
+        "source_mq_ids": [
+          "q_af2743df9f669bcb7798"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_af2743df9f669bcb7798",
+        "version": "ae565ddaa8b63ef780bdc52f785160b989eb5ff5dd33e1ce79167ce20890d6cf",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_af2743df9f669bcb7798",
+        "title": "RL07Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "softmax 两个 logits 为 0 和 ln3，则第二个动作概率为 3/(1+3)={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"0.75\",\".75\",\"3/4\"],\"numeric_value\":0.75,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "softmax 概率与 exp(logit) 成正比，第二项权重为 3。",
+        "raw_markdown": "### RL07Q05\n#### 题型\nfill_blank\n#### 题干\nsoftmax 两个 logits 为 0 和 ln3，则第二个动作概率为 3/(1+3)={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"0.75\",\".75\",\"3/4\"],\"numeric_value\":0.75,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\nsoftmax 概率与 exp(logit) 成正比，第二项权重为 3。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_3ed5df483fc9cca7d994"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_3ed5df483fc9cca7d994",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入第二个动作的概率 0.75（等价写法 .75 或 3/4）",
+            "partial_credit": "本空独立给分；数值等于 0.75（容差 1e-6）即满分，否则 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或与 0.75 不符"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 0.75、.75 或 3/4（数值等于 0.75，容差 1e-6）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1434,
+          "end_line": 1444
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1436,
+            "end_line": 1436
+          },
+          "题干": {
+            "start_line": 1438,
+            "end_line": 1438
+          },
+          "答案": {
+            "start_line": 1440,
+            "end_line": 1442
+          },
+          "解答": {
+            "start_line": 1444,
+            "end_line": 1444
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "0.75",
+              ".75",
+              "3/4"
+            ],
+            "numeric_value": 0.75,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "8b8f58afa05d9bfe83b107e2241e5dd7c66db0c5b5868a2de8bccb2cc9ce1863"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 201,
+      "prompt_tokens": 19206,
+      "total_tokens": 19407,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 390
+    }
+  }
+}

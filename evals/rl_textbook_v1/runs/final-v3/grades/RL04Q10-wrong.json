@@ -1,0 +1,119 @@
+{
+  "id": "RL04Q10-wrong",
+  "case_id": "RL04Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_cee48667578d214ad2bc",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称 MC 最适合永远不结束的任务，与 MC 更适合有自然终局的 episodic 任务相矛盾。",
+        "evidence_quote": "MC 最适合永远不结束的任务",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_ae90d3dd17d952bf3e3b",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称 MC 必须知道精确模型，与 MC 不需要已知环境模型相矛盾。",
+        "evidence_quote": "并且必须知道精确模型",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_c7713950baffd0722d20",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明 episode 长度可控且能等到终局时 MC 目标容易定义。",
+        "evidence_quote": "MC 最适合永远不结束的任务",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_f414afbc03df15116581",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及固定策略、给定起始状态、完整 episode 独立采样下样本回报均值是无偏估计。",
+        "evidence_quote": "单条轨迹就绝无方差",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_99b8d880dce8fa4d38c2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称 MC 必须以当前下一状态估值自举，与 MC 不从估计的下一状态价值自举相矛盾。",
+        "evidence_quote": "它必须以当前下一状态估值自举",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_ca756bb1abe1e65b51d5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称单条轨迹绝无方差，与 MC 方差可能较高、需要足够 episode 平均相矛盾。",
+        "evidence_quote": "单条轨迹就绝无方差",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_c50c546881eb39863d54",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称终局奖励不能用于之前访问，与 MC 能把稀疏终局奖励分配给整条轨迹上的访问相矛盾。",
+        "evidence_quote": "终局奖励不能用于之前访问",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_da752f3ad56f86ae4bec",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称在线更新永远比 TD 更及时，与在线更新和 continuing 任务中 TD 往往更方便相矛盾。",
+        "evidence_quote": "在线更新永远比TD更及时",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 611,
+      "prompt_tokens": 2365,
+      "total_tokens": 2976,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1981
+    }
+  },
+  "score": 0.0
+}

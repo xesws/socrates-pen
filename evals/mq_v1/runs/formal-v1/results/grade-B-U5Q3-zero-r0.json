@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U5Q3-zero-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q3",
+  "sample_id": "U5Q3-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_48d2f7e283ea1b5d703f",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学生答案为空，未给出任何关于可达性及依据的内容，因此不得分。",
+        "evidence_quote": ""
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 46,
+      "prompt_tokens": 432,
+      "total_tokens": 478,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 432
+    }
+  },
+  "score": 0.0
+}

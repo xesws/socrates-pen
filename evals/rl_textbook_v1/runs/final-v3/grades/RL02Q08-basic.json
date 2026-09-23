@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q08-basic",
+  "case_id": "RL02Q08",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_77e732eaf26ad4a7753a",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出回报递推式 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_quote": "回报可递推为 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2d6989ab39f622b84329",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明条件为当前状态 S_t=s 且按固定策略 π 继续行动。",
+        "evidence_quote": "条件是当前状态 S_t=s，并按固定策略 π 继续行动。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_2f130ba53a4ce469d6cc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明策略期望来自按 π(a|s) 抽动作。",
+        "evidence_quote": "条件是当前状态 S_t=s，并按固定策略 π 继续行动。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_93123c93e85caa70845a",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及环境期望来自转移概率和随机奖励。",
+        "evidence_quote": "回报可递推为 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_08ff4851cf4b553144a3",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未解释一步奖励 R_{t+1} 是当前动作后立刻得到的反馈。",
+        "evidence_quote": "回报可递推为 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_ba2e02dac1ad4bdb05da",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明折扣 γ 把下一状态后的价值缩放进当前价值。",
+        "evidence_quote": "回报可递推为 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_bed8cd5a41c9adeec722",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明等式把 V_pi 写成自身的固定点方程。",
+        "evidence_quote": "回报可递推为 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_0a1c1a342f9524e8ca2d",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及策略评价、TD 目标或动态规划备份等用途。",
+        "evidence_quote": "条件是当前状态 S_t=s，并按固定策略 π 继续行动。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 498,
+      "prompt_tokens": 2296,
+      "total_tokens": 2794,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1912
+    }
+  },
+  "score": 0.2
+}

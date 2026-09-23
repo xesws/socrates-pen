@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_13153c4e621bda04802b",
+        "name": "正确选项",
+        "definition": "经验回放在 DQN 中的常见作用：打散时间相关样本并复用过去经验。",
+        "source_mq_ids": [
+          "q_56487e1eab2b6c8104b3"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_56487e1eab2b6c8104b3",
+        "version": "5515df313596829c38ed2f017f4f030bec1f456d12dd891fd4f01166563c4a33",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_56487e1eab2b6c8104b3",
+        "title": "RL06Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "经验回放在 DQN 中的常见作用是什么？",
+        "reference_answer": "D",
+        "solution_markdown": "回放缓冲允许随机抽样小批量，降低连续转移相关性。",
+        "raw_markdown": "### RL06Q03\n#### 题型\nsingle_choice\n#### 题干\n经验回放在 DQN 中的常见作用是什么？\n#### 选项\n##### A\n保证目标策略永远等于行为策略。\n##### B\n删除所有终止样本。\n##### C\n把离散动作变成连续动作。\n##### D\n打散时间相关样本并复用过去经验。\n#### 答案\nD\n#### 解答\n回放缓冲允许随机抽样小批量，降低连续转移相关性。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_13153c4e621bda04802b"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_13153c4e621bda04802b",
+            "max_score": 1.0,
+            "description": "选择 D：打散时间相关样本并复用过去经验。",
+            "partial_credit": "单选，无部分分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、C 或未作答/错误。"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1182,
+          "end_line": 1199
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1184,
+            "end_line": 1184
+          },
+          "题干": {
+            "start_line": 1186,
+            "end_line": 1186
+          },
+          "选项": {
+            "start_line": 1188,
+            "end_line": 1195
+          },
+          "答案": {
+            "start_line": 1197,
+            "end_line": 1197
+          },
+          "解答": {
+            "start_line": 1199,
+            "end_line": 1199
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "保证目标策略永远等于行为策略。"
+          },
+          {
+            "id": "B",
+            "text": "删除所有终止样本。"
+          },
+          {
+            "id": "C",
+            "text": "把离散动作变成连续动作。"
+          },
+          {
+            "id": "D",
+            "text": "打散时间相关样本并复用过去经验。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "71adf6765048edf57a555ebe004d36944f93e7013f140f7f27d7ce5ae4154f22"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 129,
+      "prompt_tokens": 19141,
+      "total_tokens": 19270,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 325
+    }
+  }
+}

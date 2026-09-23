@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q10-basic",
+  "case_id": "RL05Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_063dac195254f5f59848",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 TD 每步更新、MC 等 episode 结束，符合更新时机。",
+        "evidence_quote": "TD 可在每一步后更新，MC 通常等 episode 结束。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c2dff7995f3ba4b389f4",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出 episode 很长或没有自然终局时 TD 更实用，符合 episode 长度方面。",
+        "evidence_quote": "episode 很长或没有自然终局时，TD 更实用。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_ad6652b9976f2269accc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 MC 使用实际完整回报或自举偏差较少。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8eb5faf0f165216fd535",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 TD 目标方差较低或依赖当前估计。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_2cfd7f382b25cc8845a3",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及在线系统边交互边学习时 TD 更合适。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_edb511df859a37eb8d11",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 continuing 任务没有清晰终局或 TD 可直接使用折扣/平均奖励框架。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e2712ff45dd301e1a64e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及奖励极度延迟且 episode 可完成时 MC 能直接利用终局回报。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_dbee00061d865ce58ec2",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及计算和存储受限时 TD 不必保存整条轨迹。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 530,
+      "prompt_tokens": 2298,
+      "total_tokens": 2828,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1914
+    }
+  },
+  "score": 0.2
+}

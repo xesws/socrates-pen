@@ -1,0 +1,349 @@
+{
+  "id": "RL05Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_c7d83dcb17c2597a6e89",
+        "name": "SARSA 目标",
+        "definition": "SARSA 的更新目标是 R + γQ(S',A')，使用下一状态实际选择的动作。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2f473220fb835c01426f",
+        "name": "Q-learning 目标",
+        "definition": "Q-learning 的更新目标是 R + γmax_a Q(S',a)，使用下一状态的最大动作价值。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d65a8fd6415a6b91f651",
+        "name": "下一动作来源",
+        "definition": "SARSA 使用实际行为策略选出的下一动作 A'。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_da2eb2942bd06b4c1a24",
+        "name": "策略关系",
+        "definition": "Q-learning 学习贪心目标策略，即使行为策略在探索。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_04b55c897c9f98d5b267",
+        "name": "探索影响",
+        "definition": "SARSA 会把探索造成的风险计入价值，常更保守。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_486a5a25537d43b6652d",
+        "name": "收敛条件",
+        "definition": "表格收敛需要充分访问、合适步长和有限折扣等条件。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_5b189aabeaad5ac074c7",
+        "name": "函数近似",
+        "definition": "函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c468a4eb1266238afefc",
+        "name": "适用场景",
+        "definition": "安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。",
+        "source_mq_ids": [
+          "q_5edb3844a42c78320757"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_5edb3844a42c78320757",
+        "version": "3b86ff5cc8af19b252c55b2a235c33a5a37e5ca9f793428a44f9d64f71ebb349",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_5edb3844a42c78320757",
+        "title": "RL05Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "比较 SARSA 与 Q-learning。请按8个方面回答：目标、下一动作、策略关系、探索影响、风险行为、收敛条件、函数近似、适用场景。",
+        "reference_answer": "1. SARSA 目标是 R+γQ(S',A')。\n2. Q-learning 目标是 R+γmax_a Q(S',a)。\n3. SARSA 使用实际行为策略选出的下一动作。\n4. Q-learning 学习贪心目标策略，即使行为策略在探索。\n5. SARSA 会把探索造成的风险计入价值，常更保守。\n6. 表格收敛需要充分访问、合适步长和有限折扣等条件。\n7. 函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。\n8. 安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL05Q08\n#### 题型\nshort_answer\n#### 题干\n比较 SARSA 与 Q-learning。请按8个方面回答：目标、下一动作、策略关系、探索影响、风险行为、收敛条件、函数近似、适用场景。\n#### 答案\n1. SARSA 目标是 R+γQ(S',A')。\n2. Q-learning 目标是 R+γmax_a Q(S',a)。\n3. SARSA 使用实际行为策略选出的下一动作。\n4. Q-learning 学习贪心目标策略，即使行为策略在探索。\n5. SARSA 会把探索造成的风险计入价值，常更保守。\n6. 表格收敛需要充分访问、合适步长和有限折扣等条件。\n7. 函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。\n8. 安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_c7d83dcb17c2597a6e89",
+          "pt_2f473220fb835c01426f",
+          "pt_d65a8fd6415a6b91f651",
+          "pt_da2eb2942bd06b4c1a24",
+          "pt_04b55c897c9f98d5b267",
+          "pt_486a5a25537d43b6652d",
+          "pt_5b189aabeaad5ac074c7",
+          "pt_c468a4eb1266238afefc"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_c7d83dcb17c2597a6e89",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "SARSA 目标是 R+γQ(S',A')。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "SARSA 目标是 R+γQ(S',A')。"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_2f473220fb835c01426f",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "Q-learning 目标是 R+γmax_a Q(S',a)。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Q-learning 目标是 R+γmax_a Q(S',a)。"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_d65a8fd6415a6b91f651",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "SARSA 使用实际行为策略选出的下一动作。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "SARSA 使用实际行为策略选出的下一动作。"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_da2eb2942bd06b4c1a24",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "Q-learning 学习贪心目标策略，即使行为策略在探索。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "Q-learning 学习贪心目标策略，即使行为策略在探索。"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_04b55c897c9f98d5b267",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "SARSA 会把探索造成的风险计入价值，常更保守。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "SARSA 会把探索造成的风险计入价值，常更保守。"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_486a5a25537d43b6652d",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "表格收敛需要充分访问、合适步长和有限折扣等条件。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "表格收敛需要充分访问、合适步长和有限折扣等条件。"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_5b189aabeaad5ac074c7",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举风险更突出。"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_c468a4eb1266238afefc",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "安全敏感且探索风险重要时 SARSA 常更自然，追求贪心最优控制时 Q-learning 常用。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1032,
+          "end_line": 1047
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1034,
+            "end_line": 1034
+          },
+          "题干": {
+            "start_line": 1036,
+            "end_line": 1036
+          },
+          "答案": {
+            "start_line": 1038,
+            "end_line": 1045
+          },
+          "解答": {
+            "start_line": 1047,
+            "end_line": 1047
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "ac7302859be1e28213ace5d6c970d70900d9da5f4616d90dab8807b0db58a79b"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1930,
+      "prompt_tokens": 19291,
+      "total_tokens": 21221,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 475
+    }
+  }
+}

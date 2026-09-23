@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U5Q3-r2",
+  "kind": "rubric",
+  "case_id": "U5Q3",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_48d2f7e283ea1b5d703f",
+      "name": "有向可达性判断",
+      "definition": "根据有向图中边的方向判断从起点到终点是否存在有向路径",
+      "source_mq_ids": [
+        "q_fc73de2ab77a99977628"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_48d2f7e283ea1b5d703f",
+      "max_score": 1.0,
+      "description": "b1：应回答从 A 到 C 可达，并说明依据是存在 A→B→C 的有向路径（或等价表述：沿箭头方向 A 到 B、B 到 C 可串联到达）。",
+      "partial_credit": "完整给出“可达”且依据为存在 A→B→C 的有向路径得1分；仅答“可达”未给依据或依据错误得0分；答“不可达”或与可达性矛盾的表述得0分；无关内容不得分。",
+      "blank_id": "b1"
+    }
+  ]
+}

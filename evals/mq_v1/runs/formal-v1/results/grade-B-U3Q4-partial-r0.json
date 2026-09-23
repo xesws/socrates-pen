@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U3Q4-partial-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U3Q4",
+  "sample_id": "U3Q4-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_e6bb4af3e7ae0a63cc25",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者只说明了 b=a 时共享同一个列表对象，未提及 b=a.copy() 会创建新的顶层列表对象，属于只说明其中一种情况，按评分标准得0分。",
+        "evidence_quote": "b=a 让二者引用同一个列表。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 76,
+      "prompt_tokens": 341,
+      "total_tokens": 417,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 341
+    }
+  },
+  "score": 0.0
+}

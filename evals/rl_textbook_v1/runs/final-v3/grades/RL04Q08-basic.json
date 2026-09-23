@@ -1,0 +1,122 @@
+{
+  "id": "RL04Q08-basic",
+  "case_id": "RL04Q08",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_d7ec98238a541eb3501c",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确写出初始化 Q(s,a)、回报统计和 epsilon-greedy 策略。",
+        "evidence_quote": "初始化 Q(s,a)、回报统计和一个 epsilon-greedy 策略。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_537e270fef133a840d52",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确写出用当前 epsilon-greedy 策略生成完整 episode。",
+        "evidence_quote": "用当前 epsilon-greedy 策略生成完整 episode。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_af45f9ed7cc6f28258b1",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及从 episode 末尾向前计算折扣回报 G_t。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_97f4abc74c36f9d0c17d",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 first-visit 或 every-visit 访问规则。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9af9557202fd4c911109",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及用样本均值或增量平均更新 Q。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_494be1dfcd925c876b11",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明 epsilon-greedy 保证非贪心动作有非零探索概率。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_4fd1ef89778b5ee72b56",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及根据更新后的 Q 改进策略。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b38e9480ed09fa5ecccf",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及停止条件。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 348,
+      "prompt_tokens": 2259,
+      "total_tokens": 2607,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1875
+    }
+  },
+  "score": 0.2
+}

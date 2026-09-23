@@ -1,0 +1,123 @@
+{
+  "id": "RL02Q01",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_c3c8df5c590773557cd3",
+        "name": "Bellman期望方程的评价对象",
+        "definition": "Bellman期望方程在固定策略下对状态价值函数（该策略在各状态下的期望回报）进行评价。",
+        "source_mq_ids": [
+          "q_111f8a619269d8cea635"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_111f8a619269d8cea635",
+        "version": "1f66962b46a849ecfedcee4bbf87961b016623bc6d63d3905addf59b8f5e238d",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_111f8a619269d8cea635",
+        "title": "RL02Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Bellman 期望方程评价的是哪一类对象？",
+        "reference_answer": "B",
+        "solution_markdown": "期望方程中的动作由固定策略 π 加权，因此是在评价该策略。",
+        "raw_markdown": "### RL02Q01\n#### 题型\nsingle_choice\n#### 题干\nBellman 期望方程评价的是哪一类对象？\n#### 选项\n##### A\n所有可能策略中的最大奖励标签。\n##### B\n一个固定策略在各状态下的期望回报。\n##### C\n监督学习训练集的经验风险。\n##### D\n环境转移概率本身的最大似然估计。\n#### 答案\nB\n#### 解答\n期望方程中的动作由固定策略 π 加权，因此是在评价该策略。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_c3c8df5c590773557cd3"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_c3c8df5c590773557cd3",
+            "max_score": 1.0,
+            "description": "选择 B：一个固定策略在各状态下的期望回报。",
+            "partial_credit": "单选题，选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、C、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 279,
+          "end_line": 296
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 281,
+            "end_line": 281
+          },
+          "题干": {
+            "start_line": 283,
+            "end_line": 283
+          },
+          "选项": {
+            "start_line": 285,
+            "end_line": 292
+          },
+          "答案": {
+            "start_line": 294,
+            "end_line": 294
+          },
+          "解答": {
+            "start_line": 296,
+            "end_line": 296
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "所有可能策略中的最大奖励标签。"
+          },
+          {
+            "id": "B",
+            "text": "一个固定策略在各状态下的期望回报。"
+          },
+          {
+            "id": "C",
+            "text": "监督学习训练集的经验风险。"
+          },
+          {
+            "id": "D",
+            "text": "环境转移概率本身的最大似然估计。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "f311a893a892f585f7351a820e5e599ea9ec16e06274fd693ed5a83beac4c2be"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 143,
+      "prompt_tokens": 19146,
+      "total_tokens": 19289,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 330
+    }
+  }
+}

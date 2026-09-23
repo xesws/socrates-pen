@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q10-basic",
+  "case_id": "RL02Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_679c38bd802ba25c1d02",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确要求先列出日志中当前时刻可见的观测字段。",
+        "evidence_quote": "先列出日志中当前时刻可见的观测字段。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_10a74ee82a60ec017b81",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "检查库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。",
+        "evidence_quote": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_092c6bc38c76263d79d3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未判断给定当前字段和动作后下一观测分布是否仍依赖更早历史。",
+        "evidence_quote": "先列出日志中当前时刻可见的观测字段。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8a205c9e8501621dc0c4",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未判断给定当前字段和动作后奖励分布是否仍依赖更早历史。",
+        "evidence_quote": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_d59205017bc477ddfb8f",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明需要过去点击串或累计疲劳度时当前字段不是马尔可夫状态。",
+        "evidence_quote": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_9f179517dc594d737a89",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提出把历史摘要、时间特征或信念状态补入状态。",
+        "evidence_quote": "先列出日志中当前时刻可见的观测字段。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_11120f508c48c888faf0",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未涉及比较含历史模型与无历史模型的预测误差和策略表现。",
+        "evidence_quote": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_d34e2e61f8a476dccd05",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明状态不充分可能导致 Bellman 目标有偏或策略部署不稳定。",
+        "evidence_quote": "先列出日志中当前时刻可见的观测字段。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 467,
+      "prompt_tokens": 2333,
+      "total_tokens": 2800,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1949
+    }
+  },
+  "score": 0.2
+}

@@ -1,0 +1,112 @@
+{
+  "id": "RL06Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_f38df802b8c79a77add7",
+        "name": "TD误差",
+        "definition": "DQN 损失中 y 与 Q(s,a;w) 的差称为 TD 误差（error）",
+        "source_mq_ids": [
+          "q_a4f8cf69dc4702e4a941"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_a4f8cf69dc4702e4a941",
+        "version": "7a7999dcf86a050f34bcb1a106d5b8c1dbaf6cd2d45da92f757927eb17b7d779",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_a4f8cf69dc4702e4a941",
+        "title": "RL06Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "DQN 损失中常把 y 与 Q(s,a;w) 的差称为 TD {{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"误差\",\"error\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "TD 误差是目标和当前预测之间的差。",
+        "raw_markdown": "### RL06Q07\n#### 题型\nfill_blank\n#### 题干\nDQN 损失中常把 y 与 Q(s,a;w) 的差称为 TD {{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"误差\",\"error\"],\"case_sensitive\":false}}\n```\n#### 解答\nTD 误差是目标和当前预测之间的差。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_f38df802b8c79a77add7"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_f38df802b8c79a77add7",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入“误差”或“error”，表示 TD 误差",
+            "partial_credit": "本空独立给分；语义等价即可；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与 TD 误差无关的内容"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填“误差”或“error”（大小写不敏感）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1240,
+          "end_line": 1250
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1242,
+            "end_line": 1242
+          },
+          "题干": {
+            "start_line": 1244,
+            "end_line": 1244
+          },
+          "答案": {
+            "start_line": 1246,
+            "end_line": 1248
+          },
+          "解答": {
+            "start_line": 1250,
+            "end_line": 1250
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "误差",
+              "error"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "47c919e71d31ab052dbf3abbfd0f114aabab48f4a988f4afd2b266a935df210d"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 163,
+      "prompt_tokens": 19152,
+      "total_tokens": 19315,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 336
+    }
+  }
+}

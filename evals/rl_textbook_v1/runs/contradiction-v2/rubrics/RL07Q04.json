@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_5e023299574e84f4f12e",
+        "name": "critic职责",
+        "definition": "critic 评估状态或动作的价值/优势，为 actor 提供学习信号",
+        "source_mq_ids": [
+          "q_160f7b35655a421be6ea"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_160f7b35655a421be6ea",
+        "version": "39afdfcc09dd7fecd4e255cd254bbd66afac191de7b1f92376fcead6618c9d71",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_160f7b35655a421be6ea",
+        "title": "RL07Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "Actor-Critic 中 critic 的主要职责是什么？",
+        "reference_answer": "A",
+        "solution_markdown": "critic 评估状态或动作，actor 负责更新策略分布。",
+        "raw_markdown": "### RL07Q04\n#### 题型\nsingle_choice\n#### 题干\nActor-Critic 中 critic 的主要职责是什么？\n#### 选项\n##### A\n估计价值或优势，为 actor 提供学习信号。\n##### B\n直接执行环境动作但不学习。\n##### C\n保存回放图像。\n##### D\n把所有随机策略变成确定策略。\n#### 答案\nA\n#### 解答\ncritic 评估状态或动作，actor 负责更新策略分布。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_5e023299574e84f4f12e"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_5e023299574e84f4f12e",
+            "max_score": 1.0,
+            "description": "选择 A：critic 估计价值或优势，为 actor 提供学习信号",
+            "partial_credit": "单选题；选 A 得满分，其他选项为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 B、C 或 D，或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1416,
+          "end_line": 1433
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1418,
+            "end_line": 1418
+          },
+          "题干": {
+            "start_line": 1420,
+            "end_line": 1420
+          },
+          "选项": {
+            "start_line": 1422,
+            "end_line": 1429
+          },
+          "答案": {
+            "start_line": 1431,
+            "end_line": 1431
+          },
+          "解答": {
+            "start_line": 1433,
+            "end_line": 1433
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "估计价值或优势，为 actor 提供学习信号。"
+          },
+          {
+            "id": "B",
+            "text": "直接执行环境动作但不学习。"
+          },
+          {
+            "id": "C",
+            "text": "保存回放图像。"
+          },
+          {
+            "id": "D",
+            "text": "把所有随机策略变成确定策略。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "f6bbcff43a45f7f29bc8dc450b97e66785fdc021337dac1c35eeae2755d9026e"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 137,
+      "prompt_tokens": 19142,
+      "total_tokens": 19279,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 326
+    }
+  }
+}

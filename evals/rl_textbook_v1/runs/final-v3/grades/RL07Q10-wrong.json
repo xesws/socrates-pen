@@ -1,0 +1,119 @@
+{
+  "id": "RL07Q10-wrong",
+  "case_id": "RL07Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_20f194b7d4629df11d04",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案说用只依赖动作的baseline，与只依赖状态的要求矛盾，且未提降低共同波动。",
+        "evidence_quote": "用只依赖动作且任意变化的baseline才能确保无偏",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0c072a16233acb0c0862",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称advantage应为随机标签，未用advantage替代原始回报突出相对好坏。",
+        "evidence_quote": "advantage应当是随机标签",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_3faabc88bae112c34e86",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称batch越小噪声必然越小，与增大batch降低噪声相反。",
+        "evidence_quote": "batch越小噪声必然越小",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_6ac86eee8c05a1140bbc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确否认GAE的偏差方差权衡。",
+        "evidence_quote": "GAE没有偏差方差权衡",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_63ee48334ba7c35bad2e",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称归一化毫无用途，与对advantage标准化改善优化尺度矛盾。",
+        "evidence_quote": "归一化、熵和更新约束都毫无用途",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f8b581d9dd0c3a3ef5e2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称熵毫无用途，与熵正则保持探索矛盾。",
+        "evidence_quote": "归一化、熵和更新约束都毫无用途",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a56d0aa8db2a6ddf72a9",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称更新约束毫无用途，与梯度裁剪或策略变化约束防止更新过大矛盾。",
+        "evidence_quote": "归一化、熵和更新约束都毫无用途",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_e19fbe9dfd3045985071",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称完全不报告指标，与报告应包含回报、熵等指标矛盾。",
+        "evidence_quote": "完全不报告指标",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 415,
+      "prompt_tokens": 2260,
+      "total_tokens": 2675,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1876
+    }
+  },
+  "score": 0.0
+}

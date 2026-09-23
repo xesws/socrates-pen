@@ -1,0 +1,109 @@
+{
+  "id": "gold-text-wrong",
+  "kind": "grade",
+  "arm": "gold",
+  "mode": "text",
+  "expected": 0,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "p1",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案主张复用同一版本ID并原地覆盖，与“每次变更分配唯一版本标识”矛盾。",
+        "evidence_quote": "Reuse one version ID and overwrite the old configuration in place.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "p2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "原地覆盖旧配置，与版本内容不可变并持久化保存相矛盾。",
+        "evidence_quote": "Reuse one version ID and overwrite the old configuration in place.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "p3",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确要求跳过验证，与发布前验证并拒绝非法配置相矛盾。",
+        "evidence_quote": "Skip validation and publish to every instance at once.",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "p4",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "要求一次性发布到所有实例，与先少量灰度再扩大范围相矛盾。",
+        "evidence_quote": "publish to every instance at once",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "p5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "明确不监控，与监控错误率和延迟并在阈值触发时停止相矛盾。",
+        "evidence_quote": "Do not monitor",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "p6",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "明确不回滚，与回滚指向已知良好版本相矛盾。",
+        "evidence_quote": "Do not monitor, roll back",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "p7",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确不收集确认，与记录各实例确认版本相矛盾。",
+        "evidence_quote": "collect acknowledgements",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "p8",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确不保留审计记录，与保留审计记录相矛盾。",
+        "evidence_quote": "keep audit records",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 409,
+      "prompt_tokens": 1950,
+      "total_tokens": 2359,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 1694
+    }
+  },
+  "score": 0.0
+}

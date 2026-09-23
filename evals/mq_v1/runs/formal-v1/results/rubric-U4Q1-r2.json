@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U4Q1-r2",
+  "kind": "rubric",
+  "case_id": "U4Q1",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_56e75c8293afd323c779",
+      "name": "二分查找前提",
+      "definition": "二分查找要求输入序列有序，以便通过比较中点排除一半搜索区间",
+      "source_mq_ids": [
+        "q_196f44464f4fbeadcab7"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_56e75c8293afd323c779",
+      "max_score": 1.0,
+      "description": "选择题干的正确选项：应选择表示输入已排序的选项A",
+      "partial_credit": "选择A得1分；选择B、未选择或选择其他错误选项得0分"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "vision-U5Q1-image-solve-r1",
+  "kind": "vision_solve",
+  "case_id": "U5Q1",
+  "split": "dev",
+  "repeat": 1,
+  "with_image": true,
+  "answer_kind": null,
+  "ok": true,
+  "response": {
+    "answer": "A",
+    "usage": {
+      "completion_tokens": 5,
+      "prompt_tokens": 311,
+      "total_tokens": 316,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 311
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "correct": true
+}

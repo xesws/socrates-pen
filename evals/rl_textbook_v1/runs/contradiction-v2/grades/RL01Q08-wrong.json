@@ -1,0 +1,119 @@
+{
+  "id": "RL01Q08-wrong",
+  "case_id": "RL01Q08",
+  "kind": "wrong",
+  "split": "dev",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_8dd24f9a41f59d222897",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称智能体是货架本身，与控制机器人移动、抓取和放置的决策程序相矛盾。",
+        "evidence_quote": "智能体是货架本身",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8fb538edd1fab015022a",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案称控制程序属于被动环境，未列出货架、货物、订单队列、障碍物、人类工人和机器人动力学等环境要素。",
+        "evidence_quote": "控制程序属于被动环境",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_2e318a03edf9da86f9dd",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案明确说状态不需要任何订单或位置，与状态应含机器人位置、订单进度等要求矛盾。",
+        "evidence_quote": "状态不需要任何订单或位置",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_bbd9923f06fdff00a60f",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案把动作定义为成功率这个统计结果，未包含移动、转向、抓取、放置、等待或高层路径选择。",
+        "evidence_quote": "动作就是成功率这个统计结果",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_abb16f9107de5632d544",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案说只奖励撞人次数，与奖励应鼓励完成订单、低碰撞、短路径和安全操作相矛盾。",
+        "evidence_quote": "只奖励撞人次数",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_08a197c4e3afe469873d",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案说永远不终止，与终止条件可包括订单完成、超时、严重碰撞或电量不足相矛盾。",
+        "evidence_quote": "永远不终止",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_d64cc33c8be964817ac5",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案说不检查历史依赖，未说明缺少遮挡、人类位置或未完成订单信息会损害马尔可夫性。",
+        "evidence_quote": "不检查历史依赖",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_218ae1e01b5ac401de46",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案说不做评估，未提及成功率、平均用时、碰撞率、路径长度和未见布局表现等评估指标。",
+        "evidence_quote": "也不做评估",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 610,
+      "prompt_tokens": 2428,
+      "total_tokens": 3038,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2044
+    }
+  },
+  "score": 0.0
+}

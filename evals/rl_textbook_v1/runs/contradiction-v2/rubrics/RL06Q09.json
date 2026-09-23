@@ -1,0 +1,7 @@
+{
+  "id": "RL06Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": false,
+  "error": "LLM response was not valid JSON"
+}

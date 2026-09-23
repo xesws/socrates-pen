@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U2Q1-r1",
+  "kind": "rubric",
+  "case_id": "U2Q1",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_57e8e6dd4d0db7ef4939",
+      "name": "range 边界规则",
+      "definition": "range(start, stop) 生成从 start 开始、到 stop 前一个整数结束的序列，不包含 stop。",
+      "source_mq_ids": [
+        "q_d9d0a801fc2958158bb6"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_57e8e6dd4d0db7ef4939",
+      "max_score": 1.0,
+      "description": "选择正确选项 B，即 [1,2,3]。",
+      "partial_credit": "选择 B 得 1 分；选择 A、C 或未选择得 0 分。"
+    }
+  ]
+}

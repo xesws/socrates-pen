@@ -1,0 +1,18 @@
+{
+  "id": "grade-B-U1Q5-zero-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U1Q5",
+  "sample_id": "U1Q5-zero",
+  "sample_kind": "zero",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": false,
+  "error": "('U1Q5', 2)"
+}

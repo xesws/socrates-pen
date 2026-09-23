@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q10-paraphrase",
+  "case_id": "RL05Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_063dac195254f5f59848",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 TD 可在一次转移后更新，而 MC 通常等完整 episode。",
+        "evidence_quote": "TD can update after a transition, whereas Monte Carlo normally waits for the full episode.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c2dff7995f3ba4b389f4",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出很长运行或缺乏自然终点时 TD 更实用。",
+        "evidence_quote": "Very long runs or lack of a natural endpoint favor TD in practice.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_ad6652b9976f2269accc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 MC 使用实际完整回报，且没有来自估计后继值的自举目标偏差。",
+        "evidence_quote": "Monte Carlo uses realized complete returns without the bootstrap target bias from an estimated successor value.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8eb5faf0f165216fd535",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 TD 目标通常采样方差较低，但依赖当前估计。",
+        "evidence_quote": "A TD target usually has less sampling variance but relies on current estimates.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_2cfd7f382b25cc8845a3",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出系统运行中需要适应时优先 TD，等价于在线边交互边学习。",
+        "evidence_quote": "Favor TD when adaptation must occur while the system runs.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_edb511df859a37eb8d11",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 continuing 任务可使用合适的折扣或平均奖励 TD 形式。",
+        "evidence_quote": "Continuing tasks can use an appropriate discounted or average-reward TD formulation.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e2712ff45dd301e1a64e",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明若延迟的终局奖励最终可观测，MC 直接使用它。",
+        "evidence_quote": "If a delayed terminal reward is eventually observable, Monte Carlo directly uses it.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_dbee00061d865ce58ec2",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 TD 无需保存整个 episode，适用于有限内存和计算。",
+        "evidence_quote": "TD can be implemented without keeping an entire episode, which is useful with limited memory and compute.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 613,
+      "prompt_tokens": 2475,
+      "total_tokens": 3088,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2091
+    }
+  },
+  "score": 1.0
+}

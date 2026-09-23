@@ -1,0 +1,122 @@
+{
+  "id": "RL08Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_a628ee60bfcf7e82880c",
+        "name": "正确选项",
+        "definition": "UCB 类方法中的 bonus 鼓励尝试不确定性较高或访问较少的动作，即选项 B。",
+        "source_mq_ids": [
+          "q_186a32eb226041025fd0"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_186a32eb226041025fd0",
+        "version": "53583a3f9cbbbe981c15167be96541ae898ffd65b1ffe8955dc4c59cd707803b",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_186a32eb226041025fd0",
+        "title": "RL08Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "UCB 类方法中的 bonus 通常鼓励什么？",
+        "reference_answer": "B",
+        "solution_markdown": "UCB 用不确定性项平衡当前均值和信息获取。",
+        "raw_markdown": "### RL08Q02\n#### 题型\nsingle_choice\n#### 题干\nUCB 类方法中的 bonus 通常鼓励什么？\n#### 选项\n##### A\n永远重复平均奖励最低的动作。\n##### B\n尝试不确定性较高或访问较少的动作。\n##### C\n删除奖励信号。\n##### D\n让行为策略概率全部为 0。\n#### 答案\nB\n#### 解答\nUCB 用不确定性项平衡当前均值和信息获取。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_a628ee60bfcf7e82880c"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_a628ee60bfcf7e82880c",
+            "max_score": 1.0,
+            "description": "选择 B：bonus 鼓励尝试不确定性较高或访问较少的动作。",
+            "partial_credit": "单选题，选对得满分，选错或未答得 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 B，或选择 A/C/D 等错误选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1595,
+          "end_line": 1612
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1597,
+            "end_line": 1597
+          },
+          "题干": {
+            "start_line": 1599,
+            "end_line": 1599
+          },
+          "选项": {
+            "start_line": 1601,
+            "end_line": 1608
+          },
+          "答案": {
+            "start_line": 1610,
+            "end_line": 1610
+          },
+          "解答": {
+            "start_line": 1612,
+            "end_line": 1612
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "永远重复平均奖励最低的动作。"
+          },
+          {
+            "id": "B",
+            "text": "尝试不确定性较高或访问较少的动作。"
+          },
+          {
+            "id": "C",
+            "text": "删除奖励信号。"
+          },
+          {
+            "id": "D",
+            "text": "让行为策略概率全部为 0。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "c8e063845e3fd07188b6fe153cc497df4d9397b4b055e00936c19fe9f0983954"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 19139,
+      "total_tokens": 19285,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 323
+    }
+  }
+}

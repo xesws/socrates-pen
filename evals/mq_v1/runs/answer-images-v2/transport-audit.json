@@ -1,0 +1,41 @@
+{
+  "image_requests": [
+    {
+      "id": "fill-image",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "fill_blank"
+    },
+    {
+      "id": "gold-image-advanced",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "short_answer"
+    },
+    {
+      "id": "gold-image-basic",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "short_answer"
+    },
+    {
+      "id": "gold-image-complete",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "short_answer"
+    },
+    {
+      "id": "gold-image-wrong",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "short_answer"
+    },
+    {
+      "id": "unreadable-image",
+      "real_image_parts": 1,
+      "learner_text_empty": true,
+      "question_type": "short_answer"
+    }
+  ],
+  "key_scan": "passed"
+}

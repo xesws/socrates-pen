@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q2-paraphrase-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_205f7ddae74c119456fe",
+        "score": 1.0,
+        "max_score": 1.0,
+        "reason": "学习者答案明确表达了“排序保证被舍弃区域不含要找的值”，即有序性导致被排除的一半不可能包含目标，建立了因果联系，符合完整表达的要求。",
+        "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 70,
+      "prompt_tokens": 385,
+      "total_tokens": 455,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 385
+    }
+  },
+  "score": 1.0
+}

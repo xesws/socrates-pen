@@ -1,0 +1,18 @@
+{
+  "dataset": "5358ec32afb2e8deb3fbc9dd8dce40d93676bcd51370133327919d8b6f110372",
+  "code": {
+    "pen/practice/importer.py": "2cd9aef5eeb562d743a07341a834ee0277edee9d5fbde2f99f9cf194da11e27c",
+    "pen/practice/grading.py": "3715fe33a850a8496f7a094bde01c7c67e1d1a548718f55406f4f9192dc8597f",
+    "pen/practice/rubric.py": "594cc393bf701d13f3fa0d1e0520ec495fa833626b9a887befaba6f9acd1db05",
+    "pen/practice/rubric_examples.py": "0d85f883464d8306ad88d1ad4633e9ba1d529e568878cdbecd984cad1beb2e2e",
+    "pen/practice/coordinator.py": "79f423ea56571c9ce86d64a533dc6d91fc3d68bcf21521613b1720459cce5e81",
+    "pen/practice/resources.py": "903b34984bd947072f941684c7ffd462a28560aaa94adf064ab2a4baf737c19d",
+    "pen/practice/llm.py": "ed19a636a4b25c6bd724dfba5b0afabba2bf504c3a3e46881e55218ed91cfa54",
+    "pen/practice/evaluation.py": "c1bf8dc6beca74bf6c40f7ddde396305d896b0dcaa15d0935081036aba34b4d1",
+    "scripts/evaluate-textbook.py": "892a496d4153821f469502cd4c22c1a59afb3d0c223650a42be43094e73f14a6"
+  },
+  "model": "deepseek-flash",
+  "temperature": 0,
+  "thinking": "off",
+  "max_output_tokens": 4096
+}

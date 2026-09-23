@@ -1,0 +1,114 @@
+{
+  "id": "RL02Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_2ff748cf60fed5db04e9",
+        "name": "状态价值计算",
+        "definition": "按策略概率对 Q 值加权求和，得到 V_pi(s)=0.25×2+0.75×6=5",
+        "source_mq_ids": [
+          "q_4ab82da97dd6ba648fb6"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_4ab82da97dd6ba648fb6",
+        "version": "00446f13592eb613ccaf51f93536ea5af5586920041601e32e9a694caf7e6fa0",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_4ab82da97dd6ba648fb6",
+        "title": "RL02Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "若 π(a1|s)=0.25、Q(s,a1)=2，π(a2|s)=0.75、Q(s,a2)=6，则 V_pi(s)={{b1}}。\n\n| 动作 | 策略概率 | Q 值 |\n|---|---:|---:|\n| a1 | 0.25 | 2 |\n| a2 | 0.75 | 6 |",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"5\",\"5.0\"],\"numeric_value\":5.0,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "按策略概率加权：0.25×2+0.75×6=5。",
+        "raw_markdown": "### RL02Q06\n#### 题型\nfill_blank\n#### 题干\n若 π(a1|s)=0.25、Q(s,a1)=2，π(a2|s)=0.75、Q(s,a2)=6，则 V_pi(s)={{b1}}。\n\n| 动作 | 策略概率 | Q 值 |\n|---|---:|---:|\n| a1 | 0.25 | 2 |\n| a2 | 0.75 | 6 |\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"5\",\"5.0\"],\"numeric_value\":5.0,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n按策略概率加权：0.25×2+0.75×6=5。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_2ff748cf60fed5db04e9"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_2ff748cf60fed5db04e9",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入 5（或等值 5.0）",
+            "partial_credit": "仅当数值等于 5（容差 1e-6）时得分，否则 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾（非 5）"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 5 或 5.0"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 362,
+          "end_line": 377
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 364,
+            "end_line": 364
+          },
+          "题干": {
+            "start_line": 366,
+            "end_line": 371
+          },
+          "答案": {
+            "start_line": 373,
+            "end_line": 375
+          },
+          "解答": {
+            "start_line": 377,
+            "end_line": 377
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "5",
+              "5.0"
+            ],
+            "numeric_value": 5.0,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "103d853bc301ad39bdbddcef891b1a6456fde91e9e8e61743ba4d662a73c17e1"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 166,
+      "prompt_tokens": 19258,
+      "total_tokens": 19424,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 442
+    }
+  }
+}

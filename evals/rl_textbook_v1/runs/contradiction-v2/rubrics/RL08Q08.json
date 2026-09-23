@@ -1,0 +1,348 @@
+{
+  "id": "RL08Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_f4a565ca5e0588f85b29",
+        "name": "训练隔离",
+        "definition": "训练和评估环境、随机种子或关卡切分应清楚隔离",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1ab1ad66fed7e3b9e6e0",
+        "name": "评估策略",
+        "definition": "评估时固定策略模式，例如关闭探索或指定 epsilon",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a72f596c7a6e531f5183",
+        "name": "种子",
+        "definition": "使用多个随机种子报告均值和波动，而非单次最好结果",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8606db132e04757aa193",
+        "name": "指标",
+        "definition": "指标应包含回报、成功率、长度、约束违反和资源消耗",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_11e030085f54f0aeaea0",
+        "name": "区间",
+        "definition": "给出标准误、置信区间或 bootstrap 区间",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1e1f4f646b8af74afd7c",
+        "name": "基线",
+        "definition": "与合理基线比较，如随机、启发式、已有算法或无学习版本",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a27a38711f1657393148",
+        "name": "消融",
+        "definition": "做关键组件消融，确认改进来自声称的机制",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b382d6b4f31c32f63db9",
+        "name": "失败案例",
+        "definition": "记录失败案例、异常轨迹和分布外场景表现",
+        "source_mq_ids": [
+          "q_778d49f904cbde70b50f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_778d49f904cbde70b50f",
+        "version": "716c6d4a6c7db3e18ec0071f00bcc4e6b9a632fc1fe7ec75bd0b68bd5958ee73",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_778d49f904cbde70b50f",
+        "title": "RL08Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "设计一个可信 RL 评估协议。请按8个方面回答：训练隔离、评估策略、种子、指标、区间、基线、消融、失败案例。",
+        "reference_answer": "1. 训练和评估环境、随机种子或关卡切分应清楚隔离。\n2. 评估时固定策略模式，例如关闭探索或指定 epsilon。\n3. 使用多个随机种子报告均值和波动，而非单次最好结果。\n4. 指标应包含回报、成功率、长度、约束违反和资源消耗。\n5. 给出标准误、置信区间或 bootstrap 区间。\n6. 与合理基线比较，如随机、启发式、已有算法或无学习版本。\n7. 做关键组件消融，确认改进来自声称的机制。\n8. 记录失败案例、异常轨迹和分布外场景表现。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL08Q08\n#### 题型\nshort_answer\n#### 题干\n设计一个可信 RL 评估协议。请按8个方面回答：训练隔离、评估策略、种子、指标、区间、基线、消融、失败案例。\n#### 答案\n1. 训练和评估环境、随机种子或关卡切分应清楚隔离。\n2. 评估时固定策略模式，例如关闭探索或指定 epsilon。\n3. 使用多个随机种子报告均值和波动，而非单次最好结果。\n4. 指标应包含回报、成功率、长度、约束违反和资源消耗。\n5. 给出标准误、置信区间或 bootstrap 区间。\n6. 与合理基线比较，如随机、启发式、已有算法或无学习版本。\n7. 做关键组件消融，确认改进来自声称的机制。\n8. 记录失败案例、异常轨迹和分布外场景表现。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_f4a565ca5e0588f85b29",
+          "pt_1ab1ad66fed7e3b9e6e0",
+          "pt_a72f596c7a6e531f5183",
+          "pt_8606db132e04757aa193",
+          "pt_11e030085f54f0aeaea0",
+          "pt_1e1f4f646b8af74afd7c",
+          "pt_a27a38711f1657393148",
+          "pt_b382d6b4f31c32f63db9"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_f4a565ca5e0588f85b29",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "训练和评估环境、随机种子或关卡切分应清楚隔离",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "训练和评估环境、随机种子或关卡切分应清楚隔离"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_1ab1ad66fed7e3b9e6e0",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "评估时固定策略模式，例如关闭探索或指定 epsilon",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "评估时固定策略模式，例如关闭探索或指定 epsilon"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_a72f596c7a6e531f5183",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "使用多个随机种子报告均值和波动，而非单次最好结果",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "使用多个随机种子报告均值和波动，而非单次最好结果"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_8606db132e04757aa193",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "指标应包含回报、成功率、长度、约束违反和资源消耗",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "指标应包含回报、成功率、长度、约束违反和资源消耗"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_11e030085f54f0aeaea0",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "给出标准误、置信区间或 bootstrap 区间",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "给出标准误、置信区间或 bootstrap 区间"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_1e1f4f646b8af74afd7c",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "与合理基线比较，如随机、启发式、已有算法或无学习版本",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "与合理基线比较，如随机、启发式、已有算法或无学习版本"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_a27a38711f1657393148",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "做关键组件消融，确认改进来自声称的机制",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "做关键组件消融，确认改进来自声称的机制"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_b382d6b4f31c32f63db9",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "记录失败案例、异常轨迹和分布外场景表现",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "记录失败案例、异常轨迹和分布外场景表现"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1682,
+          "end_line": 1697
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1684,
+            "end_line": 1684
+          },
+          "题干": {
+            "start_line": 1686,
+            "end_line": 1686
+          },
+          "答案": {
+            "start_line": 1688,
+            "end_line": 1695
+          },
+          "解答": {
+            "start_line": 1697,
+            "end_line": 1697
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "400eb8624739c717b1666a0a53449a97efb697a20bed49908a2bd63eb3e0ef42"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1823,
+      "prompt_tokens": 19275,
+      "total_tokens": 21098,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 459
+    }
+  }
+}

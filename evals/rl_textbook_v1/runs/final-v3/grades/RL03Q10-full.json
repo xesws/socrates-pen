@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q10-full",
+  "case_id": "RL03Q10",
+  "kind": "full",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1501079a3aa546101689",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 Bellman 方程把目标价值定义为算子的固定点。",
+        "evidence_quote": "Bellman 方程把目标价值定义为算子的固定点。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_9ec80cc48c9102c9e8b2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明折扣 Bellman 算子在 γ<1 时缩小价值函数之间的最大差异。",
+        "evidence_quote": "折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d2047fa3436cae8cc50e",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 γ 越小压缩越强，γ 接近 1 时收敛更慢。",
+        "evidence_quote": "γ 越小压缩越强，γ 接近 1 时收敛更慢。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8d3d6ddea2bab60095c5",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明经典保证通常针对有限状态动作空间。",
+        "evidence_quote": "经典保证通常针对有限状态动作空间。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_eefda56ec86984b3e8a9",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明异步更新也需要足够覆盖相关状态动作。",
+        "evidence_quote": "异步更新也需要足够覆盖相关状态动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_6b3cf4b9a9d234329ec6",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明若模型错误，算法收敛到错误模型下的解。",
+        "evidence_quote": "若模型错误，算法收敛到错误模型下的解。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e766ddaa8a3ab1f56c70",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明函数近似或截断评价会引入额外近似误差。",
+        "evidence_quote": "函数近似或截断评价会引入额外近似误差。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_ecfc145603040d770661",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证。",
+        "evidence_quote": "未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 599,
+      "prompt_tokens": 2436,
+      "total_tokens": 3035,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2052
+    }
+  },
+  "score": 1.0
+}

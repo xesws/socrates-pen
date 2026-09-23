@@ -1,0 +1,119 @@
+{
+  "id": "RL04Q08-contradiction",
+  "case_id": "RL04Q08",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_d7ec98238a541eb3501c",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先正确陈述初始化，但随后明确否认应初始化 Q、回报统计或 epsilon-greedy 策略，构成自相矛盾。",
+        "evidence_quote": "我同时坚持以下相反说法：算法不应该初始化 Q、回报统计或 epsilon-greedy 策略。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_537e270fef133a840d52",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明用当前 epsilon-greedy 策略生成完整 episode，且无相反矛盾。",
+        "evidence_quote": "用当前 epsilon-greedy 策略生成完整 episode。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_af45f9ed7cc6f28258b1",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明从 episode 末尾向前计算每个时刻的折扣回报 G_t，且无相反矛盾。",
+        "evidence_quote": "从 episode 末尾向前计算每个时刻的折扣回报 G_t。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_97f4abc74c36f9d0c17d",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确选择 first-visit 或 every-visit 并要求在算法说明中保持一致，且无相反矛盾。",
+        "evidence_quote": "选择 first-visit 或 every-visit，并在算法说明中保持一致。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9af9557202fd4c911109",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明用样本均值或增量平均更新被访问状态动作对的 Q，且无相反矛盾。",
+        "evidence_quote": "用样本均值或增量平均更新被访问状态动作对的 Q。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_494be1dfcd925c876b11",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 epsilon-greedy 确保非贪心动作仍有非零探索概率，且无相反矛盾。",
+        "evidence_quote": "epsilon-greedy 确保非贪心动作仍有非零探索概率。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_4fd1ef89778b5ee72b56",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明根据更新后的 Q 把策略改进为新的 epsilon-greedy，且无相反矛盾。",
+        "evidence_quote": "根据更新后的 Q 把策略改进为新的 epsilon-greedy。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b38e9480ed09fa5ecccf",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "明确说明用 episode 数、性能稳定性或 epsilon 调度作为停止条件，且无相反矛盾。",
+        "evidence_quote": "用 episode 数、性能稳定性或 epsilon 调度作为停止条件。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 674,
+      "prompt_tokens": 2511,
+      "total_tokens": 3185,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 1999
+    }
+  },
+  "score": 0.9
+}

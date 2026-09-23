@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U3Q4-wrong-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U3Q4",
+  "sample_id": "U3Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_e6bb4af3e7ae0a63cc25",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案将两种操作完全说反：把赋值说成“复制列表”，把 copy 说成“让两个名字指向原来的顶层列表”。这既未正确指出 b=a 共享同一个顶层列表对象，也未正确指出 b=a.copy() 创建新的顶层列表对象，属于表述矛盾/错误，因此得0分。",
+        "evidence_quote": "赋值会复制列表，copy 会让两个名字指向原来的顶层列表。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 112,
+      "prompt_tokens": 353,
+      "total_tokens": 465,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 353
+    }
+  },
+  "score": 0.0
+}

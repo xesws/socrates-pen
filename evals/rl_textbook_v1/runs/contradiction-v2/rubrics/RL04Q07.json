@@ -1,0 +1,113 @@
+{
+  "id": "RL04Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_3f2d82de3b05600a4b96",
+        "name": "贪心动作概率",
+        "definition": "计算 ε=0.2、4 个动作时唯一贪心动作被选中的总概率 0.85",
+        "source_mq_ids": [
+          "q_5c458d91956c8b36dae2"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_5c458d91956c8b36dae2",
+        "version": "6181f7a6d9d276284467e517ae196e1aa5b9fce5f4c2e9464bd47bca2636620d",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_5c458d91956c8b36dae2",
+        "title": "RL04Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "4 个动作、唯一贪心动作、探索时在所有动作上均匀随机；ε=0.2 的 epsilon-greedy 贪心动作概率为 1-0.2+0.2/4={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"0.85\",\".85\"],\"numeric_value\":0.85,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "唯一贪心动作获得利用概率 0.8，并在均匀探索所有 4 个动作时再获得 0.05，总计 0.85。",
+        "raw_markdown": "### RL04Q07\n#### 题型\nfill_blank\n#### 题干\n4 个动作、唯一贪心动作、探索时在所有动作上均匀随机；ε=0.2 的 epsilon-greedy 贪心动作概率为 1-0.2+0.2/4={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"0.85\",\".85\"],\"numeric_value\":0.85,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n唯一贪心动作获得利用概率 0.8，并在均匀探索所有 4 个动作时再获得 0.05，总计 0.85。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_3f2d82de3b05600a4b96"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_3f2d82de3b05600a4b96",
+            "max_score": 1.0,
+            "description": "填入 0.85（或等价 .85）",
+            "partial_credit": "本项独立给分；数值等价即可；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "0.85 或 .85"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 808,
+          "end_line": 818
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 810,
+            "end_line": 810
+          },
+          "题干": {
+            "start_line": 812,
+            "end_line": 812
+          },
+          "答案": {
+            "start_line": 814,
+            "end_line": 816
+          },
+          "解答": {
+            "start_line": 818,
+            "end_line": 818
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "0.85",
+              ".85"
+            ],
+            "numeric_value": 0.85,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "6260014f94515c3c80c54ae5dac7d84e0dbef0324762975f41a5099ff8c4efae"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 153,
+      "prompt_tokens": 19232,
+      "total_tokens": 19385,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 416
+    }
+  }
+}

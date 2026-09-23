@@ -1,0 +1,113 @@
+{
+  "id": "RL04Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_ab6381dace06c0a8966b",
+        "name": "分母取值",
+        "definition": "第10个样本到来时，增量平均公式的分母应为10",
+        "source_mq_ids": [
+          "q_13efd698bf4ee53415bf"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_13efd698bf4ee53415bf",
+        "version": "9677b2ac4164afedf5cb1f5067d431865c6384171c8556e0d1b3b0a2d71c9778",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_13efd698bf4ee53415bf",
+        "title": "RL04Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "增量平均代码如下，第10个样本到来时分母 {{b1}} 应为 10。\n```python\nvalue = value + (G - value) / {{b1}}\n```",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"10\"],\"numeric_value\":10,\"numeric_tolerance\":0}}\n```",
+        "solution_markdown": "第 n 个样本的精确增量平均使用分母 n。",
+        "raw_markdown": "### RL04Q06\n#### 题型\nfill_blank\n#### 题干\n增量平均代码如下，第10个样本到来时分母 {{b1}} 应为 10。\n```python\nvalue = value + (G - value) / {{b1}}\n```\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"10\"],\"numeric_value\":10,\"numeric_tolerance\":0}}\n```\n#### 解答\n第 n 个样本的精确增量平均使用分母 n。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_ab6381dace06c0a8966b"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_ab6381dace06c0a8966b",
+            "max_score": 1.0,
+            "description": "第10个样本到来时分母为10",
+            "partial_credit": "本项独立给分；填10即得分，其他值为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填写10"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 794,
+          "end_line": 807
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 796,
+            "end_line": 796
+          },
+          "题干": {
+            "start_line": 798,
+            "end_line": 801
+          },
+          "答案": {
+            "start_line": 803,
+            "end_line": 805
+          },
+          "解答": {
+            "start_line": 807,
+            "end_line": 807
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "10"
+            ],
+            "numeric_value": 10,
+            "numeric_tolerance": 0,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "bd68d1fd772b5f6590dd5c3c1a87b91fa7b283dc77b75c8b13a5d5baca5eed5a"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 19178,
+      "total_tokens": 19306,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 362
+    }
+  }
+}

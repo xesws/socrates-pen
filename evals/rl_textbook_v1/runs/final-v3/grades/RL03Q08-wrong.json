@@ -1,0 +1,119 @@
+{
+  "id": "RL03Q08-wrong",
+  "case_id": "RL03Q08",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_022ae8cd6bfb5ff315c7",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "状态被定义为与网格无关的随机数，与“状态为网格位置”矛盾。",
+        "evidence_quote": "状态只用一个随机数且与网格无关",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0aa78dd0961df9cfd5ce",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "动作被说成输出奖励值，未定义为上下左右及撞墙处理。",
+        "evidence_quote": "动作是输出奖励值",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_1674054d4af47d41dc61",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未给出状态动作到下一格的概率模型，反而称不需要转移模型。",
+        "evidence_quote": "不需要转移模型也能做精确DP",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_49dbee35f09ad9c7b8a2",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未设置每步-1、到达目标0等奖励信号，反而把动作说成输出奖励值。",
+        "evidence_quote": "动作是输出奖励值",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c2d4e1bd7490e6afb638",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "策略评价被说成忽略概率，与按动作概率和转移概率加权更新V矛盾。",
+        "evidence_quote": "评价时把概率全部忽略",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_b23adfdd62865432a623",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "改进被说成选非法动作，与选择合法动作矛盾。",
+        "evidence_quote": "改进选非法动作",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_6b8e850a05fc61e0db1c",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确说永远不设停止条件，与停止准则矛盾。",
+        "evidence_quote": "永远不设停止条件",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c91a39aec2154d615e31",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确说不输出策略或价值，与输出要求矛盾。",
+        "evidence_quote": "不输出策略或价值",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 399,
+      "prompt_tokens": 2326,
+      "total_tokens": 2725,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1942
+    }
+  },
+  "score": 0.0
+}

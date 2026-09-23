@@ -1,0 +1,30 @@
+{
+  "id": "vision-U5Q1-image-wrong-r1",
+  "kind": "vision_grade",
+  "case_id": "U5Q1",
+  "split": "dev",
+  "repeat": 1,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0,
+    "reason": "图中A列数值为8，B列数值为3，A列更高。学生选择B，与图片事实不符，因此得0分。",
+    "usage": {
+      "completion_tokens": 45,
+      "prompt_tokens": 371,
+      "total_tokens": 416,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 371
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0
+}

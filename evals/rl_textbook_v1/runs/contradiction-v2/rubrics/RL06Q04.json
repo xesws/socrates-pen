@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_28447ab13a19d64c9e71",
+        "name": "目标网络目的",
+        "definition": "目标网络通过使用延迟副本，使 TD 目标变化更慢，从而提高训练稳定性。",
+        "source_mq_ids": [
+          "q_24f65be481fe746e8f5f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_24f65be481fe746e8f5f",
+        "version": "6faf61b7d1823bedb4eb646aa1b41e3fb581aeeef42951f61075b16f46379e11",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_24f65be481fe746e8f5f",
+        "title": "RL06Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "目标网络的主要目的是什么？",
+        "reference_answer": "C",
+        "solution_markdown": "目标网络是延迟副本，减少目标和当前预测同时快速移动的问题。",
+        "raw_markdown": "### RL06Q04\n#### 题型\nsingle_choice\n#### 题干\n目标网络的主要目的是什么？\n#### 选项\n##### A\n增加动作数量。\n##### B\n替代奖励函数。\n##### C\n让 TD 目标变化更慢，从而提高训练稳定性。\n##### D\n避免任何梯度计算。\n#### 答案\nC\n#### 解答\n目标网络是延迟副本，减少目标和当前预测同时快速移动的问题。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_28447ab13a19d64c9e71"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_28447ab13a19d64c9e71",
+            "max_score": 1.0,
+            "description": "选择 C：让 TD 目标变化更慢，从而提高训练稳定性。",
+            "partial_credit": "单选题，选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1200,
+          "end_line": 1217
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1202,
+            "end_line": 1202
+          },
+          "题干": {
+            "start_line": 1204,
+            "end_line": 1204
+          },
+          "选项": {
+            "start_line": 1206,
+            "end_line": 1213
+          },
+          "答案": {
+            "start_line": 1215,
+            "end_line": 1215
+          },
+          "解答": {
+            "start_line": 1217,
+            "end_line": 1217
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "增加动作数量。"
+          },
+          {
+            "id": "B",
+            "text": "替代奖励函数。"
+          },
+          {
+            "id": "C",
+            "text": "让 TD 目标变化更慢，从而提高训练稳定性。"
+          },
+          {
+            "id": "D",
+            "text": "避免任何梯度计算。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "bc64a48096d08ad620a64cbaaeb31d50ae81c5ddb9e60c7dd8c93965a959c81b"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 138,
+      "prompt_tokens": 19131,
+      "total_tokens": 19269,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 315
+    }
+  }
+}

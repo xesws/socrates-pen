@@ -1,0 +1,348 @@
+{
+  "id": "RL01Q08",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_8dd24f9a41f59d222897",
+        "name": "智能体",
+        "definition": "智能体是控制拣货机器人移动、抓取和放置的决策程序",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8fb538edd1fab015022a",
+        "name": "环境",
+        "definition": "环境包括货架、货物、订单队列、障碍物、人类工人和机器人动力学",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2e318a03edf9da86f9dd",
+        "name": "状态",
+        "definition": "状态应含机器人位置、货物目标、夹爪状态、局部地图、订单进度和安全相关观测",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_bbd9923f06fdff00a60f",
+        "name": "动作",
+        "definition": "动作可定义为移动、转向、抓取、放置、等待或高层路径选择",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_abb16f9107de5632d544",
+        "name": "奖励",
+        "definition": "奖励应鼓励正确完成订单、低碰撞、短路径和安全操作，而不是只奖励速度",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_08a197c4e3afe469873d",
+        "name": "终止条件",
+        "definition": "终止条件可包括订单完成、超时、严重碰撞或电量不足",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d64cc33c8be964817ac5",
+        "name": "马尔可夫风险",
+        "definition": "若状态缺少遮挡、人类位置或未完成订单信息，马尔可夫性会受损",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_218ae1e01b5ac401de46",
+        "name": "评估指标",
+        "definition": "评估应看成功率、平均用时、碰撞率、路径长度和未见布局表现",
+        "source_mq_ids": [
+          "q_080761d675d72f270986"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_080761d675d72f270986",
+        "version": "afbbc474f73b71619e1cc5d8fc53c9e2fa8465a040ee2777ee99e53a0a698e23",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_080761d675d72f270986",
+        "title": "RL01Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "把“仓库机器人拣货”建成 MDP。请按8个方面回答：智能体、环境、状态、动作、奖励、终止条件、马尔可夫风险、评估指标。\n```mermaid\nflowchart LR\n  Agent[智能体] -->|动作| Environment[环境]\n  Environment -->|观测与奖励| Agent\n```",
+        "reference_answer": "1. 智能体是控制拣货机器人移动、抓取和放置的决策程序。\n2. 环境包括货架、货物、订单队列、障碍物、人类工人和机器人动力学。\n3. 状态应含机器人位置、货物目标、夹爪状态、局部地图、订单进度和安全相关观测。\n4. 动作可定义为移动、转向、抓取、放置、等待或高层路径选择。\n5. 奖励应鼓励正确完成订单、低碰撞、短路径和安全操作，而不是只奖励速度。\n6. 终止条件可包括订单完成、超时、严重碰撞或电量不足。\n7. 若状态缺少遮挡、人类位置或未完成订单信息，马尔可夫性会受损。\n8. 评估应看成功率、平均用时、碰撞率、路径长度和未见布局表现。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL01Q08\n#### 题型\nshort_answer\n#### 题干\n把“仓库机器人拣货”建成 MDP。请按8个方面回答：智能体、环境、状态、动作、奖励、终止条件、马尔可夫风险、评估指标。\n```mermaid\nflowchart LR\n  Agent[智能体] -->|动作| Environment[环境]\n  Environment -->|观测与奖励| Agent\n```\n#### 答案\n1. 智能体是控制拣货机器人移动、抓取和放置的决策程序。\n2. 环境包括货架、货物、订单队列、障碍物、人类工人和机器人动力学。\n3. 状态应含机器人位置、货物目标、夹爪状态、局部地图、订单进度和安全相关观测。\n4. 动作可定义为移动、转向、抓取、放置、等待或高层路径选择。\n5. 奖励应鼓励正确完成订单、低碰撞、短路径和安全操作，而不是只奖励速度。\n6. 终止条件可包括订单完成、超时、严重碰撞或电量不足。\n7. 若状态缺少遮挡、人类位置或未完成订单信息，马尔可夫性会受损。\n8. 评估应看成功率、平均用时、碰撞率、路径长度和未见布局表现。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_8dd24f9a41f59d222897",
+          "pt_8fb538edd1fab015022a",
+          "pt_2e318a03edf9da86f9dd",
+          "pt_bbd9923f06fdff00a60f",
+          "pt_abb16f9107de5632d544",
+          "pt_08a197c4e3afe469873d",
+          "pt_d64cc33c8be964817ac5",
+          "pt_218ae1e01b5ac401de46"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_8dd24f9a41f59d222897",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "智能体是控制拣货机器人移动、抓取和放置的决策程序",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "智能体是控制拣货机器人移动、抓取和放置的决策程序"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_8fb538edd1fab015022a",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "环境包括货架、货物、订单队列、障碍物、人类工人和机器人动力学",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "环境包括货架、货物、订单队列、障碍物、人类工人和机器人动力学"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_2e318a03edf9da86f9dd",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "状态应含机器人位置、货物目标、夹爪状态、局部地图、订单进度和安全相关观测",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "状态应含机器人位置、货物目标、夹爪状态、局部地图、订单进度和安全相关观测"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_bbd9923f06fdff00a60f",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "动作可定义为移动、转向、抓取、放置、等待或高层路径选择",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "动作可定义为移动、转向、抓取、放置、等待或高层路径选择"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_abb16f9107de5632d544",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "奖励应鼓励正确完成订单、低碰撞、短路径和安全操作，而不是只奖励速度",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "奖励应鼓励正确完成订单、低碰撞、短路径和安全操作，而不是只奖励速度"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_08a197c4e3afe469873d",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "终止条件可包括订单完成、超时、严重碰撞或电量不足",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "终止条件可包括订单完成、超时、严重碰撞或电量不足"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_d64cc33c8be964817ac5",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "若状态缺少遮挡、人类位置或未完成订单信息，马尔可夫性会受损",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "若状态缺少遮挡、人类位置或未完成订单信息，马尔可夫性会受损"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_218ae1e01b5ac401de46",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "评估应看成功率、平均用时、碰撞率、路径长度和未见布局表现",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "评估应看成功率、平均用时、碰撞率、路径长度和未见布局表现"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 166,
+          "end_line": 186
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 168,
+            "end_line": 168
+          },
+          "题干": {
+            "start_line": 170,
+            "end_line": 175
+          },
+          "答案": {
+            "start_line": 177,
+            "end_line": 184
+          },
+          "解答": {
+            "start_line": 186,
+            "end_line": 186
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "d58fac62ca7b7ed9bb042ac023012b7c74d9c118fcbd9e8ee0c2db9a2873f324"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1919,
+      "prompt_tokens": 19355,
+      "total_tokens": 21274,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 539
+    }
+  }
+}

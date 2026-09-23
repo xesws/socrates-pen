@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U2Q4-full-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-full",
+  "sample_kind": "full",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_dc7794b847f40f9fd12d",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确说明初始化保证首次迭代前成立，完全符合评分标准要求。",
+        "evidence_quote": "初始化保证首次迭代前成立"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_5dc6a6bf4c60b9b432a9",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确说明保持保证每一步从成立推出下一步仍成立，体现了从前一步推出下一步的迭代保持关系，完全符合评分标准要求。",
+        "evidence_quote": "保持保证每一步从成立推出下一步仍成立"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 110,
+      "prompt_tokens": 538,
+      "total_tokens": 648,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 538
+    }
+  },
+  "score": 1.0
+}

@@ -1,0 +1,348 @@
+{
+  "id": "RL07Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_df05a6692268bea6b718",
+        "name": "actor",
+        "definition": "actor 表示并更新策略分布 π_θ(a|s)",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_9cac66a1fe6aab4e1fd2",
+        "name": "critic",
+        "definition": "critic 估计 V、Q 或 advantage，为策略更新提供评价",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_68eb97730bd9905aa211",
+        "name": "价值目标",
+        "definition": "critic 可用 TD return 或 n-step/λ-return 作价值回归目标；GAE 本身主要是 advantage 估计，若用于价值目标通常形成 V_old+GAE",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_15115086b6f1d0792f3e",
+        "name": "优势",
+        "definition": "优势信号告诉 actor 已采样动作相对基线好坏",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_4048507089d75d297d95",
+        "name": "actor损失",
+        "definition": "actor 损失常含 -logπ(a|s)×advantage",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d8433da8bf92a79c492d",
+        "name": "critic损失",
+        "definition": "critic 损失常是价值预测与目标之间的平方误差或 Huber 损失",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0cad75039b4bdb225b0c",
+        "name": "熵",
+        "definition": "熵项鼓励探索并防止策略过早塌缩",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2e11c479034dad552c82",
+        "name": "风险",
+        "definition": "风险包括 critic 偏差带偏 actor、损失权重失衡和策略更新过大",
+        "source_mq_ids": [
+          "q_cd36023b5e7b55a1db2f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_cd36023b5e7b55a1db2f",
+        "version": "72c91cfe78ea1db6064fa939260e1eabdb5f666215968c89720bb88c27270c3b",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_cd36023b5e7b55a1db2f",
+        "title": "RL07Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "解释 Actor-Critic 的组成与训练信号。请按8个方面回答：actor、critic、价值目标、优势、actor损失、critic损失、熵、风险。",
+        "reference_answer": "1. actor 表示并更新策略分布 π_θ(a|s)。\n2. critic 估计 V、Q 或 advantage，为策略更新提供评价。\n3. critic 可用 TD return 或 n-step/λ-return 作价值回归目标；GAE 本身主要是 advantage 估计，若用于价值目标通常形成 V_old+GAE。\n4. 优势信号告诉 actor 已采样动作相对基线好坏。\n5. actor 损失常含 -logπ(a|s)×advantage。\n6. critic 损失常是价值预测与目标之间的平方误差或 Huber 损失。\n7. 熵项鼓励探索并防止策略过早塌缩。\n8. 风险包括 critic 偏差带偏 actor、损失权重失衡和策略更新过大。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL07Q09\n#### 题型\nshort_answer\n#### 题干\n解释 Actor-Critic 的组成与训练信号。请按8个方面回答：actor、critic、价值目标、优势、actor损失、critic损失、熵、风险。\n#### 答案\n1. actor 表示并更新策略分布 π_θ(a|s)。\n2. critic 估计 V、Q 或 advantage，为策略更新提供评价。\n3. critic 可用 TD return 或 n-step/λ-return 作价值回归目标；GAE 本身主要是 advantage 估计，若用于价值目标通常形成 V_old+GAE。\n4. 优势信号告诉 actor 已采样动作相对基线好坏。\n5. actor 损失常含 -logπ(a|s)×advantage。\n6. critic 损失常是价值预测与目标之间的平方误差或 Huber 损失。\n7. 熵项鼓励探索并防止策略过早塌缩。\n8. 风险包括 critic 偏差带偏 actor、损失权重失衡和策略更新过大。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_df05a6692268bea6b718",
+          "pt_9cac66a1fe6aab4e1fd2",
+          "pt_68eb97730bd9905aa211",
+          "pt_15115086b6f1d0792f3e",
+          "pt_4048507089d75d297d95",
+          "pt_d8433da8bf92a79c492d",
+          "pt_0cad75039b4bdb225b0c",
+          "pt_2e11c479034dad552c82"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_df05a6692268bea6b718",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "actor 表示并更新策略分布 π_θ(a|s)",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "actor 表示并更新策略分布 π_θ(a|s)"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_9cac66a1fe6aab4e1fd2",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "critic 估计 V、Q 或 advantage，为策略更新提供评价",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "critic 估计 V、Q 或 advantage，为策略更新提供评价"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_68eb97730bd9905aa211",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "critic 可用 TD return 或 n-step/λ-return 作价值回归目标；GAE 本身主要是 advantage 估计，若用于价值目标通常形成 V_old+GAE",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "critic 可用 TD return 或 n-step/λ-return 作价值回归目标；GAE 本身主要是 advantage 估计，若用于价值目标通常形成 V_old+GAE"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_15115086b6f1d0792f3e",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "优势信号告诉 actor 已采样动作相对基线好坏",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "优势信号告诉 actor 已采样动作相对基线好坏"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_4048507089d75d297d95",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "actor 损失常含 -logπ(a|s)×advantage",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "actor 损失常含 -logπ(a|s)×advantage"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_d8433da8bf92a79c492d",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "critic 损失常是价值预测与目标之间的平方误差或 Huber 损失",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "critic 损失常是价值预测与目标之间的平方误差或 Huber 损失"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_0cad75039b4bdb225b0c",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "熵项鼓励探索并防止策略过早塌缩",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "熵项鼓励探索并防止策略过早塌缩"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_2e11c479034dad552c82",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "风险包括 critic 偏差带偏 actor、损失权重失衡和策略更新过大",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "风险包括 critic 偏差带偏 actor、损失权重失衡和策略更新过大"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1483,
+          "end_line": 1498
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1485,
+            "end_line": 1485
+          },
+          "题干": {
+            "start_line": 1487,
+            "end_line": 1487
+          },
+          "答案": {
+            "start_line": 1489,
+            "end_line": 1496
+          },
+          "解答": {
+            "start_line": 1498,
+            "end_line": 1498
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "74166bf629dd7395e4e4a9598a338c399c19ac758cadc12ce1fe7012d052c9c3"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1906,
+      "prompt_tokens": 19306,
+      "total_tokens": 21212,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 490
+    }
+  }
+}

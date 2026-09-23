@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q3-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f51aab96eb42d8a849cd",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案“只要函数返回一个数字就一定存在副作用”将“返回数字”与“存在副作用”错误地绑定为充分条件，既未表达“除返回值外还改变外部可观察状态”，也未提到改变外部状态，属于无关/错误内容，按评分标准得0分。",
+        "evidence_quote": "只要函数返回一个数字就一定存在副作用。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 98,
+      "prompt_tokens": 390,
+      "total_tokens": 488,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 390
+    }
+  },
+  "score": 0.0
+}

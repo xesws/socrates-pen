@@ -1,0 +1,123 @@
+{
+  "id": "RL04Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_2bb34f94c4ade5bd50ea",
+        "name": "正确选项",
+        "definition": "选择 B：在改进策略的同时仍保留探索概率。",
+        "source_mq_ids": [
+          "q_7b5e62f09f473ec0a3ec"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_7b5e62f09f473ec0a3ec",
+        "version": "be0f8382ef2c1c8254e4001c1fb9b3ea65928ecfc962b0473399868e953fb265",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_7b5e62f09f473ec0a3ec",
+        "title": "RL04Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "on-policy MC 控制常用 epsilon-greedy 的主要原因是什么？",
+        "reference_answer": "B",
+        "solution_markdown": "epsilon-greedy 在大概率选贪心动作的同时给非贪心动作留采样机会。",
+        "raw_markdown": "### RL04Q03\n#### 题型\nsingle_choice\n#### 题干\non-policy MC 控制常用 epsilon-greedy 的主要原因是什么？\n#### 选项\n##### A\n让所有回报都变成 0。\n##### B\n在改进策略的同时仍保留探索概率。\n##### C\n避免记录动作。\n##### D\n把 episode 变成一步任务。\n#### 答案\nB\n#### 解答\nepsilon-greedy 在大概率选贪心动作的同时给非贪心动作留采样机会。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_2bb34f94c4ade5bd50ea"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_2bb34f94c4ade5bd50ea",
+            "max_score": 1.0,
+            "description": "选择 B：在改进策略的同时仍保留探索概率。",
+            "partial_credit": "单选：选 B 得满分，其他选项或未作答得 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、C、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 B"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 747,
+          "end_line": 764
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 749,
+            "end_line": 749
+          },
+          "题干": {
+            "start_line": 751,
+            "end_line": 751
+          },
+          "选项": {
+            "start_line": 753,
+            "end_line": 760
+          },
+          "答案": {
+            "start_line": 762,
+            "end_line": 762
+          },
+          "解答": {
+            "start_line": 764,
+            "end_line": 764
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "让所有回报都变成 0。"
+          },
+          {
+            "id": "B",
+            "text": "在改进策略的同时仍保留探索概率。"
+          },
+          {
+            "id": "C",
+            "text": "避免记录动作。"
+          },
+          {
+            "id": "D",
+            "text": "把 episode 变成一步任务。"
+          }
+        ],
+        "correct_choice_id": "B",
+        "rubric_version": "b713f1d26a4c2500c69313713ab7dc2016e32d0f4f88504edebe15c60f6fc931"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 130,
+      "prompt_tokens": 19149,
+      "total_tokens": 19279,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 333
+    }
+  }
+}

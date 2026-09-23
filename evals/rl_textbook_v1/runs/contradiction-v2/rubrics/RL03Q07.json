@@ -1,0 +1,112 @@
+{
+  "id": "RL03Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_b6ec9c876e9d4cae4140",
+        "name": "收敛",
+        "definition": "价值迭代中最大状态变化量小于阈值 θ 时，表示价值估计已近似收敛，可作为停止条件。",
+        "source_mq_ids": [
+          "q_a65bf5f5a4cbb672d14f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_a65bf5f5a4cbb672d14f",
+        "version": "fcc4ea8158b1cbecc4ec3f6957bade26c6f5bca26beff31ccf904f1d9f9b221c",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_a65bf5f5a4cbb672d14f",
+        "title": "RL03Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "价值迭代中若最大状态变化量小于阈值 θ，常用它作为近似{{b1}}的停止条件。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"收敛\",\"convergence\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "最大变化量小表示连续两轮价值估计已经很接近。",
+        "raw_markdown": "### RL03Q07\n#### 题型\nfill_blank\n#### 题干\n价值迭代中若最大状态变化量小于阈值 θ，常用它作为近似{{b1}}的停止条件。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"收敛\",\"convergence\"],\"case_sensitive\":false}}\n```\n#### 解答\n最大变化量小表示连续两轮价值估计已经很接近。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_b6ec9c876e9d4cae4140"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_b6ec9c876e9d4cae4140",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入“收敛”或等价英文“convergence”，表示价值估计趋于稳定。",
+            "partial_credit": "本空为精确填空，仅接受语义等价答案；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与“收敛”相矛盾的内容"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填“收敛”或“convergence”（大小写不敏感）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 592,
+          "end_line": 602
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 594,
+            "end_line": 594
+          },
+          "题干": {
+            "start_line": 596,
+            "end_line": 596
+          },
+          "答案": {
+            "start_line": 598,
+            "end_line": 600
+          },
+          "解答": {
+            "start_line": 602,
+            "end_line": 602
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "收敛",
+              "convergence"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "9a9b07dc750c151857b817264653569007dc6d2ad6ddbe5e960da01a5e68deb7"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 173,
+      "prompt_tokens": 19157,
+      "total_tokens": 19330,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 341
+    }
+  }
+}

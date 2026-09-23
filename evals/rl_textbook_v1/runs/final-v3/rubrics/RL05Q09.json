@@ -1,0 +1,349 @@
+{
+  "id": "RL05Q09",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_42c47cc11077b004f67e",
+        "name": "步长",
+        "definition": "步长 α 过大可能让单个样本过度改变价值",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d03599df041cc9adc645",
+        "name": "奖励尺度",
+        "definition": "奖励尺度过大或未归一会放大 TD 误差",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_2cf2d6afc8699b9bd6d2",
+        "name": "终止处理",
+        "definition": "终止样本若没有屏蔽下一价值，会额外加入 γV(S') 项，可能高估也可能低估",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_f531e20b4df9e30dd83b",
+        "name": "探索",
+        "definition": "探索策略变化过快会让数据分布和目标同时变化",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_19b37c0e422d9e4345a8",
+        "name": "目标",
+        "definition": "Q-learning 的 max 目标可能在噪声下过估计",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_39b7fb34db202c894cc2",
+        "name": "估计噪声",
+        "definition": "随机奖励和稀疏奖励会让短期 TD 误差方差很高",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_dc1f4b363616e0eb06b5",
+        "name": "监控",
+        "definition": "应监控 TD 误差分布、价值范围、回报均值和不同种子曲线",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0d2e2fff01632649b5e5",
+        "name": "修正",
+        "definition": "修正可降低步长、裁剪奖励、检查终止逻辑、用 Double Q 或更稳定探索",
+        "source_mq_ids": [
+          "q_54293c22a7fb00da5659"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_54293c22a7fb00da5659",
+        "version": "532e203ddf47266021514652aaba893ad211cc97f6dc75284100c0ea743d1b44",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_54293c22a7fb00da5659",
+        "title": "RL05Q09",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "诊断 TD 学习曲线剧烈震荡。请按8个方面回答：步长、奖励尺度、终止处理、探索、目标、估计噪声、监控、修正。",
+        "reference_answer": "1. 步长 α 过大可能让单个样本过度改变价值。\n2. 奖励尺度过大或未归一会放大 TD 误差。\n3. 终止样本若没有屏蔽下一价值，会额外加入 γV(S') 项，可能高估也可能低估。\n4. 探索策略变化过快会让数据分布和目标同时变化。\n5. Q-learning 的 max 目标可能在噪声下过估计。\n6. 随机奖励和稀疏奖励会让短期 TD 误差方差很高。\n7. 应监控 TD 误差分布、价值范围、回报均值和不同种子曲线。\n8. 修正可降低步长、裁剪奖励、检查终止逻辑、用 Double Q 或更稳定探索。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL05Q09\n#### 题型\nshort_answer\n#### 题干\n诊断 TD 学习曲线剧烈震荡。请按8个方面回答：步长、奖励尺度、终止处理、探索、目标、估计噪声、监控、修正。\n#### 答案\n1. 步长 α 过大可能让单个样本过度改变价值。\n2. 奖励尺度过大或未归一会放大 TD 误差。\n3. 终止样本若没有屏蔽下一价值，会额外加入 γV(S') 项，可能高估也可能低估。\n4. 探索策略变化过快会让数据分布和目标同时变化。\n5. Q-learning 的 max 目标可能在噪声下过估计。\n6. 随机奖励和稀疏奖励会让短期 TD 误差方差很高。\n7. 应监控 TD 误差分布、价值范围、回报均值和不同种子曲线。\n8. 修正可降低步长、裁剪奖励、检查终止逻辑、用 Double Q 或更稳定探索。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_42c47cc11077b004f67e",
+          "pt_d03599df041cc9adc645",
+          "pt_2cf2d6afc8699b9bd6d2",
+          "pt_f531e20b4df9e30dd83b",
+          "pt_19b37c0e422d9e4345a8",
+          "pt_39b7fb34db202c894cc2",
+          "pt_dc1f4b363616e0eb06b5",
+          "pt_0d2e2fff01632649b5e5"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_42c47cc11077b004f67e",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "步长 α 过大可能让单个样本过度改变价值",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "步长 α 过大可能让单个样本过度改变价值"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_d03599df041cc9adc645",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "奖励尺度过大或未归一会放大 TD 误差",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "奖励尺度过大或未归一会放大 TD 误差"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_2cf2d6afc8699b9bd6d2",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "终止样本若没有屏蔽下一价值，会额外加入 γV(S') 项，可能高估也可能低估",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "终止样本若没有屏蔽下一价值，会额外加入 γV(S') 项，可能高估也可能低估"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_f531e20b4df9e30dd83b",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "探索策略变化过快会让数据分布和目标同时变化",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "探索策略变化过快会让数据分布和目标同时变化"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_19b37c0e422d9e4345a8",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "Q-learning 的 max 目标可能在噪声下过估计",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Q-learning 的 max 目标可能在噪声下过估计"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_39b7fb34db202c894cc2",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "随机奖励和稀疏奖励会让短期 TD 误差方差很高",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "随机奖励和稀疏奖励会让短期 TD 误差方差很高"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_dc1f4b363616e0eb06b5",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "应监控 TD 误差分布、价值范围、回报均值和不同种子曲线",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "应监控 TD 误差分布、价值范围、回报均值和不同种子曲线"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_0d2e2fff01632649b5e5",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "修正可降低步长、裁剪奖励、检查终止逻辑、用 Double Q 或更稳定探索",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "修正可降低步长、裁剪奖励、检查终止逻辑、用 Double Q 或更稳定探索"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1048,
+          "end_line": 1063
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1050,
+            "end_line": 1050
+          },
+          "题干": {
+            "start_line": 1052,
+            "end_line": 1052
+          },
+          "答案": {
+            "start_line": 1054,
+            "end_line": 1061
+          },
+          "解答": {
+            "start_line": 1063,
+            "end_line": 1063
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "46c24ccbcc04023c907e7a2786361b7ff4676f43c551fdb332db71d61b4f8b1b"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1290,
+      "prompt_tokens": 19289,
+      "total_tokens": 20579,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 473
+    }
+  }
+}

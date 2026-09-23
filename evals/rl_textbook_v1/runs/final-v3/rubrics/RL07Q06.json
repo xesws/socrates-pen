@@ -1,0 +1,114 @@
+{
+  "id": "RL07Q06",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_902add3471583515bcd3",
+        "name": "优势估计",
+        "definition": "用采样回报减去基线得到 advantage：G−V(s)=5−3=2",
+        "source_mq_ids": [
+          "q_d1972973b5e7b0159cda"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_d1972973b5e7b0159cda",
+        "version": "58a1a0a503638e20ef694cae3270914067b6e26349178ecb2fb6e5065f32425c",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_d1972973b5e7b0159cda",
+        "title": "RL07Q06",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "若采样回报 G=5，baseline V(s)=3，则 advantage 估计为 {{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"2\",\"2.0\"],\"numeric_value\":2.0,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "sampled advantage 可写成 G-V(s)=2。",
+        "raw_markdown": "### RL07Q06\n#### 题型\nfill_blank\n#### 题干\n若采样回报 G=5，baseline V(s)=3，则 advantage 估计为 {{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"2\",\"2.0\"],\"numeric_value\":2.0,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\nsampled advantage 可写成 G-V(s)=2。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_902add3471583515bcd3"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_902add3471583515bcd3",
+            "max_score": 1.0,
+            "description": "填入 advantage 估计值 2",
+            "partial_credit": "本项独立给分；数值等于 2（含 2.0）即得分，其他值为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾（非 2）"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 2 或 2.0"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 1445,
+          "end_line": 1455
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1447,
+            "end_line": 1447
+          },
+          "题干": {
+            "start_line": 1449,
+            "end_line": 1449
+          },
+          "答案": {
+            "start_line": 1451,
+            "end_line": 1453
+          },
+          "解答": {
+            "start_line": 1455,
+            "end_line": 1455
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "2",
+              "2.0"
+            ],
+            "numeric_value": 2.0,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "4447cd6727595f7c6a6d0bac1f6aa5085a006ae6c975a7a4437765d2407a34eb"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 152,
+      "prompt_tokens": 19180,
+      "total_tokens": 19332,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 364
+    }
+  }
+}

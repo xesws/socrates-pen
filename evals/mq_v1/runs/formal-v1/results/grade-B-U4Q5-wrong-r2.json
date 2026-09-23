@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q5-wrong-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q5",
+  "sample_id": "U4Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b7d0cd841ba8a4fb7466",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案声称边界输入代表所有可能输入，与“测试只能覆盖有限样例”的要求完全相反，未指出测试的有限性。",
+        "evidence_quote": "边界输入代表所有可能输入，因此边界测试通过就是完整正确性证明。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_adc81d9e1fc89121c932",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案认为边界测试通过即可证明完整正确性，未指出未测试输入仍可能触发错误，观点与要求相反。",
+        "evidence_quote": "边界输入代表所有可能输入，因此边界测试通过就是完整正确性证明。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 134,
+      "prompt_tokens": 455,
+      "total_tokens": 589,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 455
+    }
+  },
+  "score": 0.0
+}

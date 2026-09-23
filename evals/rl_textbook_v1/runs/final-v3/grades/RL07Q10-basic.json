@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q10-basic",
+  "case_id": "RL07Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_20f194b7d4629df11d04",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案明确使用只依赖状态的 baseline 来降低回报共同波动。",
+        "evidence_quote": "使用只依赖状态的 baseline 降低回报共同波动。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0c072a16233acb0c0862",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "答案说明用 advantage 替代原始回报，并突出动作相对好坏。",
+        "evidence_quote": "用 advantage 替代原始回报，突出动作相对好坏。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_3faabc88bae112c34e86",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及增大 batch 或并行采样。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_6ac86eee8c05a1140bbc",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 n-step 或 GAE。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_63ee48334ba7c35bad2e",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及对 advantage 做标准化。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f8b581d9dd0c3a3ef5e2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及熵正则。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a56d0aa8db2a6ddf72a9",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及梯度裁剪或策略变化约束。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_e19fbe9dfd3045985071",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及报告应包含的指标。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 464,
+      "prompt_tokens": 2214,
+      "total_tokens": 2678,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1830
+    }
+  },
+  "score": 0.2
+}

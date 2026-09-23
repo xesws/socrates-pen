@@ -1,0 +1,112 @@
+{
+  "id": "RL01Q05",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_8f1936fce12c4b4ea32a",
+        "name": "折扣回报计算",
+        "definition": "按 G_0=2+0.5×2+0.5^2×2 计算得 3.5",
+        "source_mq_ids": [
+          "q_b89463bd74a27af58320"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_b89463bd74a27af58320",
+        "version": "2372b03a66a0ff9697b6f6bb3dc3d7c79e234f6178fce853c167df8f6430bf2d",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_b89463bd74a27af58320",
+        "title": "RL01Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "若三步奖励都是 2，γ=0.5，则 G_0=2+0.5×2+0.5^2×2={{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"3.5\"],\"numeric_value\":3.5,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "计算为 2+1+0.5=3.5。",
+        "raw_markdown": "### RL01Q05\n#### 题型\nfill_blank\n#### 题干\n若三步奖励都是 2，γ=0.5，则 G_0=2+0.5×2+0.5^2×2={{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"3.5\"],\"numeric_value\":3.5,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n计算为 2+1+0.5=3.5。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_8f1936fce12c4b4ea32a"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_8f1936fce12c4b4ea32a",
+            "blank_id": "b1",
+            "max_score": 1.0,
+            "description": "填入 3.5（数值等价即可）",
+            "partial_credit": "精确填空，仅正确数值得分；缺失、错误或矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "3.5"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 133,
+          "end_line": 143
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 135,
+            "end_line": 135
+          },
+          "题干": {
+            "start_line": 137,
+            "end_line": 137
+          },
+          "答案": {
+            "start_line": 139,
+            "end_line": 141
+          },
+          "解答": {
+            "start_line": 143,
+            "end_line": 143
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "3.5"
+            ],
+            "numeric_value": 3.5,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "7f932809225e1dc847cc7428d9740658a6af6f726cf53536dd608a7d285b6f63"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 146,
+      "prompt_tokens": 19191,
+      "total_tokens": 19337,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 375
+    }
+  }
+}

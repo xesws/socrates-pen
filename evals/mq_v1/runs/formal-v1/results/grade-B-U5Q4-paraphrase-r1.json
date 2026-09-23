@@ -1,0 +1,61 @@
+{
+  "id": "grade-B-U5Q4-paraphrase-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q4",
+  "sample_id": "U5Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 1,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b429d3e3f43effcc5488",
+        "score": 0.25,
+        "max_score": 0.25,
+        "reason": "答案中“两列分别是二和七”结合图意可对应A柱数值为2，符合识别A=2的要求。",
+        "evidence_quote": "两列分别是二和七"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_26195fbd1fc3ba7632d6",
+        "score": 0.25,
+        "max_score": 0.25,
+        "reason": "答案中“两列分别是二和七”结合图意可对应B柱数值为7，符合识别B=7的要求。",
+        "evidence_quote": "两列分别是二和七"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_5c027cea27943cce0d7b",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确说明后者减前者得到五，即B−A=7−2=5，结果正确。",
+        "evidence_quote": "因此后者减前者得到五。"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 169,
+      "prompt_tokens": 666,
+      "total_tokens": 835,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 666
+    }
+  },
+  "score": 1.0
+}

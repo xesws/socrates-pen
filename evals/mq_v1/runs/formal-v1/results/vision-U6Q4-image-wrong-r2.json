@@ -1,0 +1,30 @@
+{
+  "id": "vision-U6Q4-image-wrong-r2",
+  "kind": "vision_grade",
+  "case_id": "U6Q4",
+  "split": "test",
+  "repeat": 2,
+  "with_image": true,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": true,
+    "score": 0,
+    "reason": "图中两列数值为A=3、B=9，算术平均数为(3+9)/2=6，且B列高于平均数。学生答案给出平均数12且称A高于平均数，两项均错误，因此得0分。",
+    "usage": {
+      "completion_tokens": 65,
+      "prompt_tokens": 371,
+      "total_tokens": 436,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 243
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": false,
+  "score": 0
+}

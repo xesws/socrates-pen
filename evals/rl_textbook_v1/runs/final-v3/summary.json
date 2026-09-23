@@ -1,0 +1,42 @@
+{
+  "campaign_calls": 189,
+  "campaign_tokens": 1923816,
+  "rubrics_expected": 80,
+  "rubrics_attempted": 80,
+  "rubrics_valid": 80,
+  "splits": {
+    "dev": {
+      "expected": 12,
+      "attempted": 12,
+      "valid": 12,
+      "mae": 0.0,
+      "within_10_points_fraction": 1.0,
+      "strictly_increasing": 2,
+      "sampled_questions": 2,
+      "wrong_credited": [],
+      "failures": []
+    },
+    "test": {
+      "expected": 84,
+      "attempted": 84,
+      "valid": 84,
+      "mae": 0.0011904761904761901,
+      "within_10_points_fraction": 1.0,
+      "strictly_increasing": 14,
+      "sampled_questions": 14,
+      "wrong_credited": [],
+      "failures": []
+    },
+    "all": {
+      "expected": 96,
+      "attempted": 96,
+      "valid": 96,
+      "mae": 0.0010416666666666664,
+      "within_10_points_fraction": 1.0,
+      "strictly_increasing": 16,
+      "sampled_questions": 16,
+      "wrong_credited": [],
+      "failures": []
+    }
+  }
+}

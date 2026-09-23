@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q10-paraphrase",
+  "case_id": "RL07Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_20f194b7d4629df11d04",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确使用只依赖状态的 baseline 来降低共同回报波动。",
+        "evidence_quote": "Use a baseline conditioned on the state rather than the chosen action to remove common return fluctuations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0c072a16233acb0c0862",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "将学习信号中心化为 advantage，反映动作相对质量。",
+        "evidence_quote": "Center the learning signal as an advantage so it reflects relative action quality.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_3faabc88bae112c34e86",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "增大 batch 或并行轨迹可降低采样噪声。",
+        "evidence_quote": "Larger batches or parallel trajectories reduce sampling noise.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_6ac86eee8c05a1140bbc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "多步估计或 GAE 允许偏差-方差折中。",
+        "evidence_quote": "Multi-step estimators or GAE allow a bias-variance tradeoff.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_63ee48334ba7c35bad2e",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "标准化 advantage 常改善数值尺度。",
+        "evidence_quote": "Standardizing advantages often improves numerical scaling.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_f8b581d9dd0c3a3ef5e2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "熵正则保持探索，避免因早期噪声过早确定。",
+        "evidence_quote": "Entropy regularization helps maintain exploration instead of becoming deterministic because of noisy early evidence.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a56d0aa8db2a6ddf72a9",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "梯度裁剪或约束策略变化可防止单次更新过大。",
+        "evidence_quote": "Clip gradients or constrain policy movement to avoid one excessive update.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_e19fbe9dfd3045985071",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "报告包含回报、熵、价值预测误差和 KL 或策略变化指标。",
+        "evidence_quote": "Report return, entropy, value prediction error and KL or another measure of policy change.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 571,
+      "prompt_tokens": 2379,
+      "total_tokens": 2950,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1995
+    }
+  },
+  "score": 1.0
+}

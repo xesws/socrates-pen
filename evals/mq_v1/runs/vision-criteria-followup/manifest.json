@@ -1,0 +1,6 @@
+{
+  "exploratory": true,
+  "reason": "Control output schema while withholding concrete reference answers; both arms use production criterion grader. Not a replacement of formal-v1.",
+  "script_sha256": "6a2374be4417ac28e53cbfb70b917df3ba820b01ea2952b6ab6071e6fe30fd23",
+  "dataset_sha256": "99f709ba654432998cb9b12b5cbc5201f5a7b2f6bcaea72f9e1ca6508ea47d14"
+}

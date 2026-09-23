@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U2Q5-paraphrase-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q5",
+  "sample_id": "U2Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_127736a2da302be05e8a",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "回答中的“先报输入错误”可理解为明确拒绝或抛出异常，符合满分标准。",
+        "evidence_quote": "先报输入错误"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0cc779d056b4ab5aca3f",
+        "score": 0.25,
+        "max_score": 0.5,
+        "reason": "回答仅说明“避免分母为零”，即提及除以零，但未说明空列表长度为零，因此得0.25分。",
+        "evidence_quote": "避免分母为零"
+      }
+    ],
+    "score": 0.75,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 105,
+      "prompt_tokens": 470,
+      "total_tokens": 575,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 470
+    }
+  },
+  "score": 0.75
+}

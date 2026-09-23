@@ -1,0 +1,112 @@
+{
+  "id": "RL01Q07",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_e98a3eddb2485fe3ecda",
+        "name": "折扣因子范围",
+        "definition": "折扣因子 γ 满足 0≤γ<1，即小于 1",
+        "source_mq_ids": [
+          "q_a9457b045053b8353904"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_a9457b045053b8353904",
+        "version": "8f32151c7bf9c0f8a5310bf5434ec8151af5f360ab6421b2dbcf3f1dc775a98d",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_a9457b045053b8353904",
+        "title": "RL01Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在奖励有界的继续任务中，为了让无限期奖励和常常收敛，折扣因子通常取 0≤γ{{b1}}1。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"<\",\"小于\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "在奖励有界且 γ 小于 1 时，远期奖励权重几何衰减，无限折扣和通常收敛。",
+        "raw_markdown": "### RL01Q07\n#### 题型\nfill_blank\n#### 题干\n在奖励有界的继续任务中，为了让无限期奖励和常常收敛，折扣因子通常取 0≤γ{{b1}}1。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"<\",\"小于\"],\"case_sensitive\":false}}\n```\n#### 解答\n在奖励有界且 γ 小于 1 时，远期奖励权重几何衰减，无限折扣和通常收敛。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_e98a3eddb2485fe3ecda"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_e98a3eddb2485fe3ecda",
+            "max_score": 1.0,
+            "description": "填入表示“小于”的符号或词语，使 0≤γ<1 成立",
+            "blank_id": "b1",
+            "partial_credit": "仅一个空，正确得满分，否则0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与“小于”矛盾的内容（如 >、≥、=）"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 < 或“小于”等表示严格小于的等价表达"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 155,
+          "end_line": 165
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 157,
+            "end_line": 157
+          },
+          "题干": {
+            "start_line": 159,
+            "end_line": 159
+          },
+          "答案": {
+            "start_line": 161,
+            "end_line": 163
+          },
+          "解答": {
+            "start_line": 165,
+            "end_line": 165
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "<",
+              "小于"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "b63610cb70298df54f1d1a8f46218c4bf9f942bde62684f845e01edf8b449456"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 164,
+      "prompt_tokens": 19171,
+      "total_tokens": 19335,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 355
+    }
+  }
+}

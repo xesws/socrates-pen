@@ -1,0 +1,28 @@
+{
+  "id": "vision-U5Q4-blind-wrong-r0",
+  "kind": "vision_grade",
+  "case_id": "U5Q4",
+  "split": "test",
+  "repeat": 0,
+  "with_image": false,
+  "answer_kind": "wrong",
+  "ok": true,
+  "expected": 0,
+  "response": {
+    "assessable": false,
+    "usage": {
+      "completion_tokens": 7,
+      "prompt_tokens": 186,
+      "total_tokens": 193,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 186
+    },
+    "model": "deepseek-flash"
+  },
+  "abstained": true,
+  "score": null
+}

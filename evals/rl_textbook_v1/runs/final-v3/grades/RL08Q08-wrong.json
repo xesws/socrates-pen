@@ -1,0 +1,119 @@
+{
+  "id": "RL08Q08-wrong",
+  "case_id": "RL08Q08",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_f4a565ca5e0588f85b29",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及训练与评估环境、种子或关卡切分的隔离。",
+        "evidence_quote": "评估直接使用调参时挑出的最好训练轨迹，不固定策略、不用多个种子；只报最高奖励，隐藏失败和安全事件，不需区间、基线或消融。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_1ab1ad66fed7e3b9e6e0",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "明确说“不固定策略”，与评估时固定策略模式相矛盾。",
+        "evidence_quote": "不固定策略",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_a72f596c7a6e531f5183",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确说“不用多个种子”，与使用多个随机种子报告均值和波动相矛盾。",
+        "evidence_quote": "不用多个种子",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8606db132e04757aa193",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "只报最高奖励，未包含成功率、长度、约束违反和资源消耗等指标。",
+        "evidence_quote": "只报最高奖励",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_11e030085f54f0aeaea0",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "明确说“不需区间”，与给出标准误、置信区间或 bootstrap 区间相矛盾。",
+        "evidence_quote": "不需区间",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_1e1f4f646b8af74afd7c",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "明确说“不需……基线”，与和合理基线比较相矛盾。",
+        "evidence_quote": "不需区间、基线或消融",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_a27a38711f1657393148",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确说“不需……消融”，与做关键组件消融相矛盾。",
+        "evidence_quote": "不需区间、基线或消融",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b382d6b4f31c32f63db9",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "明确说“隐藏失败和安全事件”，与记录失败案例、异常轨迹和分布外场景表现相矛盾。",
+        "evidence_quote": "隐藏失败和安全事件",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 581,
+      "prompt_tokens": 2264,
+      "total_tokens": 2845,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1880
+    }
+  },
+  "score": 0.0
+}

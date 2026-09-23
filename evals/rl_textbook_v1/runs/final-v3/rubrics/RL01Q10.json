@@ -1,0 +1,349 @@
+{
+  "id": "RL01Q10",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "call_run": "baseline-v1",
+  "part": {
+    "points": [
+      {
+        "id": "pt_f4022ea19fa3b29de749",
+        "name": "episodic 定义",
+        "definition": "episodic 任务由一条条有终点的 episode 构成",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b0118295d5b921fafdce",
+        "name": "continuing 定义",
+        "definition": "continuing 任务没有自然终点，交互可无限持续",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ebaa975c2bacfbc66e31",
+        "name": "episodic 目标/回报",
+        "definition": "episodic 常最大化每条 episode 的总回报或折扣回报",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1e8fe9ce3f1e9f4e31f1",
+        "name": "continuing 目标/回报",
+        "definition": "continuing 常使用折扣回报或长期平均奖励避免无穷目标",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_01479fa903d15b5fcb77",
+        "name": "episodic 例子",
+        "definition": "棋局、闯关和一次订单配送通常是 episodic",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_a2850963dbbabf663c96",
+        "name": "continuing 例子",
+        "definition": "恒温控制、服务器调度和持续推荐更接近 continuing",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0d413312b9d8081f1c10",
+        "name": "评价方式",
+        "definition": "评价 episodic 可看每局回报、成功率和长度；continuing 可看稳态平均表现",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_cf0e380b4ea46bd53857",
+        "name": "建模选择",
+        "definition": "建模选择应跟任务时间结构一致，否则会扭曲策略偏好",
+        "source_mq_ids": [
+          "q_dce24d39283d874eb9f3"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_dce24d39283d874eb9f3",
+        "version": "10e3dad2cfb3a552447f0bad57a7c18cde3403ce3ef2179aabc8c09b25bf0c06",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_dce24d39283d874eb9f3",
+        "title": "RL01Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "比较 episodic 与 continuing 任务。请按8个方面回答：定义、目标、回报、终止、例子、折扣、评价、建模选择。",
+        "reference_answer": "1. episodic 任务由一条条有终点的 episode 构成。\n2. continuing 任务没有自然终点，交互可无限持续。\n3. episodic 常最大化每条 episode 的总回报或折扣回报。\n4. continuing 常使用折扣回报或长期平均奖励避免无穷目标。\n5. 棋局、闯关和一次订单配送通常是 episodic。\n6. 恒温控制、服务器调度和持续推荐更接近 continuing。\n7. 评价 episodic 可看每局回报、成功率和长度；continuing 可看稳态平均表现。\n8. 建模选择应跟任务时间结构一致，否则会扭曲策略偏好。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL01Q10\n#### 题型\nshort_answer\n#### 题干\n比较 episodic 与 continuing 任务。请按8个方面回答：定义、目标、回报、终止、例子、折扣、评价、建模选择。\n#### 答案\n1. episodic 任务由一条条有终点的 episode 构成。\n2. continuing 任务没有自然终点，交互可无限持续。\n3. episodic 常最大化每条 episode 的总回报或折扣回报。\n4. continuing 常使用折扣回报或长期平均奖励避免无穷目标。\n5. 棋局、闯关和一次订单配送通常是 episodic。\n6. 恒温控制、服务器调度和持续推荐更接近 continuing。\n7. 评价 episodic 可看每局回报、成功率和长度；continuing 可看稳态平均表现。\n8. 建模选择应跟任务时间结构一致，否则会扭曲策略偏好。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_f4022ea19fa3b29de749",
+          "pt_b0118295d5b921fafdce",
+          "pt_ebaa975c2bacfbc66e31",
+          "pt_1e8fe9ce3f1e9f4e31f1",
+          "pt_01479fa903d15b5fcb77",
+          "pt_a2850963dbbabf663c96",
+          "pt_0d413312b9d8081f1c10",
+          "pt_cf0e380b4ea46bd53857"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_f4022ea19fa3b29de749",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "episodic 任务由一条条有终点的 episode 构成",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "episodic 任务由一条条有终点的 episode 构成"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_b0118295d5b921fafdce",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "continuing 任务没有自然终点，交互可无限持续",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "continuing 任务没有自然终点，交互可无限持续"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_ebaa975c2bacfbc66e31",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "episodic 常最大化每条 episode 的总回报或折扣回报",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "episodic 常最大化每条 episode 的总回报或折扣回报"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_1e8fe9ce3f1e9f4e31f1",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "continuing 常使用折扣回报或长期平均奖励避免无穷目标",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "continuing 常使用折扣回报或长期平均奖励避免无穷目标"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_01479fa903d15b5fcb77",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "棋局、闯关和一次订单配送通常是 episodic",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "棋局、闯关和一次订单配送通常是 episodic"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_a2850963dbbabf663c96",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "恒温控制、服务器调度和持续推荐更接近 continuing",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "恒温控制、服务器调度和持续推荐更接近 continuing"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_0d413312b9d8081f1c10",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "评价 episodic 可看每局回报、成功率和长度；continuing 可看稳态平均表现",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "评价 episodic 可看每局回报、成功率和长度；continuing 可看稳态平均表现"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_cf0e380b4ea46bd53857",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "建模选择应跟任务时间结构一致，否则会扭曲策略偏好",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "建模选择应跟任务时间结构一致，否则会扭曲策略偏好"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 203,
+          "end_line": 218
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 205,
+            "end_line": 205
+          },
+          "题干": {
+            "start_line": 207,
+            "end_line": 207
+          },
+          "答案": {
+            "start_line": 209,
+            "end_line": 216
+          },
+          "解答": {
+            "start_line": 218,
+            "end_line": 218
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "7004571be90d23eb332e673cc1a35107cc2bcfb25a44c708acf910a09eae659c"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1295,
+      "prompt_tokens": 19271,
+      "total_tokens": 20566,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 455
+    }
+  }
+}

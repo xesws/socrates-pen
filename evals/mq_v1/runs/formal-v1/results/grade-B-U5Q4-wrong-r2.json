@@ -1,0 +1,61 @@
+{
+  "id": "grade-B-U5Q4-wrong-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q4",
+  "sample_id": "U5Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_adac371618b03b4d4b24",
+        "score": 0.0,
+        "max_score": 0.25,
+        "reason": "学习者将A识别为7，而图中A柱上方标注为2，识别错误。",
+        "evidence_quote": "A=7，B=2；B−A=9。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_7b31f3d766222c2d15ba",
+        "score": 0.0,
+        "max_score": 0.25,
+        "reason": "学习者将B识别为2，而图中B柱上方标注为7，识别错误。",
+        "evidence_quote": "A=7，B=2；B−A=9。"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_5c027cea27943cce0d7b",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者计算B−A=9，但正确应为7−2=5，计算错误。",
+        "evidence_quote": "A=7，B=2；B−A=9。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 163,
+      "prompt_tokens": 662,
+      "total_tokens": 825,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 662
+    }
+  },
+  "score": 0.0
+}

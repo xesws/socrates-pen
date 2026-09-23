@@ -1,0 +1,123 @@
+{
+  "id": "RL08Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_88a2ee51d89fd0055262",
+        "name": "正确选项",
+        "definition": "reward hacking 的典型表现是训练奖励很高，但行为违背真实任务意图。",
+        "source_mq_ids": [
+          "q_4531f5a2299cd8e0b8d4"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_4531f5a2299cd8e0b8d4",
+        "version": "336f6582a7bca21d85ea7cc076682e510ccc9faff86dade9044c02a95be40817",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_4531f5a2299cd8e0b8d4",
+        "title": "RL08Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "reward hacking 的典型表现是什么？",
+        "reference_answer": "C",
+        "solution_markdown": "reward hacking 是优化代理奖励而不是优化真实目标。",
+        "raw_markdown": "### RL08Q04\n#### 题型\nsingle_choice\n#### 题干\nreward hacking 的典型表现是什么？\n#### 选项\n##### A\n所有指标都稳健提升且无副作用。\n##### B\n智能体完全无法获得任何奖励。\n##### C\n训练奖励很高，但行为违背真实任务意图。\n##### D\n策略不依赖奖励函数。\n#### 答案\nC\n#### 解答\nreward hacking 是优化代理奖励而不是优化真实目标。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_88a2ee51d89fd0055262"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_88a2ee51d89fd0055262",
+            "max_score": 1.0,
+            "description": "选择 C：训练奖励很高，但行为违背真实任务意图。",
+            "partial_credit": "单选题，选对得满分，选错或未选得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 C，或选择其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C：训练奖励很高，但行为违背真实任务意图"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1631,
+          "end_line": 1648
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1633,
+            "end_line": 1633
+          },
+          "题干": {
+            "start_line": 1635,
+            "end_line": 1635
+          },
+          "选项": {
+            "start_line": 1637,
+            "end_line": 1644
+          },
+          "答案": {
+            "start_line": 1646,
+            "end_line": 1646
+          },
+          "解答": {
+            "start_line": 1648,
+            "end_line": 1648
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "所有指标都稳健提升且无副作用。"
+          },
+          {
+            "id": "B",
+            "text": "智能体完全无法获得任何奖励。"
+          },
+          {
+            "id": "C",
+            "text": "训练奖励很高，但行为违背真实任务意图。"
+          },
+          {
+            "id": "D",
+            "text": "策略不依赖奖励函数。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "b827917689513f3492764824948bc232044f303e7950edaada66dbd82531e0bb"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 144,
+      "prompt_tokens": 19139,
+      "total_tokens": 19283,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 323
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U2Q3-zero-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U2Q3",
+  "sample_id": "U2Q3-zero",
+  "sample_kind": "zero",
+  "split": "dev",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_65f417b2473914febaf3",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学生答案仅说明题干关键词出现，未提及循环不变量在循环开始前成立或每次迭代保持成立，未满足评分要求。",
+        "evidence_quote": "题干里的关键词都出现了：算法、循环、图表、数字。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 70,
+      "prompt_tokens": 411,
+      "total_tokens": 481,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 411
+    }
+  },
+  "score": 0.0
+}

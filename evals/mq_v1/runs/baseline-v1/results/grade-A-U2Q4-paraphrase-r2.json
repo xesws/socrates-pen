@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q4-paraphrase-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q4-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中的“先证明初始状态满足条件”准确表达了初始化保证首次迭代前成立这一要点，符合评分标准。",
+        "evidence_quote": "先证明初始状态满足条件"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q4-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中的“再证明迭代不会破坏条件”准确表达了保持保证每次迭代后仍成立这一要点，符合评分标准。",
+        "evidence_quote": "再证明迭代不会破坏条件"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 115,
+      "prompt_tokens": 375,
+      "total_tokens": 490,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 247
+    }
+  },
+  "score": 1.0
+}

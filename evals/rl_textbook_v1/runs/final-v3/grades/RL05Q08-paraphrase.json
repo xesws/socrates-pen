@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q08-paraphrase",
+  "case_id": "RL05Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_c7d83dcb17c2597a6e89",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出 SARSA 目标为 r + gamma Q(后继状态, 实际下一动作)。",
+        "evidence_quote": "SARSA uses r plus gamma Q at the successor state and the actually sampled next action.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2f473220fb835c01426f",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出 Q-learning 目标为 r + gamma 乘后继动作最大值。",
+        "evidence_quote": "Q-learning instead uses r plus gamma times the largest successor action value.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d65a8fd6415a6b91f651",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 SARSA 的下一动作来自行为策略。",
+        "evidence_quote": "The SARSA next action is drawn from the behavior policy.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_da2eb2942bd06b4c1a24",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 Q-learning 即使行为策略探索也评估贪心目标。",
+        "evidence_quote": "Q-learning evaluates a greedy target even when behavior explores.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_04b55c897c9f98d5b267",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 SARSA 反映探索后果并可能偏好更谨慎路线。",
+        "evidence_quote": "SARSA therefore reflects the consequences of exploratory moves and can prefer a more cautious route.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_486a5a25537d43b6652d",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "列出表格收敛需要充分访问、合适学习率和有限折扣设定。",
+        "evidence_quote": "Tabular guarantees need adequate visitation, appropriate learning rates and the stated finite discounted setting.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_5b189aabeaad5ac074c7",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明函数近似下两者都可能不稳定，Q-learning 的 off-policy 自举是额外风险。",
+        "evidence_quote": "With approximation either method can be unstable, with off-policy bootstrapping an additional concern for Q-learning.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c468a4eb1266238afefc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明探索风险重要时 SARSA 有用，追求贪心控制时 Q-learning 常用。",
+        "evidence_quote": "SARSA is useful when exploration risk matters; Q-learning is common for learning greedy control.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 622,
+      "prompt_tokens": 2512,
+      "total_tokens": 3134,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2128
+    }
+  },
+  "score": 1.0
+}

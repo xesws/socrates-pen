@@ -1,0 +1,27 @@
+{
+  "scope": "Student uploads answer images for short answers/fills; never image choices",
+  "split": {
+    "D1": "dev",
+    "T1": "test"
+  },
+  "new_calls_ceiling": 19,
+  "campaign_calls_ceiling": 800,
+  "acceptance": {
+    "max_normalized_mae": 0.1,
+    "image_text_score_difference": 0.1,
+    "unreadable_must_abstain": true,
+    "wrong_answer_score": 0
+  },
+  "limitations": "Synthetic screenshots, not handwritten samples; authored gold, no external double annotation; one held-out interview",
+  "files": {
+    "answers.json": "8dc2539204233518acc694c0bbbcd7b032c0bf94045d2e2de2e7075d9d965f73",
+    "assets/advanced.png": "95c957a6f4e6f0669f6e32b6991c424338fbc7a82f4a293e841ba6140d4e7a7a",
+    "assets/basic.png": "df9e36d5058ca537a9bf93d724ba99240854dd1528a392988ce84ddcbc79e230",
+    "assets/complete.png": "cd04bd1ccce8b4045c817416bb5acd76adfb1695909d25f20a9c23a378999840",
+    "assets/fill.png": "1656359fa1588599a31685db7eefbabfa6898039e6b41451a751e09fd462b20a",
+    "assets/unreadable.png": "64174ba13efe4c734f92f8d5b02fa9086760879227927a40d7cb4cf9fc31f3bb",
+    "assets/wrong.png": "0e8174776d5d791c8e7baeb895ab0c832fefc60435e997a53c7ab26a6be8c348",
+    "book.md": "52565d0f801f6dbe8e9cf79265d0f9e1f3d670f8b27f493bea12fa0dcc823292",
+    "gold.json": "7ca24bd9cacaf2e5b828e4c2fd1cd70176f45376487cf39d980b049599f88ac8"
+  }
+}

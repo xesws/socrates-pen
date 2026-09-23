@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q10-paraphrase",
+  "case_id": "RL06Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_cdf8e51a2aa6e35d6db5",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确指出噪声下最大化会选到向上误差（高估动作）。",
+        "evidence_quote": "When action-value estimates are noisy, maximizing them tends to select an upward error.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c83981a0388e967a2848",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出 Q-learning 目标中的后继动作最大值是选择偏差进入更新的位置。",
+        "evidence_quote": "The successor-action maximum in the Q-learning target is where this selection enters the update.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_5d5513434c1aa8353b64",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明即使动作价值相同，最大噪声实现也会被选中。",
+        "evidence_quote": "Even equally valuable actions can show this effect because the largest noise realization wins.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_39b9f82ccc96ef780799",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "列出 Q 值虚高、偏向坏动作和训练不稳定等后果。",
+        "evidence_quote": "Inflated Q estimates can promote bad actions and unstable training.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_8a5260453f8d94d4eb15",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "正确描述 Double DQN 用在线网络选动作、目标网络评价。",
+        "evidence_quote": "Double DQN selects the successor action with the online network and evaluates it using the target network.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_dfbb32f5e32872c19e0a",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出延迟目标网络只减慢目标移动，不能消除选择偏差。",
+        "evidence_quote": "A delayed target alone slows target movement but does not remove selection bias.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_8e8fc26dd9a18500bc8e",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "提到比较预测 Q 与经验回报，并检查动作集中异常。",
+        "evidence_quote": "Compare predicted Q with empirical returns and inspect suspicious action concentration.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_8143114fc45991365a10",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 Double DQN 缓解问题，但仍需探索、稳定优化和数据覆盖。",
+        "evidence_quote": "Double DQN mitigates this issue; exploration, stable optimization and data coverage still matter.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 610,
+      "prompt_tokens": 2526,
+      "total_tokens": 3136,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2142
+    }
+  },
+  "score": 1.0
+}

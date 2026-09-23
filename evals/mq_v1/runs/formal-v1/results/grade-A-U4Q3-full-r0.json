@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q3-full-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q3-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中“除了返回值以外”准确表达了变化发生在返回值之外这一要点，符合评分标准。",
+        "evidence_quote": "除了返回值以外"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q3-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案中“还改变外部可观察状态”准确表达了改变外部可观察状态这一要点，符合评分标准。",
+        "evidence_quote": "还改变外部可观察状态"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 139,
+      "prompt_tokens": 419,
+      "total_tokens": 558,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 419
+    }
+  },
+  "score": 1.0
+}

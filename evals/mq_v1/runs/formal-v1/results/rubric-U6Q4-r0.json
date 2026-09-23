@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U6Q4-r0",
+  "kind": "rubric",
+  "case_id": "U6Q4",
+  "split": "test",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_522610b99068bfdaea42",
+      "name": "算术平均数计算",
+      "definition": "根据图中两列数值3和9，计算其算术平均数(3+9)/2=6",
+      "source_mq_ids": [
+        "q_d50dc8db400b92f440a7"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_93b0ef411c94caf80a87",
+      "name": "高于平均数的列判断",
+      "definition": "比较各列数值与平均数6的大小，判断哪一列高于平均数",
+      "source_mq_ids": [
+        "q_d50dc8db400b92f440a7"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_522610b99068bfdaea42",
+      "max_score": 0.5,
+      "description": "给出两列数值的算术平均数为6",
+      "partial_credit": "答出6得0.5分；答错或未答得0分；若同时给出其他矛盾数值则不得分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_93b0ef411c94caf80a87",
+      "max_score": 0.5,
+      "description": "指出B列高于平均数",
+      "partial_credit": "答出B高于平均数得0.5分；答错或未答得0分；若同时声称A也高于平均数则不得分"
+    }
+  ]
+}

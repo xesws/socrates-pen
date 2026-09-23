@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U2Q3-r2",
+  "kind": "rubric",
+  "case_id": "U2Q3",
+  "split": "dev",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_65f417b2473914febaf3",
+      "name": "循环不变量的成立条件",
+      "definition": "说明循环不变量在循环开始前成立，并在每次迭代后保持成立。",
+      "source_mq_ids": [
+        "q_9a72b91249f5bc3e0ee4"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_65f417b2473914febaf3",
+      "max_score": 1.0,
+      "description": "空白 b1 应填写：循环不变量在循环开始前成立，并且每次迭代都保持成立（或等价表述，如初始化时成立且迭代后仍成立）。",
+      "partial_credit": "若仅说明循环开始前成立或仅说明每次迭代保持成立，得0.5分；若两者均未说明、表述错误或包含矛盾内容（如仅在循环结束后成立），得0分。",
+      "blank_id": "b1"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "id": "RL07Q07",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_0a295086c97ab813dd84",
+        "name": "熵奖励",
+        "definition": "在策略损失中加入熵（entropy）奖励以鼓励更高随机性和探索",
+        "source_mq_ids": [
+          "q_b6457a7bc48f99bd0ae1"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_b6457a7bc48f99bd0ae1",
+        "version": "57d4dce253885178551064b8be9fec5507e70cb4c7d800afe85bee6a2bad7fcd",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_b6457a7bc48f99bd0ae1",
+        "title": "RL07Q07",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在策略损失中加入 {{b1}} 奖励，常用于鼓励更高随机性和探索。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"熵\",\"entropy\"],\"case_sensitive\":false}}\n```",
+        "solution_markdown": "熵越高表示策略分布越分散，能抑制过早确定化。",
+        "raw_markdown": "### RL07Q07\n#### 题型\nfill_blank\n#### 题干\n在策略损失中加入 {{b1}} 奖励，常用于鼓励更高随机性和探索。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"熵\",\"entropy\"],\"case_sensitive\":false}}\n```\n#### 解答\n熵越高表示策略分布越分散，能抑制过早确定化。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_0a295086c97ab813dd84"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_0a295086c97ab813dd84",
+            "max_score": 1.0,
+            "description": "填入“熵”或“entropy”，表示用于鼓励随机性与探索的奖励项",
+            "partial_credit": "本项独立给分；语义等价即可；缺失、错误或自相矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未填、填错或填入与熵无关的内容"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入“熵”或“entropy”（大小写不敏感）"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 1456,
+          "end_line": 1466
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1458,
+            "end_line": 1458
+          },
+          "题干": {
+            "start_line": 1460,
+            "end_line": 1460
+          },
+          "答案": {
+            "start_line": 1462,
+            "end_line": 1464
+          },
+          "解答": {
+            "start_line": 1466,
+            "end_line": 1466
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "熵",
+              "entropy"
+            ],
+            "case_sensitive": false,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "4109de5c453d297868fb0a7dbb6c579dfadbe3983aeb6efab6c58b6eccf7d180"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 160,
+      "prompt_tokens": 19150,
+      "total_tokens": 19310,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 334
+    }
+  }
+}

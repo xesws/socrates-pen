@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U6Q4-partial-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U6Q4",
+  "sample_id": "U6Q4-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_522610b99068bfdaea42",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生答案明确给出平均数为6，符合评分标准中“答出6得0.5分”的要求，且未给出矛盾数值。",
+        "evidence_quote": "平均数为 6。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_93b0ef411c94caf80a87",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生答案未提及B列高于平均数，也未提及A列，属于未答，根据评分标准得0分。",
+        "evidence_quote": "平均数为 6。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 147,
+      "prompt_tokens": 561,
+      "total_tokens": 708,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 561
+    }
+  },
+  "score": 0.5
+}

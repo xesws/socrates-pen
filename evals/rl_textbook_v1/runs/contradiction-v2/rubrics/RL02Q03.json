@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_5e7b2f5608d513273ae1",
+        "name": "Bellman 最优方程中 max 的含义",
+        "definition": "max_{a'} 表示在下一状态 s' 上对所有可选动作 a' 取动作价值函数的最大值，即选择使 Q(s',a') 最大的动作，而仍对下一状态分布取期望。",
+        "source_mq_ids": [
+          "q_b50e122748d76ebc53a9"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_b50e122748d76ebc53a9",
+        "version": "5f7f5b356e9658eaec13dc0e41d16093d8c9c731941086f3f709a24dfca175c3",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_b50e122748d76ebc53a9",
+        "title": "RL02Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "在 Q_* 的 Bellman 最优方程中，max_{a'} 的含义是什么？",
+        "reference_answer": "A",
+        "solution_markdown": "最优动作价值对下一状态的动作选择取最大，但仍需对下一状态分布取期望。",
+        "raw_markdown": "### RL02Q03\n#### 题型\nsingle_choice\n#### 题干\n在 Q_* 的 Bellman 最优方程中，max_{a'} 的含义是什么？\n#### 选项\n##### A\n到达下一状态后选择估计最优的下一动作。\n##### B\n从所有随机下一状态中挑一个最有利状态。\n##### C\n把奖励函数改成最大值 1。\n##### D\n删除环境转移概率。\n#### 答案\nA\n#### 解答\n最优动作价值对下一状态的动作选择取最大，但仍需对下一状态分布取期望。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_5e7b2f5608d513273ae1"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_5e7b2f5608d513273ae1",
+            "max_score": 1.0,
+            "description": "选择 A：到达下一状态后选择估计最优的下一动作。",
+            "partial_credit": "单选题，选对得满分，选错或未答得 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 B、C、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 A"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 315,
+          "end_line": 332
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 317,
+            "end_line": 317
+          },
+          "题干": {
+            "start_line": 319,
+            "end_line": 319
+          },
+          "选项": {
+            "start_line": 321,
+            "end_line": 328
+          },
+          "答案": {
+            "start_line": 330,
+            "end_line": 330
+          },
+          "解答": {
+            "start_line": 332,
+            "end_line": 332
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "到达下一状态后选择估计最优的下一动作。"
+          },
+          {
+            "id": "B",
+            "text": "从所有随机下一状态中挑一个最有利状态。"
+          },
+          {
+            "id": "C",
+            "text": "把奖励函数改成最大值 1。"
+          },
+          {
+            "id": "D",
+            "text": "删除环境转移概率。"
+          }
+        ],
+        "correct_choice_id": "A",
+        "rubric_version": "f2c442f1072258f9de4e3d0a02681e8d063fb0644935e77f2d6891e4972c8e34"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 173,
+      "prompt_tokens": 19162,
+      "total_tokens": 19335,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 346
+    }
+  }
+}

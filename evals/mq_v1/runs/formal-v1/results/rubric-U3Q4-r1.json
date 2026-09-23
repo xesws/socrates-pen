@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U3Q4-r1",
+  "kind": "rubric",
+  "case_id": "U3Q4",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_42d7c2577bb493ff12f5",
+      "name": "顶层列表对象共享与复制",
+      "definition": "区分 b=a 时两个变量指向同一个顶层列表对象，而 b=a.copy() 时 b 指向一个新的顶层列表对象",
+      "source_mq_ids": [
+        "q_a34369b7248a920f3a27"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_42d7c2577bb493ff12f5",
+      "max_score": 1.0,
+      "description": "说明 b=a 使 b 与 a 共享同一个顶层列表对象，而 b=a.copy() 创建新的顶层列表对象并赋给 b",
+      "partial_credit": "完整说明共享与新建两种差别得1分；只说明其中一种差别得0.5分；未说明或表述错误（如认为 b=a 也创建新列表）得0分"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U1Q2-r2",
+  "kind": "rubric",
+  "case_id": "U1Q2",
+  "split": "dev",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_72d05022a89d472227ec",
+      "name": "布尔表达式求值",
+      "definition": "判断 Python 表达式 not (True and False) 的最终布尔值",
+      "source_mq_ids": [
+        "q_022eb8d6bec447bb7b95"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_72d05022a89d472227ec",
+      "max_score": 1.0,
+      "description": "选择正确选项 B（True）；若选择 A（False）或其他错误选项则不得分。",
+      "partial_credit": "选择 B 得 1 分；选择 A 或其他选项得 0 分。",
+      "blank_id": null
+    }
+  ]
+}

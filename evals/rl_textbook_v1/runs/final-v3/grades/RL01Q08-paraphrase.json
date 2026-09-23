@@ -1,0 +1,123 @@
+{
+  "id": "RL01Q08-paraphrase",
+  "case_id": "RL01Q08",
+  "kind": "paraphrase",
+  "split": "dev",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_8dd24f9a41f59d222897",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明智能体是控制机器人移动、抓取和放置的决策程序。",
+        "evidence_quote": "The agent is the robot control software deciding where to drive and how to pick and place.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8fb538edd1fab015022a",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "环境包含货架、货物、订单队列、障碍物、工人和机器人动力学。",
+        "evidence_quote": "The world contains shelves, stock, order queues, obstacles, workers and robot dynamics.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_2e318a03edf9da86f9dd",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "状态输入包含位置、目标货物、夹爪状态、局部地图、订单进度和安全观测。",
+        "evidence_quote": "Its decision input includes pose, target item, gripper status, a local map, order progress and safety observations.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_bbd9923f06fdff00a60f",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "动作包括移动、转向、抓取、放置、等待和路径选择。",
+        "evidence_quote": "Available controls include moving, turning, picking, placing, waiting and choosing a route.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_abb16f9107de5632d544",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "奖励鼓励正确订单、安全无碰撞、高效行驶，而非仅速度。",
+        "evidence_quote": "Reward successful correct orders, safe collision-free operation and efficient travel, not speed alone.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_08a197c4e3afe469873d",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "终止条件包括完成、超时、严重碰撞或电量耗尽。",
+        "evidence_quote": "End a run on completion, timeout, serious collision or exhausted battery.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_d64cc33c8be964817ac5",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指出遮挡的人和缺失未完成订单信息会使观测不满足马尔可夫性。",
+        "evidence_quote": "Occluded people and missing unfinished-order information can make the observation insufficiently Markov.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_218ae1e01b5ac401de46",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "评估指标包括成功率、时间、碰撞、行驶距离和陌生布局表现。",
+        "evidence_quote": "Measure success, time, collisions, travel distance and performance on unfamiliar layouts.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 635,
+      "prompt_tokens": 2609,
+      "total_tokens": 3244,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 2609
+    }
+  },
+  "score": 1.0
+}

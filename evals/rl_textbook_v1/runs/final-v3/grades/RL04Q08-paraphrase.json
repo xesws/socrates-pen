@@ -1,0 +1,122 @@
+{
+  "id": "RL04Q08-paraphrase",
+  "case_id": "RL04Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_d7ec98238a541eb3501c",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确初始化动作价值表、回报统计和 epsilon-greedy 策略。",
+        "evidence_quote": "Initialize an action-value table, return statistics and an epsilon-greedy policy.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_537e270fef133a840d52",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明用当前 epsilon-greedy 策略生成完整 episode。",
+        "evidence_quote": "Roll out full episodes with the current such policy.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_af45f9ed7cc6f28258b1",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明从 episode 末尾向前累积折扣回报。",
+        "evidence_quote": "Accumulate discounted returns backwards from the end.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_97f4abc74c36f9d0c17d",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "要求选择 first-visit 或 every-visit 并保持一致。",
+        "evidence_quote": "Decide on first-visit or every-visit treatment and use it consistently.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_9af9557202fd4c911109",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明用样本均值或增量等价更新被访问状态动作对的 Q。",
+        "evidence_quote": "Update observed state-action values with the sample mean or its incremental equivalent.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_494be1dfcd925c876b11",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明正 epsilon 保证非贪心动作有非零概率。",
+        "evidence_quote": "Positive epsilon leaves a nonzero chance for nongreedy actions.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_4fd1ef89778b5ee72b56",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明根据更新后的 Q 重新计算 epsilon-greedy 策略。",
+        "evidence_quote": "Recompute the epsilon-greedy policy from the new Q estimates.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_b38e9480ed09fa5ecccf",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明用停止预算或性能稳定性规则以及探索调度作为停止条件。",
+        "evidence_quote": "Specify a stopping budget or performance-stability rule and the exploration schedule.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 582,
+      "prompt_tokens": 2410,
+      "total_tokens": 2992,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2026
+    }
+  },
+  "score": 1.0
+}

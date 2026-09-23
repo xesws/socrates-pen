@@ -1,0 +1,348 @@
+{
+  "id": "RL03Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_1501079a3aa546101689",
+        "name": "固定点",
+        "definition": "Bellman 方程把目标价值定义为算子的固定点",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_9ec80cc48c9102c9e8b2",
+        "name": "压缩",
+        "definition": "折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d2047fa3436cae8cc50e",
+        "name": "折扣",
+        "definition": "γ 越小压缩越强，γ 接近 1 时收敛更慢",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8d3d6ddea2bab60095c5",
+        "name": "有限性",
+        "definition": "经典保证通常针对有限状态动作空间",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_eefda56ec86984b3e8a9",
+        "name": "更新覆盖",
+        "definition": "异步更新也需要足够覆盖相关状态动作",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_6b3cf4b9a9d234329ec6",
+        "name": "模型准确",
+        "definition": "若模型错误，算法收敛到错误模型下的解",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_e766ddaa8a3ab1f56c70",
+        "name": "近似误差",
+        "definition": "函数近似或截断评价会引入额外近似误差",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_ecfc145603040d770661",
+        "name": "边界",
+        "definition": "未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证",
+        "source_mq_ids": [
+          "q_4fa8e89cc118e252b1fd"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_4fa8e89cc118e252b1fd",
+        "version": "6acdac32e5172fa9026ae9b940f5bcbd333c836da4cb728fc0e84a468127ae0c",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_4fa8e89cc118e252b1fd",
+        "title": "RL03Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "解释动态规划为什么能收敛，以及这个结论的边界。请按8个方面回答：固定点、压缩、折扣、有限性、更新覆盖、模型准确、近似误差、边界。",
+        "reference_answer": "1. Bellman 方程把目标价值定义为算子的固定点。\n2. 折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异。\n3. γ 越小压缩越强，γ 接近 1 时收敛更慢。\n4. 经典保证通常针对有限状态动作空间。\n5. 异步更新也需要足够覆盖相关状态动作。\n6. 若模型错误，算法收敛到错误模型下的解。\n7. 函数近似或截断评价会引入额外近似误差。\n8. 未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL03Q10\n#### 题型\nshort_answer\n#### 题干\n解释动态规划为什么能收敛，以及这个结论的边界。请按8个方面回答：固定点、压缩、折扣、有限性、更新覆盖、模型准确、近似误差、边界。\n#### 答案\n1. Bellman 方程把目标价值定义为算子的固定点。\n2. 折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异。\n3. γ 越小压缩越强，γ 接近 1 时收敛更慢。\n4. 经典保证通常针对有限状态动作空间。\n5. 异步更新也需要足够覆盖相关状态动作。\n6. 若模型错误，算法收敛到错误模型下的解。\n7. 函数近似或截断评价会引入额外近似误差。\n8. 未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_1501079a3aa546101689",
+          "pt_9ec80cc48c9102c9e8b2",
+          "pt_d2047fa3436cae8cc50e",
+          "pt_8d3d6ddea2bab60095c5",
+          "pt_eefda56ec86984b3e8a9",
+          "pt_6b3cf4b9a9d234329ec6",
+          "pt_e766ddaa8a3ab1f56c70",
+          "pt_ecfc145603040d770661"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_1501079a3aa546101689",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "Bellman 方程把目标价值定义为算子的固定点",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Bellman 方程把目标价值定义为算子的固定点"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_9ec80cc48c9102c9e8b2",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "折扣 Bellman 算子在 γ<1 时会缩小价值函数之间的最大差异"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_d2047fa3436cae8cc50e",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "γ 越小压缩越强，γ 接近 1 时收敛更慢",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "γ 越小压缩越强，γ 接近 1 时收敛更慢"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_8d3d6ddea2bab60095c5",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "经典保证通常针对有限状态动作空间",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "经典保证通常针对有限状态动作空间"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_eefda56ec86984b3e8a9",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "异步更新也需要足够覆盖相关状态动作",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "异步更新也需要足够覆盖相关状态动作"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_6b3cf4b9a9d234329ec6",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "若模型错误，算法收敛到错误模型下的解",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "若模型错误，算法收敛到错误模型下的解"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_e766ddaa8a3ab1f56c70",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "函数近似或截断评价会引入额外近似误差",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "函数近似或截断评价会引入额外近似误差"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_ecfc145603040d770661",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "未折扣继续任务、非平稳环境或不满足条件时不能直接套用该保证"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 635,
+          "end_line": 650
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 637,
+            "end_line": 637
+          },
+          "题干": {
+            "start_line": 639,
+            "end_line": 639
+          },
+          "答案": {
+            "start_line": 641,
+            "end_line": 648
+          },
+          "解答": {
+            "start_line": 650,
+            "end_line": 650
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "be495c9c2a607c99b10bf9d6e01fd90112f9032fd734fb26507326cdcbad7534"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1243,
+      "prompt_tokens": 19278,
+      "total_tokens": 20521,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 462
+    }
+  }
+}

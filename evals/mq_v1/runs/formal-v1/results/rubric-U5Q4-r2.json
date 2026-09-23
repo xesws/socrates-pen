@@ -1,0 +1,60 @@
+{
+  "id": "rubric-U5Q4-r2",
+  "kind": "rubric",
+  "case_id": "U5Q4",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_adac371618b03b4d4b24",
+      "name": "读取A值",
+      "definition": "从图中识别柱A上方标注的数值",
+      "source_mq_ids": [
+        "q_3e5d5245f4b5cf46abc6"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_7b31f3d766222c2d15ba",
+      "name": "读取B值",
+      "definition": "从图中识别柱B上方标注的数值",
+      "source_mq_ids": [
+        "q_3e5d5245f4b5cf46abc6"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_5c027cea27943cce0d7b",
+      "name": "计算B−A",
+      "definition": "用B的数值减去A的数值得到差值",
+      "source_mq_ids": [
+        "q_3e5d5245f4b5cf46abc6"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_adac371618b03b4d4b24",
+      "max_score": 0.25,
+      "description": "识别图中A柱上方标注的数值为2",
+      "partial_credit": "答出A=2得0.25分；答错或未答得0分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_7b31f3d766222c2d15ba",
+      "max_score": 0.25,
+      "description": "识别图中B柱上方标注的数值为7",
+      "partial_credit": "答出B=7得0.25分；答错或未答得0分"
+    },
+    {
+      "id": "c3",
+      "point_id": "pt_5c027cea27943cce0d7b",
+      "max_score": 0.5,
+      "description": "计算B−A，即7−2，结果为5",
+      "partial_credit": "答出B−A=5得0.5分；答错或未答得0分"
+    }
+  ]
+}

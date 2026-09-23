@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q4-zero-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-zero",
+  "sample_kind": "zero",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q4-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及二分查找中候选规模如何变化，未表达“每步候选规模约减半”这一要点。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q4-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答未提及迭代次数与 log n 的关系，未表达“迭代次数随 log n 增长”这一要点。",
+        "evidence_quote": "我喜欢咖啡，这道题不重要。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 110,
+      "prompt_tokens": 378,
+      "total_tokens": 488,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 378
+    }
+  },
+  "score": 0.0
+}

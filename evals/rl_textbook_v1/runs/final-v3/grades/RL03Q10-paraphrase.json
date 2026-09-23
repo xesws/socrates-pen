@@ -1,0 +1,122 @@
+{
+  "id": "RL03Q10-paraphrase",
+  "case_id": "RL03Q10",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1501079a3aa546101689",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明目标价值满足 Bellman 不动点方程。",
+        "evidence_quote": "The desired value solves a Bellman fixed-point equation.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_9ec80cc48c9102c9e8b2",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明折扣小于1时 Bellman 映射在 sup 范数下收缩。",
+        "evidence_quote": "For discount below one the Bellman map shrinks sup-norm distances by at most gamma.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_d2047fa3436cae8cc50e",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明折扣接近1会削弱收缩并减慢收敛。",
+        "evidence_quote": "A discount closer to one weakens this contraction and usually slows convergence.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_8d3d6ddea2bab60095c5",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明经典表格结论使用有限状态和动作集。",
+        "evidence_quote": "The classical tabular statement uses finite state and action sets.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_eefda56ec86984b3e8a9",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明异步方案仍需足够覆盖相关更新。",
+        "evidence_quote": "Asynchronous schemes still need sufficient coverage of the relevant updates.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_6b3cf4b9a9d234329ec6",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明模型不准确时收敛到该不准确模型的解。",
+        "evidence_quote": "An inaccurate transition or reward model yields a solution to that inaccurate model.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_e766ddaa8a3ab1f56c70",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明价值近似或策略评估截断会引入额外误差。",
+        "evidence_quote": "Approximation of the value or truncation of policy evaluation adds further error.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_ecfc145603040d770661",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明不能直接套用于未折扣继续任务或变化环境。",
+        "evidence_quote": "Do not apply this guarantee unchanged to undiscounted continuing tasks or a changing environment.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 575,
+      "prompt_tokens": 2413,
+      "total_tokens": 2988,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2029
+    }
+  },
+  "score": 1.0
+}

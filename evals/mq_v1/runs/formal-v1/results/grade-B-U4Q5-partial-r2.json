@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q5-partial-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q5",
+  "sample_id": "U4Q5-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 2,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b7d0cd841ba8a4fb7466",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确指出测试只检查了选出的有限样例，符合“测试只覆盖有限/选定样例”的要求。",
+        "evidence_quote": "测试只检查了选出的有限样例。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_adc81d9e1fc89121c932",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "答案未提及未测试输入仍可能触发错误，也未说明不能证明程序对所有输入都正确，因此不得分。",
+        "evidence_quote": "测试只检查了选出的有限样例。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 114,
+      "prompt_tokens": 439,
+      "total_tokens": 553,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 439
+    }
+  },
+  "score": 0.5
+}

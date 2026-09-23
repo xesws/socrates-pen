@@ -1,0 +1,348 @@
+{
+  "id": "RL06Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_cdf8e51a2aa6e35d6db5",
+        "name": "来源",
+        "definition": "动作价值估计含噪声时，max 更容易选择被高估的动作。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c83981a0388e967a2848",
+        "name": "max",
+        "definition": "Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_5d5513434c1aa8353b64",
+        "name": "噪声",
+        "definition": "即使真实动作价值相同，噪声最大者也会被系统性选中。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_39b9f82ccc96ef780799",
+        "name": "后果",
+        "definition": "后果包括 Q 值虚高、策略偏向错误动作和训练不稳定。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8a5260453f8d94d4eb15",
+        "name": "Double DQN",
+        "definition": "Double DQN 用在线网络选动作，用目标网络评价该动作。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_dfbb32f5e32872c19e0a",
+        "name": "目标网络",
+        "definition": "目标网络本身主要减慢目标变化，不能单独消除 max 偏差。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8e8fc26dd9a18500bc8e",
+        "name": "评估",
+        "definition": "评估时应比较预测 Q 与实际回报，并观察动作选择是否异常集中。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8143114fc45991365a10",
+        "name": "限制",
+        "definition": "Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。",
+        "source_mq_ids": [
+          "q_fb80dbf8df75d936735b"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_fb80dbf8df75d936735b",
+        "version": "eeea339ecad62dcb5cac0e6d5e3b8ebf90e825d1e41d580f44ee74e5e8af3b24",
+        "source_unit_id": "unit_b4d47e9e5151d557",
+        "source_mq_id": "q_fb80dbf8df75d936735b",
+        "title": "RL06Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "解释 DQN 中过估计偏差及缓解办法。请按8个方面回答：来源、max、噪声、后果、Double DQN、目标网络、评估、限制。",
+        "reference_answer": "1. 动作价值估计含噪声时，max 更容易选择被高估的动作。\n2. Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。\n3. 即使真实动作价值相同，噪声最大者也会被系统性选中。\n4. 后果包括 Q 值虚高、策略偏向错误动作和训练不稳定。\n5. Double DQN 用在线网络选动作，用目标网络评价该动作。\n6. 目标网络本身主要减慢目标变化，不能单独消除 max 偏差。\n7. 评估时应比较预测 Q 与实际回报，并观察动作选择是否异常集中。\n8. Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL06Q10\n#### 题型\nshort_answer\n#### 题干\n解释 DQN 中过估计偏差及缓解办法。请按8个方面回答：来源、max、噪声、后果、Double DQN、目标网络、评估、限制。\n#### 答案\n1. 动作价值估计含噪声时，max 更容易选择被高估的动作。\n2. Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。\n3. 即使真实动作价值相同，噪声最大者也会被系统性选中。\n4. 后果包括 Q 值虚高、策略偏向错误动作和训练不稳定。\n5. Double DQN 用在线网络选动作，用目标网络评价该动作。\n6. 目标网络本身主要减慢目标变化，不能单独消除 max 偏差。\n7. 评估时应比较预测 Q 与实际回报，并观察动作选择是否异常集中。\n8. Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_cdf8e51a2aa6e35d6db5",
+          "pt_c83981a0388e967a2848",
+          "pt_5d5513434c1aa8353b64",
+          "pt_39b9f82ccc96ef780799",
+          "pt_8a5260453f8d94d4eb15",
+          "pt_dfbb32f5e32872c19e0a",
+          "pt_8e8fc26dd9a18500bc8e",
+          "pt_8143114fc45991365a10"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_cdf8e51a2aa6e35d6db5",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "动作价值估计含噪声时，max 更容易选择被高估的动作。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "动作价值估计含噪声时，max 更容易选择被高估的动作。"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_c83981a0388e967a2848",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_5d5513434c1aa8353b64",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "即使真实动作价值相同，噪声最大者也会被系统性选中。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "即使真实动作价值相同，噪声最大者也会被系统性选中。"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_39b9f82ccc96ef780799",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "后果包括 Q 值虚高、策略偏向错误动作和训练不稳定。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "后果包括 Q 值虚高、策略偏向错误动作和训练不稳定。"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_8a5260453f8d94d4eb15",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "Double DQN 用在线网络选动作，用目标网络评价该动作。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "Double DQN 用在线网络选动作，用目标网络评价该动作。"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_dfbb32f5e32872c19e0a",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "目标网络本身主要减慢目标变化，不能单独消除 max 偏差。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "目标网络本身主要减慢目标变化，不能单独消除 max 偏差。"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_8e8fc26dd9a18500bc8e",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "评估时应比较预测 Q 与实际回报，并观察动作选择是否异常集中。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "评估时应比较预测 Q 与实际回报，并观察动作选择是否异常集中。"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_8143114fc45991365a10",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1283,
+          "end_line": 1298
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1285,
+            "end_line": 1285
+          },
+          "题干": {
+            "start_line": 1287,
+            "end_line": 1287
+          },
+          "答案": {
+            "start_line": 1289,
+            "end_line": 1296
+          },
+          "解答": {
+            "start_line": 1298,
+            "end_line": 1298
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "75cdf4c53baf33938de72eec238965405e82c5325d9717bc59086ad900dacf46"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1896,
+      "prompt_tokens": 19301,
+      "total_tokens": 21197,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 485
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U2Q5-r2",
+  "kind": "rubric",
+  "case_id": "U2Q5",
+  "split": "dev",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_9d0a624f911899f2b984",
+      "name": "处理方式",
+      "definition": "对空列表输入应采取的明确处理措施",
+      "source_mq_ids": [
+        "q_ec467743732e2f484c1f"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_69a4990e65c338ab4946",
+      "name": "原因说明",
+      "definition": "解释为何不能直接对空列表求平均",
+      "source_mq_ids": [
+        "q_ec467743732e2f484c1f"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_9d0a624f911899f2b984",
+      "max_score": 0.5,
+      "description": "应说明对空列表要明确拒绝或抛出异常（如报错、返回错误提示等），不能静默返回结果。",
+      "partial_credit": "提到拒绝或抛出异常得满分；仅说“不能求平均”但未给出明确处理方式得0.25；未提及任何处理方式或给出错误处理（如返回0、返回空）得0。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_69a4990e65c338ab4946",
+      "max_score": 0.5,
+      "description": "应说明原因是空列表长度为0，直接求平均会导致除以零。",
+      "partial_credit": "明确提到长度为零导致除以零得满分；只提到长度为0但未联系除以零得0.25；未提及原因或原因错误得0。"
+    }
+  ]
+}

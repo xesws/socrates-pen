@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q4-paraphrase-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q4-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案明确说明搜索空间不断除以二，准确表达了每步候选规模约减半的要点。",
+        "evidence_quote": "搜索空间不断除以二"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q4-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案指出除到一个元素大约需要以二为底的对数次，准确表达了迭代次数随 log n 增长。",
+        "evidence_quote": "除到一个元素大约需要以二为底的对数次"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 111,
+      "prompt_tokens": 400,
+      "total_tokens": 511,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 400
+    }
+  },
+  "score": 1.0
+}

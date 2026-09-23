@@ -1,0 +1,349 @@
+{
+  "id": "RL02Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_679c38bd802ba25c1d02",
+        "name": "当前观测",
+        "definition": "列出日志中当前时刻可见的观测字段",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_10a74ee82a60ec017b81",
+        "name": "隐藏变量",
+        "definition": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_092c6bc38c76263d79d3",
+        "name": "转移预测",
+        "definition": "判断给定当前字段和动作后，下一观测分布是否仍依赖更早历史",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_8a205c9e8501621dc0c4",
+        "name": "奖励预测",
+        "definition": "判断给定当前字段和动作后，奖励分布是否仍依赖更早历史",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d59205017bc477ddfb8f",
+        "name": "历史依赖",
+        "definition": "若需要过去点击串或累计疲劳度才能预测未来，当前字段不是马尔可夫状态",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_9f179517dc594d737a89",
+        "name": "补充状态",
+        "definition": "可把必要历史摘要、时间特征或信念状态补入状态",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_11120f508c48c888faf0",
+        "name": "验证",
+        "definition": "验证可比较含历史模型与无历史模型的预测误差和策略表现",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_d34e2e61f8a476dccd05",
+        "name": "后果",
+        "definition": "状态不充分可能使 Bellman 目标有偏，也可能让学到的策略在部署中不稳定",
+        "source_mq_ids": [
+          "q_083ce8b1b4e9b30eb68f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_083ce8b1b4e9b30eb68f",
+        "version": "8bf1b5491cf463b4e943e11cbe1d2fbbd792da0ef9767216296f47c05244a224",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_083ce8b1b4e9b30eb68f",
+        "title": "RL02Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "判断一份用户日志是否足以作为 MDP 状态。请按8个方面回答：当前观测、隐藏变量、转移预测、奖励预测、历史依赖、补充状态、验证、后果。",
+        "reference_answer": "1. 先列出日志中当前时刻可见的观测字段。\n2. 检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。\n3. 判断给定当前字段和动作后，下一观测分布是否仍依赖更早历史。\n4. 判断给定当前字段和动作后，奖励分布是否仍依赖更早历史。\n5. 若需要过去点击串或累计疲劳度才能预测未来，当前字段不是马尔可夫状态。\n6. 可把必要历史摘要、时间特征或信念状态补入状态。\n7. 验证可比较含历史模型与无历史模型的预测误差和策略表现。\n8. 状态不充分可能使 Bellman 目标有偏，也可能让学到的策略在部署中不稳定。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL02Q10\n#### 题型\nshort_answer\n#### 题干\n判断一份用户日志是否足以作为 MDP 状态。请按8个方面回答：当前观测、隐藏变量、转移预测、奖励预测、历史依赖、补充状态、验证、后果。\n#### 答案\n1. 先列出日志中当前时刻可见的观测字段。\n2. 检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量。\n3. 判断给定当前字段和动作后，下一观测分布是否仍依赖更早历史。\n4. 判断给定当前字段和动作后，奖励分布是否仍依赖更早历史。\n5. 若需要过去点击串或累计疲劳度才能预测未来，当前字段不是马尔可夫状态。\n6. 可把必要历史摘要、时间特征或信念状态补入状态。\n7. 验证可比较含历史模型与无历史模型的预测误差和策略表现。\n8. 状态不充分可能使 Bellman 目标有偏，也可能让学到的策略在部署中不稳定。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_679c38bd802ba25c1d02",
+          "pt_10a74ee82a60ec017b81",
+          "pt_092c6bc38c76263d79d3",
+          "pt_8a205c9e8501621dc0c4",
+          "pt_d59205017bc477ddfb8f",
+          "pt_9f179517dc594d737a89",
+          "pt_11120f508c48c888faf0",
+          "pt_d34e2e61f8a476dccd05"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_679c38bd802ba25c1d02",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "列出日志中当前时刻可见的观测字段",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "列出日志中当前时刻可见的观测字段"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_10a74ee82a60ec017b81",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "检查是否存在库存、用户意图、设备延迟等影响未来但未记录的隐藏变量"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_092c6bc38c76263d79d3",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "判断给定当前字段和动作后，下一观测分布是否仍依赖更早历史",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "判断给定当前字段和动作后，下一观测分布是否仍依赖更早历史"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_8a205c9e8501621dc0c4",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "判断给定当前字段和动作后，奖励分布是否仍依赖更早历史",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "判断给定当前字段和动作后，奖励分布是否仍依赖更早历史"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_d59205017bc477ddfb8f",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "若需要过去点击串或累计疲劳度才能预测未来，当前字段不是马尔可夫状态",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "若需要过去点击串或累计疲劳度才能预测未来，当前字段不是马尔可夫状态"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_9f179517dc594d737a89",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "可把必要历史摘要、时间特征或信念状态补入状态",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "可把必要历史摘要、时间特征或信念状态补入状态"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_11120f508c48c888faf0",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "验证可比较含历史模型与无历史模型的预测误差和策略表现",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "验证可比较含历史模型与无历史模型的预测误差和策略表现"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_d34e2e61f8a476dccd05",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "状态不充分可能使 Bellman 目标有偏，也可能让学到的策略在部署中不稳定",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "状态不充分可能使 Bellman 目标有偏，也可能让学到的策略在部署中不稳定"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 421,
+          "end_line": 436
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 423,
+            "end_line": 423
+          },
+          "题干": {
+            "start_line": 425,
+            "end_line": 425
+          },
+          "答案": {
+            "start_line": 427,
+            "end_line": 434
+          },
+          "解答": {
+            "start_line": 436,
+            "end_line": 436
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "c5143900e6b1074208c508b9fac070fb2f45bd0a1c7ea593248d95f2633819a5"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1903,
+      "prompt_tokens": 19308,
+      "total_tokens": 21211,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 492
+    }
+  }
+}

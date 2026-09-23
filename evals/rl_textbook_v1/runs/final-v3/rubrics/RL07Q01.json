@@ -1,0 +1,123 @@
+{
+  "id": "RL07Q01",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_3da678c2988b4f9c8fdc",
+        "name": "正确选项",
+        "definition": "选择 C：指出如何改变参数以提高或降低已采样动作的概率。",
+        "source_mq_ids": [
+          "q_58ad7860d9f542e63a67"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_58ad7860d9f542e63a67",
+        "version": "479456f9bfce8bcc98490ea1bf202f222e2da7a2ecafcb77b70c2176fe000d3f",
+        "source_unit_id": "unit_3b61cccb7009032b",
+        "source_mq_id": "q_58ad7860d9f542e63a67",
+        "title": "RL07Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "REINFORCE 更新中 ∇θ log πθ(A_t|S_t) 的作用是什么？",
+        "reference_answer": "C",
+        "solution_markdown": "log 概率梯度是对采样动作概率的可微调整方向。",
+        "raw_markdown": "### RL07Q01\n#### 题型\nsingle_choice\n#### 题干\nREINFORCE 更新中 ∇θ log πθ(A_t|S_t) 的作用是什么？\n#### 选项\n##### A\n直接给出环境转移概率。\n##### B\n保证奖励没有方差。\n##### C\n指出如何改变参数以提高或降低已采样动作的概率。\n##### D\n把连续动作离散化。\n#### 答案\nC\n#### 解答\nlog 概率梯度是对采样动作概率的可微调整方向。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_3da678c2988b4f9c8fdc"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_3da678c2988b4f9c8fdc",
+            "max_score": 1.0,
+            "description": "选择 C：指出如何改变参数以提高或降低已采样动作的概率。",
+            "partial_credit": "单选，选对得满分，选错或未选得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1362,
+          "end_line": 1379
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1364,
+            "end_line": 1364
+          },
+          "题干": {
+            "start_line": 1366,
+            "end_line": 1366
+          },
+          "选项": {
+            "start_line": 1368,
+            "end_line": 1375
+          },
+          "答案": {
+            "start_line": 1377,
+            "end_line": 1377
+          },
+          "解答": {
+            "start_line": 1379,
+            "end_line": 1379
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "直接给出环境转移概率。"
+          },
+          {
+            "id": "B",
+            "text": "保证奖励没有方差。"
+          },
+          {
+            "id": "C",
+            "text": "指出如何改变参数以提高或降低已采样动作的概率。"
+          },
+          {
+            "id": "D",
+            "text": "把连续动作离散化。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "3e918a5c547b1b38929b86b1f1b8aedbf8827e60f36795a02892b9abddfe1e26"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 133,
+      "prompt_tokens": 19149,
+      "total_tokens": 19282,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 333
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "id": "vision-U5Q5-blind-solve-r0",
+  "attempt": 0,
+  "signature": "aaa9c7f0ac0461fcb90d895b270c96177ba9b8ac91a088610a0b2e4ff37c8e27",
+  "started_at": "2026-09-23T01:07:17.742134+00:00",
+  "requested_model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com",
+  "ok": true,
+  "retryable": false,
+  "parsed": {
+    "status": "insufficient_evidence",
+    "usage": {
+      "completion_tokens": 8,
+      "prompt_tokens": 105,
+      "total_tokens": 113,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 105
+    },
+    "model": "deepseek-flash"
+  },
+  "elapsed_seconds": 0.85,
+  "request": {
+    "model": "deepseek-flash",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Solve the question using the actual attached image. If the image is unavailable, do not guess; return {\"status\":\"insufficient_evidence\"}. Otherwise return JSON {\"A\":number,\"B\":number,\"difference\":number}.\n\nInterface language: zh.\nReturn exactly one JSON object. Do not call tools."
+      },
+      {
+        "role": "user",
+        "content": "{\"payload\": {\"choices\": [], \"question\": \"读图给出 A、B 的数值，并计算 B−A。\\n\\n![图](assets/v04.png)\"}}"
+      }
+    ],
+    "stream": false,
+    "extra_body": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "max_tokens": 2048,
+    "temperature": 0
+  },
+  "response": {
+    "id": "c539720b-f458-4bc8-9737-2bcea5acb6d5",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "{\"status\":\"insufficient_evidence\"}",
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": null
+        }
+      }
+    ],
+    "created": 1790125637,
+    "model": "deepseek-flash",
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+    "usage": {
+      "completion_tokens": 8,
+      "prompt_tokens": 105,
+      "total_tokens": 113,
+      "completion_tokens_details": null,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 105
+    }
+  },
+  "usage": {
+    "calls": 1,
+    "completion_tokens": 8,
+    "prompt_tokens": 105,
+    "total_tokens": 113,
+    "prompt_tokens_details": {
+      "calls": 1,
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 105
+  },
+  "charged_tokens": 113,
+  "usage_known": true
+}

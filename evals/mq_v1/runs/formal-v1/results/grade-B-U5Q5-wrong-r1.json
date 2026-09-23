@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q5-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1e89828c7bb83244f9be",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生给出的 A=2、B=7 与正确答案 A=7、B=2 完全相反，A 和 B 均错误，因此得 0 分。",
+        "evidence_quote": "A=2，B=7"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_f84ab61235c00f1a38fc",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生计算 B−A=9，而正确结果应为 2−7=-5，结果错误，因此得 0 分。",
+        "evidence_quote": "B−A=9"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 125,
+      "prompt_tokens": 623,
+      "total_tokens": 748,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 623
+    }
+  },
+  "score": 0.0
+}

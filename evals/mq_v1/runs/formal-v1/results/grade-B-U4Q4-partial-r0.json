@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q4-partial-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_2204fef8ec109730c328",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者明确指出每一步将候选数量减半，符合“每次比较将剩余候选规模约减半”的要求。",
+        "evidence_quote": "每一步把候选数量减半。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_34cd7e43f6bf3c33518b",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者未提及比较次数约为log2(n)或次数随log n增长，仅说明规模减半，未涉及次数增长方式。",
+        "evidence_quote": "每一步把候选数量减半。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 114,
+      "prompt_tokens": 441,
+      "total_tokens": 555,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 441
+    }
+  },
+  "score": 0.5
+}

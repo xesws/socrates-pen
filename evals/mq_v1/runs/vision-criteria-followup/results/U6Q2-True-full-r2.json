@@ -1,0 +1,11 @@
+{
+  "id": "U6Q2-True-full-r2",
+  "case_id": "U6Q2",
+  "with_image": true,
+  "answer_kind": "full",
+  "repeat": 2,
+  "expected": 1,
+  "ok": false,
+  "error": "semantic grader returned no criteria array",
+  "abstained": true
+}

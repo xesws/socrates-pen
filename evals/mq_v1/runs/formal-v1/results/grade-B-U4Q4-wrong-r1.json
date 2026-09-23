@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q4-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_b9a29aadbc8a95639c89",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答称“每次仅排除一个元素”，这与“每次比较将剩余候选规模约减半”完全相反，未指出规模减半，因此得0分。",
+        "evidence_quote": "每次仅排除一个元素"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_cf39975a28133fef985c",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答称“二分查找需要 n 的平方次”，既未给出 log2(n) 或对数增长，且结论错误，因此得0分。",
+        "evidence_quote": "二分查找需要 n 的平方次"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 129,
+      "prompt_tokens": 448,
+      "total_tokens": 577,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 448
+    }
+  },
+  "score": 0.0
+}

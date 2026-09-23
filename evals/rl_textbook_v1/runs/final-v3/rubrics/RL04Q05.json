@@ -1,0 +1,114 @@
+{
+  "id": "RL04Q05",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_bad3bd704af2ae1ea7e5",
+        "name": "样本均值",
+        "definition": "三个回报 2、4、6 的算术平均值为 4",
+        "source_mq_ids": [
+          "q_96dc8054f16bbdce08d1"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_96dc8054f16bbdce08d1",
+        "version": "564ea6946c6da4cb5fecbd36d65700695c2d66c2509ed6013a762334e50e0733",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_96dc8054f16bbdce08d1",
+        "title": "RL04Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "三个 episode 观察到的回报为 2、4、6，则样本均值为 {{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"4\",\"4.0\"],\"numeric_value\":4.0,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "算术平均为 (2+4+6)/3=4。",
+        "raw_markdown": "### RL04Q05\n#### 题型\nfill_blank\n#### 题干\n三个 episode 观察到的回报为 2、4、6，则样本均值为 {{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"4\",\"4.0\"],\"numeric_value\":4.0,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n算术平均为 (2+4+6)/3=4。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_bad3bd704af2ae1ea7e5"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_bad3bd704af2ae1ea7e5",
+            "max_score": 1.0,
+            "description": "填入 4（或等值 4.0）",
+            "partial_credit": "本项独立给分；数值等于 4 即得分，否则为 0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或与 4 矛盾"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 4 或 4.0"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 783,
+          "end_line": 793
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 785,
+            "end_line": 785
+          },
+          "题干": {
+            "start_line": 787,
+            "end_line": 787
+          },
+          "答案": {
+            "start_line": 789,
+            "end_line": 791
+          },
+          "解答": {
+            "start_line": 793,
+            "end_line": 793
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "4",
+              "4.0"
+            ],
+            "numeric_value": 4.0,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "bd18066310858f3a0066f0f0d4c2931baa806c11a5f0b7956629ed69c6108d23"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 145,
+      "prompt_tokens": 19181,
+      "total_tokens": 19326,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 365
+    }
+  }
+}

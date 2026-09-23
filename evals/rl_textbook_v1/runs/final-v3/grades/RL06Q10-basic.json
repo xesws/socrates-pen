@@ -1,0 +1,122 @@
+{
+  "id": "RL06Q10-basic",
+  "case_id": "RL06Q10",
+  "kind": "basic",
+  "split": "test",
+  "expected": 0.2,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_cdf8e51a2aa6e35d6db5",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明动作价值估计含噪声时，max 更容易选择被高估的动作。",
+        "evidence_quote": "动作价值估计含噪声时，max 更容易选择被高估的动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_c83981a0388e967a2848",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "指出 Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。",
+        "evidence_quote": "Q-learning 目标中的 max_a Q(s',a) 是过估计的重要来源。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_5d5513434c1aa8353b64",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明即使真实动作价值相同，噪声最大者也会被系统性选中。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_39b9f82ccc96ef780799",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及 Q 值虚高、策略偏向错误动作或训练不稳定等后果。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_8a5260453f8d94d4eb15",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明 Double DQN 用在线网络选动作、用目标网络评价该动作。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_dfbb32f5e32872c19e0a",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明目标网络主要减慢目标变化，不能单独消除 max 偏差。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_8e8fc26dd9a18500bc8e",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及评估时比较预测 Q 与实际回报或观察动作选择是否异常集中。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_8143114fc45991365a10",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明 Double DQN 只能缓解过估计，仍需足够探索、稳定优化和分布覆盖。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.2,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "basic",
+      "label": "基础"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 402,
+      "prompt_tokens": 2349,
+      "total_tokens": 2751,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1965
+    }
+  },
+  "score": 0.2
+}

@@ -1,0 +1,112 @@
+{
+  "id": "RL03Q05",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_a651a16ad8cc3dae5896",
+        "name": "计算结果",
+        "definition": "正确计算 max(0.2+0.9×4, 1+0.9×2) 的值，即 3.8",
+        "source_mq_ids": [
+          "q_23d060301179e9e940bc"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_23d060301179e9e940bc",
+        "version": "c4df4d2ca50b2739df15a2a9b1b6a8fc0bc0662e04ad243c2f9849b601b25cef",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_23d060301179e9e940bc",
+        "title": "RL03Q05",
+        "type": "fill_blank",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "确定转移下，一次最优备份为 max(0.2+0.9×4, 1+0.9×2)，结果是 {{b1}}。",
+        "reference_answer": "```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"3.8\"],\"numeric_value\":3.8,\"numeric_tolerance\":1e-06}}\n```",
+        "solution_markdown": "两个动作值分别为 3.8 和 2.8，因此取 3.8。",
+        "raw_markdown": "### RL03Q05\n#### 题型\nfill_blank\n#### 题干\n确定转移下，一次最优备份为 max(0.2+0.9×4, 1+0.9×2)，结果是 {{b1}}。\n#### 答案\n```json\n{\"b1\":{\"grading\":\"exact\",\"answers\":[\"3.8\"],\"numeric_value\":3.8,\"numeric_tolerance\":1e-06}}\n```\n#### 解答\n两个动作值分别为 3.8 和 2.8，因此取 3.8。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_a651a16ad8cc3dae5896"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_a651a16ad8cc3dae5896",
+            "max_score": 1.0,
+            "description": "填入 max(0.2+0.9×4, 1+0.9×2) 的正确结果 3.8",
+            "partial_credit": "精确数值填空，仅正确值得分；数值容差 1e-06。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或与 3.8 不符"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "填入 3.8（允许 1e-06 数值容差）"
+              }
+            ],
+            "blank_id": "b1"
+          }
+        ],
+        "source": {
+          "start_line": 570,
+          "end_line": 580
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 572,
+            "end_line": 572
+          },
+          "题干": {
+            "start_line": 574,
+            "end_line": 574
+          },
+          "答案": {
+            "start_line": 576,
+            "end_line": 578
+          },
+          "解答": {
+            "start_line": 580,
+            "end_line": 580
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 90,
+        "blanks": [
+          {
+            "grading": "exact",
+            "answers": [
+              "3.8"
+            ],
+            "numeric_value": 3.8,
+            "numeric_tolerance": 1e-06,
+            "id": "b1",
+            "label": "b1"
+          }
+        ],
+        "rubric_version": "7eedfae119effc198c2845a60e76fde771a5950d1659ad7eeae318d1ef7a6280"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 186,
+      "prompt_tokens": 19195,
+      "total_tokens": 19381,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 379
+    }
+  }
+}

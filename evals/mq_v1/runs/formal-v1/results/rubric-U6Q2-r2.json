@@ -1,0 +1,28 @@
+{
+  "id": "rubric-U6Q2-r2",
+  "kind": "rubric",
+  "case_id": "U6Q2",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_f279c517cb0174aebcce",
+      "name": "比例计算",
+      "definition": "根据图中A与B的数值计算A占A+B总量的百分比",
+      "source_mq_ids": [
+        "q_a8a36e8322ca81ba7ba1"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_f279c517cb0174aebcce",
+      "max_score": 1.0,
+      "description": "选择题干的正确选项：A为4、B为6，A占A+B总量的比例为4/(4+6)=40%，对应选项B",
+      "partial_credit": "选择B得1分；选择A或其他选项得0分"
+    }
+  ]
+}

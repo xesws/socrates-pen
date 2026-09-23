@@ -1,0 +1,349 @@
+{
+  "id": "RL08Q10",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_72e19f1ccb93519a32f8",
+        "name": "epsilon机制",
+        "definition": "epsilon-greedy 用固定或调度概率随机选动作。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b5a4ca3721c94b379ba5",
+        "name": "UCB信息",
+        "definition": "UCB 使用访问次数或不确定性信息给动作加 bonus。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_fbc09cdb053845c43538",
+        "name": "内在奖励机制",
+        "definition": "内在奖励为新奇、预测误差或信息增益额外给分。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_3b25f3bb77db9a38fbac",
+        "name": "epsilon权衡",
+        "definition": "epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_181fb499e231458538fb",
+        "name": "UCB条件",
+        "definition": "UCB 更有方向性，但需要可靠不确定性或计数。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_4aeba8f5725b6bf069ee",
+        "name": "内在奖励风险",
+        "definition": "内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_56ca235033b46b1a8eca",
+        "name": "安全",
+        "definition": "安全场景中三者都应受动作约束和风险过滤限制。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c1d1f719447f0c70de03",
+        "name": "评估",
+        "definition": "评估应分开报告训练探索收益、最终策略表现和安全违规率。",
+        "source_mq_ids": [
+          "q_a1ae8491990bfe501feb"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_a1ae8491990bfe501feb",
+        "version": "ef1b139430224130d75b4bd80137acd2dcf1eb56f0b9ff7ad564720f5d977a19",
+        "source_unit_id": "unit_839edf988f28f0ea",
+        "source_mq_id": "q_a1ae8491990bfe501feb",
+        "title": "RL08Q10",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "比较三种探索方法：epsilon-greedy、UCB、内在奖励。请按8个方面回答：epsilon机制、UCB信息、内在奖励机制、epsilon权衡、UCB条件、内在奖励风险、安全、评估。",
+        "reference_answer": "1. epsilon-greedy 用固定或调度概率随机选动作。\n2. UCB 使用访问次数或不确定性信息给动作加 bonus。\n3. 内在奖励为新奇、预测误差或信息增益额外给分。\n4. epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。\n5. UCB 更有方向性，但需要可靠不确定性或计数。\n6. 内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。\n7. 安全场景中三者都应受动作约束和风险过滤限制。\n8. 评估应分开报告训练探索收益、最终策略表现和安全违规率。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL08Q10\n#### 题型\nshort_answer\n#### 题干\n比较三种探索方法：epsilon-greedy、UCB、内在奖励。请按8个方面回答：epsilon机制、UCB信息、内在奖励机制、epsilon权衡、UCB条件、内在奖励风险、安全、评估。\n#### 答案\n1. epsilon-greedy 用固定或调度概率随机选动作。\n2. UCB 使用访问次数或不确定性信息给动作加 bonus。\n3. 内在奖励为新奇、预测误差或信息增益额外给分。\n4. epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。\n5. UCB 更有方向性，但需要可靠不确定性或计数。\n6. 内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。\n7. 安全场景中三者都应受动作约束和风险过滤限制。\n8. 评估应分开报告训练探索收益、最终策略表现和安全违规率。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_72e19f1ccb93519a32f8",
+          "pt_b5a4ca3721c94b379ba5",
+          "pt_fbc09cdb053845c43538",
+          "pt_3b25f3bb77db9a38fbac",
+          "pt_181fb499e231458538fb",
+          "pt_4aeba8f5725b6bf069ee",
+          "pt_56ca235033b46b1a8eca",
+          "pt_c1d1f719447f0c70de03"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_72e19f1ccb93519a32f8",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "epsilon-greedy 用固定或调度概率随机选动作。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "epsilon-greedy 用固定或调度概率随机选动作。"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_b5a4ca3721c94b379ba5",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "UCB 使用访问次数或不确定性信息给动作加 bonus。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "UCB 使用访问次数或不确定性信息给动作加 bonus。"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_fbc09cdb053845c43538",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "内在奖励为新奇、预测误差或信息增益额外给分。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "内在奖励为新奇、预测误差或信息增益额外给分。"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_3b25f3bb77db9a38fbac",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "epsilon-greedy 简单稳健，但不区分哪些动作更需要探索。"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_181fb499e231458538fb",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "UCB 更有方向性，但需要可靠不确定性或计数。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "UCB 更有方向性，但需要可靠不确定性或计数。"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_4aeba8f5725b6bf069ee",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "内在奖励可探索稀疏奖励环境，但可能追逐新奇而偏离任务。"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_56ca235033b46b1a8eca",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "安全场景中三者都应受动作约束和风险过滤限制。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "安全场景中三者都应受动作约束和风险过滤限制。"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_c1d1f719447f0c70de03",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "评估应分开报告训练探索收益、最终策略表现和安全违规率。",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "评估应分开报告训练探索收益、最终策略表现和安全违规率。"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 1714,
+          "end_line": 1729
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 1716,
+            "end_line": 1716
+          },
+          "题干": {
+            "start_line": 1718,
+            "end_line": 1718
+          },
+          "答案": {
+            "start_line": 1720,
+            "end_line": 1727
+          },
+          "解答": {
+            "start_line": 1729,
+            "end_line": 1729
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "74ce7502ad9b7073538ef64ad669f0a19d6b1bce2f505d93e2b13d68e07eec37"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1842,
+      "prompt_tokens": 19289,
+      "total_tokens": 21131,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 473
+    }
+  }
+}

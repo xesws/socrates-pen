@@ -1,0 +1,122 @@
+{
+  "id": "RL07Q08-paraphrase",
+  "case_id": "RL07Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_bf66ece6b5a437e2e1da",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确初始化参数化随机策略。",
+        "evidence_quote": "start with a parameterized stochastic policy",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_8953218b37dfe272f081",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "用当前策略生成完整 episode。",
+        "evidence_quote": "Generate complete episodes using the current policy.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_aacab06f60dd6cdd64b8",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "每个访问步计算剩余奖励和，即未折扣回报。",
+        "evidence_quote": "At each visited step compute the remaining reward sum.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_dbe8536260e0d162ab96",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "用回报乘动作对数概率梯度并累加，构造策略梯度估计。",
+        "evidence_quote": "Multiply that return by the gradient of the sampled action log probability and accumulate the estimate.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c89f1232684f4d53dffe",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "减去状态条件、不依赖动作的 baseline 以降低方差。",
+        "evidence_quote": "Subtracting a state-conditioned, action-independent baseline can reduce variance.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_91aae9b670a0b3dd30d9",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "梯度上升以偏好正优势动作。",
+        "evidence_quote": "Ascend the gradient to favor actions with positive advantage.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_32576a03a4965dc43c29",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "指出轨迹回报噪声大，长 episode 方差尤其高。",
+        "evidence_quote": "Noisy trajectory returns, especially on long episodes, cause large variance.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_4c209d1dc3b1ec9f4460",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "用独立评估 episode、平均回报和不确定性区间评估学习。",
+        "evidence_quote": "Assess learning on separate evaluation episodes using mean return and uncertainty intervals.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 549,
+      "prompt_tokens": 2447,
+      "total_tokens": 2996,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2063
+    }
+  },
+  "score": 1.0
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q4-full-r2",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q4",
+  "sample_id": "U4Q4-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 2,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_2204fef8ec109730c328",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者明确指出每次比较将剩余候选规模约减半，符合满分标准。",
+        "evidence_quote": "每次比较把剩余候选规模约减半"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_34cd7e43f6bf3c33518b",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者明确指出需要约log2(n)次使规模降到1，符合满分标准。",
+        "evidence_quote": "需要约 log2(n) 次使规模降到 1"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 106,
+      "prompt_tokens": 475,
+      "total_tokens": 581,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 475
+    }
+  },
+  "score": 1.0
+}

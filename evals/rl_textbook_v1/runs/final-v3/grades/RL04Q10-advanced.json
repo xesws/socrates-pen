@@ -1,0 +1,122 @@
+{
+  "id": "RL04Q10-advanced",
+  "case_id": "RL04Q10",
+  "kind": "advanced",
+  "split": "test",
+  "expected": 0.5,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_cee48667578d214ad2bc",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确说明 MC 更适合有自然终局的 episodic 任务。",
+        "evidence_quote": "MC 更适合有自然终局的 episodic 任务。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_ae90d3dd17d952bf3e3b",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 MC 不需要已知环境模型，只需采样完整轨迹。",
+        "evidence_quote": "MC 不需要已知环境模型，只需要采样完整轨迹。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_c7713950baffd0722d20",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明 episode 长度可控且能等到终局时，MC 目标容易定义。",
+        "evidence_quote": "当 episode 长度可控且能等到终局时，MC 目标容易定义。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_f414afbc03df15116581",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是无偏估计。",
+        "evidence_quote": "在固定策略、给定起始状态且完整 episode 独立采样时，样本回报均值是该价值的无偏估计。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_99b8d880dce8fa4d38c2",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 MC 不自举或不会把早期 V 估计放入目标。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_ca756bb1abe1e65b51d5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未提及 MC 方差较高或需要足够 episode 平均。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_c50c546881eb39863d54",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及稀疏终局奖励中 MC 能把最终结果分配给整条轨迹上的访问。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_da752f3ad56f86ae4bec",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未提及实现上 MC 简单，也未提及在线更新和 continuing 任务中 TD 更方便。",
+        "evidence_quote": "",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "advanced",
+      "label": "进阶"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 566,
+      "prompt_tokens": 2413,
+      "total_tokens": 2979,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2029
+    }
+  },
+  "score": 0.5
+}

@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U4Q2-r2",
+  "kind": "rubric",
+  "case_id": "U4Q2",
+  "split": "test",
+  "repeat": 2,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_205f7ddae74c119456fe",
+      "name": "二分查找排除依据",
+      "definition": "理解二分查找中比较中点后能丢弃一半候选的原因在于数组的有序性，即目标不可能出现在被排除的那一半。",
+      "source_mq_ids": [
+        "q_3ea8562c68b22ee521ba"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_205f7ddae74c119456fe",
+      "max_score": 1.0,
+      "description": "b1处应说明数组已排序，因此目标不可能出现在被排除的那一半（或等价表述：利用有序性排除不可能包含目标的一半）。",
+      "partial_credit": "完整表达有序性导致可排除一半得1分；仅提及有序性或仅提及排除一半但未建立因果联系得0分；答非所问或空白得0分。",
+      "blank_id": "b1"
+    }
+  ]
+}

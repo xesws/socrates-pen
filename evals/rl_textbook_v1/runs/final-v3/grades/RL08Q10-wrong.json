@@ -1,0 +1,119 @@
+{
+  "id": "RL08Q10-wrong",
+  "case_id": "RL08Q10",
+  "kind": "wrong",
+  "split": "test",
+  "expected": 0,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0,
+    "fact3": 0,
+    "fact4": 0,
+    "fact5": 0,
+    "fact6": 0,
+    "fact7": 0,
+    "fact8": 0
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_72e19f1ccb93519a32f8",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确说 epsilon-greedy 从不随机，与“用概率随机选动作”矛盾。",
+        "evidence_quote": "epsilon-greedy 从不随机",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_b5a4ca3721c94b379ba5",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案明确说 UCB 完全不使用计数和不确定性，与使用访问次数或不确定性信息矛盾。",
+        "evidence_quote": "UCB 完全不使用计数和不确定性",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_fbc09cdb053845c43538",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案说内在奖励就是删除新奇信号，与为新奇、预测误差或信息增益额外给分矛盾。",
+        "evidence_quote": "内在奖励就是删除新奇信号",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_3b25f3bb77db9a38fbac",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "未说明 epsilon-greedy 简单稳健但不区分哪些动作更需要探索。",
+        "evidence_quote": "epsilon-greedy 从不随机",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_181fb499e231458538fb",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案否认 UCB 使用计数和不确定性，未说明其更有方向性但需要可靠不确定性或计数。",
+        "evidence_quote": "UCB 完全不使用计数和不确定性",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_4aeba8f5725b6bf069ee",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "未说明内在奖励可探索稀疏奖励环境但可能追逐新奇而偏离任务。",
+        "evidence_quote": "内在奖励就是删除新奇信号",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_56ca235033b46b1a8eca",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称三者保证绝对安全，与安全场景中应受动作约束和风险过滤限制矛盾。",
+        "evidence_quote": "三者保证绝对安全",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c1d1f719447f0c70de03",
+        "score": 0,
+        "max_score": 0.15,
+        "reason": "答案称不需评估、最终策略表现也不用记录，与分开报告评估指标矛盾。",
+        "evidence_quote": "不需调节或评估，最终策略表现也不用记录",
+        "evidence_source": "text",
+        "level_id": "missing"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 586,
+      "prompt_tokens": 2299,
+      "total_tokens": 2885,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 1915
+    }
+  },
+  "score": 0.0
+}

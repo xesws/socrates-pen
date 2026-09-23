@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q5-partial-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q5",
+  "sample_id": "U5Q5-partial",
+  "sample_kind": "partial",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_1e89828c7bb83244f9be",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生答案明确给出 A=7 且 B=2，与标准答案一致，符合满分条件。",
+        "evidence_quote": "A=7，B=2。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_f84ab61235c00f1a38fc",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学生答案未计算或给出 B−A 的结果，缺少该步骤，按评分标准得 0 分。",
+        "evidence_quote": "A=7，B=2。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 109,
+      "prompt_tokens": 611,
+      "total_tokens": 720,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 611
+    }
+  },
+  "score": 0.5
+}

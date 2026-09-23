@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U4Q3-wrong-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U4Q3",
+  "sample_id": "U4Q3-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U4Q3-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案“只要函数返回一个数字就一定存在副作用”表达的是返回数字与副作用之间的必然联系，并未提及“变化发生在返回值之外”这一要点，且与要点含义不符。",
+        "evidence_quote": "只要函数返回一个数字就一定存在副作用。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U4Q3-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案没有表达“改变外部可观察状态”这一要点，反而将副作用与返回数字错误关联，属于表达错误。",
+        "evidence_quote": "只要函数返回一个数字就一定存在副作用。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 128,
+      "prompt_tokens": 416,
+      "total_tokens": 544,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 416
+    }
+  },
+  "score": 0.0
+}

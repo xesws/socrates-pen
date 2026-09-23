@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U2Q4-partial-r2",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U2Q4",
+  "sample_id": "U2Q4-partial",
+  "sample_kind": "partial",
+  "split": "dev",
+  "repeat": 2,
+  "expected": 0.5,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U2Q4-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者答案准确表达了“初始化保证首次迭代前成立”这一要点，与评分标准完全一致。",
+        "evidence_quote": "初始化保证首次迭代前成立。"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U2Q4-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者答案未提及“保持”步骤及其作用（保证每次迭代后仍成立），因此该要点未表达。",
+        "evidence_quote": "初始化保证首次迭代前成立。"
+      }
+    ],
+    "score": 0.5,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 105,
+      "prompt_tokens": 361,
+      "total_tokens": 466,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 233
+    }
+  },
+  "score": 0.5
+}

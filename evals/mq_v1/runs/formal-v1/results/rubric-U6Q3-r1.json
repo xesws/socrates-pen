@@ -1,0 +1,29 @@
+{
+  "id": "rubric-U6Q3-r1",
+  "kind": "rubric",
+  "case_id": "U6Q3",
+  "split": "test",
+  "repeat": 1,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_a26a4bc5977023dbf2c2",
+      "name": "中位数计算",
+      "definition": "将给定数字排序后取中间位置的数作为中位数",
+      "source_mq_ids": [
+        "q_29aae66ad7cfbcc64290"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_a26a4bc5977023dbf2c2",
+      "max_score": 1.0,
+      "description": "在空白 b1 中填入排序后中间位置的数字，即 3",
+      "partial_credit": "填入 3 得 1 分；填入其他数字、空白或无关内容得 0 分",
+      "blank_id": "b1"
+    }
+  ]
+}

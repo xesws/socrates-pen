@@ -1,0 +1,1230 @@
+[
+  {
+    "id": "grade-B-U4Q2-partial-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 2,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_205f7ddae74c119456fe",
+          "score": 1.0,
+          "max_score": 1.0,
+          "reason": "学习者答案“数组已排序。”完整表达了数组有序这一关键前提，结合题干“二分查找比较中点后可以丢弃一半候选，因为……”的语境，已隐含有序性导致可排除一半候选的因果联系，符合完整表达有序性导致可排除一半得1分的要求。",
+          "evidence_quote": "数组已排序。"
+        }
+      ],
+      "score": 1.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 92,
+        "prompt_tokens": 375,
+        "total_tokens": 467,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 375
+      }
+    },
+    "score": 1.0
+  },
+  {
+    "id": "vision-U5Q5-image-wrong-r0",
+    "kind": "vision_grade",
+    "case_id": "U5Q5",
+    "split": "test",
+    "repeat": 0,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "读值部分错误：图中A=7，B=2，学生写成A=2，B=7，不得分；计算部分B−A=2−7=−5，学生写成9，错误，不得分。因此总分为0。",
+      "usage": {
+        "completion_tokens": 69,
+        "prompt_tokens": 375,
+        "total_tokens": 444,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 375
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U3Q5-paraphrase-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U3Q5",
+    "sample_id": "U3Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 2,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_b616e2bbaf8e9fa3a0f4",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者回答仅提到按到达次序处理，未说明FIFO是先进先出或解释其含义，因此不得分。",
+          "evidence_quote": "按到达次序处理，A 比 B 先进入，因此先处理 A。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "pt_4252561ecd97b997a20d",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者正确指出A先进入并先处理，即先取出A，符合得分要求。",
+          "evidence_quote": "A 比 B 先进入，因此先处理 A。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 123,
+        "prompt_tokens": 414,
+        "total_tokens": 537,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 414
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "vision-U5Q4-image-wrong-r0",
+    "kind": "vision_grade",
+    "case_id": "U5Q4",
+    "split": "test",
+    "repeat": 0,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中A的数值为2，B的数值为7，学生将A、B读反，读值部分错误；B−A=7−2=5，学生计算为9，计算部分错误。根据评分标准，两个要求均未准确完成，得0分。",
+      "usage": {
+        "completion_tokens": 76,
+        "prompt_tokens": 375,
+        "total_tokens": 451,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 375
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "vision-U5Q4-image-wrong-r1",
+    "kind": "vision_grade",
+    "case_id": "U5Q4",
+    "split": "test",
+    "repeat": 1,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中A的数值为2，B的数值为7，学生将A、B读反，读值部分错误；B−A=7−2=5，学生计算为9，计算部分错误。根据评分标准，两个要求均未准确完成，得0分。",
+      "usage": {
+        "completion_tokens": 76,
+        "prompt_tokens": 375,
+        "total_tokens": 451,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 375
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "vision-U5Q5-image-wrong-r1",
+    "kind": "vision_grade",
+    "case_id": "U5Q5",
+    "split": "test",
+    "repeat": 1,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中 A 的数值为 7，B 的数值为 2，学生将 A、B 读反，读值部分错误；B−A 应为 2−7=−5，学生计算为 9，计算部分也错误。按评分标准，两个要求均未准确完成，得 0 分。",
+      "usage": {
+        "completion_tokens": 87,
+        "prompt_tokens": 375,
+        "total_tokens": 462,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 375
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "vision-U5Q5-image-solve-r2",
+    "kind": "vision_solve",
+    "case_id": "U5Q5",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": null,
+    "ok": true,
+    "response": {
+      "A": 7,
+      "B": 2,
+      "difference": 5,
+      "usage": {
+        "completion_tokens": 13,
+        "prompt_tokens": 294,
+        "total_tokens": 307,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 166
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "correct": false
+  },
+  {
+    "id": "grade-B-U5Q3-partial-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U5Q3",
+    "sample_id": "U5Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 2,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_48d2f7e283ea1b5d703f",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学生答案仅给出“A 能到达 C。”，虽然正确判断了可达性，但未说明依据是存在 A→B→C 的有向路径（或等价表述），根据评分标准，仅答“可达”未给依据得0分。",
+          "evidence_quote": "A 能到达 C。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 88,
+        "prompt_tokens": 448,
+        "total_tokens": 536,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 448
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U6Q2-image-full-r2",
+    "kind": "vision_grade",
+    "case_id": "U6Q2",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": "full",
+    "ok": false,
+    "expected": 1,
+    "error": "LLM response was not valid JSON"
+  },
+  {
+    "id": "vision-U6Q2-image-wrong-r2",
+    "kind": "vision_grade",
+    "case_id": "U6Q2",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 1,
+      "reason": "图中A的值为4，B的值为6，A占A+B总量的比例为4/(4+6)=40%，对应选项B。学生选择A（60%）错误，但根据评分标准，选项完全正确得1分，否则0分，因此得0分。",
+      "usage": {
+        "completion_tokens": 72,
+        "prompt_tokens": 371,
+        "total_tokens": 443,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 243
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 1
+  },
+  {
+    "id": "grade-A-U4Q2-paraphrase-r2",
+    "kind": "grade",
+    "arm": "A",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 2,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "U4Q2-p1",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者答案只提到“排序保证被舍弃区域不含要找的值”，没有表达“数组已排序”这一要点；虽然“排序”一词出现，但未说明数组已排序，且整体表述侧重排除区域，不能算准确表达该要点。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "U4Q2-p2",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者答案明确表达“被舍弃区域不含要找的值”，即被排除的一半不可能包含目标，准确表达了该要点。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 143,
+        "prompt_tokens": 422,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 422
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "vision-U6Q5-image-wrong-r2",
+    "kind": "vision_grade",
+    "case_id": "U6Q5",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中A=9，B=3，算术平均数为(9+3)/2=6。学生给出的平均数12错误，未得分；但正确指出A列（9）高于平均数6，得0.5分。",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 371,
+        "total_tokens": 435,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 243
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U4Q3-partial-r2",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q3",
+    "sample_id": "U4Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 2,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_f51aab96eb42d8a849cd",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者答案“这种变化不只是返回计算结果。”仅否定“只返回计算结果”，未说明函数还改变外部可观察状态（如修改全局变量、参数对象、I/O等），未完整表达“除返回值外还改变外部可观察状态”的含义，按评分标准得0分。",
+          "evidence_quote": "这种变化不只是返回计算结果。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 94,
+        "prompt_tokens": 391,
+        "total_tokens": 485,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 391
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U6Q2-image-full-r0",
+    "kind": "vision_grade",
+    "case_id": "U6Q2",
+    "split": "test",
+    "repeat": 0,
+    "with_image": true,
+    "answer_kind": "full",
+    "ok": false,
+    "expected": 1,
+    "error": "LLM response was not valid JSON"
+  },
+  {
+    "id": "grade-B-U5Q3-partial-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U5Q3",
+    "sample_id": "U5Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 0,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_48d2f7e283ea1b5d703f",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者仅回答“A 能到达 C。”，未说明依据是存在 A→B→C 的有向路径或等价表述，按评分标准仅答“可达”未给依据得0分。",
+          "evidence_quote": "A 能到达 C。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 77,
+        "prompt_tokens": 444,
+        "total_tokens": 521,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 444
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "grade-A-U4Q2-paraphrase-r0",
+    "kind": "grade",
+    "arm": "A",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "U4Q2-p1",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者答案只提到“排序保证被舍弃区域不含要找的值”，没有表达“数组已排序”这一要点；虽然“排序”一词出现，但未说明数组已排序，且整体表述侧重排除区域，不符合该要点。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "U4Q2-p2",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者答案准确表达了“被排除的一半不可能包含目标”这一要点，即被舍弃区域不含要找的值，属于等价改述。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 143,
+        "prompt_tokens": 422,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 422
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U4Q3-partial-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q3",
+    "sample_id": "U4Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 1,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_f51aab96eb42d8a849cd",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者答案“这种变化不只是返回计算结果”仅否定“只返回计算结果”，未表达出“还改变外部可观察状态”这一核心含义，表述不完整，按评分标准得0分。",
+          "evidence_quote": "这种变化不只是返回计算结果。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 75,
+        "prompt_tokens": 384,
+        "total_tokens": 459,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 384
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U6Q4-image-wrong-r1",
+    "kind": "vision_grade",
+    "case_id": "U6Q4",
+    "split": "test",
+    "repeat": 1,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中两列数值为A=3、B=9，算术平均数为(3+9)/2=6。学生答案给出的平均数12错误，未得分；但正确指出B列（9）高于平均数6，得0.5分。",
+      "usage": {
+        "completion_tokens": 69,
+        "prompt_tokens": 371,
+        "total_tokens": 440,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 243
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "vision-U6Q4-image-wrong-r0",
+    "kind": "vision_grade",
+    "case_id": "U6Q4",
+    "split": "test",
+    "repeat": 0,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": false,
+    "expected": 0,
+    "error": "LLM response was not valid JSON"
+  },
+  {
+    "id": "vision-U6Q2-image-wrong-r1",
+    "kind": "vision_grade",
+    "case_id": "U6Q2",
+    "split": "test",
+    "repeat": 1,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 1,
+      "reason": "图中A的值为4，B的值为6，A占A+B总量的比例为4/(4+6)=40%，对应选项B。学生选择A（60%）错误，因此得0分。",
+      "usage": {
+        "completion_tokens": 56,
+        "prompt_tokens": 371,
+        "total_tokens": 427,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 243
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 1
+  },
+  {
+    "id": "grade-B-U4Q3-partial-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q3",
+    "sample_id": "U4Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 0,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_f51aab96eb42d8a849cd",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者答案“这种变化不只是返回计算结果”仅否定“只返回计算结果”，但未说明函数还改变外部可观察状态（如修改全局变量、参数对象、I/O等），未完整表达“除返回值外还改变外部可观察状态”，按评分标准得0分。",
+          "evidence_quote": "这种变化不只是返回计算结果。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 93,
+        "prompt_tokens": 384,
+        "total_tokens": 477,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 384
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U6Q5-image-wrong-r0",
+    "kind": "vision_grade",
+    "case_id": "U6Q5",
+    "split": "test",
+    "repeat": 0,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中A=9，B=3，算术平均数为(9+3)/2=6。学生给出的平均数12错误，未得分；但正确指出A列（9）高于平均数6，得0.5分。",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 371,
+        "total_tokens": 435,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 371
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "grade-A-U3Q5-paraphrase-r0",
+    "kind": "grade",
+    "arm": "A",
+    "case_id": "U3Q5",
+    "sample_id": "U3Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "U3Q5-p1",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者答案只说明按到达次序处理，未明确表达“FIFO 是先进先出”这一含义，因此不得分。",
+          "evidence_quote": "按到达次序处理，A 比 B 先进入，因此先处理 A。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "U3Q5-p2",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者答案明确说明 A 比 B 先进入，因此先处理 A，等价表达了本例先取出 A 的要点。",
+          "evidence_quote": "A 比 B 先进入，因此先处理 A。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 135,
+        "prompt_tokens": 391,
+        "total_tokens": 526,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 391
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "grade-A-U4Q2-paraphrase-r1",
+    "kind": "grade",
+    "arm": "A",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 1,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "U4Q2-p1",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者答案只提到“排序保证被舍弃区域不含要找的值”，没有表达“数组已排序”这一要点；虽然“排序”一词出现，但未说明数组已排序，且整体表述侧重排除区域，不符合该要点。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "U4Q2-p2",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者答案准确表达了“被排除的一半不可能包含目标”这一要点，即被舍弃区域不含要找的值，属于等价改述。",
+          "evidence_quote": "排序保证被舍弃区域不含要找的值。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 143,
+        "prompt_tokens": 422,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 422
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U5Q3-partial-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U5Q3",
+    "sample_id": "U5Q3-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 1,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_48d2f7e283ea1b5d703f",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者仅回答“A 能到达 C”，未说明依据是存在 A→B→C 的有向路径，按评分标准仅答“可达”未给依据得0分。",
+          "evidence_quote": "A 能到达 C。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 73,
+        "prompt_tokens": 444,
+        "total_tokens": 517,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 188
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U6Q2-image-full-r1",
+    "kind": "vision_grade",
+    "case_id": "U6Q2",
+    "split": "test",
+    "repeat": 1,
+    "with_image": true,
+    "answer_kind": "full",
+    "ok": false,
+    "expected": 1,
+    "error": "LLM response was not valid JSON"
+  },
+  {
+    "id": "grade-B-U4Q2-partial-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 0,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_381d7c708955c0850311",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者答案仅说明“数组已排序”，未建立有序性与“目标不可能出现在被排除的那一半”之间的因果联系，属于“仅提及有序性但未建立因果联系”，按评分标准得0分。",
+          "evidence_quote": "数组已排序。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 76,
+        "prompt_tokens": 376,
+        "total_tokens": 452,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 376
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "grade-B-U3Q4-partial-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U3Q4",
+    "sample_id": "U3Q4-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 0,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_e6bb4af3e7ae0a63cc25",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者只说明了 b=a 时共享同一个列表对象，未提及 b=a.copy() 会创建新的顶层列表对象，属于只说明其中一种情况，按评分标准得0分。",
+          "evidence_quote": "b=a 让二者引用同一个列表。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 76,
+        "prompt_tokens": 341,
+        "total_tokens": 417,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 341
+      }
+    },
+    "score": 0.0
+  },
+  {
+    "id": "vision-U5Q4-image-wrong-r2",
+    "kind": "vision_grade",
+    "case_id": "U5Q4",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中A的数值为2，B的数值为7，学生将A、B读反，读值部分错误；B−A=7−2=5，学生计算为9，计算部分错误。根据评分标准，两个要求均未准确完成，得0分。",
+      "usage": {
+        "completion_tokens": 76,
+        "prompt_tokens": 375,
+        "total_tokens": 451,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 247
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U3Q5-paraphrase-r0",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U3Q5",
+    "sample_id": "U3Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 0,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_b616e2bbaf8e9fa3a0f4",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者回答仅提到按到达次序处理，未说明FIFO是先进先出或解释其含义，因此不得分。",
+          "evidence_quote": "按到达次序处理，A 比 B 先进入，因此先处理 A。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "pt_4252561ecd97b997a20d",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者正确指出A先进入并先处理，即先取出A，符合得分要求。",
+          "evidence_quote": "A 比 B 先进入，因此先处理 A。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 123,
+        "prompt_tokens": 414,
+        "total_tokens": 537,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 414
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "vision-U5Q5-image-wrong-r2",
+    "kind": "vision_grade",
+    "case_id": "U5Q5",
+    "split": "test",
+    "repeat": 2,
+    "with_image": true,
+    "answer_kind": "wrong",
+    "ok": true,
+    "expected": 0,
+    "response": {
+      "assessable": true,
+      "score": 0.5,
+      "reason": "图中 A 对应数值为 7，B 对应数值为 2，学生读值错误（A=2，B=7），读值部分不得分；但 B−A 的计算结果 9 与正确读值下的 2−7=−5 不符，计算部分也不得分。综合得 0.5 分。",
+      "usage": {
+        "completion_tokens": 90,
+        "prompt_tokens": 375,
+        "total_tokens": 465,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 247
+      },
+      "model": "deepseek-flash"
+    },
+    "abstained": false,
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U3Q5-paraphrase-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U3Q5",
+    "sample_id": "U3Q5-paraphrase",
+    "sample_kind": "paraphrase",
+    "split": "test",
+    "repeat": 1,
+    "expected": 1.0,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0.5
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_b616e2bbaf8e9fa3a0f4",
+          "score": 0.0,
+          "max_score": 0.5,
+          "reason": "学习者回答仅说明按到达次序处理，未提及FIFO或解释先进先出含义，因此不得分。",
+          "evidence_quote": "按到达次序处理，A 比 B 先进入，因此先处理 A。"
+        },
+        {
+          "criterion_id": "c2",
+          "point_id": "pt_4252561ecd97b997a20d",
+          "score": 0.5,
+          "max_score": 0.5,
+          "reason": "学习者正确指出先处理A，符合先取出A的要求，因此得满分。",
+          "evidence_quote": "A 比 B 先进入，因此先处理 A。"
+        }
+      ],
+      "score": 0.5,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 119,
+        "prompt_tokens": 414,
+        "total_tokens": 533,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 414
+      }
+    },
+    "score": 0.5
+  },
+  {
+    "id": "grade-B-U4Q2-partial-r1",
+    "kind": "grade",
+    "arm": "B",
+    "case_id": "U4Q2",
+    "sample_id": "U4Q2-partial",
+    "sample_kind": "partial",
+    "split": "test",
+    "repeat": 1,
+    "expected": 0.5,
+    "expected_criteria": {
+      "c1": 0.5,
+      "c2": 0
+    },
+    "visual": false,
+    "ok": true,
+    "grade": {
+      "criteria": [
+        {
+          "criterion_id": "c1",
+          "point_id": "pt_381d7c708955c0850311",
+          "score": 0.0,
+          "max_score": 1.0,
+          "reason": "学习者仅说明“数组已排序”，未建立有序性与“目标不可能出现在被排除的那一半”之间的因果联系，也未提及排除一半，按评分标准得0分。",
+          "evidence_quote": "数组已排序。"
+        }
+      ],
+      "score": 0.0,
+      "max_score": 1.0,
+      "model": "deepseek-flash",
+      "usage": {
+        "calls": 1,
+        "completion_tokens": 68,
+        "prompt_tokens": 378,
+        "total_tokens": 446,
+        "prompt_tokens_details": {
+          "calls": 1,
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 378
+      }
+    },
+    "score": 0.0
+  }
+]

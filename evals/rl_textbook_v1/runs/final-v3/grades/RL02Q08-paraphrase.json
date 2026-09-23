@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q08-paraphrase",
+  "case_id": "RL02Q08",
+  "kind": "paraphrase",
+  "split": "test",
+  "expected": 1.0,
+  "expected_criteria": {
+    "fact1": 0.1,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_77e732eaf26ad4a7753a",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确将回报拆分为下一步奖励加折扣后的剩余回报，等价于 G_t=R_{t+1}+γG_{t+1}。",
+        "evidence_quote": "Split the return into the next reward plus gamma times the remaining return.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_2d6989ab39f622b84329",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明以当前状态 s 为条件并保持策略 π 固定。",
+        "evidence_quote": "Condition on the present state s and keep policy pi fixed.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_2f130ba53a4ce469d6cc",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明对当前及后续按 π 抽取的动作取期望。",
+        "evidence_quote": "Average over actions drawn from pi now and later.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_93123c93e85caa70845a",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明对环境随机转移和随机奖励积分/取期望。",
+        "evidence_quote": "Also integrate the random transitions and random rewards of the environment.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_08ff4851cf4b553144a3",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 R_{t+1} 是当前动作引起的即时反馈。",
+        "evidence_quote": "R at t+1 is the immediate feedback caused by the current action.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_ba2e02dac1ad4bdb05da",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明 γ 缩放延续价值。",
+        "evidence_quote": "Gamma scales the continuation value.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_bed8cd5a41c9adeec722",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明策略价值是其自身 Bellman 备份的固定点。",
+        "evidence_quote": "The resulting identity says that the policy value is a fixed point of its own Bellman backup.",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_0a1c1a342f9524e8ca2d",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明该等式用于策略评估，并作为 DP 和时序差分学习的目标。",
+        "evidence_quote": "It supplies policy evaluation and the targets used in DP and temporal-difference learning.",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": {
+      "id": "complete",
+      "label": "完整"
+    },
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 589,
+      "prompt_tokens": 2427,
+      "total_tokens": 3016,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 384
+      },
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 2043
+    }
+  },
+  "score": 1.0
+}

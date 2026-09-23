@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U4Q4-r0",
+  "kind": "rubric",
+  "case_id": "U4Q4",
+  "split": "test",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_2204fef8ec109730c328",
+      "name": "规模减半",
+      "definition": "说明二分查找每次比较后，剩余候选区间规模约减半",
+      "source_mq_ids": [
+        "q_ccd9b9e6ea8dc14e5669"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_34cd7e43f6bf3c33518b",
+      "name": "次数对数增长",
+      "definition": "说明使规模降到1所需的比较次数约为log2(n)，即随n的对数增长",
+      "source_mq_ids": [
+        "q_ccd9b9e6ea8dc14e5669"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_2204fef8ec109730c328",
+      "max_score": 0.5,
+      "description": "指出每次比较将剩余候选规模约减半（或等价表述：候选区间长度变为原来的一半）",
+      "partial_credit": "明确说明规模约减半得0.5分；仅说规模减小但未提减半得0分；未提及规模变化得0分"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_34cd7e43f6bf3c33518b",
+      "max_score": 0.5,
+      "description": "指出需要约log2(n)次比较使规模降到1，或说明比较次数随log n增长",
+      "partial_credit": "明确给出log2(n)次或次数随log n增长得0.5分；仅说次数少或增长慢但未提对数得0分；未提及次数增长方式得0分"
+    }
+  ]
+}

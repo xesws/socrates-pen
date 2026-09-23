@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U4Q5-paraphrase-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q5",
+  "sample_id": "U4Q5-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_20b88dfb2d293b30d165",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者指出“检查几个特殊情况不是遍历输入空间”，明确说明测试只覆盖有限样例，无法穷尽所有输入，符合得分要求。",
+        "evidence_quote": "检查几个特殊情况不是遍历输入空间"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_adc81d9e1fc89121c932",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学习者指出“其他情况仍有缺陷的可能”，明确说明未测试输入仍可能出错，不能证明对所有输入正确，符合得分要求。",
+        "evidence_quote": "其他情况仍有缺陷的可能"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 119,
+      "prompt_tokens": 418,
+      "total_tokens": 537,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 418
+    }
+  },
+  "score": 1.0
+}

@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U5Q4-full-r0",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U5Q4",
+  "sample_id": "U5Q4-full",
+  "sample_kind": "full",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": true,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_8662679ddfa84caae807",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生正确读出A=2且B=7，两个数值均正确，符合满分标准。",
+        "evidence_quote": "A=2，B=7"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_262a710547fc3ceddca0",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "学生正确计算B−A=7−2=5，结果正确，符合满分标准。",
+        "evidence_quote": "B−A=5"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 102,
+      "prompt_tokens": 641,
+      "total_tokens": 743,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 641
+    }
+  },
+  "score": 1.0
+}

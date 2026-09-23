@@ -1,0 +1,53 @@
+{
+  "id": "grade-B-U1Q4-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U1Q4",
+  "sample_id": "U1Q4-wrong",
+  "sample_kind": "wrong",
+  "split": "dev",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_134e0776382462078574",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答称“== 比较地址”，这与“== 比较值是否相等”相反，属于表述错误，因此不得分。",
+        "evidence_quote": "== 比较地址"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_219b30b01f262f8fa71c",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答称“is 比较内容”，这与“is 比较是否为同一对象”相反，属于表述错误，因此不得分。",
+        "evidence_quote": "is 比较内容"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 110,
+      "prompt_tokens": 416,
+      "total_tokens": 526,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 416
+    }
+  },
+  "score": 0.0
+}

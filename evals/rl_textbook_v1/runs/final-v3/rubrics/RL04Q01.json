@@ -1,0 +1,123 @@
+{
+  "id": "RL04Q01",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_42ee487125664ce335fa",
+        "name": "正确选项",
+        "definition": "first-visit MC 与 every-visit MC 的差别在于同一 episode 中重复出现的状态：前者只用第一次访问，后者每次访问都使用。",
+        "source_mq_ids": [
+          "q_4d162aab0241366e2ea7"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_4d162aab0241366e2ea7",
+        "version": "5e9247f7de9665e17d9020dce187a6d53b1a1d1422a0232902d82013b7e10e63",
+        "source_unit_id": "unit_24bfe3abf25fc247",
+        "source_mq_id": "q_4d162aab0241366e2ea7",
+        "title": "RL04Q01",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "first-visit MC 与 every-visit MC 的差别在哪里？",
+        "reference_answer": "D",
+        "solution_markdown": "两者的核心差别是同一条轨迹中重复访问的样本选择。",
+        "raw_markdown": "### RL04Q01\n#### 题型\nsingle_choice\n#### 题干\nfirst-visit MC 与 every-visit MC 的差别在哪里？\n#### 选项\n##### A\n前者必须知道模型，后者不能采样。\n##### B\n前者用于控制，后者只能用于监督学习。\n##### C\n前者不使用回报，后者不使用奖励。\n##### D\n同一 episode 中重复出现的状态，前者只用第一次，后者每次都用。\n#### 答案\nD\n#### 解答\n两者的核心差别是同一条轨迹中重复访问的样本选择。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_42ee487125664ce335fa"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_42ee487125664ce335fa",
+            "max_score": 1.0,
+            "description": "选择 D：同一 episode 中重复出现的状态，前者只用第一次，后者每次都用。",
+            "partial_credit": "单选题，选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 D，或选择其他选项/未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 711,
+          "end_line": 728
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 713,
+            "end_line": 713
+          },
+          "题干": {
+            "start_line": 715,
+            "end_line": 715
+          },
+          "选项": {
+            "start_line": 717,
+            "end_line": 724
+          },
+          "答案": {
+            "start_line": 726,
+            "end_line": 726
+          },
+          "解答": {
+            "start_line": 728,
+            "end_line": 728
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "前者必须知道模型，后者不能采样。"
+          },
+          {
+            "id": "B",
+            "text": "前者用于控制，后者只能用于监督学习。"
+          },
+          {
+            "id": "C",
+            "text": "前者不使用回报，后者不使用奖励。"
+          },
+          {
+            "id": "D",
+            "text": "同一 episode 中重复出现的状态，前者只用第一次，后者每次都用。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "9f825f1738e7bfa323150b7f100958611ade752d25929ba6d9b1bbe776c4ee32"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 156,
+      "prompt_tokens": 19156,
+      "total_tokens": 19312,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 340
+    }
+  }
+}

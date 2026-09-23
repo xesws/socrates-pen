@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U1Q4-r0",
+  "kind": "rubric",
+  "case_id": "U1Q4",
+  "split": "dev",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_07ac9c61ab0544b443d0",
+      "name": "== 比较值",
+      "definition": "说明 == 比较的是值是否相等。",
+      "source_mq_ids": [
+        "q_687869f91ff0754f0308"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_e89b8afd3294ed9a821b",
+      "name": "is 比较身份",
+      "definition": "说明 is 比较的是是否为同一对象（对象身份）。",
+      "source_mq_ids": [
+        "q_687869f91ff0754f0308"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_07ac9c61ab0544b443d0",
+      "max_score": 0.5,
+      "description": "指出 == 比较值是否相等（或等价表述，如比较两个对象的值是否相同）。",
+      "partial_credit": "若明确说明 == 比较值是否相等，得满分；若未提及或表述错误（如说 == 比较对象身份），得0分。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_e89b8afd3294ed9a821b",
+      "max_score": 0.5,
+      "description": "指出 is 比较是否为同一对象（或等价表述，如比较对象身份、比较内存地址是否相同）。",
+      "partial_credit": "若明确说明 is 比较是否为同一对象（或对象身份），得满分；若未提及或表述错误（如说 is 比较值是否相等），得0分。"
+    }
+  ]
+}

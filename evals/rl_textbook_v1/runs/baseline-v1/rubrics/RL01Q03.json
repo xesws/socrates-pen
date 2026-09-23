@@ -1,0 +1,122 @@
+{
+  "id": "RL01Q03",
+  "kind": "rubric",
+  "split": "dev",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_2aaf633611a85b449d9c",
+        "name": "马尔可夫状态要求",
+        "definition": "状态需包含预测下一状态和奖励所需的全部相关信息，给定当前状态与动作后历史不再提供额外预测信息",
+        "source_mq_ids": [
+          "q_e96d7126aaccd0099a23"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_e96d7126aaccd0099a23",
+        "version": "2e42ed821610065816ccbf5a1eab7562e8ddadffee5682c4476fe56261023975",
+        "source_unit_id": "unit_4acf099b583f47c1",
+        "source_mq_id": "q_e96d7126aaccd0099a23",
+        "title": "RL01Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "哪种说法最接近马尔可夫状态的要求？",
+        "reference_answer": "C",
+        "solution_markdown": "马尔可夫性要求给定当前状态和动作后，历史不再提供额外预测信息。",
+        "raw_markdown": "### RL01Q03\n#### 题型\nsingle_choice\n#### 题干\n哪种说法最接近马尔可夫状态的要求？\n#### 选项\n##### A\n状态必须包含从开局到现在的所有原始像素。\n##### B\n状态只能是一个实数。\n##### C\n状态必须包含预测下一状态和奖励所需的全部相关信息。\n##### D\n状态不能随动作改变。\n#### 答案\nC\n#### 解答\n马尔可夫性要求给定当前状态和动作后，历史不再提供额外预测信息。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_2aaf633611a85b449d9c"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_2aaf633611a85b449d9c",
+            "max_score": 1.0,
+            "description": "选择 C：状态必须包含预测下一状态和奖励所需的全部相关信息",
+            "partial_credit": "单选，选对得满分，选错或未选为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、D 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 97,
+          "end_line": 114
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 99,
+            "end_line": 99
+          },
+          "题干": {
+            "start_line": 101,
+            "end_line": 101
+          },
+          "选项": {
+            "start_line": 103,
+            "end_line": 110
+          },
+          "答案": {
+            "start_line": 112,
+            "end_line": 112
+          },
+          "解答": {
+            "start_line": 114,
+            "end_line": 114
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "状态必须包含从开局到现在的所有原始像素。"
+          },
+          {
+            "id": "B",
+            "text": "状态只能是一个实数。"
+          },
+          {
+            "id": "C",
+            "text": "状态必须包含预测下一状态和奖励所需的全部相关信息。"
+          },
+          {
+            "id": "D",
+            "text": "状态不能随动作改变。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "27bbb0c0462d86d0a5de95e9592e01f2816230d596a47d5587e53c1a6a9aea16"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 143,
+      "prompt_tokens": 19148,
+      "total_tokens": 19291,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 332
+    }
+  }
+}

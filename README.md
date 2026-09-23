@@ -721,7 +721,7 @@ Bing），再向 Wikipedia 要一份；三家合起来按规范化 URL 去重、
 | 部分 | 规模 |
 | --- | --- |
 | Python（sidecar，不含测试） | 32 个模块，9719 行 |
-| Python 测试 | **1138 passed** |
+| Python 测试 | **1224 passed** |
 | TypeScript（插件） | 18 个文件，6137 行 |
 | HTTP 路由 | 23 条 |
 | 配置旋钮 | 18 个 |
@@ -763,7 +763,7 @@ Bing），再向 Wikipedia 要一份；三家合起来按规范化 URL 去重、
 
 `npm run build` = `tsc --noEmit && npm test && esbuild`。三样全过才产 `main.js`。
 
-后端 `python -m pytest pen/tests -q` → **1138 passed**，
+后端 `python -m pytest pen/tests -q` → **1224 passed**，
 在任何一个干净 checkout 上都该是这个数（v0.15.1 之前不是，见
 [`docs/v0.15.1-公开仓测试开箱45红.md`](docs/v0.15.1-公开仓测试开箱45红.md)）。
 
@@ -896,7 +896,7 @@ npm run dev
 后端：
 
 ```bash
-python -m pytest pen/tests -q       # 1138 passed
+python -m pytest pen/tests -q       # 1224 passed
 python -m pen.index --check 你的笔记.md
 ```
 
@@ -928,6 +928,10 @@ OpenAI 兼容节点按协议能接，但没有逐家测过。
 ---
 
 ## 8 · 最近的版本
+
+开发中新增 [固定 MQ Schema](docs/mq-schema-v1.md)、[作答图片测评](evals/answer_images_v2/REPORT.md) 和 [80 题强化学习教材测评](evals/rl_textbook_v1/REPORT.md)。本轮 80 题完整导入；rubric 单题重试后全部通过复核；96 次评分有 1 次多给 10 分。
+
+**开发中，尚未发布 · 练习系统（实验功能，默认关闭）。** 从已有 Meta Questions 导入单选、填空、简答，并补充知识点与评分标准，按 rubric 评分并保留作答日志。独立本地 Analysis 和 Scheduling 服务提供正式作答分析、个性化模型训练与主动领取的推荐队列。[使用与验证](docs/v0.29.0-练习系统.md)
 
 每个小版本都有一份设计说明在 [`docs/`](docs/)：读者看到了什么、病根在哪、改了什么、哪道闸守着。
 这里只列 0.19 以来的大版本，补丁版顺带一句。

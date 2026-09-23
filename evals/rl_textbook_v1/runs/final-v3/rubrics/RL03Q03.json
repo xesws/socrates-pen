@@ -1,0 +1,123 @@
+{
+  "id": "RL03Q03",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "call_run": "contradiction-v2",
+  "part": {
+    "points": [
+      {
+        "id": "pt_0ce73f65e62dfe613a8c",
+        "name": "正确选项",
+        "definition": "价值迭代的一次核心更新最接近 Bellman 最优备份（选项 D）。",
+        "source_mq_ids": [
+          "q_ab32f181f320297b7c2f"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_ab32f181f320297b7c2f",
+        "version": "f43675cc291b8c35a38341a682c9fba3ae2a36c7523bbd0b269d5ac6da56dcc6",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_ab32f181f320297b7c2f",
+        "title": "RL03Q03",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "价值迭代的一次核心更新最接近哪种备份？",
+        "reference_answer": "D",
+        "solution_markdown": "价值迭代每次用 max_a 的最优备份更新 V。",
+        "raw_markdown": "### RL03Q03\n#### 题型\nsingle_choice\n#### 题干\n价值迭代的一次核心更新最接近哪种备份？\n#### 选项\n##### A\n固定策略的蒙特卡洛平均。\n##### B\n监督学习的交叉熵损失。\n##### C\n仅复制旧价值不变。\n##### D\nBellman 最优备份。\n#### 答案\nD\n#### 解答\n价值迭代每次用 max_a 的最优备份更新 V。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_0ce73f65e62dfe613a8c"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_0ce73f65e62dfe613a8c",
+            "max_score": 1.0,
+            "description": "选择 D：Bellman 最优备份。",
+            "partial_credit": "单选题，选对得满分，选错或未答为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 D，或选择 A/B/C 等其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D（Bellman 最优备份）"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 534,
+          "end_line": 551
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 536,
+            "end_line": 536
+          },
+          "题干": {
+            "start_line": 538,
+            "end_line": 538
+          },
+          "选项": {
+            "start_line": 540,
+            "end_line": 547
+          },
+          "答案": {
+            "start_line": 549,
+            "end_line": 549
+          },
+          "解答": {
+            "start_line": 551,
+            "end_line": 551
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "固定策略的蒙特卡洛平均。"
+          },
+          {
+            "id": "B",
+            "text": "监督学习的交叉熵损失。"
+          },
+          {
+            "id": "C",
+            "text": "仅复制旧价值不变。"
+          },
+          {
+            "id": "D",
+            "text": "Bellman 最优备份。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "ce0fc472bfeb8e7cfde21c461b25678693f36a09f9cf54510ad48dfa642b26a6"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 136,
+      "prompt_tokens": 19134,
+      "total_tokens": 19270,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 318
+    }
+  }
+}

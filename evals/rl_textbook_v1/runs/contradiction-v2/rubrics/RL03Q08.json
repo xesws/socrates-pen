@@ -1,0 +1,348 @@
+{
+  "id": "RL03Q08",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_022ae8cd6bfb5ff315c7",
+        "name": "状态定义",
+        "definition": "状态可定义为网格位置，必要时包含终止格",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_0aa78dd0961df9cfd5ce",
+        "name": "动作定义",
+        "definition": "动作可定义为上、下、左、右，并处理撞墙后留在原地",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_1674054d4af47d41dc61",
+        "name": "模型定义",
+        "definition": "模型要给出每个状态动作到下一格的概率，含滑动或随机转移",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_49dbee35f09ad9c7b8a2",
+        "name": "奖励定义",
+        "definition": "奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c2d4e1bd7490e6afb638",
+        "name": "策略评价",
+        "definition": "策略评价按当前策略对动作概率和转移概率加权更新 V",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_b23adfdd62865432a623",
+        "name": "策略改进",
+        "definition": "策略改进在每个非终止状态选择一步期望回报最大的合法动作",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_6b8e850a05fc61e0db1c",
+        "name": "停止准则",
+        "definition": "停止可用最大价值变化量或策略不再变化作为准则",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      },
+      {
+        "id": "pt_c91a39aec2154d615e31",
+        "name": "输出内容",
+        "definition": "输出应包括最终策略、状态价值表和关键参数如 γ、阈值",
+        "source_mq_ids": [
+          "q_9c1c9743c1699ae92736"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_9c1c9743c1699ae92736",
+        "version": "159632865afc81bf1dfe3600f6fafd2bffe0ca80501384df70467952c77267f9",
+        "source_unit_id": "unit_8e1695eb8a9218e4",
+        "source_mq_id": "q_9c1c9743c1699ae92736",
+        "title": "RL03Q08",
+        "type": "short_answer",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "为 4×4 Gridworld 设计动态规划求解流程。请按8个方面回答：状态、动作、模型、奖励、评价、改进、停止、输出。",
+        "reference_answer": "1. 状态可定义为网格位置，必要时包含终止格。\n2. 动作可定义为上、下、左、右，并处理撞墙后留在原地。\n3. 模型要给出每个状态动作到下一格的概率，含滑动或随机转移。\n4. 奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号。\n5. 策略评价按当前策略对动作概率和转移概率加权更新 V。\n6. 策略改进在每个非终止状态选择一步期望回报最大的合法动作。\n7. 停止可用最大价值变化量或策略不再变化作为准则。\n8. 输出应包括最终策略、状态价值表和关键参数如 γ、阈值。",
+        "solution_markdown": "评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "raw_markdown": "### RL03Q08\n#### 题型\nshort_answer\n#### 题干\n为 4×4 Gridworld 设计动态规划求解流程。请按8个方面回答：状态、动作、模型、奖励、评价、改进、停止、输出。\n#### 答案\n1. 状态可定义为网格位置，必要时包含终止格。\n2. 动作可定义为上、下、左、右，并处理撞墙后留在原地。\n3. 模型要给出每个状态动作到下一格的概率，含滑动或随机转移。\n4. 奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号。\n5. 策略评价按当前策略对动作概率和转移概率加权更新 V。\n6. 策略改进在每个非终止状态选择一步期望回报最大的合法动作。\n7. 停止可用最大价值变化量或策略不再变化作为准则。\n8. 输出应包括最终策略、状态价值表和关键参数如 γ、阈值。\n#### 解答\n评分策略：1-2为basic各0.10；3-4为advanced各0.15；5-8为complete，权重依次0.10、0.10、0.15、0.15；语义等价且无相关矛盾即可给分。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_022ae8cd6bfb5ff315c7",
+          "pt_0aa78dd0961df9cfd5ce",
+          "pt_1674054d4af47d41dc61",
+          "pt_49dbee35f09ad9c7b8a2",
+          "pt_c2d4e1bd7490e6afb638",
+          "pt_b23adfdd62865432a623",
+          "pt_6b8e850a05fc61e0db1c",
+          "pt_c91a39aec2154d615e31"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_022ae8cd6bfb5ff315c7",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "状态可定义为网格位置，必要时包含终止格",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "状态可定义为网格位置，必要时包含终止格"
+              }
+            ]
+          },
+          {
+            "id": "c2",
+            "point_id": "pt_0aa78dd0961df9cfd5ce",
+            "max_score": 0.1,
+            "tier": "basic",
+            "description": "动作可定义为上、下、左、右，并处理撞墙后留在原地",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "动作可定义为上、下、左、右，并处理撞墙后留在原地"
+              }
+            ]
+          },
+          {
+            "id": "c3",
+            "point_id": "pt_1674054d4af47d41dc61",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "模型要给出每个状态动作到下一格的概率，含滑动或随机转移",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "模型要给出每个状态动作到下一格的概率，含滑动或随机转移"
+              }
+            ]
+          },
+          {
+            "id": "c4",
+            "point_id": "pt_49dbee35f09ad9c7b8a2",
+            "max_score": 0.15,
+            "tier": "advanced",
+            "description": "奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号"
+              }
+            ]
+          },
+          {
+            "id": "c5",
+            "point_id": "pt_c2d4e1bd7490e6afb638",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "策略评价按当前策略对动作概率和转移概率加权更新 V",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "策略评价按当前策略对动作概率和转移概率加权更新 V"
+              }
+            ]
+          },
+          {
+            "id": "c6",
+            "point_id": "pt_b23adfdd62865432a623",
+            "max_score": 0.1,
+            "tier": "complete",
+            "description": "策略改进在每个非终止状态选择一步期望回报最大的合法动作",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.1,
+                "condition": "策略改进在每个非终止状态选择一步期望回报最大的合法动作"
+              }
+            ]
+          },
+          {
+            "id": "c7",
+            "point_id": "pt_6b8e850a05fc61e0db1c",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "停止可用最大价值变化量或策略不再变化作为准则",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "停止可用最大价值变化量或策略不再变化作为准则"
+              }
+            ]
+          },
+          {
+            "id": "c8",
+            "point_id": "pt_c91a39aec2154d615e31",
+            "max_score": 0.15,
+            "tier": "complete",
+            "description": "输出应包括最终策略、状态价值表和关键参数如 γ、阈值",
+            "partial_credit": "本项独立给分；表达相同含义即可；缺失或与本项事实矛盾为0。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "缺失、错误或自相矛盾"
+              },
+              {
+                "id": "met",
+                "score": 0.15,
+                "condition": "输出应包括最终策略、状态价值表和关键参数如 γ、阈值"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 603,
+          "end_line": 618
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 605,
+            "end_line": 605
+          },
+          "题干": {
+            "start_line": 607,
+            "end_line": 607
+          },
+          "答案": {
+            "start_line": 609,
+            "end_line": 616
+          },
+          "解答": {
+            "start_line": 618,
+            "end_line": 618
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 180,
+        "rubric_schema": "tiered-v1",
+        "rubric_levels": [
+          {
+            "id": "basic",
+            "label": "基础",
+            "requires": [
+              "c1",
+              "c2"
+            ],
+            "min_score": 0.2
+          },
+          {
+            "id": "advanced",
+            "label": "进阶",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ],
+            "min_score": 0.5
+          },
+          {
+            "id": "complete",
+            "label": "完整",
+            "requires": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8"
+            ],
+            "min_score": 1
+          }
+        ],
+        "rubric_version": "a14799c47ccb191b2befbab6bbcd1751834f7e53da2a6ae6825626f2b88d37ed"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 1843,
+      "prompt_tokens": 19290,
+      "total_tokens": 21133,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 474
+    }
+  }
+}

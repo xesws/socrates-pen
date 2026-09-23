@@ -1,0 +1,119 @@
+{
+  "id": "RL03Q08-contradiction",
+  "case_id": "RL03Q08",
+  "kind": "contradiction",
+  "split": "test",
+  "expected": 0.9,
+  "expected_criteria": {
+    "fact1": 0,
+    "fact2": 0.1,
+    "fact3": 0.15,
+    "fact4": 0.15,
+    "fact5": 0.1,
+    "fact6": 0.1,
+    "fact7": 0.15,
+    "fact8": 0.15
+  },
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_022ae8cd6bfb5ff315c7",
+        "score": 0,
+        "max_score": 0.1,
+        "reason": "答案先给出正确状态定义，但随后明确坚持相反说法，构成自相矛盾，本项不得分。",
+        "evidence_quote": "我同时坚持以下相反说法：网格位置不能作为这个 Gridworld 的状态。",
+        "evidence_source": "text",
+        "level_id": "missing"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "pt_0aa78dd0961df9cfd5ce",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "明确给出上下左右动作并处理撞墙后留在原地，无矛盾。",
+        "evidence_quote": "动作可定义为上、下、左、右，并处理撞墙后留在原地。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c3",
+        "point_id": "pt_1674054d4af47d41dc61",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "说明模型给出状态动作到下一格的概率，并含滑动或随机转移。",
+        "evidence_quote": "模型要给出每个状态动作到下一格的概率，含滑动或随机转移。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c4",
+        "point_id": "pt_49dbee35f09ad9c7b8a2",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "给出每步 -1、到达目标 0 或其他明确信号，符合奖励设置。",
+        "evidence_quote": "奖励可设置为每步 -1、到达目标 0 或任务所需的其他明确信号。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c5",
+        "point_id": "pt_c2d4e1bd7490e6afb638",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明策略评价按当前策略对动作概率和转移概率加权更新 V。",
+        "evidence_quote": "策略评价按当前策略对动作概率和转移概率加权更新 V。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c6",
+        "point_id": "pt_b23adfdd62865432a623",
+        "score": 0.1,
+        "max_score": 0.1,
+        "reason": "说明策略改进在每个非终止状态选择一步期望回报最大的合法动作。",
+        "evidence_quote": "策略改进在每个非终止状态选择一步期望回报最大的合法动作。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c7",
+        "point_id": "pt_6b8e850a05fc61e0db1c",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "给出最大价值变化量或策略不再变化作为停止准则。",
+        "evidence_quote": "停止可用最大价值变化量或策略不再变化作为准则。",
+        "evidence_source": "text",
+        "level_id": "met"
+      },
+      {
+        "criterion_id": "c8",
+        "point_id": "pt_c91a39aec2154d615e31",
+        "score": 0.15,
+        "max_score": 0.15,
+        "reason": "输出包括最终策略、状态价值表和关键参数如 γ、阈值。",
+        "evidence_quote": "输出应包括最终策略、状态价值表和关键参数如 γ、阈值。",
+        "evidence_source": "text",
+        "level_id": "met"
+      }
+    ],
+    "score": 0.9,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "achievement": null,
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 635,
+      "prompt_tokens": 2544,
+      "total_tokens": 3179,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 2032
+    }
+  },
+  "score": 0.9
+}

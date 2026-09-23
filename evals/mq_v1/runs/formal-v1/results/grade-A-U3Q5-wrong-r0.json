@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U3Q5-wrong-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U3Q5",
+  "sample_id": "U3Q5-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 0,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U3Q5-p1",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者将 FIFO 错误表述为“后进先出”，与“先进先出”的正确含义相反，属于表达错误，得0分。",
+        "evidence_quote": "FIFO 是后进先出"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U3Q5-p2",
+        "score": 0.0,
+        "max_score": 0.5,
+        "reason": "学习者回答“先取 B”，与正确要点“本例 A 先取出”相反，属于表达错误，得0分。",
+        "evidence_quote": "因此先取 B。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 118,
+      "prompt_tokens": 385,
+      "total_tokens": 503,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 385
+    }
+  },
+  "score": 0.0
+}

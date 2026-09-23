@@ -1,0 +1,53 @@
+{
+  "id": "grade-A-U3Q4-paraphrase-r0",
+  "kind": "grade",
+  "arm": "A",
+  "case_id": "U3Q4",
+  "sample_id": "U3Q4-paraphrase",
+  "sample_kind": "paraphrase",
+  "split": "test",
+  "repeat": 0,
+  "expected": 1.0,
+  "expected_criteria": {
+    "c1": 0.5,
+    "c2": 0.5
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "U3Q4-p1",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案中“直接赋值让两个名字指向同一容器”准确表达了 b=a 共享顶层列表对象这一要点，符合得分标准。",
+        "evidence_quote": "直接赋值让两个名字指向同一容器"
+      },
+      {
+        "criterion_id": "c2",
+        "point_id": "U3Q4-p2",
+        "score": 0.5,
+        "max_score": 0.5,
+        "reason": "答案中“copy 给出另一个外层容器”准确表达了 a.copy 创建新的顶层列表对象这一要点，符合得分标准。",
+        "evidence_quote": "copy 给出另一个外层容器"
+      }
+    ],
+    "score": 1.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 119,
+      "prompt_tokens": 396,
+      "total_tokens": 515,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 396
+    }
+  },
+  "score": 1.0
+}

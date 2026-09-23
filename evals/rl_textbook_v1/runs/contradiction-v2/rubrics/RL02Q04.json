@@ -1,0 +1,122 @@
+{
+  "id": "RL02Q04",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_0ab340cc5c37713678d4",
+        "name": "正确选项",
+        "definition": "选择 C：Bellman 算子在无穷范数下具有压缩性。",
+        "source_mq_ids": [
+          "q_7fc7fddf7b159450a904"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_7fc7fddf7b159450a904",
+        "version": "72ee80bfecd62bce3c8b28cee3020f26ff1ff6e798658c398435fcb555398dcc",
+        "source_unit_id": "unit_d8ce2268d2927528",
+        "source_mq_id": "q_7fc7fddf7b159450a904",
+        "title": "RL02Q04",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "为什么 γ<1 的有限折扣 MDP 常有唯一价值固定点？",
+        "reference_answer": "C",
+        "solution_markdown": "折扣使未来价值差异按 γ 缩小，从而带来压缩映射性质。",
+        "raw_markdown": "### RL02Q04\n#### 题型\nsingle_choice\n#### 题干\n为什么 γ<1 的有限折扣 MDP 常有唯一价值固定点？\n#### 选项\n##### A\n所有奖励都会自动变成 0。\n##### B\n策略空间只剩一个策略。\n##### C\nBellman 算子在无穷范数下具有压缩性。\n##### D\n状态转移必须是确定的。\n#### 答案\nC\n#### 解答\n折扣使未来价值差异按 γ 缩小，从而带来压缩映射性质。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_0ab340cc5c37713678d4"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_0ab340cc5c37713678d4",
+            "max_score": 1.0,
+            "description": "选择 C：Bellman 算子在无穷范数下具有压缩性。",
+            "partial_credit": "单选：选 C 得满分，其他选项或未作答得 0 分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "未选 C，或选择 A/B/D 等其他选项"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 C：Bellman 算子在无穷范数下具有压缩性"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 333,
+          "end_line": 350
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 335,
+            "end_line": 335
+          },
+          "题干": {
+            "start_line": 337,
+            "end_line": 337
+          },
+          "选项": {
+            "start_line": 339,
+            "end_line": 346
+          },
+          "答案": {
+            "start_line": 348,
+            "end_line": 348
+          },
+          "解答": {
+            "start_line": 350,
+            "end_line": 350
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "所有奖励都会自动变成 0。"
+          },
+          {
+            "id": "B",
+            "text": "策略空间只剩一个策略。"
+          },
+          {
+            "id": "C",
+            "text": "Bellman 算子在无穷范数下具有压缩性。"
+          },
+          {
+            "id": "D",
+            "text": "状态转移必须是确定的。"
+          }
+        ],
+        "correct_choice_id": "C",
+        "rubric_version": "3e9dc4448172efb6b82f1799bec5b4f34b55de7665db0dc9c6401d2df2f12a4c"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 153,
+      "prompt_tokens": 19150,
+      "total_tokens": 19303,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 334
+    }
+  }
+}

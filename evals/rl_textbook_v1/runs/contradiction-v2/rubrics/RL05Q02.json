@@ -1,0 +1,122 @@
+{
+  "id": "RL05Q02",
+  "kind": "rubric",
+  "split": "test",
+  "ok": true,
+  "part": {
+    "points": [
+      {
+        "id": "pt_b6b859725cd77b423d09",
+        "name": "正确选项",
+        "definition": "SARSA 的更新目标使用当前行为策略选出的下一动作 A'，因此是 on-policy。",
+        "source_mq_ids": [
+          "q_5c8cc348e3342e8ed29a"
+        ],
+        "evidence": []
+      }
+    ],
+    "edges": [],
+    "questions": [
+      {
+        "id": "q_5c8cc348e3342e8ed29a",
+        "version": "9041bd178465a44f68b823cbf5c88c28e5a94220919acd7488e31c54db3ac196",
+        "source_unit_id": "unit_16eeaff4f1e58d9a",
+        "source_mq_id": "q_5c8cc348e3342e8ed29a",
+        "title": "RL05Q02",
+        "type": "single_choice",
+        "purpose": "practice",
+        "exam_form": null,
+        "prompt": "SARSA 被称为 on-policy 的原因是什么？",
+        "reference_answer": "D",
+        "solution_markdown": "SARSA 的目标含 Q(S',A')，A' 来自当前行为策略。",
+        "raw_markdown": "### RL05Q02\n#### 题型\nsingle_choice\n#### 题干\nSARSA 被称为 on-policy 的原因是什么？\n#### 选项\n##### A\n它必须知道完整转移模型。\n##### B\n它永远不探索。\n##### C\n它只学习状态价值 V。\n##### D\n更新目标使用实际行为策略选出的下一动作 A'。\n#### 答案\nD\n#### 解答\nSARSA 的目标含 Q(S',A')，A' 来自当前行为策略。",
+        "status": "accepted",
+        "point_ids": [
+          "pt_b6b859725cd77b423d09"
+        ],
+        "criteria": [
+          {
+            "id": "c1",
+            "point_id": "pt_b6b859725cd77b423d09",
+            "max_score": 1.0,
+            "description": "选择 D：更新目标使用实际行为策略选出的下一动作 A'。",
+            "partial_credit": "单选：选对得满分，选错或未答得0分。",
+            "levels": [
+              {
+                "id": "missing",
+                "score": 0,
+                "condition": "选择 A、B、C 或未作答"
+              },
+              {
+                "id": "met",
+                "score": 1,
+                "condition": "选择 D"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "start_line": 945,
+          "end_line": 962
+        },
+        "field_spans": {
+          "题型": {
+            "start_line": 947,
+            "end_line": 947
+          },
+          "题干": {
+            "start_line": 949,
+            "end_line": 949
+          },
+          "选项": {
+            "start_line": 951,
+            "end_line": 958
+          },
+          "答案": {
+            "start_line": 960,
+            "end_line": 960
+          },
+          "解答": {
+            "start_line": 962,
+            "end_line": 962
+          }
+        },
+        "asset_root": "/Users/tangyiq/dev/socrates-pen/evals/rl_textbook_v1",
+        "assets": [],
+        "estimated_seconds": 45,
+        "choices": [
+          {
+            "id": "A",
+            "text": "它必须知道完整转移模型。"
+          },
+          {
+            "id": "B",
+            "text": "它永远不探索。"
+          },
+          {
+            "id": "C",
+            "text": "它只学习状态价值 V。"
+          },
+          {
+            "id": "D",
+            "text": "更新目标使用实际行为策略选出的下一动作 A'。"
+          }
+        ],
+        "correct_choice_id": "D",
+        "rubric_version": "55584d1a032f87d741fee7b43f8faabad9c2e59d72d77a49e79280086f679f19"
+      }
+    ],
+    "issues": [],
+    "usage": {
+      "completion_tokens": 142,
+      "prompt_tokens": 19147,
+      "total_tokens": 19289,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 18816
+      },
+      "prompt_cache_hit_tokens": 18816,
+      "prompt_cache_miss_tokens": 331
+    }
+  }
+}

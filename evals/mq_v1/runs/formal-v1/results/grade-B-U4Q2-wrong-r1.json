@@ -1,0 +1,45 @@
+{
+  "id": "grade-B-U4Q2-wrong-r1",
+  "kind": "grade",
+  "arm": "B",
+  "case_id": "U4Q2",
+  "sample_id": "U4Q2-wrong",
+  "sample_kind": "wrong",
+  "split": "test",
+  "repeat": 1,
+  "expected": 0,
+  "expected_criteria": {
+    "c1": 0,
+    "c2": 0
+  },
+  "visual": false,
+  "ok": true,
+  "grade": {
+    "criteria": [
+      {
+        "criterion_id": "c1",
+        "point_id": "pt_381d7c708955c0850311",
+        "score": 0.0,
+        "max_score": 1.0,
+        "reason": "学习者答案称“随机数组也能任意丢掉一半，因为中点总是目标”，既未说明数组已排序，也未建立“有序性导致目标不可能在被排除半区”的因果联系，且表述与二分查找丢弃一半的正确依据相悖，属于答非所问。",
+        "evidence_quote": "随机数组也能任意丢掉一半，因为中点总是目标。"
+      }
+    ],
+    "score": 0.0,
+    "max_score": 1.0,
+    "model": "deepseek-flash",
+    "usage": {
+      "calls": 1,
+      "completion_tokens": 97,
+      "prompt_tokens": 394,
+      "total_tokens": 491,
+      "prompt_tokens_details": {
+        "calls": 1,
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 394
+    }
+  },
+  "score": 0.0
+}

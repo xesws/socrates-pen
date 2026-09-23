@@ -1,0 +1,44 @@
+{
+  "id": "rubric-U2Q5-r0",
+  "kind": "rubric",
+  "case_id": "U2Q5",
+  "split": "dev",
+  "repeat": 0,
+  "ok": true,
+  "points": [
+    {
+      "id": "pt_127736a2da302be05e8a",
+      "name": "处理方式",
+      "definition": "说明输入空列表时应明确拒绝或抛出异常。",
+      "source_mq_ids": [
+        "q_ec467743732e2f484c1f"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pt_0cc779d056b4ab5aca3f",
+      "name": "原因",
+      "definition": "说明空列表长度为零，直接求平均会导致除以零。",
+      "source_mq_ids": [
+        "q_ec467743732e2f484c1f"
+      ],
+      "evidence": []
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c1",
+      "point_id": "pt_127736a2da302be05e8a",
+      "max_score": 0.5,
+      "description": "回答应指出输入空列表时应明确拒绝或抛出异常。若仅说返回0、返回None、忽略空列表等未拒绝或未抛出异常的处理，则不得分。",
+      "partial_credit": "答出明确拒绝或抛出异常之一得满分；若表述模糊但可理解为拒绝或抛出异常，得0.25分；若给出其他处理方式（如返回0、返回None、忽略）得0分。"
+    },
+    {
+      "id": "c2",
+      "point_id": "pt_0cc779d056b4ab5aca3f",
+      "max_score": 0.5,
+      "description": "回答应说明原因是空列表长度为零，直接求平均会导致除以零。若未提及长度为零或除以零，则不得分。",
+      "partial_credit": "同时说明长度为零和除以零得满分；仅说明长度为零或仅说明除以零得0.25分；未说明原因或原因错误得0分。"
+    }
+  ]
+}
